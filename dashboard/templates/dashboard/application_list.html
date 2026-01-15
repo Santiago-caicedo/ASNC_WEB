@@ -1,0 +1,189 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Solicitudes de Ingreso</h2>
+        <p class="text-muted small">Gestione los candidatos aspirantes a la Asociación.</p>
+    </div>
+    
+    <div class="d-flex gap-2">
+        <div class="input-group shadow-sm" style="width: 300px;">
+            <span class="input-group-text bg-white border-end-0 ps-3">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" class="form-control border-start-0 ps-2" placeholder="Buscar por nombre o email..." style="font-size: 0.9rem;">
+        </div>
+        <button class="btn btn-white shadow-sm border px-3" title="Filtrar">
+            <i class="bi bi-funnel"></i>
+        </button>
+        <button class="btn btn-dark shadow-sm px-3">
+            <i class="bi bi-download me-2"></i> Exportar
+        </button>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4"> 
+    <div class="card-body p-0">
+        <div class="table-responsive" style="overflow: visible;"> 
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px; width: 30%;">Candidato</th>
+                        <th class="py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Perfil Profesional</th>
+                        <th class="py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Estado</th>
+                        <th class="py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Fecha</th>
+                        <th class="pe-4 py-3 text-end text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="ps-4 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle d-flex justify-content-center align-items-center me-3 fw-bold text-white shadow-sm" 
+                                     style="width: 45px; height: 45px; background: linear-gradient(135deg, var(--asnc-blue), #4a6fa5); font-size: 0.9rem;">
+                                    {{ app.first_name|first }}{{ app.last_name|first }}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ app.first_name }} {{ app.last_name }}</div>
+                                    <div class="small text-muted">{{ app.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="fw-semibold text-secondary">{{ app.profession }}</div>
+                            <div class="small text-muted">
+                                {% if app.current_job %}{{ app.current_job }}{% else %}Consultor Independiente{% endif %}
+                            </div>
+                        </td>
+
+                        <td>
+                            {% if app.status == 'PENDING' %}
+                                <span class="badge rounded-pill bg-warning bg-opacity-10 text-warning px-3 py-2 border border-warning border-opacity-10">
+                                    <i class="bi bi-clock me-1"></i> Pendiente
+                                </span>
+                            {% elif app.status == 'REVIEW' %}
+                                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2 border border-primary border-opacity-10">
+                                    <i class="bi bi-search me-1"></i> En Estudio
+                                </span>
+                            {% elif app.status == 'APPROVED' %}
+                                <span class="badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2 border border-success border-opacity-10">
+                                    <i class="bi bi-check-circle me-1"></i> Aprobado
+                                </span>
+                            {% elif app.status == 'REJECTED' %}
+                                <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger px-3 py-2 border border-danger border-opacity-10">
+                                    <i class="bi bi-x-circle me-1"></i> Rechazado
+                                </span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-dark bg-opacity-10 text-dark px-3 py-2">
+                                    {{ app.get_status_display }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-muted small">
+                            {{ app.created_at|date:"d M, Y" }} <br>
+                            <span class="text-muted opacity-50">{{ app.created_at|time:"H:i" }}</span>
+                        </td>
+
+                        <td class="pe-4 text-end">
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                                    <i class="bi bi-three-dots-vertical text-muted"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3" style="z-index: 9999;">
+                                    <li><h6 class="dropdown-header text-uppercase small fw-bold">Gestión</h6></li>
+                                    
+                                    <li>
+                                        <a class="dropdown-item py-2 fw-bold" href="{% url 'application_detail' app.pk %}">
+                                            <i class="bi bi-eye me-2 text-primary"></i> Ver Expediente
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        {% if app.cv_file %}
+                                        <a class="dropdown-item py-2" href="{{ app.cv_file.url }}" target="_blank">
+                                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i> Ver Hoja de Vida
+                                        </a>
+                                        {% else %}
+                                        <span class="dropdown-item disabled text-muted"><i class="bi bi-file-earmark-x me-2"></i> Sin CV</span>
+                                        {% endif %}
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="py-4">
+                                <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-muted">
+                                    <i class="bi bi-inbox fs-1"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark">No hay solicitudes nuevas</h5>
+                                <p class="text-muted small mb-0">Cuando los aspirantes se registren, aparecerán aquí.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if applications %}
+        <div class="card-footer bg-white border-top border-light py-3 px-4 d-flex justify-content-between align-items-center">
+            <small class="text-muted">Mostrando {{ applications.count }} registros</small>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled">
+                        <a class="page-link border-0 bg-light text-muted rounded-start-3 ms-1" href="#">Anterior</a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link bg-asnc-blue border-0 rounded-3 mx-1 shadow-sm" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link border-0 bg-light text-dark rounded-3 mx-1" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link border-0 bg-light text-dark rounded-end-3 me-1" href="#">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    /* Estilos extra */
+    .table-responsive {
+        overflow: visible !important; /* CRÍTICO: Permite que el menú salga */
+    }
+    .card {
+        /* Eliminado min-height */
+        overflow: visible; /* Asegura que la tarjeta no corte hijos */
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(33, 58, 92, 0.02);
+        transition: background-color 0.2s ease;
+    }
+    .btn-white {
+        background-color: white;
+        border-color: #dee2e6;
+        color: #495057;
+    }
+    .btn-white:hover {
+        background-color: #f8f9fa;
+    }
+    .page-link.bg-asnc-blue {
+        background-color: var(--asnc-blue) !important;
+        color: white !important;
+    }
+</style>
+
+{% endblock %}

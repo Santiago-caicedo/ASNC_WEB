@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal Oficial de la Asociación Nuclear Colombiana">
+    <meta name="author" content="ASNC">
+    
+    <title>ASNC - {% block title %}Asociación Nuclear Colombiana{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- SISTEMA DE DISEÑO ASNC --- */
+        :root {
+            --asnc-navy: #1B2A41;       /* Azul oscuro (Casi negro) */
+            --asnc-blue: #213a5c;       /* Azul corporativo medio */
+            --asnc-gold: #f4c343;       /* Amarillo dorado */
+            --asnc-bg: #F5F7FA;         /* Fondo general */
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            color: var(--asnc-navy);
+            background-color: var(--asnc-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER WRAPPER (Sticky) --- */
+        .header-wrapper {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            background-color: white;
+        }
+
+        /* --- 1. TOP BAR --- */
+        .top-bar {
+            background-color: var(--asnc-navy);
+            color: white;
+            font-size: 0.85rem;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .top-bar a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .top-bar a:hover {
+            color: var(--asnc-gold);
+        }
+
+        .social-icon {
+            font-size: 1rem;
+            margin-left: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-2px);
+            color: var(--asnc-gold) !important;
+        }
+
+        /* --- 2. NAVBAR PRINCIPAL --- */
+        .navbar-asnc {
+            background-color: white;
+            padding-top: 0.5rem;  /* Reducimos un poco el padding vertical para compensar el logo grande */
+            padding-bottom: 0.5rem;
+        }
+
+        .navbar-brand-logo {
+            height: 65px; /* <--- CAMBIO: Logo mucho más grande (antes 55px) */
+            width: auto;
+            transition: transform 0.2s;
+        }
+        
+        .navbar-brand-logo:hover {
+            transform: scale(1.02);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--asnc-navy);
+            margin: 0 5px;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--asnc-blue);
+        }
+
+        /* Efecto de línea animada */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: var(--asnc-gold);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        /* Botón CTA Principal */
+        .btn-asnc-primary {
+            background-color: var(--asnc-blue);
+            color: white;
+            font-weight: 600;
+            border: 2px solid var(--asnc-blue);
+            transition: all 0.3s ease;
+        }
+
+        .btn-asnc-primary:hover {
+            background-color: var(--asnc-navy);
+            border-color: var(--asnc-navy);
+            color: var(--asnc-gold);
+            box-shadow: 0 4px 12px rgba(33, 58, 92, 0.2);
+        }
+
+        /* --- 3. FOOTER --- */
+        .footer-asnc {
+            background-color: var(--asnc-navy);
+            color: white;
+            padding-top: 4rem;
+            padding-bottom: 2rem;
+            margin-top: auto;
+        }
+        .footer-link {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .footer-link:hover { color: var(--asnc-gold); padding-left: 5px; }
+        .text-gold { color: var(--asnc-gold) !important; }
+    </style>
+</head>
+<body>
+
+    <header class="sticky-top header-wrapper">
+        
+        <div class="top-bar">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-none d-md-flex gap-4">
+                    <a href="mailto:contacto@asocnuclear.org"><i class="bi bi-envelope-fill me-2 text-gold"></i> contacto@asocnuclear.org</a>
+                </div>
+                
+                <div class="ms-auto d-flex align-items-center">
+                    <span class="d-none d-md-inline me-2 opacity-75 small">Síguenos:</span>
+                    <a href="https://instagram.com" target="_blank" class="social-icon" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="https://linkedin.com" target="_blank" class="social-icon" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="https://youtube.com" target="_blank" class="social-icon" title="YouTube"><i class="bi bi-youtube"></i></a>
+                    <a href="https://facebook.com" target="_blank" class="social-icon" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="https://tiktok.com" target="_blank" class="social-icon" title="TikTok"><i class="bi bi-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <nav class="navbar navbar-expand-lg navbar-asnc">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <img src="{% static 'images/asnc_logo_full.png' %}" alt="Logo ASNC" class="navbar-brand-logo">
+                </a>
+
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{% url 'home' %}">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="#">Quiénes Somos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="#">Eventos</a>
+                        </li>
+                        
+                        <li class="nav-item d-none d-lg-block mx-2 border-end border-2" style="height: 20px; opacity: 0.2;"></li>
+
+                        <li class="nav-item ms-lg-2">
+                            <a href="{% url 'login' %}" class="btn btn-link text-decoration-none fw-bold" style="color: var(--asnc-blue); font-size: 0.95rem;">
+                                <i class="bi bi-person-circle me-1"></i> Acceso Asociados
+                            </a>
+                        </li>
+                        <li class="nav-item ms-2 mt-2 mt-lg-0">
+                            <a href="{% url 'application_create' %}" class="btn btn-asnc-primary rounded-pill px-4 py-2">
+                                ¡Únete a la ASNC!
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer-asnc">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold text-white mb-3">ASNC</h5>
+                    <p class="small text-white-50">
+                        Promoviendo el desarrollo pacífico, seguro y sostenible de la ciencia y tecnología nuclear en Colombia.
+                    </p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="text-white fs-5"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold text-gold mb-3">Navegación</h6>
+                    <a href="{% url 'home' %}" class="footer-link">Inicio</a>
+                    <a href="#" class="footer-link">Sobre Nosotros</a>
+                    <a href="{% url 'application_create' %}" class="footer-link">Afiliarse</a>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold text-gold mb-3">Legal</h6>
+                    <a href="#" class="footer-link">Estatutos</a>
+                    <a href="#" class="footer-link">Política de Datos</a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="fw-bold text-gold mb-3">Contacto</h6>
+                    <ul class="list-unstyled small text-white-50">
+                        <li class="mb-2"><i class="bi bi-geo-alt me-2"></i> Bogotá D.C., Colombia</li>
+                        <li class="mb-2"><i class="bi bi-envelope me-2"></i> contacto@asocnuclear.org</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary opacity-25">
+            <div class="text-center small text-white-50">
+                &copy; {% now "Y" %} Asociación Nuclear Colombiana. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

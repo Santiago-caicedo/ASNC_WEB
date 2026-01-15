@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Deploying Projects — Vercel</title>
+
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #010409;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --muted: #8b949e;
+            --green: #3fb950;
+            --blue: #58a6ff;
+            --yellow: #d29922;
+            --bar-bg: #21262d;
+        }
+
+        body {
+            background: var(--bg);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "JetBrains Mono", "Fira Code", monospace;
+            color: var(--text);
+        }
+
+        .terminal {
+            width: 900px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .terminal-header {
+            background: #161b22;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+
+        .terminal-title {
+            margin-left: 12px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* Body */
+        .terminal-body {
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .line {
+            margin-bottom: 8px;
+        }
+
+        .prompt {
+            color: var(--green);
+        }
+
+        .command {
+            color: var(--blue);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .deploy-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 18px;
+            background: #0d1117;
+        }
+
+        .deploy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .domain {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .status {
+            color: var(--yellow);
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            background: var(--bar-bg);
+            border-radius: 6px;
+            overflow: hidden;
+            height: 10px;
+            margin: 10px 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), #56d364);
+            width: 0;
+            animation: load 2s ease-out forwards;
+        }
+
+        .progress.p98 { width: 98%; }
+        .progress.p97 { width: 97%; }
+
+        @keyframes load {
+            from { width: 0; }
+            to { }
+        }
+
+        .deploy-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .time {
+            color: var(--text);
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="terminal">
+
+    <div class="terminal-header">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+        <div class="terminal-title">Vercel — Deployment Console</div>
+    </div>
+
+    <div class="terminal-body">
+
+        <div class="line">
+            <span class="prompt">▲ vercel</span>
+            <span class="command"> deploy</span>
+            <span class="muted"> --prod</span>
+        </div>
+
+        <div class="line muted">🔍 Inspecting project configuration</div>
+        <div class="line muted">📦 Building production bundle</div>
+        <div class="line muted">☁️ Uploading assets to edge network</div>
+
+        <!-- Deploy 1 -->
+        <div class="deploy-card">
+            <div class="deploy-header">
+                <span class="domain">miboda.lat</span>
+                <span class="status">Deploying <span class="spinner">⏳</span></span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress p98"></div>
+            </div>
+
+            <div class="deploy-footer">
+                <span>Progress: <strong>98%</strong></span>
+                <span class="time">ETA: ~50 min</span>
+            </div>
+        </div>
+
+        <!-- Deploy 2 -->
+        <div class="deploy-card">
+            <div class="deploy-header">
+                <span class="domain">waco.lat</span>
+                <span class="status">Deploying <span class="spinner">⏳</span></span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress p97"></div>
+            </div>
+
+            <div class="deploy-footer">
+                <span>Progress: <strong>97%</strong></span>
+                <span class="time">ETA: ~70 min</span>
+            </div>
+        </div>
+
+        <div class="line muted" style="margin-top:20px;">
+            🚀 Finalizing edge routing & SSL certificates...
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

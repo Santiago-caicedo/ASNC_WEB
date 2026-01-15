@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificación de Seguridad - Vadom Data</title>
+    <style>
+        /* --- CONFIGURACIÓN DE COLORES --- */
+        :root {
+            --brand-color: #1d7784;
+            --brand-cyan: #00aeb3;
+            --brand-dark: #145660;
+            --text-main: #333333;
+            --text-light: #555555;
+            --bg-page: #ffffff;
+            --success-color: #00b894;
+        }
+
+        body {
+            background-color: #e6e6e6;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* --- PÁGINA FÍSICA --- */
+        .page {
+            background-color: var(--bg-page);
+            width: 210mm;
+            height: 297mm; /* Altura A4 */
+            padding: 20mm 20mm 0 20mm; 
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--brand-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            flex-shrink: 0;
+        }
+
+        .header-left img { height: 55px; display: block; }
+        .header-right { text-align: right; }
+
+        .doc-type {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--brand-color);
+            text-transform: uppercase;
+            font-weight: 700;
+            max-width: 450px;
+            line-height: 1.2;
+        }
+
+        /* --- CONTENIDO --- */
+        .content {
+            flex-grow: 1;
+            padding-bottom: 100px;
+        }
+
+        /* --- CONTROL BOX --- */
+        table { width: 100%; border-collapse: collapse; }
+
+        .control-box { margin-bottom: 30px; font-size: 11px; }
+        .control-box td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            color: var(--text-main);
+        }
+
+        .label { background-color: #f8f9fa; font-weight: bold; color: var(--brand-dark); width: 18%; }
+        .value { width: 32%; }
+
+        /* --- TABLA DE ESTADO (SECCIÓN 4) --- */
+        .status-table {
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            font-size: 10.5px;
+            border: 1px solid #ddd;
+        }
+        
+        .status-table th {
+            background-color: var(--brand-color);
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-table td {
+            border-bottom: 1px solid #eee;
+            padding: 8px;
+            vertical-align: top;
+            color: var(--text-main);
+        }
+
+        .badge-success {
+            background-color: #e6fffa;
+            color: #00796b;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 9px;
+            border: 1px solid #b2f5ea;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        /* --- TEXTOS --- */
+        h2 {
+            font-size: 13px;
+            color: var(--brand-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 4px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 10.5px;
+            line-height: 1.5;
+            color: var(--text-main);
+            text-align: justify;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+
+        ul {
+            margin: 0 0 15px 0;
+            padding-left: 18px;
+            font-size: 10.5px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+        
+        li { margin-bottom: 4px; }
+        strong { color: var(--brand-dark); font-weight: 600; }
+
+        /* --- NOTA DE RESTRICCIÓN DE INFORME COMPLETO --- */
+        .restriction-note {
+            background-color: #fff8e1;
+            border-left: 3px solid #ffc107;
+            padding: 10px;
+            font-size: 9.5px;
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 25px;
+            text-align: justify;
+            font-style: italic;
+        }
+
+        /* --- CERTIFICACIÓN / FIRMA --- */
+        .certification-box {
+            margin-top: 10px;
+            border: 1px solid #dae1e7;
+            background-color: #fbfbfb;
+            padding: 15px;
+            page-break-inside: avoid;
+        }
+
+        .cert-header {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 35px; /* Espacio para firma */
+            display: block;
+        }
+
+        .cert-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--brand-dark);
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+            display: block;
+            width: 250px;
+        }
+
+        .cert-role {
+            font-size: 10px;
+            color: #555;
+            display: block;
+        }
+
+        /* --- DISCLAIMER --- */
+        .legal-disclaimer {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #fcfcfc;
+            border: 1px solid #eeeeee;
+            font-size: 8px;
+            color: #777;
+            text-align: justify;
+            line-height: 1.3;
+        }
+        .legal-title { font-weight: bold; color: var(--brand-color); display: block; margin-bottom: 3px; }
+
+        /* --- FOOTER GRÁFICO --- */
+        .footer-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            line-height: 0;
+        }
+        
+        .footer-wave { width: 100%; height: 100%; display: block; }
+
+        /* --- IMPRESIÓN --- */
+        @media print {
+            @page { margin: 0; size: A4; }
+            body { background-color: white; padding: 0; margin: 0; gap: 0; }
+            .page { 
+                box-shadow: none; 
+                margin: 0; 
+                page-break-after: always;
+            }
+            .page:last-child { page-break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <header>
+            <div class="header-left">
+                <img src="https://vadomdata.com/wp-content/uploads/2025/08/Vadom-logo-blanco-e1756258715825.png" alt="Vadom Data Logo">
+            </div>
+            <div class="header-right">
+                <div class="doc-type">AWS Partner Network Certification</div>
+                <h1>Certificación de Postura de Seguridad y Conformidad Tecnológica</h1>
+            </div>
+        </header>
+
+        <div class="content">
+            <table class="control-box">
+                <tr>
+                    <td class="label">Referencia:</td>
+                    <td class="value">ADV-SEC-CERT-2025-Q4</td>
+                    <td class="label">Cliente:</td>
+                    <td class="value">Vadom Data Consulting</td>
+                </tr>
+                <tr>
+                    <td class="label">Emitido Por:</td>
+                    <td class="value">Advancit SAS</td>
+                    <td class="label">Estado:</td>
+                    <td class="value">Vigente / Certificado</td>
+                </tr>
+                <tr>
+                    <td class="label">Tipo:</td>
+                    <td class="value">Seguridad Gestionada</td>
+                    <td class="label">Fecha Emisión:</td>
+                    <td class="value"><strong>20 de Octubre de 2025</strong></td>
+                </tr>
+            </table>
+
+            <h2>1. Resumen Ejecutivo</h2>
+            <p>
+                El presente documento certifica que la infraestructura tecnológica que soporta la plataforma de Vadom Data Consulting, alojada en la nube de Amazon Web Services (AWS), opera bajo un modelo de Seguridad Gestionada (Managed Security Services) administrado por Advancit SAS.
+            </p>
+            <p>
+                Nuestro equipo de ingeniería cloud realiza labores continuas de monitoreo, actualización y endurecimiento (hardening) de los sistemas, garantizando la confidencialidad, integridad y disponibilidad de los datos procesados, en cumplimiento con el AWS Well-Architected Framework.
+            </p>
+
+            <h2>2. Alcance del Servicio de Seguridad</h2>
+            <p>La gestión de seguridad abarca los siguientes componentes críticos del entorno productivo:</p>
+            <ul>
+                <li><strong>Capa de Red:</strong> Configuración de VPC, Subredes Privadas/Públicas, y Firewalls Virtuales (Security Groups / NACLs).</li>
+                <li><strong>Capa de Cómputo:</strong> Gestión de parches de seguridad a nivel de Sistema Operativo (Linux Ubuntu) en instancias EC2.</li>
+                <li><strong>Capa de Datos:</strong> Encriptación y respaldo de Bases de Datos Gestionadas (Amazon RDS PostgreSQL) y Almacenamiento de Objetos (S3).</li>
+                <li><strong>Gestión de Identidades:</strong> Control de accesos privilegiados (IAM) y rotación de credenciales.</li>
+            </ul>
+
+            <h2>3. Metodología de Evaluación y Control</h2>
+            <p>A diferencia de una auditoría puntual, Vadom Data cuenta con un esquema de Cumplimiento Continuo, donde se ejecutan las siguientes actividades periódicas:</p>
+            <ul>
+                <li><strong>Análisis de Vulnerabilidades:</strong> Escaneo automatizado mediante AWS Inspector y AWS Trusted Advisor para detectar configuraciones inseguras.</li>
+                <li><strong>Gestión de Parches (Patch Management):</strong> Aplicación de actualizaciones críticas en un plazo no mayor a 48 horas tras su liberación.</li>
+                <li><strong>Monitoreo de Amenazas 24/7:</strong> Vigilancia activa de logs mediante Amazon CloudWatch para detección de intrusiones.</li>
+                <li><strong>Resiliencia y Backups:</strong> Verificación diaria de integridad de Snapshots y replicación Multi-AZ.</li>
+            </ul>
+        </div>
+
+        <div class="footer-container">
+            <svg class="footer-wave" viewBox="0 0 1000 150" preserveAspectRatio="none">
+                <path d="M0,150 L350,150 L0,50 Z" fill="#0b4a53" opacity="0.8"></path>
+                <path d="M0,150 L700,150 L0,0 Z" fill="#1d7784" opacity="0.9"></path>
+                <path d="M300,150 Q650,120 1000,150 L1000,150 L300,150 Z" fill="#00aeb3"></path>
+                <path d="M350,150 Q650,50 1000,20" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M370,150 Q670,60 1000,30" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M390,150 Q690,70 1000,40" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M410,150 Q710,80 1000,50" stroke="#cccccc" stroke-width="1" fill="none"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div class="page">
+        <header>
+            <div class="header-left">
+                <img src="https://vadomdata.com/wp-content/uploads/2025/08/Vadom-logo-blanco-e1756258715825.png" alt="Vadom Data Logo">
+            </div>
+            <div class="header-right">
+                <div class="doc-type">AWS Partner Network Certification</div>
+                <h1>Certificación de Postura de Seguridad y Conformidad Tecnológica</h1>
+            </div>
+        </header>
+
+        <div class="content">
+            <h2>4. Estado Actual de Seguridad (Octubre 2025)</h2>
+            <p>A la fecha de corte de este certificado, se confirman los siguientes indicadores de seguridad:</p>
+            
+            <table class="status-table">
+                <thead>
+                    <tr>
+                        <th width="25%">Dominio de Control</th>
+                        <th width="15%">Estado</th>
+                        <th width="60%">Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Actualización de Sistemas</strong></td>
+                        <td><span class="badge-success">CUMPLIDO</span></td>
+                        <td>Todos los servidores cuentan con los últimos parches de seguridad críticos aplicados.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encriptación de Datos</strong></td>
+                        <td><span class="badge-success">CUMPLIDO</span></td>
+                        <td>Se valida encriptación AES-256 en reposo para Bases de Datos y Discos EBS.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Protección Perimetral</strong></td>
+                        <td><span class="badge-success">CUMPLIDO</span></td>
+                        <td>AWS Shield Standard y WAF activos. No se detectan puertos inseguros expuestos a internet.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accesos Administrativos</strong></td>
+                        <td><span class="badge-success">CUMPLIDO</span></td>
+                        <td>MFA forzado para todos los accesos de consola raíz y administrativa.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>5. Conclusión y Dictamen Técnico</h2>
+            <p>
+                Advancit SAS certifica que la plataforma de Vadom Data Consulting cuenta con una arquitectura robusta y segura, diseñada para mitigar riesgos cibernéticos modernos. Los controles implementados son suficientes y adecuados para el procesamiento de información sensible y confidencial.
+            </p>
+            <p>
+                El entorno se encuentra <strong>OPERATIVO y SEGURO</strong>, sin hallazgos críticos pendientes de remediación al momento de esta certificación.
+            </p>
+
+            <div class="restriction-note">
+                <strong>NOTA DE ALCANCE DOCUMENTAL:</strong> El informe técnico detallado de arquitectura, logs de auditoría y configuraciones específicas contiene información estratégica confidencial (Know-How). Por políticas de seguridad corporativa y protección de la propiedad intelectual, dicho informe completo es de uso exclusivo interno de Vadom Data Consulting SAS y <strong>no será proporcionado a terceros</strong>. El presente certificado, emitido por un partner tecnológico autorizado, constituye prueba suficiente de la conformidad y efectividad de los controles de seguridad aquí descritos.
+            </div>
+
+            <div class="certification-box">
+                <span class="cert-header">EMITIDO Y CERTIFICADO POR:</span>
+                
+                <span class="cert-name">Daniel Bernal Yhamá</span>
+                <span class="cert-role">CEO & Lead Security Architect</span>
+                <span class="cert-role">Advancit SAS - AWS Partner Network</span>
+            </div>
+
+            <div class="legal-disclaimer">
+                <span class="legal-title">AVISO DE CONFIDENCIALIDAD</span>
+                Este documento contiene información propietaria y confidencial perteneciente a <strong>Vadom Data Consulting SAS</strong> y <strong>Advancit SAS</strong>. Está destinado únicamente para el uso de la persona o entidad a la que se le proporcionó. La divulgación, copia, distribución o toma de cualquier acción basada en el contenido de esta información sin autorización está estrictamente prohibida y puede ser ilegal.
+            </div>
+        </div>
+
+        <div class="footer-container">
+            <svg class="footer-wave" viewBox="0 0 1000 150" preserveAspectRatio="none">
+                <path d="M0,150 L350,150 L0,50 Z" fill="#0b4a53" opacity="0.8"></path>
+                <path d="M0,150 L700,150 L0,0 Z" fill="#1d7784" opacity="0.9"></path>
+                <path d="M300,150 Q650,120 1000,150 L1000,150 L300,150 Z" fill="#00aeb3"></path>
+                <path d="M350,150 Q650,50 1000,20" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M370,150 Q670,60 1000,30" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M390,150 Q690,70 1000,40" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M410,150 Q710,80 1000,50" stroke="#cccccc" stroke-width="1" fill="none"></path>
+            </svg>
+        </div>
+    </div>
+
+</body>
+</html>

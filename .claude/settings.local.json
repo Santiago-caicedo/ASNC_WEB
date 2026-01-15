@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(source venv/bin/activate:*)",
+      "Bash(python manage.py makemigrations:*)",
+      "Bash(python3 manage.py:*)",
+      "Bash(git remote add:*)"
+    ]
+  }
+}

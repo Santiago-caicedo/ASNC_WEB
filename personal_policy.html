@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceptable Use Policy (AUP) - Vadom Data</title>
+    <style>
+        /* --- CONFIGURACIÓN DE COLORES --- */
+        :root {
+            --brand-color: #1d7784;
+            --brand-cyan: #00aeb3;
+            --brand-dark: #145660;
+            --text-main: #333333;
+            --text-light: #555555;
+            --bg-page: #ffffff;
+        }
+
+        body {
+            background-color: #e6e6e6;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* --- PÁGINA FÍSICA --- */
+        .page {
+            background-color: var(--bg-page);
+            width: 210mm;
+            height: 297mm; /* Altura A4 */
+            padding: 20mm 20mm 0 20mm; 
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--brand-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            flex-shrink: 0;
+        }
+
+        .header-left img { height: 55px; display: block; }
+        .header-right { text-align: right; }
+
+        .doc-type {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            color: var(--brand-color);
+            text-transform: uppercase;
+            font-weight: 700;
+            max-width: 450px;
+            line-height: 1.2;
+        }
+
+        /* --- CONTENIDO --- */
+        .content {
+            flex-grow: 1;
+            padding-bottom: 100px; /* Espacio para el footer */
+        }
+
+        /* --- CONTROL BOX --- */
+        table { width: 100%; border-collapse: collapse; }
+
+        .control-box { margin-bottom: 30px; font-size: 11px; }
+        .control-box td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            color: var(--text-main);
+        }
+
+        .label { background-color: #f8f9fa; font-weight: bold; color: var(--brand-dark); width: 18%; }
+        .value { width: 32%; }
+
+        /* --- TEXTOS --- */
+        h2 {
+            font-size: 13px;
+            color: var(--brand-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 4px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 10.5px;
+            line-height: 1.5;
+            color: var(--text-main);
+            text-align: justify;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+
+        ul {
+            margin: 0 0 15px 0;
+            padding-left: 18px;
+            font-size: 10.5px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+        
+        li { margin-bottom: 4px; }
+        strong { color: var(--brand-dark); font-weight: 600; }
+
+        /* --- CAJA DE FIRMA (NUEVO) --- */
+        .acknowledgment-box {
+            margin-top: 25px;
+            border: 2px solid #eee;
+            background-color: #fafafa;
+            padding: 15px;
+            page-break-inside: avoid;
+        }
+        
+        .ack-title {
+            display: block;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px;
+            color: var(--brand-dark);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .ack-text {
+            font-size: 10px;
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .signature-lines {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .sign-field {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .sign-line {
+            border-bottom: 1px solid #333;
+            height: 25px;
+            margin-bottom: 5px;
+        }
+
+        .sign-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: #777;
+        }
+
+        /* --- DISCLAIMER --- */
+        .legal-disclaimer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fcfcfc;
+            border: 1px solid #eeeeee;
+            font-size: 8px;
+            color: #777;
+            text-align: justify;
+            line-height: 1.3;
+        }
+        .legal-title { font-weight: bold; color: var(--brand-color); display: block; margin-bottom: 3px; }
+
+        /* --- FOOTER GRÁFICO --- */
+        .footer-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            line-height: 0;
+        }
+        
+        .footer-wave { width: 100%; height: 100%; display: block; }
+
+        /* --- IMPRESIÓN --- */
+        @media print {
+            @page { margin: 0; size: A4; }
+            body { background-color: white; padding: 0; margin: 0; gap: 0; }
+            .page { 
+                box-shadow: none; 
+                margin: 0; 
+                page-break-after: always;
+            }
+            .page:last-child { page-break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <header>
+            <div class="header-left">
+                <img src="https://vadomdata.com/wp-content/uploads/2025/08/Vadom-logo-blanco-e1756258715825.png" alt="Vadom Data Logo">
+            </div>
+            <div class="header-right">
+                <div class="doc-type">HR & Security Policy</div>
+                <h1>Acceptable Use Policy (AUP)</h1>
+            </div>
+        </header>
+
+        <div class="content">
+            <table class="control-box">
+                <tr>
+                    <td class="label">Document ID:</td>
+                    <td class="value">VAD-HR-POL-005</td>
+                    <td class="label">Version:</td>
+                    <td class="value">2.3</td>
+                </tr>
+                <tr>
+                    <td class="label">Owner:</td>
+                    <td class="value">HR & Security Dept</td>
+                    <td class="label">Status:</td>
+                    <td class="value">Active / Enforced</td>
+                </tr>
+                <tr>
+                    <td class="label">Classification:</td>
+                    <td class="value">Internal Use</td>
+                    <td class="label">Last Review:</td>
+                    <td class="value"><strong>November 05, 2025</strong></td>
+                </tr>
+            </table>
+
+            <h2>1. Purpose</h2>
+            <p>
+                The purpose of this policy is to outline the acceptable use of computer equipment, email, internet access, and networks at Vadom Data Consulting SAS. These rules are in place to protect the employee and Vadom Data. Inappropriate use exposes the company to risks including virus attacks, compromise of network systems and services, and legal issues.
+            </p>
+
+            <h2>2. Scope</h2>
+            <p>
+                This policy applies to the use of information, electronic and computing devices, and network resources to conduct Vadom Data business or interact with internal networks and business systems, whether owned or leased by Vadom Data, the employee, or a third party. All employees, contractors, consultants, temporaries, and other workers at Vadom Data are responsible for exercising good judgment regarding appropriate use of information, electronic devices, and network resources.
+            </p>
+
+            <h2>3. General Use and Ownership</h2>
+            <ul>
+                <li><strong>Proprietary Information:</strong> Vadom Data proprietary information stored on electronic and computing devices whether owned or leased by Vadom Data, the employee or a third party, remains the sole property of Vadom Data.</li>
+                <li><strong>No Expectation of Privacy:</strong> Employees should have no expectation of privacy when using company-issued devices or networks. Vadom Data reserves the right to audit networks and systems on a periodic basis to ensure compliance with this policy.</li>
+            </ul>
+
+            <h2>4. Security and Proprietary Information</h2>
+            <ul>
+                <li><strong>Password Protection:</strong> Employees must keep their passwords secure and consistent with the Password Policy. Do not share passwords with anyone, including IT support.</li>
+                <li><strong>Unattended Devices:</strong> Users must lock their screen (Windows Key + L or equivalent) whenever they leave their desk, even for a short period.</li>
+                <li><strong>Data Handling:</strong> Sensitive data (Client PII, Financials) must not be stored on local drives (Desktop/Documents) without encryption. Use approved cloud repositories (e.g., Corporate Drive/SharePoint).</li>
+            </ul>
+
+            <h2>5. Email and Communication Activities</h2>
+            <ul>
+                <li><strong>Official Use:</strong> Corporate email is for business purposes. Minimal personal use is permitted provided it does not interfere with productivity.</li>
+                <li><strong>Prohibited Content:</strong> Sending unsolicited email messages, including "junk mail" or other advertising material to individuals who did not specifically request such material (email spam), is prohibited.</li>
+                <li><strong>Phishing Awareness:</strong> Employees must not open email attachments from unknown sources or click on suspicious links. Report any suspicious email to the Security Team immediately.</li>
+            </ul>
+        </div>
+
+        <div class="footer-container">
+            <svg class="footer-wave" viewBox="0 0 1000 150" preserveAspectRatio="none">
+                <path d="M0,150 L350,150 L0,50 Z" fill="#0b4a53" opacity="0.8"></path>
+                <path d="M0,150 L700,150 L0,0 Z" fill="#1d7784" opacity="0.9"></path>
+                <path d="M300,150 Q650,120 1000,150 L1000,150 L300,150 Z" fill="#00aeb3"></path>
+                <path d="M350,150 Q650,50 1000,20" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M370,150 Q670,60 1000,30" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M390,150 Q690,70 1000,40" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M410,150 Q710,80 1000,50" stroke="#cccccc" stroke-width="1" fill="none"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div class="page">
+        <header>
+            <div class="header-left">
+                <img src="https://vadomdata.com/wp-content/uploads/2025/08/Vadom-logo-blanco-e1756258715825.png" alt="Vadom Data Logo">
+            </div>
+            <div class="header-right">
+                <div class="doc-type">HR & Security Policy</div>
+                <h1>Acceptable Use Policy (AUP)</h1>
+            </div>
+        </header>
+
+        <div class="content">
+            <h2>6. Internet Use</h2>
+            <ul>
+                <li><strong>Business Purpose:</strong> Internet access is provided to assist employees in the performance of their jobs.</li>
+                <li><strong>Prohibited Sites:</strong> Accessing websites that contain pornography, hate speech, illegal activities, or gambling is strictly prohibited on company networks.</li>
+                <li><strong>Software Downloads:</strong> Employees may not download or install software (including browser extensions) without prior approval from the IT Department.</li>
+            </ul>
+
+            <h2>7. Unacceptable Use</h2>
+            <p>The following activities are strictly prohibited:</p>
+            <ul>
+                <li>Violating the rights of any person or company protected by copyright, trade secret, patent, or other intellectual property, or similar laws or regulations.</li>
+                <li>Introduction of malicious programs into the network or server (e.g., viruses, worms, Trojan horses, email bombs, etc.).</li>
+                <li>Revealing your account password to others or allowing use of your account by others.</li>
+                <li>Using a Vadom Data computing asset to actively engage in procuring or transmitting material that is in violation of sexual harassment or hostile workplace laws.</li>
+                <li>Making fraudulent offers of products, items, or services originating from any Vadom Data account.</li>
+            </ul>
+
+            <h2>8. BYOD (Bring Your Own Device)</h2>
+            <p>If an employee uses a personal device (mobile phone, tablet) to access corporate email or data (e.g., Teams, Outlook), they must agree to install the company's Mobile Device Management (MDM) profile or ensure the device is password-protected and encrypted.</p>
+
+            <h2>9. Policy Compliance</h2>
+            <ul>
+                <li><strong>Compliance Measurement:</strong> The Security Team will verify compliance to this policy through various methods, including but not limited to, business tool reports, internal and external audits, and feedback to the policy owner.</li>
+                <li><strong>Non-Compliance:</strong> An employee found to have violated this policy may be subject to disciplinary action, up to and including termination of employment.</li>
+            </ul>
+
+            <div class="acknowledgment-box">
+                <span class="ack-title">User Acknowledgment</span>
+                <p class="ack-text">
+                    I acknowledge that I have received, read, and understood the Vadom Data Consulting Acceptable Use Policy. I agree to comply with the guidelines regarding the use of the company’s technology resources.
+                </p>
+                <div class="signature-lines">
+                    <div class="sign-field">
+                        <div class="sign-line"></div>
+                        <div class="sign-label">Employee Name</div>
+                    </div>
+                    <div class="sign-field">
+                        <div class="sign-line"></div>
+                        <div class="sign-label">Signature</div>
+                    </div>
+                    <div class="sign-field" style="max-width: 120px;">
+                        <div class="sign-line"></div>
+                        <div class="sign-label">Date</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legal-disclaimer">
+                <span class="legal-title">CONFIDENTIALITY NOTICE</span>
+                This document contains proprietary and confidential information belonging to <strong>Vadom Data Consulting SAS</strong>. It is intended solely for the use of the individual or entity to whom it was provided. Unauthorized disclosure, copying, distribution, or taking any action in reliance on the contents of this information is strictly prohibited and may be unlawful.
+            </div>
+        </div>
+
+        <div class="footer-container">
+            <svg class="footer-wave" viewBox="0 0 1000 150" preserveAspectRatio="none">
+                <path d="M0,150 L350,150 L0,50 Z" fill="#0b4a53" opacity="0.8"></path>
+                <path d="M0,150 L700,150 L0,0 Z" fill="#1d7784" opacity="0.9"></path>
+                <path d="M300,150 Q650,120 1000,150 L1000,150 L300,150 Z" fill="#00aeb3"></path>
+                <path d="M350,150 Q650,50 1000,20" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M370,150 Q670,60 1000,30" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M390,150 Q690,70 1000,40" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M410,150 Q710,80 1000,50" stroke="#cccccc" stroke-width="1" fill="none"></path>
+            </svg>
+        </div>
+    </div>
+
+</body>
+</html>

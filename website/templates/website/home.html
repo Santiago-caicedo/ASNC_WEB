@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio - La Voz Nuclear de Colombia{% endblock %}
+
+{% block content %}
+
+<header id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="6000">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active" style="height: 85vh; min-height: 600px;">
+            <div class="w-100 h-100" 
+                 style="background: linear-gradient(rgba(27, 42, 65, 0.5), rgba(27, 42, 65, 0.7)), url('{% static 'images/hero_energy.jpg' %}') center/cover no-repeat;">
+            </div>
+            <div class="carousel-caption d-flex flex-column justify-content-center h-100 pb-5">
+                <div class="container text-start">
+                    <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold text-uppercase ls-1 slide-up">Transición Energética Justa</span>
+                    <h1 class="display-3 fw-bold text-white mb-3 slide-up" style="animation-delay: 0.1s;">El Futuro es Nuclear</h1>
+                    <p class="lead text-white-50 mb-4 slide-up" style="max-width: 700px; animation-delay: 0.2s;">
+                        Promovemos la inclusión de la energía nuclear en la matriz colombiana como la única fuente base libre de emisiones. Educamos para derribar mitos y construir futuro.
+                    </p>
+                    <div class="slide-up" style="animation-delay: 0.3s;">
+                        <a href="{% url 'application_create' %}" class="btn btn-light btn-lg px-5 fw-bold rounded-pill text-primary shadow-lg">Sumar mi Voz</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item" style="height: 85vh; min-height: 600px;">
+            <div class="w-100 h-100" 
+                 style="background: linear-gradient(rgba(27, 42, 65, 0.5), rgba(27, 42, 65, 0.7)), url('{% static 'images/hero_medicine.jpg' %}') center/cover no-repeat;">
+            </div>
+            <div class="carousel-caption d-flex flex-column justify-content-center h-100 pb-5">
+                <div class="container text-start">
+                    <span class="badge bg-info text-dark mb-3 px-3 py-2 rounded-pill fw-bold text-uppercase ls-1">Salud Pública</span>
+                    <h1 class="display-3 fw-bold text-white mb-3">Tecnología que Salva Vidas</h1>
+                    <p class="lead text-white-50 mb-4" style="max-width: 700px;">
+                        Visibilizamos los avances en diagnóstico y tratamiento contra el cáncer. Apoyamos a los profesionales que usan el átomo para la salud de los colombianos.
+                    </p>
+                    <a href="#nuclenergy" class="btn btn-outline-light btn-lg px-5 fw-bold rounded-pill">Leer Artículos</a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item" style="height: 85vh; min-height: 600px;">
+            <div class="w-100 h-100" 
+                 style="background: linear-gradient(rgba(27, 42, 65, 0.5), rgba(27, 42, 65, 0.7)), url('{% static 'images/hero_agriculture.jpg' %}') center/cover no-repeat;">
+            </div>
+            <div class="carousel-caption d-flex flex-column justify-content-center h-100 pb-5">
+                <div class="container text-start">
+                    <span class="badge bg-success text-white mb-3 px-3 py-2 rounded-pill fw-bold text-uppercase ls-1">Seguridad Alimentaria</span>
+                    <h1 class="display-3 fw-bold text-white mb-3">Seguridad Alimentaria</h1>
+                    <p class="lead text-white-50 mb-4" style="max-width: 700px;">
+                        Divulgamos técnicas nucleares para el mejoramiento de cultivos y control de plagas. Ciencia aplicada al campo colombiano.
+                    </p>
+                    <a href="{% url 'application_create' %}" class="btn btn-outline-light btn-lg px-5 fw-bold rounded-pill">Únete a la Asociación</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section id="nuclenergy" class="py-5 bg-white position-relative">
+    <div class="container py-5">
+        <div class="row align-items-center gx-5">
+            <div class="col-lg-5 mb-5 mb-lg-0">
+                <div class="ps-lg-4 border-start border-4 border-warning">
+                    <h6 class="text-uppercase text-muted fw-bold ls-1 mb-2">Plataforma Oficial de Contenidos</h6>
+                    <h2 class="display-5 fw-bold text-dark mb-4">La ciencia explicada, <br>sin mitos.</h2>
+                    <p class="lead text-secondary mb-4">
+                        Combatimos la desinformación con datos. <strong>Nuclenergy</strong> es nuestro brazo comunicativo para llevar la ciencia nuclear a todos los rincones de la sociedad.
+                    </p>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-warning me-2"></i> Noticias del sector global y local.
+                        </div>
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-warning me-2"></i> Entrevistas con expertos.
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <a href="https://nuclenergy.com" target="_blank" class="btn btn-dark btn-lg rounded-pill px-5 fw-bold shadow-hover">
+                            Ir a Nuclenergy.com <i class="bi bi-box-arrow-up-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="bg-light rounded-5 p-5 position-relative overflow-hidden text-center shadow-sm">
+                    <div class="position-absolute top-0 start-0 w-100 h-100" 
+                         style="background-image: radial-gradient(#dee2e6 1px, transparent 1px); background-size: 20px 20px; opacity: 0.5;"></div>
+                    <div class="position-relative z-1 py-4">
+                        <img src="{% static 'images/nuclenergy_logo.png' %}" alt="Nuclenergy Logo" class="img-fluid mb-4 hover-scale" style="max-width: 350px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
+                        <p class="text-muted fst-italic mb-0">"Información con energía"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 position-relative bg-navy overflow-hidden">
+    <div class="world-map-bg"></div>
+    
+    <div class="position-absolute w-100 h-100 top-0 start-0" 
+         style="background: radial-gradient(circle at center, rgba(33, 58, 92, 0.4) 0%, rgba(27, 42, 65, 0.95) 90%);"></div>
+
+    <div class="container position-relative z-1 py-5">
+        
+        <div class="text-center mb-5">
+            <div class="d-inline-block border border-info border-opacity-25 rounded-pill px-3 py-1 mb-3 bg-black bg-opacity-25 backdrop-blur">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="pulse-dot-cyan"></span>
+                    <span class="text-info small font-monospace tracking-wide">CONEXIÓN SATELITAL ACTIVA</span>
+                </div>
+            </div>
+            <h2 class="display-3 fw-bold text-white mb-2">Reactores Nucleares <span class="text-info">Bajo la Lupa</span></h2>
+            <p class="lead text-white-50">Explora la infraestructura nuclear mundial en una experiencia inmersiva.</p>
+        </div>
+
+        <div class="position-relative" style="min-height: 450px;">
+            
+            <div class="position-absolute top-50 start-50 translate-middle text-center">
+                <div class="radar-scan-container">
+                    <div class="radar-beam"></div>
+                    <i class="bi bi-globe2 display-1 text-white opacity-50" style="font-size: 8rem;"></i>
+                </div>
+            </div>
+
+            <div class="position-absolute top-0 start-0 translate-middle-y d-none d-lg-block floating-card-1">
+                <div class="glass-card p-3 rounded-3 text-white" style="width: 220px;">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <small class="text-white-50 font-monospace">LATAM_GRID</small>
+                        <i class="bi bi-wifi text-success small"></i>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <h4 class="mb-0 fw-bold">7</h4>
+                        <span class="small text-success">Unidades <br>Operativas</span>
+                    </div>
+                    <div class="progress mt-2 bg-secondary bg-opacity-50" style="height: 3px;">
+                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="position-absolute bottom-0 end-0 translate-middle-y d-none d-lg-block floating-card-2">
+                <div class="glass-card p-3 rounded-3 text-white" style="width: 240px;">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <small class="text-white-50 font-monospace">GLOBAL_STATUS</small>
+                        <div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
+                    </div>
+                    <h5 class="fw-bold mb-1">Monitoreo 24/7</h5>
+                    <p class="small text-white-50 mb-0 lh-sm">
+                        Sincronización de datos técnicos y operativos en tiempo real.
+                    </p>
+                </div>
+            </div>
+
+            <div class="position-absolute top-0 end-0 d-none d-md-block floating-card-3">
+                <div class="glass-card p-2 rounded-3 text-center px-3">
+                    <small class="text-info fw-bold d-block">CAPACIDAD TOTAL</small>
+                    <span class="h4 fw-bold text-white count-up">392</span> <span class="small text-white-50">GWe</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="https://tudominio-reactores.com" target="_blank" class="btn btn-info btn-lg px-5 py-3 rounded-pill fw-bold shadow-glow hover-scale text-dark">
+                <i class="bi bi-globe-americas me-2"></i> Explorar Plataforma Interactiva
+            </a>
+            <p class="mt-3 text-white-50 small">Acceso libre y gratuito para consulta pública.</p>
+        </div>
+
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="row mb-5">
+            <div class="col-lg-6">
+                <h5 class="text-warning fw-bold text-uppercase ls-1">Membresía</h5>
+                <h2 class="display-5 fw-bold text-dark">¿Por qué ser parte?</h2>
+            </div>
+            <div class="col-lg-6 d-flex align-items-end">
+                <p class="text-muted lead mb-0">
+                    Más que una asociación, somos un ecosistema de crecimiento profesional. Diseñamos beneficios para potenciar tu carrera.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="card border-0 h-100 bg-white shadow-sm rounded-4 overflow-hidden hover-lift">
+                    <div class="card-body p-5 d-flex flex-column justify-content-between">
+                        <div class="mb-4">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-4">
+                                <i class="bi bi-diagram-3-fill fs-3"></i>
+                            </div>
+                            <h3 class="fw-bold">Networking de Alto Nivel</h3>
+                            <p class="text-muted">Acceso directo al directorio de expertos, líderes de industria y reguladores. Eventos exclusivos para conectar.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="card border-0 bg-navy text-white rounded-4 shadow-sm overflow-hidden hover-lift">
+                            <div class="card-body p-4 p-md-5 d-flex align-items-center">
+                                <div class="me-4"><i class="bi bi-shield-check display-4 text-warning"></i></div>
+                                <div>
+                                    <h4 class="fw-bold text-white">Respaldo Institucional</h4>
+                                    <p class="text-white-50 mb-0">Avalamos tu experiencia. Tu perfil profesional gana peso al ser miembro activo de la ASNC.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-white h-100 rounded-4 shadow-sm hover-lift">
+                            <div class="card-body p-4">
+                                <i class="bi bi-mortarboard fs-2 text-success mb-3 d-block"></i>
+                                <h5 class="fw-bold">Formación</h5>
+                                <p class="small text-muted mb-0">Prioridad en cursos del OIEA y becas universitarias.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-white h-100 rounded-4 shadow-sm hover-lift">
+                            <div class="card-body p-4">
+                                <i class="bi bi-newspaper fs-2 text-danger mb-3 d-block"></i>
+                                <h5 class="fw-bold">Publicación</h5>
+                                <p class="small text-muted mb-0">Publica tus investigaciones en nuestros canales oficiales.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="position-relative py-5">
+    <div class="position-absolute top-0 start-0 w-100 h-100" 
+         style="background: linear-gradient(rgba(33, 58, 92, 0.9), rgba(27, 42, 65, 0.9)), url('{% static 'images/cta_community_bg.jpg' %}') center/cover fixed no-repeat; z-index: -1;">
+    </div>
+    <div class="container text-center py-5">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="display-5 fw-bold text-white mb-4">Únete a la comunidad científica más importante del sector</h2>
+            <p class="lead text-white-50 mb-5">
+                Profesionales, estudiantes y empresas unidos por el desarrollo nuclear pacífico de Colombia.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="{% url 'application_create' %}" class="btn btn-warning btn-lg px-5 fw-bold shadow-lg rounded-pill scale-hover">
+                    Iniciar Solicitud de Ingreso
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-white border-top">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <span class="badge bg-secondary bg-opacity-10 text-secondary mb-2 px-3 py-2 rounded-pill fw-bold">BOLETÍN SEMANAL</span>
+                <h3 class="display-6 fw-bold text-dark mb-3">No te pierdas ningún avance</h3>
+                <p class="text-muted lead mb-4">
+                    Suscríbete a nuestro resumen semanal. Recibe invitaciones a webinars, noticias de regulación y artículos destacados de Nuclenergy directamente en tu correo.
+                </p>
+                
+                <form action="#" class="row g-2">
+                    <div class="col-sm-8">
+                        <input type="email" class="form-control form-control-lg rounded-pill border-secondary border-opacity-25 px-4" placeholder="Tu correo electrónico...">
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-dark btn-lg w-100 rounded-pill fw-bold">Suscribirme</button>
+                    </div>
+                </form>
+                <small class="text-muted mt-3 d-block ms-3"><i class="bi bi-lock-fill me-1"></i> Respetamos tus datos. Cero spam.</small>
+            </div>
+
+            <div class="col-lg-5 offset-lg-1">
+                <div class="bg-light rounded-4 p-5 text-center position-relative overflow-hidden">
+                    <i class="bi bi-envelope-paper-heart display-1 text-warning position-relative z-1 hover-lift"></i>
+                    
+                    <div class="position-absolute top-0 end-0 p-5 opacity-25">
+                        <i class="bi bi-send fs-1 text-dark"></i>
+                    </div>
+                    <div class="position-absolute bottom-0 start-0 p-4 opacity-10">
+                        <i class="bi bi-chat-quote fs-1 text-dark"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Estilos Generales */
+    .bg-navy { background-color: var(--asnc-navy); }
+    .ls-1 { letter-spacing: 2px; }
+    
+    /* Animaciones Generales */
+    .hover-lift { transition: transform 0.3s; }
+    .hover-lift:hover { transform: translateY(-5px); }
+    .scale-hover:hover { transform: scale(1.05); transition: transform 0.2s; }
+    .hover-scale:hover { transform: scale(1.05); transition: transform 0.3s; }
+    .shadow-glow { box-shadow: 0 0 20px rgba(13, 202, 240, 0.4); }
+
+    /* Animaciones Hero */
+    .slide-up { animation: slideUpFade 0.8s ease forwards; opacity: 0; }
+    @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- GLASSMORPHISM & TOOL SECTION --- */
+    .world-map-bg {
+        position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg'); /* Mapa silueta */
+        background-size: cover;
+        background-position: center;
+        opacity: 0.1;
+        filter: invert(1); /* Hacerlo blanco sobre fondo oscuro */
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .pulse-dot-cyan {
+        width: 8px; height: 8px;
+        background-color: #0dcaf0;
+        border-radius: 50%;
+        box-shadow: 0 0 0 rgba(13, 202, 240, 0.7);
+        animation: pulse-cyan 2s infinite;
+    }
+    @keyframes pulse-cyan {
+        0% { box-shadow: 0 0 0 0 rgba(13, 202, 240, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(13, 202, 240, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(13, 202, 240, 0); }
+    }
+
+    /* Radar Scan Effect */
+    .radar-scan-container {
+        position: relative;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .radar-beam {
+        position: absolute; width: 100%; height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, transparent 0deg, rgba(13, 202, 240, 0.1) 60deg, rgba(13, 202, 240, 0.4) 90deg, transparent 91deg);
+        animation: radar-spin 4s linear infinite;
+    }
+    @keyframes radar-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* Floating Cards Animation */
+    .floating-card-1 { animation: float-y 6s ease-in-out infinite; }
+    .floating-card-2 { animation: float-y 5s ease-in-out infinite 1s; }
+    .floating-card-3 { animation: float-y 7s ease-in-out infinite 0.5s; }
+
+    @keyframes float-y {
+        0%, 100% { transform: translateY(-50%) translateY(0px); }
+        50% { transform: translateY(-50%) translateY(-15px); }
+    }
+</style>
+
+{% endblock %}

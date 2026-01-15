@@ -1,0 +1,133 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+
+<div class="mb-4">
+    <a href="{% url 'application_list' %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al listado
+    </a>
+</div>
+
+<div class="row g-4">
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 text-center overflow-hidden h-100">
+            <div class="card-body p-5">
+                <div class="mx-auto rounded-circle d-flex justify-content-center align-items-center mb-4 text-white shadow fw-bold display-4" 
+                     style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--asnc-blue), #4a6fa5);">
+                    {{ app.first_name|first }}{{ app.last_name|first }}
+                </div>
+
+                <h3 class="fw-bold text-dark mb-1">{{ app.first_name }} {{ app.last_name }}</h3>
+                <p class="text-muted mb-3">{{ app.profession }}</p>
+
+                <div class="mb-4">
+                    {% if app.status == 'PENDING' %}
+                        <span class="badge rounded-pill bg-warning text-dark px-3 py-2">Pendiente de Revisión</span>
+                    {% elif app.status == 'APPROVED' %}
+                        <span class="badge rounded-pill bg-success text-white px-3 py-2">Aprobado</span>
+                    {% elif app.status == 'REJECTED' %}
+                        <span class="badge rounded-pill bg-danger text-white px-3 py-2">Rechazado</span>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2">
+                    {% if app.cv_file %}
+                    <a href="{{ app.cv_file.url }}" target="_blank" class="btn btn-outline-dark rounded-pill">
+                        <i class="bi bi-file-earmark-pdf me-2"></i> Descargar CV
+                    </a>
+                    {% endif %}
+                    
+                    {% if app.linkedin_url %}
+                    <a href="{{ app.linkedin_url }}" target="_blank" class="btn btn-outline-primary rounded-pill border-0 bg-light text-primary">
+                        <i class="bi bi-linkedin me-2"></i> Ver LinkedIn
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer bg-light p-3 border-top border-light text-muted small">
+                Registrado: {{ app.created_at|date:"d M, Y" }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white p-4 border-bottom border-light">
+                <h5 class="fw-bold mb-0 text-dark">Información del Postulante</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Contacto</h6>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Correo Electrónico</label>
+                            <span class="fw-medium text-dark">{{ app.email }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Teléfono Móvil</label>
+                            <span class="fw-medium text-dark">{{ app.phone }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Perfil Laboral</h6>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Cargo Actual</label>
+                            <span class="fw-medium text-dark">{% if app.current_job %}{{ app.current_job }}{% else %}No especificado{% endif %}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Institución / Empresa</label>
+                            <span class="fw-medium text-dark">{% if app.institution %}{{ app.institution }}{% else %}No especificado{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="my-4 text-muted opacity-25">
+                
+                <div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-3">Notas Internas (Historial)</h6>
+                    <div class="bg-light p-3 rounded-3 text-muted small fst-italic">
+                        No hay notas registradas por el comité para este candidato.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if app.status != 'APPROVED' and app.status != 'REJECTED' %}
+        <div class="card border-0 shadow-sm rounded-4 bg-dark text-white overflow-hidden">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="fw-bold mb-1">Decisión del Comité</h5>
+                    <p class="text-white-50 mb-0 small">Esta acción notificará al candidato automáticamente.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'change_status' app.pk 'rejected' %}" 
+                       class="btn btn-outline-danger border-0 text-white bg-danger bg-opacity-25"
+                       onclick="return confirm('¿Está seguro de RECHAZAR esta solicitud? Esta acción no se puede deshacer.');">
+                        <i class="bi bi-x-circle me-2"></i> Rechazar
+                    </a>
+
+                    <a href="{% url 'change_status' app.pk 'approved' %}" 
+                       class="btn btn-success px-4 fw-bold shadow">
+                        <i class="bi bi-check-circle-fill me-2"></i> Aprobar Ingreso
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if app.status == 'APPROVED' %}
+        <div class="alert alert-success border-0 shadow-sm rounded-4 d-flex align-items-center" role="alert">
+            <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+            <div>
+                <h6 class="fw-bold mb-0">Candidato Aprobado</h6>
+                <p class="mb-0 small">Este usuario ya forma parte de la base de datos de vinculación.</p>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

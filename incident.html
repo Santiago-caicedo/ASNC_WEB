@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Response Plan (IRP) - Vadom Data</title>
+    <style>
+        /* --- CONFIGURACIÓN DE COLORES --- */
+        :root {
+            --brand-color: #1d7784;
+            --brand-cyan: #00aeb3;
+            --brand-dark: #145660;
+            --text-main: #333333;
+            --text-light: #555555;
+            --bg-page: #ffffff;
+        }
+
+        body {
+            background-color: #e6e6e6;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* --- PÁGINA FÍSICA --- */
+        .page {
+            background-color: var(--bg-page);
+            width: 210mm;
+            height: 297mm; /* Altura A4 */
+            padding: 20mm 20mm 0 20mm; 
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--brand-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-shrink: 0;
+        }
+
+        .header-left img { height: 55px; display: block; }
+        .header-right { text-align: right; }
+
+        .doc-type {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            color: var(--brand-color);
+            text-transform: uppercase;
+            font-weight: 700;
+            max-width: 450px;
+            line-height: 1.2;
+        }
+
+        /* --- CONTENIDO --- */
+        .content {
+            flex-grow: 1;
+            /* Espacio de seguridad inferior para evitar choque con footer */
+            padding-bottom: 120px; 
+        }
+
+        /* --- CONTROL BOX --- */
+        table { width: 100%; border-collapse: collapse; }
+
+        .control-box { margin-bottom: 30px; font-size: 11px; }
+        .control-box td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            color: var(--text-main);
+        }
+
+        .label { background-color: #f8f9fa; font-weight: bold; color: var(--brand-dark); width: 18%; }
+        .value { width: 32%; }
+
+        /* --- TEXTOS --- */
+        h2 {
+            font-size: 13px;
+            color: var(--brand-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 4px;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        
+        h3 {
+            font-size: 11px;
+            color: var(--brand-dark);
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        p {
+            font-size: 10.5px;
+            line-height: 1.5;
+            color: var(--text-main);
+            text-align: justify;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+
+        ul {
+            margin: 0 0 10px 0;
+            padding-left: 18px;
+            font-size: 10.5px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+        
+        li { margin-bottom: 4px; }
+        strong { color: var(--brand-dark); font-weight: 600; }
+
+        /* --- DISCLAIMER --- */
+        .legal-disclaimer {
+            margin-top: auto;
+            padding: 10px;
+            background-color: #fcfcfc;
+            border: 1px solid #eeeeee;
+            font-size: 8px;
+            color: #777;
+            text-align: justify;
+            line-height: 1.3;
+        }
+        .legal-title { font-weight: bold; color: var(--brand-color); display: block; margin-bottom: 3px; }
+
+        /* --- FOOTER GRÁFICO --- */
+        .footer-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            line-height: 0;
+        }
+        
+        .footer-wave { width: 100%; height: 100%; display: block; }
+
+        /* --- IMPRESIÓN --- */
+        @media print {
+            @page { margin: 0; size: A4; }
+            body { background-color: white; padding: 0; margin: 0; gap: 0; }
+            .page { 
+                box-shadow: none; 
+                margin: 0; 
+                page-break-after: always;
+            }
+            .page:last-child { page-break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <header>
+            <div class="header-left">
+                <img src="https://vadomdata.com/wp-content/uploads/2025/08/Vadom-logo-blanco-e1756258715825.png" alt="Vadom Data Logo">
+            </div>
+            <div class="header-right">
+                <div class="doc-type">Security Operations Policy</div>
+                <h1>Incident Response Plan (IRP)</h1>
+            </div>
+        </header>
+
+        <div class="content">
+            <table class="control-box">
+                <tr>
+                    <td class="label">Document ID:</td>
+                    <td class="value">VAD-SEC-POL-012</td>
+                    <td class="label">Version:</td>
+                    <td class="value">3.0</td>
+                </tr>
+                <tr>
+                    <td class="label">Owner:</td>
+                    <td class="value">Security Ops & CTO</td>
+                    <td class="label">Status:</td>
+                    <td class="value">Active / Enforced</td>
+                </tr>
+                <tr>
+                    <td class="label">Classification:</td>
+                    <td class="value">Internal Use</td>
+                    <td class="label">Last Review:</td>
+                    <td class="value"><strong>November 15, 2025</strong></td>
+                </tr>
+            </table>
+
+            <h2>1. Purpose</h2>
+            <p>
+                The purpose of this Incident Response Plan (IRP) is to provide a standardized response framework for cybersecurity incidents at Vadom Data Consulting SAS. This plan ensures that incidents are detected, analyzed, contained, and eradicated promptly to minimize impact on the business and our clients.
+            </p>
+
+            <h2>2. Scope</h2>
+            <p>
+                This plan applies to all systems, networks, and data operated by Vadom Data, specifically the Supplier Management Platform hosted on Amazon Web Services (AWS). It covers incidents ranging from service interruptions to confirmed data breaches.
+            </p>
+
+            <h2>3. Roles and Responsibilities</h2>
+            <ul>
+                <li><strong>Incident Commander (IC):</strong> The CTO or designee. Responsible for overall coordination and high-level decision-making.</li>
+                <li><strong>SOC Team (Advancit):</strong> Responsible for initial detection, triage, and infrastructure containment (Level 1 & 2).</li>
+                <li><strong>Engineering Team:</strong> Responsible for application-level analysis, code patches, and data restoration (Level 3).</li>
+                <li><strong>Legal/Compliance:</strong> Responsible for regulatory reporting and client notifications.</li>
+            </ul>
+
+            <h2>4. Incident Response Phases (NIST Framework)</h2>
+            
+            <h3>Phase 1: Preparation</h3>
+            <ul>
+                <li><strong>Tools:</strong> Maintenance of monitoring systems (AWS CloudWatch, GuardDuty), logging aggregators, and backup systems.</li>
+                <li><strong>Training:</strong> Regular tabletop exercises and phishing simulations for staff.</li>
+            </ul>
+
+            <h3>Phase 2: Detection and Analysis</h3>
+            <ul>
+                <li><strong>Sources:</strong> Alerts are generated from SIEM tools, AWS CloudWatch alarms, or user reports.</li>
+                <li><strong>Triage:</strong> The SOC Team validates the alert to rule out false positives.</li>
+                <li><strong>Severity Classification:</strong>
+                    <ul>
+                        <li><strong>SEV-1 (Critical):</strong> Data Breach, active external attack, total system outage.</li>
+                        <li><strong>SEV-2 (High):</strong> System performance degradation, malware on single endpoint.</li>
+                        <li><strong>SEV-3 (Low):</strong> Non-critical alerts, failed login attempts.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer-container">
+            <svg class="footer-wave" viewBox="0 0 1000 150" preserveAspectRatio="none">
+                <path d="M0,150 L350,150 L0,50 Z" fill="#0b4a53" opacity="0.8"></path>
+                <path d="M0,150 L700,150 L0,0 Z" fill="#1d7784" opacity="0.9"></path>
+                <path d="M300,150 Q650,120 1000,150 L1000,150 L300,150 Z" fill="#00aeb3"></path>
+                <path d="M350,150 Q650,50 1000,20" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M370,150 Q670,60 1000,30" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M390,150 Q690,70 1000,40" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M410,150 Q710,80 1000,50" stroke="#cccccc" stroke-width="1" fill="none"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div class="page">
+        <header>
+            <div class="header-left">
+                <img src="https://vadomdata.com/wp-content/uploads/2025/08/Vadom-logo-blanco-e1756258715825.png" alt="Vadom Data Logo">
+            </div>
+            <div class="header-right">
+                <div class="doc-type">Security Operations Policy</div>
+                <h1>Incident Response Plan (IRP)</h1>
+            </div>
+        </header>
+
+        <div class="content">
+            <h3>Phase 3: Containment, Eradication, and Recovery</h3>
+            <ul>
+                <li><strong>Containment:</strong>
+                    <ul>
+                        <li>Short-term: Blocking IP addresses via WAF, isolating EC2 instances, revoking compromised AWS IAM keys.</li>
+                        <li>Long-term: Patching vulnerabilities, updating firewall rules.</li>
+                    </ul>
+                </li>
+                <li><strong>Eradication:</strong> Removing malware, deleting malicious accounts, and mitigating the root vulnerability.</li>
+                <li><strong>Recovery:</strong> Restoring systems from clean backups (AWS Backup) and verifying system integrity before restoring full service.</li>
+            </ul>
+
+            <h3>Phase 4: Post-Incident Activity</h3>
+            <ul>
+                <li><strong>Root Cause Analysis (RCA):</strong> A mandatory report analyzing why the incident happened and how to prevent recurrence.</li>
+                <li><strong>Lessons Learned:</strong> Meeting held within 5 days of incident closure to update policies or tools.</li>
+            </ul>
+
+            <h2>5. Client Notification Policy</h2>
+            <p>In the event of a confirmed security incident affecting client data (Confidentiality/Integrity) or service availability:</p>
+            <ul>
+                <li><strong>Timeline:</strong> Vadom Data will notify the client’s Point of Contact within 24 hours of breach confirmation.</li>
+                <li><strong>Content:</strong> The notification will include the nature of the incident, data affected, and immediate remediation steps taken.</li>
+            </ul>
+
+            <h2>6. Escalation Matrix</h2>
+            <ul>
+                <li><strong>Level 1:</strong> Automated Alert -> SOC Analyst (Advancit).</li>
+                <li><strong>Level 2:</strong> SOC Analyst -> Lead Engineer (Vadom).</li>
+                <li><strong>Level 3:</strong> Lead Engineer -> CTO / Incident Commander (Vadom).</li>
+            </ul>
+
+            <div class="legal-disclaimer">
+                <span class="legal-title">CONFIDENTIALITY NOTICE</span>
+                This document contains proprietary and confidential information belonging to <strong>Vadom Data Consulting SAS</strong>. It is intended solely for the use of the individual or entity to whom it was provided. Unauthorized disclosure, copying, distribution, or taking any action in reliance on the contents of this information is strictly prohibited and may be unlawful.
+            </div>
+        </div>
+
+        <div class="footer-container">
+            <svg class="footer-wave" viewBox="0 0 1000 150" preserveAspectRatio="none">
+                <path d="M0,150 L350,150 L0,50 Z" fill="#0b4a53" opacity="0.8"></path>
+                <path d="M0,150 L700,150 L0,0 Z" fill="#1d7784" opacity="0.9"></path>
+                <path d="M300,150 Q650,120 1000,150 L1000,150 L300,150 Z" fill="#00aeb3"></path>
+                <path d="M350,150 Q650,50 1000,20" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M370,150 Q670,60 1000,30" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M390,150 Q690,70 1000,40" stroke="#cccccc" stroke-width="1" fill="none"></path>
+                <path d="M410,150 Q710,80 1000,50" stroke="#cccccc" stroke-width="1" fill="none"></path>
+            </svg>
+        </div>
+    </div>
+
+</body>
+</html>

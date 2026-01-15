@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASNC | Panel Directivo</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Paleta ASNC Redefinida */
+            --asnc-navy: #1B2A41;       /* Azul muy oscuro (Casi negro) para textos */
+            --asnc-blue: #213a5c;       /* Azul corporativo */
+            --asnc-gold: #f4c343;       /* Amarillo marca */
+            --bg-body: #F5F7FA;         /* Gris azulado muy suave */
+            --sidebar-width: 280px;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
+            --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--asnc-navy);
+            overflow-x: hidden;
+        }
+
+        /* --- SIDEBAR DE ALTA GAMA --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background-color: #ffffff; /* BLANCO PURO */
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0,0,0,0.03); /* Borde casi invisible */
+            box-shadow: 5px 0 25px rgba(0,0,0,0.02); /* Sombra difusa hacia la derecha */
+        }
+
+        .sidebar-brand {
+            padding: 2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 1.5rem;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        /* Títulos de sección pequeños */
+        .menu-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            margin-top: 1.5rem;
+            padding-left: 10px;
+        }
+
+        /* Enlaces de navegación */
+        .nav-link {
+            color: #64748b; /* Gris medio para items inactivos */
+            padding: 0.9rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 12px; /* Botones redondeados modernos */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            font-size: 1.25rem;
+            margin-right: 12px;
+            color: #94a3b8;
+            transition: color 0.3s;
+        }
+
+        /* Hover State */
+        .nav-link:hover {
+            background-color: #f8fafc;
+            color: var(--asnc-blue);
+            transform: translateX(5px); /* Pequeño movimiento a la derecha */
+        }
+
+        /* Active State (El secreto del diseño) */
+        .nav-link.active {
+            background-color: rgba(33, 58, 92, 0.05); /* Azul muy muy suave */
+            color: var(--asnc-blue);
+            font-weight: 600;
+        }
+        
+        .nav-link.active i {
+            color: var(--asnc-gold); /* Icono dorado cuando está activo */
+        }
+
+        /* Footer del Sidebar (Perfil) */
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(0,0,0,0.03);
+            background: linear-gradient(to bottom, #ffffff, #fafafa);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background-color: var(--asnc-blue);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+
+        /* Topbar invisible pero funcional */
+        .top-bar-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-weight: 700;
+            font-size: 1.75rem;
+            color: var(--asnc-navy);
+            letter-spacing: -0.5px;
+        }
+
+        /* Estilos globales de Cards para usar en los hijos */
+        .kpi-card {
+            background: white;
+            border-radius: 20px; /* Bordes muy redondeados */
+            padding: 1.5rem;
+            border: none;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .btn-logout {
+            border: none;
+            background: transparent;
+            color: #dc3545;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover {
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="{% static 'images/asnc_logo_full.png' %}" alt="ASNC" style="max-width: 100%; height: auto; max-height: 60px;">
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-label">Principal</div>
+            
+            <a href="{% url 'dashboard_home' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard_home' %}active{% endif %}">
+                <i class="bi bi-grid-1x2"></i> Dashboard
+            </a>
+            
+            <div class="menu-label">Gestión Académica</div>
+            
+            <a href="{% url 'application_list' %}" class="nav-link {% if 'solicitudes' in request.path %}active{% endif %}">
+                <i class="bi bi-file-earmark-person"></i> Solicitudes
+                {% if pending_count > 0 %}
+                <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.6em;">{{ pending_count }}</span>
+                {% endif %}
+            </a>
+            
+            <a href="#" class="nav-link disabled">
+                <i class="bi bi-people"></i> Directorio Oficial
+            </a>
+
+            <div class="menu-label">Administración</div>
+             <a href="#" class="nav-link disabled">
+                <i class="bi bi-credit-card"></i> Pagos y Cartera
+            </a>
+             <a href="#" class="nav-link disabled">
+                <i class="bi bi-gear"></i> Configuración
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">
+                    {{ user.first_name|first }}{{ user.last_name|first }}
+                </div>
+                <div class="flex-grow-1" style="line-height: 1.2;">
+                    <small class="d-block fw-bold text-dark">{{ user.first_name }}</small>
+                    <small class="text-muted" style="font-size: 0.7rem;">Admin</small>
+                </div>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout" title="Cerrar Sesión">
+                        <i class="bi bi-power"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-2 fs-5"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
