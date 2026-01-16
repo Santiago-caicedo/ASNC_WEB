@@ -6,7 +6,17 @@
       "Bash(python manage.py makemigrations:*)",
       "Bash(python3 manage.py:*)",
       "Bash(git remote add:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:simplemaps.com)",
+      "WebFetch(domain:upload.wikimedia.org)",
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "WebFetch(domain:codepen.io)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(source venv/Scripts/activate)",
+      "Bash(venv/Scripts/python.exe manage.py makemigrations:*)",
+      "Bash(venv/Scripts/python.exe:*)"
     ]
   }
 }

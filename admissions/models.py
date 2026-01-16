@@ -24,7 +24,14 @@ class MembershipApplication(models.Model):
     current_job = models.CharField(_('Cargo Actual'), max_length=100, blank=True)
     institution = models.CharField(_('Empresa / Institución'), max_length=100, blank=True)
     linkedin_url = models.URLField(_('LinkedIn / Perfil Profesional'), blank=True)
-    
+
+    # Motivación y aporte
+    contribution_statement = models.TextField(
+        _('¿Cómo puedes aportar a la ASNC?'),
+        blank=True,
+        help_text=_('Cuéntanos brevemente sobre ti, tu experiencia en el sector nuclear y cómo crees que puedes contribuir al crecimiento de la asociación.')
+    )
+
     # Archivos (El CV) - Opcional
     cv_file = models.FileField(
         _('Hoja de Vida (PDF)'),

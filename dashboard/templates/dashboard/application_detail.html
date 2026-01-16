@@ -83,9 +83,22 @@
                         </div>
                     </div>
                 </div>
-                
+
+                {% if app.contribution_statement %}
                 <hr class="my-4 text-muted opacity-25">
-                
+
+                <div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-3">
+                        <i class="bi bi-lightbulb text-warning me-2"></i>¿Cómo puede aportar a la ASNC?
+                    </h6>
+                    <div class="bg-light p-3 rounded-3">
+                        <p class="mb-0 text-dark" style="white-space: pre-wrap;">{{ app.contribution_statement }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <hr class="my-4 text-muted opacity-25">
+
                 <div>
                     <h6 class="text-uppercase text-muted small fw-bold mb-3">Notas Internas (Historial)</h6>
                     <div class="bg-light p-3 rounded-3 text-muted small fst-italic">

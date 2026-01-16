@@ -70,6 +70,20 @@
                                     <div class="invalid-feedback d-block">{{ form.profession.errors.0 }}</div>
                                 {% endif %}
                             </div>
+
+                            <!-- Aporte a la ASNC -->
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="bi bi-lightbulb me-2"></i>¿Cómo puedes aportar a la ASNC?
+                                </label>
+                                {{ form.contribution_statement }}
+                                <small class="form-text text-muted mt-1 d-block">
+                                    Cuéntanos brevemente sobre tu experiencia en el sector nuclear y cómo crees que puedes contribuir al crecimiento de la asociación.
+                                </small>
+                                {% if form.contribution_statement.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.contribution_statement.errors.0 }}</div>
+                                {% endif %}
+                            </div>
                         </div>
 
                         <!-- Checkbox de privacidad -->

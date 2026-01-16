@@ -5,7 +5,7 @@ class MembershipApplicationForm(forms.ModelForm):
     class Meta:
         model = MembershipApplication
         fields = [
-            'first_name', 'last_name', 'email', 'profession'
+            'first_name', 'last_name', 'email', 'profession', 'contribution_statement'
         ]
         widgets = {
             'first_name': forms.TextInput(attrs={
@@ -24,4 +24,12 @@ class MembershipApplicationForm(forms.ModelForm):
                 'placeholder': 'Ej: Ingeniero Nuclear, Físico Médico',
                 'class': 'form-control form-control-lg'
             }),
+            'contribution_statement': forms.Textarea(attrs={
+                'placeholder': 'Cuéntanos sobre tu trayectoria profesional, tu interés en el sector nuclear y cómo crees que puedes contribuir al crecimiento de la ASNC...',
+                'class': 'form-control form-control-lg',
+                'rows': 4
+            }),
+        }
+        labels = {
+            'contribution_statement': '¿Cómo puedes aportar a la ASNC?'
         }
