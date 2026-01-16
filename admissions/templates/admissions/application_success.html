@@ -1,12 +1,297 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Solicitud Recibida</title>
-</head>
-<body>
-    <h1>¡Gracias por tu interés!</h1>
-    <p>Hemos recibido tu solicitud y hoja de vida.</p>
-    <p>El Comité de Admisiones revisará tu perfil y te contactaremos pronto.</p>
-    <a href="/solicitud/">Volver</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Solicitud Recibida - ASNC{% endblock %}
+
+{% block content %}
+
+<section class="success-hero">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 col-11">
+
+                <div class="success-card text-center">
+                    <!-- Animated Check Icon -->
+                    <div class="success-icon mx-auto mb-4">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+
+                    <!-- Message -->
+                    <h1 class="success-title">¡Solicitud Recibida!</h1>
+
+                    <p class="success-message">
+                        Gracias por tu interés en formar parte de la
+                        <strong>Asociación Nuclear Colombiana</strong>.
+                    </p>
+
+                    <div class="success-details">
+                        <div class="detail-item">
+                            <i class="bi bi-envelope-check"></i>
+                            <span>Te enviaremos un correo de confirmación</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-people"></i>
+                            <span>Nuestro Comité revisará tu perfil</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Recibirás respuesta en los próximos días</span>
+                        </div>
+                    </div>
+
+                    <div class="success-quote">
+                        <i class="bi bi-quote"></i>
+                        <p>La ciencia nuclear al servicio del desarrollo sostenible de Colombia.</p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="success-actions">
+                        <a href="{% url 'home' %}" class="btn btn-primary-asnc">
+                            <i class="bi bi-house me-2"></i>Volver al inicio
+                        </a>
+                    </div>
+
+                    <!-- Social -->
+                    <div class="success-social">
+                        <p>Síguenos en redes sociales</p>
+                        <div class="social-icons">
+                            <a href="https://linkedin.com" target="_blank" class="social-link">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <a href="https://instagram.com" target="_blank" class="social-link">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <a href="https://youtube.com" target="_blank" class="social-link">
+                                <i class="bi bi-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .success-hero {
+        min-height: calc(100vh - 140px);
+        display: flex;
+        align-items: center;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .success-hero::before {
+        content: '';
+        position: absolute;
+        top: -30%;
+        right: -15%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(244, 195, 67, 0.12) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .success-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -20%;
+        left: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(27, 42, 65, 0.06) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .success-card {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.05),
+            0 10px 15px -3px rgba(0, 0, 0, 0.08),
+            0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        position: relative;
+        z-index: 1;
+    }
+
+    @media (max-width: 576px) {
+        .success-card {
+            padding: 2rem 1.5rem;
+            border-radius: 20px;
+        }
+    }
+
+    /* Animated Checkmark */
+    .success-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .checkmark {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 2;
+        stroke: var(--asnc-gold);
+        stroke-miterlimit: 10;
+        animation: scale .3s ease-in-out .9s both;
+    }
+
+    .checkmark-circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke-miterlimit: 10;
+        stroke: var(--asnc-navy);
+        fill: none;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        stroke: var(--asnc-gold);
+        stroke-width: 3;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes stroke {
+        100% { stroke-dashoffset: 0; }
+    }
+
+    @keyframes scale {
+        0%, 100% { transform: none; }
+        50% { transform: scale3d(1.1, 1.1, 1); }
+    }
+
+    .success-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--asnc-navy);
+        margin-bottom: 1rem;
+    }
+
+    .success-message {
+        font-size: 1.1rem;
+        color: #64748b;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .success-details {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        color: #475569;
+        font-size: 0.95rem;
+    }
+
+    .detail-item:not(:last-child) {
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .detail-item i {
+        font-size: 1.25rem;
+        color: var(--asnc-navy);
+        width: 28px;
+    }
+
+    .success-quote {
+        background: var(--asnc-navy);
+        color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .success-quote i {
+        font-size: 2rem;
+        color: var(--asnc-gold);
+        opacity: 0.5;
+        position: absolute;
+        top: 10px;
+        left: 15px;
+    }
+
+    .success-quote p {
+        margin: 0;
+        font-style: italic;
+        font-size: 0.95rem;
+        padding-left: 1rem;
+    }
+
+    .btn-primary-asnc {
+        background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 14px rgba(27, 42, 65, 0.25);
+    }
+
+    .btn-primary-asnc:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(27, 42, 65, 0.35);
+        color: white;
+    }
+
+    .success-social {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .success-social p {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        margin-bottom: 1rem;
+    }
+
+    .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .social-link {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--asnc-navy);
+        font-size: 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+        background: var(--asnc-navy);
+        color: var(--asnc-gold);
+        transform: translateY(-3px);
+    }
+</style>
+
+{% endblock %}

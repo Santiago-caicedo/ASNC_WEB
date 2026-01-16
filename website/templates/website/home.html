@@ -5,234 +5,466 @@
 
 {% block content %}
 
-<header id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="6000">
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
-    </div>
-    <div class="carousel-inner">
-        <div class="carousel-item active" style="height: 85vh; min-height: 600px;">
-            <div class="w-100 h-100" 
-                 style="background: linear-gradient(rgba(27, 42, 65, 0.5), rgba(27, 42, 65, 0.7)), url('{% static 'images/hero_energy.jpg' %}') center/cover no-repeat;">
-            </div>
-            <div class="carousel-caption d-flex flex-column justify-content-center h-100 pb-5">
-                <div class="container text-start">
-                    <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold text-uppercase ls-1 slide-up">Transición Energética Justa</span>
-                    <h1 class="display-3 fw-bold text-white mb-3 slide-up" style="animation-delay: 0.1s;">El Futuro es Nuclear</h1>
-                    <p class="lead text-white-50 mb-4 slide-up" style="max-width: 700px; animation-delay: 0.2s;">
-                        Promovemos la inclusión de la energía nuclear en la matriz colombiana como la única fuente base libre de emisiones. Educamos para derribar mitos y construir futuro.
-                    </p>
-                    <div class="slide-up" style="animation-delay: 0.3s;">
-                        <a href="{% url 'application_create' %}" class="btn btn-light btn-lg px-5 fw-bold rounded-pill text-primary shadow-lg">Sumar mi Voz</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item" style="height: 85vh; min-height: 600px;">
-            <div class="w-100 h-100" 
-                 style="background: linear-gradient(rgba(27, 42, 65, 0.5), rgba(27, 42, 65, 0.7)), url('{% static 'images/hero_medicine.jpg' %}') center/cover no-repeat;">
-            </div>
-            <div class="carousel-caption d-flex flex-column justify-content-center h-100 pb-5">
-                <div class="container text-start">
-                    <span class="badge bg-info text-dark mb-3 px-3 py-2 rounded-pill fw-bold text-uppercase ls-1">Salud Pública</span>
-                    <h1 class="display-3 fw-bold text-white mb-3">Tecnología que Salva Vidas</h1>
-                    <p class="lead text-white-50 mb-4" style="max-width: 700px;">
-                        Visibilizamos los avances en diagnóstico y tratamiento contra el cáncer. Apoyamos a los profesionales que usan el átomo para la salud de los colombianos.
-                    </p>
-                    <a href="#nuclenergy" class="btn btn-outline-light btn-lg px-5 fw-bold rounded-pill">Leer Artículos</a>
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item" style="height: 85vh; min-height: 600px;">
-            <div class="w-100 h-100" 
-                 style="background: linear-gradient(rgba(27, 42, 65, 0.5), rgba(27, 42, 65, 0.7)), url('{% static 'images/hero_agriculture.jpg' %}') center/cover no-repeat;">
-            </div>
-            <div class="carousel-caption d-flex flex-column justify-content-center h-100 pb-5">
-                <div class="container text-start">
-                    <span class="badge bg-success text-white mb-3 px-3 py-2 rounded-pill fw-bold text-uppercase ls-1">Seguridad Alimentaria</span>
-                    <h1 class="display-3 fw-bold text-white mb-3">Seguridad Alimentaria</h1>
-                    <p class="lead text-white-50 mb-4" style="max-width: 700px;">
-                        Divulgamos técnicas nucleares para el mejoramiento de cultivos y control de plagas. Ciencia aplicada al campo colombiano.
-                    </p>
-                    <a href="{% url 'application_create' %}" class="btn btn-outline-light btn-lg px-5 fw-bold rounded-pill">Únete a la Asociación</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
+<!-- ==================== HERO FULL SCREEN ==================== -->
+<section class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
 
-<section id="nuclenergy" class="py-5 bg-white position-relative">
-    <div class="container py-5">
-        <div class="row align-items-center gx-5">
-            <div class="col-lg-5 mb-5 mb-lg-0">
-                <div class="ps-lg-4 border-start border-4 border-warning">
-                    <h6 class="text-uppercase text-muted fw-bold ls-1 mb-2">Plataforma Oficial de Contenidos</h6>
-                    <h2 class="display-5 fw-bold text-dark mb-4">La ciencia explicada, <br>sin mitos.</h2>
-                    <p class="lead text-secondary mb-4">
-                        Combatimos la desinformación con datos. <strong>Nuclenergy</strong> es nuestro brazo comunicativo para llevar la ciencia nuclear a todos los rincones de la sociedad.
-                    </p>
-                    <div class="d-flex flex-column gap-3">
-                        <div class="d-flex align-items-center text-muted">
-                            <i class="bi bi-check-circle-fill text-warning me-2"></i> Noticias del sector global y local.
-                        </div>
-                        <div class="d-flex align-items-center text-muted">
-                            <i class="bi bi-check-circle-fill text-warning me-2"></i> Entrevistas con expertos.
-                        </div>
+    <!-- Floating Particles -->
+    <div class="hero-particles" id="heroParticles"></div>
+
+    <div class="container position-relative z-2">
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-content">
+                    <div class="hero-badge" data-animate="fadeInUp">
+                        <span class="badge-dot"></span>
+                        <span>Asociacion Nuclear Colombiana</span>
                     </div>
-                    <div class="mt-5">
-                        <a href="https://nuclenergy.com" target="_blank" class="btn btn-dark btn-lg rounded-pill px-5 fw-bold shadow-hover">
-                            Ir a Nuclenergy.com <i class="bi bi-box-arrow-up-right ms-2"></i>
+
+                    <h1 class="hero-title" data-animate="fadeInUp" data-delay="100">
+                        El Futuro de Colombia
+                        <span class="text-highlight">es Nuclear</span>
+                    </h1>
+
+                    <p class="hero-description" data-animate="fadeInUp" data-delay="200">
+                        Somos la comunidad cientifica que impulsa el desarrollo de la energia nuclear
+                        como pilar fundamental de la transicion energetica justa en Colombia.
+                    </p>
+
+                    <div class="hero-actions" data-animate="fadeInUp" data-delay="300">
+                        <a href="{% url 'application_create' %}" class="btn-primary-xl">
+                            <span>Unete a la ASNC</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="#fission" class="btn-secondary-xl">
+                            <i class="bi bi-play-circle"></i>
+                            <span>Descubre mas</span>
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-7">
-                <div class="bg-light rounded-5 p-5 position-relative overflow-hidden text-center shadow-sm">
-                    <div class="position-absolute top-0 start-0 w-100 h-100" 
-                         style="background-image: radial-gradient(#dee2e6 1px, transparent 1px); background-size: 20px 20px; opacity: 0.5;"></div>
-                    <div class="position-relative z-1 py-4">
-                        <img src="{% static 'images/nuclenergy_logo.png' %}" alt="Nuclenergy Logo" class="img-fluid mb-4 hover-scale" style="max-width: 350px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
-                        <p class="text-muted fst-italic mb-0">"Información con energía"</p>
+
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="hero-visual">
+                    <!-- Mini Atom Animation -->
+                    <div class="atom-container">
+                        <div class="nucleus"></div>
+                        <div class="orbit orbit-1"><div class="electron"></div></div>
+                        <div class="orbit orbit-2"><div class="electron"></div></div>
+                        <div class="orbit orbit-3"><div class="electron"></div></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+    </div>
 </section>
 
-<section class="py-5 position-relative bg-navy overflow-hidden">
-    <div class="world-map-bg"></div>
-    
-    <div class="position-absolute w-100 h-100 top-0 start-0" 
-         style="background: radial-gradient(circle at center, rgba(33, 58, 92, 0.4) 0%, rgba(27, 42, 65, 0.95) 90%);"></div>
-
-    <div class="container position-relative z-1 py-5">
-        
-        <div class="text-center mb-5">
-            <div class="d-inline-block border border-info border-opacity-25 rounded-pill px-3 py-1 mb-3 bg-black bg-opacity-25 backdrop-blur">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="pulse-dot-cyan"></span>
-                    <span class="text-info small font-monospace tracking-wide">CONEXIÓN SATELITAL ACTIVA</span>
-                </div>
-            </div>
-            <h2 class="display-3 fw-bold text-white mb-2">Reactores Nucleares <span class="text-info">Bajo la Lupa</span></h2>
-            <p class="lead text-white-50">Explora la infraestructura nuclear mundial en una experiencia inmersiva.</p>
-        </div>
-
-        <div class="position-relative" style="min-height: 450px;">
-            
-            <div class="position-absolute top-50 start-50 translate-middle text-center">
-                <div class="radar-scan-container">
-                    <div class="radar-beam"></div>
-                    <i class="bi bi-globe2 display-1 text-white opacity-50" style="font-size: 8rem;"></i>
-                </div>
-            </div>
-
-            <div class="position-absolute top-0 start-0 translate-middle-y d-none d-lg-block floating-card-1">
-                <div class="glass-card p-3 rounded-3 text-white" style="width: 220px;">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <small class="text-white-50 font-monospace">LATAM_GRID</small>
-                        <i class="bi bi-wifi text-success small"></i>
-                    </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <h4 class="mb-0 fw-bold">7</h4>
-                        <span class="small text-success">Unidades <br>Operativas</span>
-                    </div>
-                    <div class="progress mt-2 bg-secondary bg-opacity-50" style="height: 3px;">
-                        <div class="progress-bar bg-success" style="width: 100%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="position-absolute bottom-0 end-0 translate-middle-y d-none d-lg-block floating-card-2">
-                <div class="glass-card p-3 rounded-3 text-white" style="width: 240px;">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <small class="text-white-50 font-monospace">GLOBAL_STATUS</small>
-                        <div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
-                    </div>
-                    <h5 class="fw-bold mb-1">Monitoreo 24/7</h5>
-                    <p class="small text-white-50 mb-0 lh-sm">
-                        Sincronización de datos técnicos y operativos en tiempo real.
+<!-- ==================== NUCLEAR FISSION ANIMATION SECTION ==================== -->
+<section id="fission" class="fission-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2">
+                <div class="fission-content">
+                    <span class="section-tag">El Poder del Atomo</span>
+                    <h2 class="section-title">
+                        Fision Nuclear:<br>
+                        <span class="text-gold">Energia del Futuro</span>
+                    </h2>
+                    <p class="section-description">
+                        La fision nuclear ocurre cuando un neutron impacta un nucleo de uranio-235,
+                        dividiendolo en dos fragmentos y liberando una cantidad inmensa de energia,
+                        junto con mas neutrones que continuan la reaccion en cadena.
                     </p>
-                </div>
-            </div>
 
-            <div class="position-absolute top-0 end-0 d-none d-md-block floating-card-3">
-                <div class="glass-card p-2 rounded-3 text-center px-3">
-                    <small class="text-info fw-bold d-block">CAPACIDAD TOTAL</small>
-                    <span class="h4 fw-bold text-white count-up">392</span> <span class="small text-white-50">GWe</span>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="text-center mt-5">
-            <a href="https://tudominio-reactores.com" target="_blank" class="btn btn-info btn-lg px-5 py-3 rounded-pill fw-bold shadow-glow hover-scale text-dark">
-                <i class="bi bi-globe-americas me-2"></i> Explorar Plataforma Interactiva
-            </a>
-            <p class="mt-3 text-white-50 small">Acceso libre y gratuito para consulta pública.</p>
-        </div>
-
-    </div>
-</section>
-
-<section class="py-5 bg-light">
-    <div class="container py-5">
-        <div class="row mb-5">
-            <div class="col-lg-6">
-                <h5 class="text-warning fw-bold text-uppercase ls-1">Membresía</h5>
-                <h2 class="display-5 fw-bold text-dark">¿Por qué ser parte?</h2>
-            </div>
-            <div class="col-lg-6 d-flex align-items-end">
-                <p class="text-muted lead mb-0">
-                    Más que una asociación, somos un ecosistema de crecimiento profesional. Diseñamos beneficios para potenciar tu carrera.
-                </p>
-            </div>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-lg-5">
-                <div class="card border-0 h-100 bg-white shadow-sm rounded-4 overflow-hidden hover-lift">
-                    <div class="card-body p-5 d-flex flex-column justify-content-between">
-                        <div class="mb-4">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-4">
-                                <i class="bi bi-diagram-3-fill fs-3"></i>
+                    <div class="fission-steps">
+                        <div class="step-item" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-text">
+                                <h4>Impacto del Neutron</h4>
+                                <p>Un neutron colisiona con el nucleo de U-235</p>
                             </div>
-                            <h3 class="fw-bold">Networking de Alto Nivel</h3>
-                            <p class="text-muted">Acceso directo al directorio de expertos, líderes de industria y reguladores. Eventos exclusivos para conectar.</p>
+                        </div>
+                        <div class="step-item" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-text">
+                                <h4>Division del Nucleo</h4>
+                                <p>El atomo se vuelve inestable y se divide</p>
+                            </div>
+                        </div>
+                        <div class="step-item" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-text">
+                                <h4>Liberacion de Energia</h4>
+                                <p>Se libera energia termica y mas neutrones</p>
+                            </div>
+                        </div>
+                        <div class="step-item" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-text">
+                                <h4>Reaccion en Cadena</h4>
+                                <p>Los neutrones continuan el proceso</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-7">
-                <div class="row g-4">
-                    <div class="col-12">
-                        <div class="card border-0 bg-navy text-white rounded-4 shadow-sm overflow-hidden hover-lift">
-                            <div class="card-body p-4 p-md-5 d-flex align-items-center">
-                                <div class="me-4"><i class="bi bi-shield-check display-4 text-warning"></i></div>
-                                <div>
-                                    <h4 class="fw-bold text-white">Respaldo Institucional</h4>
-                                    <p class="text-white-50 mb-0">Avalamos tu experiencia. Tu perfil profesional gana peso al ser miembro activo de la ASNC.</p>
+
+            <div class="col-lg-6 order-lg-1">
+                <div class="fission-visual" id="fissionVisual">
+                    <!-- SVG Nuclear Fission Animation -->
+                    <svg viewBox="0 0 500 500" class="fission-svg" id="fissionSvg">
+                        <defs>
+                            <!-- Gradients -->
+                            <radialGradient id="nucleusGradient" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" style="stop-color:#f4c343;stop-opacity:1" />
+                                <stop offset="70%" style="stop-color:#d97706;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#92400e;stop-opacity:1" />
+                            </radialGradient>
+                            <radialGradient id="fragmentGradient" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#991b1b;stop-opacity:1" />
+                            </radialGradient>
+                            <radialGradient id="energyGradient" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" style="stop-color:#fef3c7;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#fcd34d;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0" />
+                            </radialGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                            <filter id="strongGlow">
+                                <feGaussianBlur stdDeviation="10" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Background Grid -->
+                        <g class="grid-lines" opacity="0.1">
+                            <line x1="0" y1="250" x2="500" y2="250" stroke="#f4c343" stroke-width="1"/>
+                            <line x1="250" y1="0" x2="250" y2="500" stroke="#f4c343" stroke-width="1"/>
+                            <circle cx="250" cy="250" r="100" fill="none" stroke="#f4c343" stroke-width="1"/>
+                            <circle cx="250" cy="250" r="200" fill="none" stroke="#f4c343" stroke-width="1"/>
+                        </g>
+
+                        <!-- Energy Release (hidden initially) -->
+                        <circle cx="250" cy="250" r="0" fill="url(#energyGradient)" class="energy-burst" id="energyBurst" filter="url(#strongGlow)"/>
+
+                        <!-- Incoming Neutron -->
+                        <g class="incoming-neutron" id="incomingNeutron">
+                            <circle cx="50" cy="250" r="12" fill="#60a5fa" filter="url(#glow)"/>
+                            <circle cx="50" cy="250" r="6" fill="#bfdbfe"/>
+                            <!-- Neutron trail -->
+                            <ellipse cx="30" cy="250" rx="20" ry="4" fill="rgba(96, 165, 250, 0.3)"/>
+                        </g>
+
+                        <!-- Main Uranium Nucleus -->
+                        <g class="uranium-nucleus" id="uraniumNucleus">
+                            <!-- Nucleus glow -->
+                            <circle cx="250" cy="250" r="55" fill="rgba(244, 195, 67, 0.3)" filter="url(#glow)"/>
+                            <!-- Main nucleus -->
+                            <circle cx="250" cy="250" r="45" fill="url(#nucleusGradient)" class="main-nucleus"/>
+                            <!-- Protons and neutrons (dots on surface) -->
+                            <g class="nucleons">
+                                <circle cx="235" cy="220" r="8" fill="#ef4444"/>
+                                <circle cx="265" cy="225" r="8" fill="#3b82f6"/>
+                                <circle cx="250" cy="240" r="8" fill="#ef4444"/>
+                                <circle cx="230" cy="255" r="8" fill="#3b82f6"/>
+                                <circle cx="270" cy="260" r="8" fill="#ef4444"/>
+                                <circle cx="255" cy="275" r="8" fill="#3b82f6"/>
+                                <circle cx="240" cy="265" r="8" fill="#ef4444"/>
+                                <circle cx="260" cy="245" r="8" fill="#3b82f6"/>
+                            </g>
+                            <!-- U-235 Label -->
+                            <text x="250" y="330" text-anchor="middle" fill="#f4c343" font-size="16" font-weight="bold" class="nucleus-label">U-235</text>
+                        </g>
+
+                        <!-- Fragment 1 (hidden initially) -->
+                        <g class="fragment fragment-1" id="fragment1" opacity="0">
+                            <circle cx="250" cy="250" r="30" fill="url(#fragmentGradient)" filter="url(#glow)"/>
+                            <circle cx="240" cy="240" r="6" fill="#fca5a5"/>
+                            <circle cx="260" cy="245" r="6" fill="#93c5fd"/>
+                            <circle cx="250" cy="260" r="6" fill="#fca5a5"/>
+                            <text x="250" y="310" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="bold">Ba-141</text>
+                        </g>
+
+                        <!-- Fragment 2 (hidden initially) -->
+                        <g class="fragment fragment-2" id="fragment2" opacity="0">
+                            <circle cx="250" cy="250" r="25" fill="url(#fragmentGradient)" filter="url(#glow)"/>
+                            <circle cx="245" cy="245" r="5" fill="#fca5a5"/>
+                            <circle cx="255" cy="255" r="5" fill="#93c5fd"/>
+                            <text x="250" y="300" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="bold">Kr-92</text>
+                        </g>
+
+                        <!-- Released Neutrons (hidden initially) -->
+                        <g class="released-neutrons" id="releasedNeutrons" opacity="0">
+                            <g class="neutron neutron-1">
+                                <circle cx="250" cy="250" r="10" fill="#60a5fa" filter="url(#glow)"/>
+                                <circle cx="250" cy="250" r="5" fill="#bfdbfe"/>
+                            </g>
+                            <g class="neutron neutron-2">
+                                <circle cx="250" cy="250" r="10" fill="#60a5fa" filter="url(#glow)"/>
+                                <circle cx="250" cy="250" r="5" fill="#bfdbfe"/>
+                            </g>
+                            <g class="neutron neutron-3">
+                                <circle cx="250" cy="250" r="10" fill="#60a5fa" filter="url(#glow)"/>
+                                <circle cx="250" cy="250" r="5" fill="#bfdbfe"/>
+                            </g>
+                        </g>
+
+                        <!-- Energy Rays (hidden initially) -->
+                        <g class="energy-rays" id="energyRays" opacity="0">
+                            <line x1="250" y1="250" x2="250" y2="50" stroke="#fcd34d" stroke-width="3" class="ray"/>
+                            <line x1="250" y1="250" x2="400" y2="100" stroke="#fcd34d" stroke-width="3" class="ray"/>
+                            <line x1="250" y1="250" x2="450" y2="250" stroke="#fcd34d" stroke-width="3" class="ray"/>
+                            <line x1="250" y1="250" x2="400" y2="400" stroke="#fcd34d" stroke-width="3" class="ray"/>
+                            <line x1="250" y1="250" x2="250" y2="450" stroke="#fcd34d" stroke-width="3" class="ray"/>
+                            <line x1="250" y1="250" x2="100" y2="400" stroke="#fcd34d" stroke-width="3" class="ray"/>
+                            <line x1="250" y1="250" x2="50" y2="250" stroke="#fcd34d" stroke-width="3" class="ray"/>
+                            <line x1="250" y1="250" x2="100" y2="100" stroke="#fcd34d" stroke-width="3" class="ray"/>
+                        </g>
+
+                        <!-- Chain Reaction Indicator -->
+                        <g class="chain-indicator" id="chainIndicator" opacity="0">
+                            <text x="250" y="480" text-anchor="middle" fill="#f4c343" font-size="14" font-weight="bold">
+                                REACCION EN CADENA INICIADA
+                            </text>
+                        </g>
+
+                        <!-- Progress indicator -->
+                        <g class="progress-display" transform="translate(250, 30)">
+                            <rect x="-100" y="0" width="200" height="8" fill="#1f2937" rx="4"/>
+                            <rect x="-100" y="0" width="0" height="8" fill="#f4c343" rx="4" id="fissionProgress"/>
+                        </g>
+                    </svg>
+
+                    <!-- Energy Counter -->
+                    <div class="energy-counter" id="energyCounter">
+                        <div class="counter-label">Energia Liberada</div>
+                        <div class="counter-value"><span id="energyValue">0</span> MeV</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== NUCLEAR APPLICATIONS SECTION ==================== -->
+<section class="applications-section">
+    <div class="container">
+        <div class="section-header text-center" data-animate="fadeInUp">
+            <span class="section-tag">Aplicaciones</span>
+            <h2 class="section-title-lg">La Tecnologia Nuclear Transforma Vidas</h2>
+            <p class="section-subtitle">
+                Mas alla de la generacion electrica, la energia nuclear tiene aplicaciones
+                fundamentales en medicina, agricultura e industria.
+            </p>
+        </div>
+
+        <div class="applications-grid">
+            <!-- Medicine -->
+            <div class="application-card" data-animate="fadeInUp" data-delay="100">
+                <div class="app-image-wrapper">
+                    <img src="{% static 'images/hero_medicine.jpg' %}" alt="Medicina Nuclear">
+                    <div class="app-overlay">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+                </div>
+                <div class="app-content">
+                    <h3>Medicina Nuclear</h3>
+                    <p>Diagnostico por imagenes, tratamiento del cancer con radioterapia, y esterilizacion de equipos medicos.</p>
+                    <ul class="app-features">
+                        <li><i class="bi bi-check2"></i> PET y SPECT scan</li>
+                        <li><i class="bi bi-check2"></i> Radioterapia oncologica</li>
+                        <li><i class="bi bi-check2"></i> Radioisotopos terapeuticos</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Agriculture -->
+            <div class="application-card" data-animate="fadeInUp" data-delay="200">
+                <div class="app-image-wrapper">
+                    <img src="{% static 'images/hero_agriculture.jpg' %}" alt="Agricultura Nuclear">
+                    <div class="app-overlay">
+                        <i class="bi bi-flower1"></i>
+                    </div>
+                </div>
+                <div class="app-content">
+                    <h3>Agricultura</h3>
+                    <p>Mejora genetica de cultivos, control de plagas y conservacion de alimentos mediante radiacion.</p>
+                    <ul class="app-features">
+                        <li><i class="bi bi-check2"></i> Mutaciones beneficas</li>
+                        <li><i class="bi bi-check2"></i> Esterilizacion de insectos</li>
+                        <li><i class="bi bi-check2"></i> Irradiacion de alimentos</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Energy -->
+            <div class="application-card" data-animate="fadeInUp" data-delay="300">
+                <div class="app-image-wrapper">
+                    <img src="{% static 'images/hero_energy.jpg' %}" alt="Energia Nuclear">
+                    <div class="app-overlay">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                </div>
+                <div class="app-content">
+                    <h3>Energia Limpia</h3>
+                    <p>Generacion electrica continua, cero emisiones de CO2 y alta densidad energetica.</p>
+                    <ul class="app-features">
+                        <li><i class="bi bi-check2"></i> 24/7 sin intermitencia</li>
+                        <li><i class="bi bi-check2"></i> Huella de carbono minima</li>
+                        <li><i class="bi bi-check2"></i> Maxima eficiencia</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== NUCLENERGY DATA SECTION ==================== -->
+<section class="data-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="data-content" data-animate="fadeInLeft">
+                    <span class="section-tag tag-glow">Nueva Herramienta</span>
+                    <h2 class="section-title">
+                        NuclenergyData:<br>
+                        <span class="text-gold">Visualizacion en Tiempo Real</span>
+                    </h2>
+                    <p class="section-description">
+                        Explora el estado de la energia nuclear en el mundo con nuestra plataforma
+                        interactiva de datos. Atlas mundial de reactores, comparador de paises
+                        y estadisticas actualizadas.
+                    </p>
+
+                    <div class="data-features">
+                        <div class="data-feature">
+                            <div class="feature-icon-sm">
+                                <i class="bi bi-globe-americas"></i>
+                            </div>
+                            <div>
+                                <h4>Atlas Mundial</h4>
+                                <p>Visualiza reactores por pais en un mapa interactivo</p>
+                            </div>
+                        </div>
+                        <div class="data-feature">
+                            <div class="feature-icon-sm">
+                                <i class="bi bi-bar-chart-line"></i>
+                            </div>
+                            <div>
+                                <h4>Comparador</h4>
+                                <p>Compara estadisticas entre diferentes naciones</p>
+                            </div>
+                        </div>
+                        <div class="data-feature">
+                            <div class="feature-icon-sm">
+                                <i class="bi bi-activity"></i>
+                            </div>
+                            <div>
+                                <h4>Datos en Vivo</h4>
+                                <p>Informacion actualizada de reactores operativos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="https://www.nuclenergydata.com/" target="_blank" class="btn-primary-xl btn-glow">
+                        <span>Explorar NuclenergyData</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="data-visual" id="dataVisual">
+                    <!-- Live Data Animation -->
+                    <div class="data-screen">
+                        <div class="screen-header">
+                            <div class="screen-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <span class="screen-title">NuclenergyData - Live</span>
+                            <div class="live-indicator">
+                                <span class="live-dot"></span>
+                                <span>LIVE</span>
+                            </div>
+                        </div>
+                        <div class="screen-content">
+                            <!-- World Map Simplified -->
+                            <div class="mini-map">
+                                <svg viewBox="0 0 400 200" class="map-svg">
+                                    <!-- Simplified world continents -->
+                                    <path d="M50,80 Q80,60 120,70 L150,65 Q180,55 200,70 L210,75 Q230,85 240,90 L200,100 Q160,110 120,95 L80,90 Q60,85 50,80" fill="rgba(244,195,67,0.2)" class="continent"/>
+                                    <path d="M220,70 Q260,60 300,65 L340,70 Q360,80 350,95 L320,100 Q280,95 250,90 L220,85 Q210,80 220,70" fill="rgba(244,195,67,0.2)" class="continent"/>
+                                    <path d="M90,110 Q120,105 140,115 L130,140 Q100,145 80,130 L90,110" fill="rgba(244,195,67,0.2)" class="continent"/>
+                                    <path d="M280,100 Q320,105 340,120 L330,150 Q300,155 270,140 L280,100" fill="rgba(244,195,67,0.2)" class="continent"/>
+
+                                    <!-- Reactor dots -->
+                                    <g class="reactor-dots" id="reactorDots">
+                                        <circle cx="100" cy="75" r="4" fill="#f4c343" class="reactor-dot"/>
+                                        <circle cx="150" cy="70" r="3" fill="#f4c343" class="reactor-dot"/>
+                                        <circle cx="200" cy="80" r="5" fill="#f4c343" class="reactor-dot"/>
+                                        <circle cx="280" cy="75" r="6" fill="#f4c343" class="reactor-dot"/>
+                                        <circle cx="320" cy="80" r="4" fill="#f4c343" class="reactor-dot"/>
+                                        <circle cx="340" cy="90" r="3" fill="#f4c343" class="reactor-dot"/>
+                                        <circle cx="110" cy="120" r="2" fill="#f4c343" class="reactor-dot"/>
+                                        <circle cx="300" cy="115" r="3" fill="#f4c343" class="reactor-dot"/>
+                                    </g>
+
+                                    <!-- Connection lines -->
+                                    <g class="connection-lines" id="connectionLines">
+                                        <line x1="100" y1="75" x2="150" y2="70" stroke="#f4c343" stroke-width="1" opacity="0" class="conn-line"/>
+                                        <line x1="150" y1="70" x2="200" y2="80" stroke="#f4c343" stroke-width="1" opacity="0" class="conn-line"/>
+                                        <line x1="200" y1="80" x2="280" y2="75" stroke="#f4c343" stroke-width="1" opacity="0" class="conn-line"/>
+                                        <line x1="280" y1="75" x2="320" y2="80" stroke="#f4c343" stroke-width="1" opacity="0" class="conn-line"/>
+                                    </g>
+
+                                    <!-- Data pulses -->
+                                    <g class="data-pulses" id="dataPulses">
+                                        <circle cx="200" cy="80" r="0" fill="none" stroke="#f4c343" stroke-width="2" opacity="0" class="pulse"/>
+                                        <circle cx="280" cy="75" r="0" fill="none" stroke="#f4c343" stroke-width="2" opacity="0" class="pulse"/>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <!-- Stats Panels -->
+                            <div class="data-panels">
+                                <div class="data-panel" id="panel1">
+                                    <div class="panel-value"><span class="panel-number">440</span></div>
+                                    <div class="panel-label">Reactores Activos</div>
+                                    <div class="panel-bar"><div class="bar-fill" style="width: 85%"></div></div>
+                                </div>
+                                <div class="data-panel" id="panel2">
+                                    <div class="panel-value"><span class="panel-number">32</span></div>
+                                    <div class="panel-label">Paises con Nuclear</div>
+                                    <div class="panel-bar"><div class="bar-fill" style="width: 60%"></div></div>
+                                </div>
+                                <div class="data-panel" id="panel3">
+                                    <div class="panel-value"><span class="panel-number">58</span></div>
+                                    <div class="panel-label">En Construccion</div>
+                                    <div class="panel-bar"><div class="bar-fill" style="width: 40%"></div></div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-0 bg-white h-100 rounded-4 shadow-sm hover-lift">
-                            <div class="card-body p-4">
-                                <i class="bi bi-mortarboard fs-2 text-success mb-3 d-block"></i>
-                                <h5 class="fw-bold">Formación</h5>
-                                <p class="small text-muted mb-0">Prioridad en cursos del OIEA y becas universitarias.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-0 bg-white h-100 rounded-4 shadow-sm hover-lift">
-                            <div class="card-body p-4">
-                                <i class="bi bi-newspaper fs-2 text-danger mb-3 d-block"></i>
-                                <h5 class="fw-bold">Publicación</h5>
-                                <p class="small text-muted mb-0">Publica tus investigaciones en nuestros canales oficiales.</p>
+
+                            <!-- Data Stream -->
+                            <div class="data-stream" id="dataStream">
+                                <div class="stream-line"></div>
+                                <div class="stream-line"></div>
+                                <div class="stream-line"></div>
                             </div>
                         </div>
                     </div>
@@ -242,134 +474,1802 @@
     </div>
 </section>
 
-<section class="position-relative py-5">
-    <div class="position-absolute top-0 start-0 w-100 h-100" 
-         style="background: linear-gradient(rgba(33, 58, 92, 0.9), rgba(27, 42, 65, 0.9)), url('{% static 'images/cta_community_bg.jpg' %}') center/cover fixed no-repeat; z-index: -1;">
+<!-- ==================== NUCLENERGY EDUCATION SECTION ==================== -->
+<section class="education-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 order-lg-2">
+                <div class="education-content" data-animate="fadeInRight">
+                    <span class="section-tag">Educacion y Divulgacion</span>
+                    <h2 class="section-title">
+                        Nuclenergy:<br>
+                        <span class="text-gold">Ciencia sin Mitos</span>
+                    </h2>
+                    <p class="section-description">
+                        Nuestra plataforma educativa lleva conocimiento verificado sobre tecnologia nuclear
+                        a estudiantes, profesionales y al publico general. Combatimos la desinformacion con ciencia.
+                    </p>
+
+                    <ul class="feature-list">
+                        <li><i class="bi bi-mortarboard"></i> Contenido educativo para todos los niveles</li>
+                        <li><i class="bi bi-newspaper"></i> Noticias del sector nuclear global</li>
+                        <li><i class="bi bi-person-video3"></i> Entrevistas con expertos internacionales</li>
+                        <li><i class="bi bi-journal-text"></i> Articulos de divulgacion cientifica</li>
+                    </ul>
+
+                    <a href="https://nuclenergy.com" target="_blank" class="btn-primary-xl">
+                        <span>Visitar Nuclenergy</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 order-lg-1">
+                <div class="education-visual" data-animate="fadeInLeft">
+                    <!-- Classroom Blackboard -->
+                    <div class="blackboard">
+                        <div class="board-frame">
+                            <div class="board-surface">
+                                <!-- Chalk writings -->
+                                <div class="chalk-content">
+                                    <div class="chalk-title">NUCLENERGY</div>
+                                    <div class="chalk-subtitle">La verdad sobre la energia nuclear</div>
+
+                                    <!-- Chalk drawings -->
+                                    <div class="chalk-atom">
+                                        <svg viewBox="0 0 100 100" class="chalk-svg">
+                                            <circle cx="50" cy="50" r="8" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"/>
+                                            <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" transform="rotate(0 50 50)"/>
+                                            <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" transform="rotate(60 50 50)"/>
+                                            <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" transform="rotate(-60 50 50)"/>
+                                        </svg>
+                                    </div>
+
+                                    <div class="chalk-formula">E = mc<sup>2</sup></div>
+
+                                    <div class="chalk-facts">
+                                        <div class="fact-item">
+                                            <span class="checkmark">&#10003;</span> Cero emisiones CO2
+                                        </div>
+                                        <div class="fact-item">
+                                            <span class="checkmark">&#10003;</span> Alta densidad energetica
+                                        </div>
+                                        <div class="fact-item">
+                                            <span class="checkmark">&#10003;</span> Energia de base
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Chalk dust particles -->
+                                <div class="chalk-dust" id="chalkDust"></div>
+                            </div>
+
+                            <!-- Board tray -->
+                            <div class="board-tray">
+                                <div class="chalk-piece chalk-white"></div>
+                                <div class="chalk-piece chalk-yellow"></div>
+                                <div class="eraser"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating elements -->
+                    <div class="floating-book">
+                        <i class="bi bi-book"></i>
+                        <span>+200 Articulos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="container text-center py-5">
-        <div class="col-lg-8 mx-auto">
-            <h2 class="display-5 fw-bold text-white mb-4">Únete a la comunidad científica más importante del sector</h2>
-            <p class="lead text-white-50 mb-5">
-                Profesionales, estudiantes y empresas unidos por el desarrollo nuclear pacífico de Colombia.
+</section>
+
+<!-- ==================== BENEFITS SECTION ==================== -->
+<section class="benefits-section">
+    <div class="container">
+        <div class="section-header text-center" data-animate="fadeInUp">
+            <span class="section-tag">Membresia ASNC</span>
+            <h2 class="section-title-lg">Por que ser parte de la ASNC?</h2>
+            <p class="section-subtitle">
+                Mas que una asociacion, somos un ecosistema de crecimiento profesional
+                disenado para potenciar tu carrera en el sector nuclear.
             </p>
-            <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="{% url 'application_create' %}" class="btn btn-warning btn-lg px-5 fw-bold shadow-lg rounded-pill scale-hover">
-                    Iniciar Solicitud de Ingreso
+        </div>
+
+        <div class="benefits-grid">
+            <div class="benefit-card benefit-main" data-animate="fadeInUp" data-delay="100">
+                <div class="benefit-icon">
+                    <i class="bi bi-diagram-3-fill"></i>
+                </div>
+                <h3>Networking de Alto Nivel</h3>
+                <p>Acceso directo al directorio de expertos, lideres de industria, reguladores y cientificos del sector nuclear en Colombia y el mundo.</p>
+                <div class="benefit-tag">Lo mas solicitado</div>
+            </div>
+
+            <div class="benefit-card" data-animate="fadeInUp" data-delay="200">
+                <div class="benefit-icon icon-gold">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h3>Respaldo Institucional</h3>
+                <p>Tu perfil profesional gana peso y credibilidad al ser miembro activo de la ASNC.</p>
+            </div>
+
+            <div class="benefit-card" data-animate="fadeInUp" data-delay="300">
+                <div class="benefit-icon icon-green">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <h3>Formacion Continua</h3>
+                <p>Prioridad en cursos del OIEA, becas universitarias y certificaciones internacionales.</p>
+            </div>
+
+            <div class="benefit-card" data-animate="fadeInUp" data-delay="400">
+                <div class="benefit-icon icon-blue">
+                    <i class="bi bi-journal-richtext"></i>
+                </div>
+                <h3>Publicacion Cientifica</h3>
+                <p>Publica tus investigaciones y articulos en nuestros canales oficiales y revistas asociadas.</p>
+            </div>
+
+            <div class="benefit-card" data-animate="fadeInUp" data-delay="500">
+                <div class="benefit-icon icon-purple">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <h3>Eventos Exclusivos</h3>
+                <p>Acceso preferencial a congresos, seminarios y encuentros del sector nuclear.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== CTA SECTION ==================== -->
+<section class="cta-section">
+    <div class="cta-bg-pattern"></div>
+    <div class="container position-relative z-1">
+        <div class="cta-content text-center" data-animate="fadeInUp">
+            <h2 class="cta-title">
+                Unete a la Comunidad Cientifica<br>
+                <span class="text-gold">mas importante del sector</span>
+            </h2>
+            <p class="cta-description">
+                Profesionales, estudiantes y empresas unidos por el desarrollo
+                nuclear pacifico y sostenible de Colombia.
+            </p>
+            <div class="cta-actions">
+                <a href="{% url 'application_create' %}" class="btn-cta-primary">
+                    <span>Iniciar Solicitud de Ingreso</span>
+                    <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
+            <p class="cta-note">
+                <i class="bi bi-clock"></i> Proceso de revision: 5-7 dias habiles
+            </p>
         </div>
     </div>
 </section>
 
-<section class="py-5 bg-white border-top">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <span class="badge bg-secondary bg-opacity-10 text-secondary mb-2 px-3 py-2 rounded-pill fw-bold">BOLETÍN SEMANAL</span>
-                <h3 class="display-6 fw-bold text-dark mb-3">No te pierdas ningún avance</h3>
-                <p class="text-muted lead mb-4">
-                    Suscríbete a nuestro resumen semanal. Recibe invitaciones a webinars, noticias de regulación y artículos destacados de Nuclenergy directamente en tu correo.
-                </p>
-                
-                <form action="#" class="row g-2">
-                    <div class="col-sm-8">
-                        <input type="email" class="form-control form-control-lg rounded-pill border-secondary border-opacity-25 px-4" placeholder="Tu correo electrónico...">
+<!-- ==================== NEWSLETTER SECTION ==================== -->
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-card" data-animate="fadeInUp">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="newsletter-content">
+                        <span class="section-tag">Boletin Semanal</span>
+                        <h3>No te pierdas ningun avance</h3>
+                        <p>Recibe noticias, invitaciones a eventos y articulos destacados de Nuclenergy directamente en tu correo.</p>
                     </div>
-                    <div class="col-sm-4">
-                        <button type="button" class="btn btn-dark btn-lg w-100 rounded-pill fw-bold">Suscribirme</button>
-                    </div>
-                </form>
-                <small class="text-muted mt-3 d-block ms-3"><i class="bi bi-lock-fill me-1"></i> Respetamos tus datos. Cero spam.</small>
-            </div>
-
-            <div class="col-lg-5 offset-lg-1">
-                <div class="bg-light rounded-4 p-5 text-center position-relative overflow-hidden">
-                    <i class="bi bi-envelope-paper-heart display-1 text-warning position-relative z-1 hover-lift"></i>
-                    
-                    <div class="position-absolute top-0 end-0 p-5 opacity-25">
-                        <i class="bi bi-send fs-1 text-dark"></i>
-                    </div>
-                    <div class="position-absolute bottom-0 start-0 p-4 opacity-10">
-                        <i class="bi bi-chat-quote fs-1 text-dark"></i>
-                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <form class="newsletter-form">
+                        <div class="input-group">
+                            <input type="email" placeholder="Tu correo electronico" required>
+                            <button type="submit">
+                                <span>Suscribirme</span>
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                        <small><i class="bi bi-shield-check"></i> Respetamos tu privacidad. Cero spam.</small>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
+<!-- ==================== STYLES ==================== -->
 <style>
-    /* Estilos Generales */
-    .bg-navy { background-color: var(--asnc-navy); }
-    .ls-1 { letter-spacing: 2px; }
-    
-    /* Animaciones Generales */
-    .hover-lift { transition: transform 0.3s; }
-    .hover-lift:hover { transform: translateY(-5px); }
-    .scale-hover:hover { transform: scale(1.05); transition: transform 0.2s; }
-    .hover-scale:hover { transform: scale(1.05); transition: transform 0.3s; }
-    .shadow-glow { box-shadow: 0 0 20px rgba(13, 202, 240, 0.4); }
+/* ===== VARIABLES ===== */
+:root {
+    --navy: #1B2A41;
+    --navy-light: #213a5c;
+    --gold: #f4c343;
+    --gold-light: #fcd34d;
+    --bg-light: #f8fafc;
+    --bg-dark: #0f172a;
+    --text-muted: #64748b;
+}
 
-    /* Animaciones Hero */
-    .slide-up { animation: slideUpFade 0.8s ease forwards; opacity: 0; }
-    @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+/* ===== HERO SECTION ===== */
+.hero-section {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--navy);
+}
 
-    /* --- GLASSMORPHISM & TOOL SECTION --- */
-    .world-map-bg {
-        position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-        background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg'); /* Mapa silueta */
-        background-size: cover;
-        background-position: center;
-        opacity: 0.1;
-        filter: invert(1); /* Hacerlo blanco sobre fondo oscuro */
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--navy) 100%);
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(244, 195, 67, 0.1) 0%, transparent 60%);
+}
+
+.hero-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem 0;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(244, 195, 67, 0.1);
+    border: 1px solid rgba(244, 195, 67, 0.3);
+    padding: 0.5rem 1.25rem;
+    border-radius: 50px;
+    margin-bottom: 1.5rem;
+    color: var(--gold);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
+.text-highlight {
+    display: block;
+    color: var(--gold);
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    max-width: 540px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-primary-xl {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid var(--gold);
+}
+
+.btn-primary-xl:hover {
+    background: transparent;
+    color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(244, 195, 67, 0.3);
+}
+
+.btn-glow {
+    animation: btnGlow 2s ease-in-out infinite;
+}
+
+@keyframes btnGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(244, 195, 67, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(244, 195, 67, 0.6); }
+}
+
+.btn-secondary-xl {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: transparent;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 2px solid rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-xl:hover {
+    border-color: white;
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Hero Visual - Atom */
+.hero-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.atom-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+
+.nucleus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 60px rgba(244, 195, 67, 0.6);
+}
+
+.orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 2px solid rgba(244, 195, 67, 0.3);
+    border-radius: 50%;
+}
+
+.orbit-1 {
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    animation: orbit 4s linear infinite;
+}
+
+.orbit-2 {
+    width: 220px;
+    height: 220px;
+    margin: -110px 0 0 -110px;
+    transform: rotate(60deg);
+    animation: orbit 6s linear infinite reverse;
+}
+
+.orbit-3 {
+    width: 290px;
+    height: 290px;
+    margin: -145px 0 0 -145px;
+    transform: rotate(-30deg);
+    animation: orbit 8s linear infinite;
+}
+
+.electron {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(244, 195, 67, 0.8);
+}
+
+@keyframes orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+    animation: scrollLine 2s ease-in-out infinite;
+}
+
+@keyframes scrollLine {
+    0%, 100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.5); opacity: 0.5; }
+}
+
+/* ===== FISSION SECTION ===== */
+.fission-section {
+    padding: 8rem 0;
+    background: var(--bg-light);
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+.fission-content {
+    padding-right: 2rem;
+}
+
+.section-tag {
+    display: inline-block;
+    background: rgba(244, 195, 67, 0.15);
+    color: var(--navy);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(244, 195, 67, 0.3);
+}
+
+.tag-glow {
+    animation: tagPulse 2s ease-in-out infinite;
+}
+
+@keyframes tagPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(244, 195, 67, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(244, 195, 67, 0.5); }
+}
+
+.section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.text-gold {
+    color: var(--gold);
+}
+
+.section-description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.fission-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    opacity: 0.4;
+    transform: translateX(-10px);
+}
+
+.step-item.active {
+    background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: var(--navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step-item.active .step-number {
+    background: var(--gold);
+    color: var(--navy);
+}
+
+.step-text h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 0.25rem;
+}
+
+.step-text p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Fission Visual */
+.fission-visual {
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.fission-svg {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1));
+}
+
+.energy-counter {
+    margin-top: 2rem;
+    background: var(--navy);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(27, 42, 65, 0.3);
+}
+
+.counter-label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 0.5rem;
+}
+
+.counter-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+}
+
+/* ===== APPLICATIONS SECTION ===== */
+.applications-section {
+    padding: 8rem 0;
+    background: white;
+}
+
+.section-header {
+    max-width: 700px;
+    margin: 0 auto 4rem;
+}
+
+.section-title-lg {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.applications-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 991px) {
+    .applications-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 575px) {
+    .applications-grid { grid-template-columns: 1fr; }
+}
+
+.application-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+}
+
+.application-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.app-image-wrapper {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.app-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.application-card:hover .app-image-wrapper img {
+    transform: scale(1.1);
+}
+
+.app-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(27, 42, 65, 0.9), transparent);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 1rem;
+}
+
+.app-overlay i {
+    font-size: 2.5rem;
+    color: var(--gold);
+}
+
+.app-content {
+    padding: 1.5rem;
+}
+
+.app-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 0.75rem;
+}
+
+.app-content p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.app-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.app-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--navy);
+    padding: 0.35rem 0;
+}
+
+.app-features i {
+    color: var(--gold);
+}
+
+/* ===== DATA SECTION ===== */
+.data-section {
+    padding: 8rem 0;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+}
+
+.data-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(244, 195, 67, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+.data-content {
+    position: relative;
+    z-index: 1;
+}
+
+.data-content .section-tag {
+    background: rgba(244, 195, 67, 0.2);
+    color: var(--gold);
+    border-color: rgba(244, 195, 67, 0.4);
+}
+
+.data-content .section-title {
+    color: white;
+}
+
+.data-content .section-description {
+    color: rgba(255,255,255,0.7);
+}
+
+.data-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.data-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.feature-icon-sm {
+    width: 50px;
+    height: 50px;
+    background: rgba(244, 195, 67, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.data-feature h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.data-feature p {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+}
+
+/* Data Visual */
+.data-visual {
+    position: relative;
+    z-index: 1;
+}
+
+.data-screen {
+    background: #0f172a;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    border: 1px solid rgba(244, 195, 67, 0.2);
+}
+
+.screen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: #1e293b;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.screen-dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.screen-dots span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.screen-dots span:nth-child(1) { background: #ef4444; }
+.screen-dots span:nth-child(2) { background: #f59e0b; }
+.screen-dots span:nth-child(3) { background: #22c55e; }
+
+.screen-title {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem;
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #22c55e;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.screen-content {
+    padding: 1.5rem;
+}
+
+.mini-map {
+    background: rgba(27, 42, 65, 0.5);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.map-svg {
+    width: 100%;
+    height: auto;
+}
+
+.reactor-dot {
+    animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.data-panels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.data-panel {
+    background: rgba(27, 42, 65, 0.5);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.panel-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--gold);
+}
+
+.panel-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.5rem;
+}
+
+.panel-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 1s ease;
+}
+
+.data-stream {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.stream-line {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    border-radius: 2px;
+    animation: streamFlow 1.5s ease-in-out infinite;
+}
+
+.stream-line:nth-child(2) { animation-delay: 0.3s; }
+.stream-line:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes streamFlow {
+    0% { opacity: 0.2; transform: scaleX(0.5); }
+    50% { opacity: 1; transform: scaleX(1); }
+    100% { opacity: 0.2; transform: scaleX(0.5); }
+}
+
+/* ===== EDUCATION SECTION ===== */
+.education-section {
+    padding: 8rem 0;
+    background: var(--bg-light);
+}
+
+.education-content .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+}
+
+.education-content .feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.education-content .feature-list i {
+    color: var(--gold);
+    font-size: 1.25rem;
+    width: 30px;
+}
+
+/* Blackboard */
+.education-visual {
+    position: relative;
+}
+
+.blackboard {
+    perspective: 1000px;
+}
+
+.board-frame {
+    background: #5c4033;
+    padding: 20px 20px 10px;
+    border-radius: 8px;
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.3),
+        inset 0 2px 4px rgba(255,255,255,0.1);
+}
+
+.board-surface {
+    background: #2a4a3a;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+    border-radius: 4px;
+    padding: 2rem;
+    min-height: 350px;
+    position: relative;
+    overflow: hidden;
+}
+
+.chalk-content {
+    position: relative;
+    z-index: 1;
+}
+
+.chalk-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.chalk-subtitle {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.chalk-atom {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+}
+
+.chalk-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.chalk-formula {
+    font-size: 2rem;
+    color: var(--gold);
+    text-align: center;
+    font-family: 'Times New Roman', serif;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px rgba(244, 195, 67, 0.5);
+}
+
+.chalk-facts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.fact-item {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkmark {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.chalk-dust {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.board-tray {
+    background: #4a3728;
+    height: 20px;
+    margin-top: 10px;
+    border-radius: 0 0 4px 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    gap: 0.5rem;
+}
+
+.chalk-piece {
+    width: 40px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.chalk-white { background: #f5f5f5; }
+.chalk-yellow { background: #f4c343; }
+
+.eraser {
+    width: 50px;
+    height: 12px;
+    background: #1f2937;
+    border-radius: 2px;
+    margin-left: auto;
+}
+
+.floating-book {
+    position: absolute;
+    bottom: -10px;
+    right: 30px;
+    background: var(--navy);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 10px 30px rgba(27, 42, 65, 0.4);
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-book i {
+    color: var(--gold);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ===== BENEFITS SECTION ===== */
+.benefits-section {
+    padding: 8rem 0;
+    background: white;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 991px) {
+    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 575px) {
+    .benefits-grid { grid-template-columns: 1fr; }
+}
+
+.benefit-card {
+    background: var(--bg-light);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.4s ease;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.benefit-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-color: rgba(244, 195, 67, 0.3);
+}
+
+.benefit-main {
+    grid-column: span 1;
+    grid-row: span 2;
+    background: var(--navy);
+    color: white;
+}
+
+.benefit-main h3 { color: white; }
+.benefit-main p { color: rgba(255,255,255,0.7); }
+
+.benefit-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(244, 195, 67, 0.15);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.benefit-main .benefit-icon {
+    background: rgba(244, 195, 67, 0.2);
+}
+
+.icon-gold { background: rgba(244, 195, 67, 0.15); color: #f59e0b; }
+.icon-green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.icon-blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.icon-purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+
+.benefit-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 0.75rem;
+}
+
+.benefit-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.benefit-tag {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* ===== CTA SECTION ===== */
+.cta-section {
+    padding: 8rem 0;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(244, 195, 67, 0.1) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+.cta-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.cta-description {
+    font-size: 1.15rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 2.5rem;
+}
+
+.btn-cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 1.25rem 2.5rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(244, 195, 67, 0.3);
+}
+
+.btn-cta-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(244, 195, 67, 0.4);
+    color: var(--navy);
+}
+
+.cta-note {
+    margin-top: 1.5rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+}
+
+.cta-note i {
+    margin-right: 0.5rem;
+}
+
+/* ===== NEWSLETTER SECTION ===== */
+.newsletter-section {
+    padding: 5rem 0;
+    background: var(--bg-light);
+}
+
+.newsletter-card {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.newsletter-content h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 0.75rem;
+}
+
+.newsletter-content p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.newsletter-form .input-group {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.newsletter-form input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.newsletter-form input:focus {
+    outline: none;
+    border-color: var(--navy);
+}
+
+.newsletter-form button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--navy);
+    color: white;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.newsletter-form button:hover {
+    background: var(--navy-light);
+    transform: translateY(-2px);
+}
+
+.newsletter-form small {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.newsletter-form small i {
+    color: #10b981;
+    margin-right: 0.5rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+[data-animate] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+[data-animate].animated {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 991px) {
+    .fission-content {
+        padding-right: 0;
+        margin-bottom: 3rem;
     }
 
-    .glass-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-
-    .pulse-dot-cyan {
-        width: 8px; height: 8px;
-        background-color: #0dcaf0;
-        border-radius: 50%;
-        box-shadow: 0 0 0 rgba(13, 202, 240, 0.7);
-        animation: pulse-cyan 2s infinite;
-    }
-    @keyframes pulse-cyan {
-        0% { box-shadow: 0 0 0 0 rgba(13, 202, 240, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(13, 202, 240, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(13, 202, 240, 0); }
-    }
-
-    /* Radar Scan Effect */
-    .radar-scan-container {
+    .fission-visual {
         position: relative;
-        width: 200px; height: 200px;
-        border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        display: flex; align-items: center; justify-content: center;
+        top: 0;
     }
-    .radar-beam {
-        position: absolute; width: 100%; height: 100%;
-        border-radius: 50%;
-        background: conic-gradient(from 0deg, transparent 0deg, rgba(13, 202, 240, 0.1) 60deg, rgba(13, 202, 240, 0.4) 90deg, transparent 91deg);
-        animation: radar-spin 4s linear infinite;
-    }
-    @keyframes radar-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* Floating Cards Animation */
-    .floating-card-1 { animation: float-y 6s ease-in-out infinite; }
-    .floating-card-2 { animation: float-y 5s ease-in-out infinite 1s; }
-    .floating-card-3 { animation: float-y 7s ease-in-out infinite 0.5s; }
-
-    @keyframes float-y {
-        0%, 100% { transform: translateY(-50%) translateY(0px); }
-        50% { transform: translateY(-50%) translateY(-15px); }
+    .benefit-main {
+        grid-column: span 2;
+        grid-row: span 1;
     }
+
+    .data-panels {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575px) {
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary-xl, .btn-secondary-xl {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .newsletter-form .input-group {
+        flex-direction: column;
+    }
+
+    .benefit-main {
+        grid-column: span 1;
+    }
+
+    .chalk-title {
+        font-size: 1.75rem;
+    }
+
+    .chalk-formula {
+        font-size: 1.5rem;
+    }
+}
 </style>
+
+<!-- ===== ANIME.JS ===== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ==================== SCROLL ANIMATIONS ====================
+    const animatedElements = document.querySelectorAll('[data-animate]');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const delay = entry.target.dataset.delay || 0;
+                setTimeout(() => {
+                    entry.target.classList.add('animated');
+                }, delay);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    animatedElements.forEach(el => observer.observe(el));
+
+    // ==================== NUCLEAR FISSION SCROLL ANIMATION ====================
+    const fissionSection = document.getElementById('fission');
+    const incomingNeutron = document.getElementById('incomingNeutron');
+    const uraniumNucleus = document.getElementById('uraniumNucleus');
+    const fragment1 = document.getElementById('fragment1');
+    const fragment2 = document.getElementById('fragment2');
+    const releasedNeutrons = document.getElementById('releasedNeutrons');
+    const energyBurst = document.getElementById('energyBurst');
+    const energyRays = document.getElementById('energyRays');
+    const chainIndicator = document.getElementById('chainIndicator');
+    const fissionProgress = document.getElementById('fissionProgress');
+    const energyValue = document.getElementById('energyValue');
+    const stepItems = document.querySelectorAll('.step-item');
+
+    let fissionAnimated = false;
+
+    function updateFission() {
+        if (!fissionSection) return;
+
+        const rect = fissionSection.getBoundingClientRect();
+        const sectionHeight = rect.height;
+        const scrolled = -rect.top;
+        const viewportHeight = window.innerHeight;
+        const progress = Math.max(0, Math.min(1, scrolled / (sectionHeight - viewportHeight)));
+
+        // Update progress bar
+        if (fissionProgress) {
+            fissionProgress.setAttribute('width', progress * 200);
+        }
+
+        // Update energy value
+        if (energyValue) {
+            const energy = Math.round(progress * 200);
+            energyValue.textContent = energy;
+        }
+
+        // Step items activation
+        stepItems.forEach((item, i) => {
+            const stepThreshold = (i + 1) * 0.25;
+            if (progress >= stepThreshold - 0.2) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // Phase 1: Neutron approaches (0-25%)
+        if (progress < 0.25) {
+            const neutronProgress = progress / 0.25;
+            const neutronX = 50 + neutronProgress * 160; // Move from 50 to 210
+
+            if (incomingNeutron) {
+                incomingNeutron.querySelector('circle').setAttribute('cx', neutronX);
+                incomingNeutron.querySelector('circle:nth-child(2)').setAttribute('cx', neutronX);
+                incomingNeutron.querySelector('ellipse').setAttribute('cx', neutronX - 20);
+            }
+
+            // Reset other elements
+            if (uraniumNucleus) uraniumNucleus.style.opacity = 1;
+            if (fragment1) fragment1.style.opacity = 0;
+            if (fragment2) fragment2.style.opacity = 0;
+            if (releasedNeutrons) releasedNeutrons.style.opacity = 0;
+            if (energyBurst) energyBurst.setAttribute('r', 0);
+            if (energyRays) energyRays.style.opacity = 0;
+        }
+
+        // Phase 2: Impact and nucleus deformation (25-40%)
+        else if (progress < 0.4) {
+            const impactProgress = (progress - 0.25) / 0.15;
+
+            // Hide incoming neutron
+            if (incomingNeutron) incomingNeutron.style.opacity = 1 - impactProgress;
+
+            // Nucleus starts to deform (shake effect)
+            if (uraniumNucleus) {
+                const shake = Math.sin(impactProgress * Math.PI * 8) * 5 * (1 - impactProgress);
+                uraniumNucleus.style.transform = `translateX(${shake}px)`;
+            }
+
+            // Start energy burst
+            if (energyBurst) {
+                energyBurst.setAttribute('r', impactProgress * 30);
+                energyBurst.style.opacity = impactProgress * 0.5;
+            }
+        }
+
+        // Phase 3: Split and energy release (40-70%)
+        else if (progress < 0.7) {
+            const splitProgress = (progress - 0.4) / 0.3;
+
+            // Hide original nucleus
+            if (uraniumNucleus) uraniumNucleus.style.opacity = 1 - splitProgress;
+            if (incomingNeutron) incomingNeutron.style.opacity = 0;
+
+            // Show and separate fragments
+            if (fragment1) {
+                fragment1.style.opacity = splitProgress;
+                const f1X = 250 - splitProgress * 120;
+                const f1Y = 250 - splitProgress * 60;
+                fragment1.style.transform = `translate(${f1X - 250}px, ${f1Y - 250}px)`;
+            }
+
+            if (fragment2) {
+                fragment2.style.opacity = splitProgress;
+                const f2X = 250 + splitProgress * 120;
+                const f2Y = 250 + splitProgress * 60;
+                fragment2.style.transform = `translate(${f2X - 250}px, ${f2Y - 250}px)`;
+            }
+
+            // Energy burst expands
+            if (energyBurst) {
+                energyBurst.setAttribute('r', 30 + splitProgress * 150);
+                energyBurst.style.opacity = 0.5 - splitProgress * 0.3;
+            }
+
+            // Energy rays appear
+            if (energyRays) {
+                energyRays.style.opacity = splitProgress;
+                const rays = energyRays.querySelectorAll('.ray');
+                rays.forEach((ray, i) => {
+                    const scale = splitProgress;
+                    ray.style.strokeDasharray = `${scale * 200}`;
+                    ray.style.opacity = splitProgress * (1 - i * 0.05);
+                });
+            }
+        }
+
+        // Phase 4: Neutrons release and chain reaction (70-100%)
+        else {
+            const chainProgress = (progress - 0.7) / 0.3;
+
+            // Keep fragments visible and moving
+            if (fragment1) {
+                fragment1.style.opacity = 1;
+                const f1X = 130 - chainProgress * 30;
+                const f1Y = 190 - chainProgress * 40;
+                fragment1.style.transform = `translate(${f1X - 250}px, ${f1Y - 250}px)`;
+            }
+
+            if (fragment2) {
+                fragment2.style.opacity = 1;
+                const f2X = 370 + chainProgress * 30;
+                const f2Y = 310 + chainProgress * 40;
+                fragment2.style.transform = `translate(${f2X - 250}px, ${f2Y - 250}px)`;
+            }
+
+            // Release neutrons
+            if (releasedNeutrons) {
+                releasedNeutrons.style.opacity = 1;
+                const neutrons = releasedNeutrons.querySelectorAll('.neutron');
+
+                // Neutron 1 - goes up-left
+                const n1X = 250 - chainProgress * 150;
+                const n1Y = 250 - chainProgress * 120;
+                neutrons[0].style.transform = `translate(${n1X - 250}px, ${n1Y - 250}px)`;
+
+                // Neutron 2 - goes up-right
+                const n2X = 250 + chainProgress * 140;
+                const n2Y = 250 - chainProgress * 100;
+                neutrons[1].style.transform = `translate(${n2X - 250}px, ${n2Y - 250}px)`;
+
+                // Neutron 3 - goes down
+                const n3X = 250 + chainProgress * 50;
+                const n3Y = 250 + chainProgress * 130;
+                neutrons[2].style.transform = `translate(${n3X - 250}px, ${n3Y - 250}px)`;
+            }
+
+            // Fade energy burst
+            if (energyBurst) {
+                energyBurst.setAttribute('r', 180 + chainProgress * 50);
+                energyBurst.style.opacity = 0.2 - chainProgress * 0.2;
+            }
+
+            // Show chain reaction indicator
+            if (chainIndicator) {
+                chainIndicator.style.opacity = chainProgress;
+            }
+        }
+    }
+
+    window.addEventListener('scroll', updateFission);
+    updateFission();
+
+    // ==================== DATA VISUALIZATION ANIMATIONS ====================
+    const dataVisual = document.getElementById('dataVisual');
+
+    if (dataVisual) {
+        // Animate reactor dots pulsing
+        anime({
+            targets: '.reactor-dot',
+            scale: [1, 1.5, 1],
+            opacity: [0.6, 1, 0.6],
+            duration: 2000,
+            delay: anime.stagger(200),
+            loop: true,
+            easing: 'easeInOutQuad'
+        });
+
+        // Animate connection lines
+        anime({
+            targets: '.conn-line',
+            opacity: [0, 0.5, 0],
+            strokeDashoffset: [anime.setDashoffset, 0],
+            duration: 3000,
+            delay: anime.stagger(500),
+            loop: true,
+            easing: 'easeInOutQuad'
+        });
+
+        // Animate data pulses
+        anime({
+            targets: '.pulse',
+            r: [0, 30],
+            opacity: [0.8, 0],
+            duration: 2000,
+            delay: anime.stagger(1000),
+            loop: true,
+            easing: 'easeOutQuad'
+        });
+
+        // Animate panel numbers when in view
+        const dataObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    anime({
+                        targets: '.panel-number',
+                        innerHTML: function(el) {
+                            return [0, el.textContent];
+                        },
+                        round: 1,
+                        duration: 2000,
+                        easing: 'easeOutExpo'
+                    });
+                    dataObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        dataObserver.observe(dataVisual);
+    }
+
+    // ==================== HERO PARTICLES ====================
+    const particlesContainer = document.getElementById('heroParticles');
+    if (particlesContainer) {
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 4 + 2}px;
+                height: ${Math.random() * 4 + 2}px;
+                background: rgba(244, 195, 67, ${Math.random() * 0.5 + 0.2});
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+            `;
+            particlesContainer.appendChild(particle);
+        }
+
+        anime({
+            targets: '#heroParticles div',
+            translateX: () => anime.random(-50, 50),
+            translateY: () => anime.random(-50, 50),
+            scale: () => anime.random(0.5, 1.5),
+            opacity: [
+                { value: 0.8, duration: 1000 },
+                { value: 0.2, duration: 1000 }
+            ],
+            easing: 'easeInOutQuad',
+            duration: 3000,
+            loop: true,
+            delay: () => anime.random(0, 2000)
+        });
+    }
+
+    // ==================== CHALK DUST ANIMATION ====================
+    const chalkDust = document.getElementById('chalkDust');
+    if (chalkDust) {
+        for (let i = 0; i < 20; i++) {
+            const dust = document.createElement('div');
+            dust.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 3 + 1}px;
+                height: ${Math.random() * 3 + 1}px;
+                background: rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1});
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+            `;
+            chalkDust.appendChild(dust);
+        }
+
+        anime({
+            targets: '#chalkDust div',
+            translateY: () => anime.random(-20, 20),
+            translateX: () => anime.random(-10, 10),
+            opacity: [0.3, 0.1],
+            duration: 4000,
+            loop: true,
+            delay: () => anime.random(0, 3000),
+            easing: 'easeInOutQuad'
+        });
+    }
+
+    // ==================== HERO ENTRANCE ANIMATION ====================
+    anime.timeline()
+        .add({
+            targets: '.hero-badge',
+            opacity: [0, 1],
+            translateY: [30, 0],
+            duration: 800,
+            easing: 'easeOutExpo'
+        })
+        .add({
+            targets: '.hero-title',
+            opacity: [0, 1],
+            translateY: [30, 0],
+            duration: 800,
+            easing: 'easeOutExpo'
+        }, '-=600')
+        .add({
+            targets: '.hero-description',
+            opacity: [0, 1],
+            translateY: [30, 0],
+            duration: 800,
+            easing: 'easeOutExpo'
+        }, '-=600')
+        .add({
+            targets: '.hero-actions',
+            opacity: [0, 1],
+            translateY: [30, 0],
+            duration: 800,
+            easing: 'easeOutExpo'
+        }, '-=600')
+        .add({
+            targets: '.atom-container',
+            opacity: [0, 1],
+            scale: [0.5, 1],
+            duration: 1000,
+            easing: 'easeOutElastic(1, .8)'
+        }, '-=800');
+
+});
+</script>
 
 {% endblock %}

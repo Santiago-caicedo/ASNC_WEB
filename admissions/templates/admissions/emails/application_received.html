@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud Recibida - ASNC</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa;">
+
+    <!-- Container -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f5f7fa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+
+                <!-- Email Card -->
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #1B2A41 0%, #213a5c 100%); padding: 40px 40px 30px; text-align: center;">
+                            <!-- Logo placeholder - usar URL absoluta en producción -->
+                            <div style="background-color: white; display: inline-block; padding: 15px 25px; border-radius: 12px; margin-bottom: 20px;">
+                                <span style="font-size: 24px; font-weight: 700; color: #1B2A41;">ASNC</span>
+                            </div>
+                            <h1 style="color: #ffffff; font-size: 28px; margin: 0; font-weight: 600;">
+                                ¡Solicitud Recibida!
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 40px;">
+
+                            <!-- Greeting -->
+                            <p style="font-size: 18px; color: #1B2A41; margin: 0 0 20px;">
+                                Hola <strong>{{ first_name }}</strong>,
+                            </p>
+
+                            <p style="font-size: 16px; color: #64748b; line-height: 1.7; margin: 0 0 30px;">
+                                Gracias por tu interés en formar parte de la <strong style="color: #1B2A41;">Asociación Nuclear Colombiana</strong>.
+                                Hemos recibido tu solicitud de membresía y estamos emocionados de que quieras unirte a nuestra comunidad.
+                            </p>
+
+                            <!-- Tracking Code Box -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; padding: 25px; border-left: 4px solid #f4c343;">
+                                        <p style="font-size: 14px; color: #64748b; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px;">
+                                            Tu código de seguimiento
+                                        </p>
+                                        <p style="font-size: 18px; color: #1B2A41; margin: 0; font-family: monospace; font-weight: 600; word-break: break-all;">
+                                            {{ uuid }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Next Steps -->
+                            <p style="font-size: 16px; color: #1B2A41; font-weight: 600; margin: 0 0 15px;">
+                                ¿Qué sigue ahora?
+                            </p>
+
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 30px;">
+                                <!-- Step 1 -->
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="width: 40px; vertical-align: top;">
+                                                    <div style="width: 28px; height: 28px; background-color: #1B2A41; border-radius: 50%; text-align: center; line-height: 28px; color: white; font-size: 14px; font-weight: 600;">1</div>
+                                                </td>
+                                                <td style="color: #475569; font-size: 15px; line-height: 1.5;">
+                                                    Nuestro <strong>Comité de Admisiones</strong> revisará tu perfil profesional.
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- Step 2 -->
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="width: 40px; vertical-align: top;">
+                                                    <div style="width: 28px; height: 28px; background-color: #1B2A41; border-radius: 50%; text-align: center; line-height: 28px; color: white; font-size: 14px; font-weight: 600;">2</div>
+                                                </td>
+                                                <td style="color: #475569; font-size: 15px; line-height: 1.5;">
+                                                    Recibirás una notificación con el <strong>resultado de la evaluación</strong>.
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- Step 3 -->
+                                <tr>
+                                    <td style="padding: 12px 0;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="width: 40px; vertical-align: top;">
+                                                    <div style="width: 28px; height: 28px; background-color: #f4c343; border-radius: 50%; text-align: center; line-height: 28px; color: #1B2A41; font-size: 14px; font-weight: 600;">3</div>
+                                                </td>
+                                                <td style="color: #475569; font-size: 15px; line-height: 1.5;">
+                                                    Si eres aprobado, te daremos la <strong>bienvenida oficial</strong> a la ASNC.
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Quote -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td style="background-color: #1B2A41; border-radius: 12px; padding: 25px; text-align: center;">
+                                        <p style="color: #f4c343; font-size: 24px; margin: 0 0 10px;">"</p>
+                                        <p style="color: #ffffff; font-size: 15px; font-style: italic; margin: 0; line-height: 1.6;">
+                                            La ciencia nuclear al servicio del desarrollo sostenible de Colombia.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Closing -->
+                            <p style="font-size: 16px; color: #64748b; line-height: 1.7; margin: 0;">
+                                Si tienes alguna pregunta, no dudes en contactarnos respondiendo a este correo.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; padding: 30px 40px; border-top: 1px solid #e2e8f0;">
+
+                            <!-- Social Links -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="https://linkedin.com" style="display: inline-block; width: 36px; height: 36px; background-color: #1B2A41; border-radius: 8px; text-align: center; line-height: 36px; color: white; text-decoration: none; margin: 0 5px; font-size: 14px;">in</a>
+                                        <a href="https://instagram.com" style="display: inline-block; width: 36px; height: 36px; background-color: #1B2A41; border-radius: 8px; text-align: center; line-height: 36px; color: white; text-decoration: none; margin: 0 5px; font-size: 14px;">ig</a>
+                                        <a href="https://youtube.com" style="display: inline-block; width: 36px; height: 36px; background-color: #1B2A41; border-radius: 8px; text-align: center; line-height: 36px; color: white; text-decoration: none; margin: 0 5px; font-size: 14px;">yt</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="font-size: 13px; color: #94a3b8; text-align: center; margin: 0 0 10px;">
+                                <strong style="color: #1B2A41;">Asociación Nuclear Colombiana</strong><br>
+                                Bogotá D.C., Colombia
+                            </p>
+
+                            <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
+                                © 2025 ASNC. Todos los derechos reservados.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

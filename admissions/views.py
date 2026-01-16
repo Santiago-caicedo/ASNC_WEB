@@ -6,10 +6,52 @@ from django.views.generic import ListView
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.conf import settings
 from .models import MembershipApplication
 from .forms import MembershipApplicationForm
+
+
+def send_application_email(application):
+    """Envía email de confirmación con template HTML"""
+    subject = '¡Recibimos tu solicitud! - Asociación Nuclear Colombiana'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = application.email
+
+    # Contexto para el template
+    context = {
+        'first_name': application.first_name,
+        'last_name': application.last_name,
+        'uuid': application.uuid,
+    }
+
+    # Renderizar templates
+    html_content = render_to_string('admissions/emails/application_received.html', context)
+    text_content = f"""
+Hola {application.first_name},
+
+Gracias por tu interés en formar parte de la Asociación Nuclear Colombiana.
+Hemos recibido tu solicitud de membresía.
+
+Tu código de seguimiento es: {application.uuid}
+
+¿Qué sigue ahora?
+1. Nuestro Comité de Admisiones revisará tu perfil profesional.
+2. Recibirás una notificación con el resultado de la evaluación.
+3. Si eres aprobado, te daremos la bienvenida oficial a la ASNC.
+
+Si tienes alguna pregunta, no dudes en contactarnos.
+
+Saludos,
+Asociación Nuclear Colombiana
+    """
+
+    # Crear email con alternativas (texto plano + HTML)
+    email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    email.attach_alternative(html_content, "text/html")
+    email.send(fail_silently=False)
+
 
 class ApplicationCreateView(CreateView):
     model = MembershipApplication
@@ -18,19 +60,16 @@ class ApplicationCreateView(CreateView):
     success_url = reverse_lazy('application_success')
 
     def form_valid(self, form):
-        # Primero guardamos el objeto en la BD
+        # Guardamos el objeto en la BD
         self.object = form.save()
-        
-        # Luego enviamos el correo
-        # Nota: self.object.email accede al email que el usuario acaba de escribir
-        send_mail(
-            subject='Recibimos tu solicitud - ASNC',
-            message=f'Hola {self.object.first_name}, hemos recibido tu solicitud. Tu código de seguimiento es: {self.object.uuid}',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.object.email],
-            fail_silently=False,
-        )
-        
+
+        # Enviamos el correo HTML
+        try:
+            send_application_email(self.object)
+        except Exception:
+            # Si falla el email, no interrumpimos el flujo
+            pass
+
         return super().form_valid(form)
 
 class ApplicationSuccessView(TemplateView):
