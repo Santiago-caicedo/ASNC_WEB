@@ -4,6 +4,9 @@
 
 This is the **ASNC Platform** (Asociación Nuclear Colombiana) - a Django 6.0 web application for managing membership admissions and providing an administrative portal for committee members.
 
+**Official Domain:** www.asncol.com
+**Contact Email:** info@asncol.com
+
 ## Tech Stack
 
 - **Framework**: Django 6.0
@@ -305,7 +308,8 @@ Note: Items marked as "placeholder" are not yet implemented.
 
 - Development: Console backend (prints to terminal)
 - Production: Configure SMTP in settings.py (TODO)
-- Default from: `no-reply@asocnuclear.org`
+- Default from: `no-reply@asncol.com`
+- Contact email: `info@asncol.com`
 - Email templates: `admissions/templates/admissions/emails/application_received.html`
 - Uses `EmailMultiAlternatives` for HTML + plain text
 

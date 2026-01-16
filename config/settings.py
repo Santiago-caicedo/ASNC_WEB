@@ -199,7 +199,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Email dev configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'no-reply@asocnuclear.org'
+DEFAULT_FROM_EMAIL = 'no-reply@asncol.com'
 
 
 # Redirecciones
