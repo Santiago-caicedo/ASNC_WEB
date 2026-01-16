@@ -43,9 +43,12 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
 
+    # Storage
+    'storages',
+
+    # Apps
     'users',
     'admissions',
-
     'dashboard',
     'website',
 ]
@@ -130,24 +133,64 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
-
 # Esto le dice a Django: "Busca también en la carpeta 'static' que está en la raíz"
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# (Opcional, pero recomendado para futuro despliegue)
 # Es donde Django juntará todo cuando pases a producción
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
-# Media files (Uploads)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# ============================================================================
+# CONFIGURACIÓN HÍBRIDA: LOCAL (DEBUG=True) vs S3 (DEBUG=False)
+# ============================================================================
+
+if DEBUG:
+    # ----- MODO DESARROLLO (LOCAL) -----
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+else:
+    # ----- MODO PRODUCCIÓN (AWS S3) -----
+    from storages.backends.s3boto3 import S3Boto3Storage
+
+    # Configuración AWS (credenciales via IAM Role del EC2)
+    AWS_STORAGE_BUCKET_NAME = 'vadomdata'
+    AWS_S3_REGION_NAME = 'us-east-1'
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_DEFAULT_ACL = None
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+
+    # Prefijo del cliente (carpeta en S3)
+    S3_PREFIX = config('S3_CLIENT_PREFIX', default='asnc')
+
+    # Clases de almacenamiento personalizadas
+    class StaticStorage(S3Boto3Storage):
+        location = f'{S3_PREFIX}/static'
+        default_acl = None
+
+    class MediaStorage(S3Boto3Storage):
+        location = f'{S3_PREFIX}/media'
+        default_acl = None
+
+    # URLs públicas
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{S3_PREFIX}/static/'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{S3_PREFIX}/media/'
+
+    # Backends de almacenamiento
+    STORAGES = {
+        "default": {"BACKEND": "config.settings.MediaStorage"},
+        "staticfiles": {"BACKEND": "config.settings.StaticStorage"},
+    }
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
