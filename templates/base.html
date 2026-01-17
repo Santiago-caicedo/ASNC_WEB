@@ -8,7 +8,11 @@
     <meta name="author" content="ASNC">
     
     <title>ASNC - {% block title %}Asociación Nuclear Colombiana{% endblock %}</title>
-    
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/icon_asnc.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/icon_asnc.png' %}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -94,8 +98,14 @@
             position: relative;
         }
 
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover {
             color: var(--asnc-blue);
+        }
+
+        /* Estado activo - página actual */
+        .nav-link.active {
+            color: var(--asnc-gold) !important;
+            font-weight: 600;
         }
 
         /* Efecto de línea animada */
@@ -112,6 +122,11 @@
         }
 
         .nav-link:hover::after {
+            width: 80%;
+        }
+
+        /* Línea visible en estado activo */
+        .nav-link.active::after {
             width: 80%;
         }
 
@@ -185,13 +200,13 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link px-3" href="{% url 'home' %}">Inicio</a>
+                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3" href="#">Quiénes Somos</a>
+                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">Quiénes Somos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3" href="#">Eventos</a>
+                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="#">Eventos</a>
                         </li>
                         
                         <li class="nav-item d-none d-lg-block mx-2 border-end border-2" style="height: 20px; opacity: 0.2;"></li>

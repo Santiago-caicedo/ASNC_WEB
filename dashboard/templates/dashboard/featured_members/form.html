@@ -1,0 +1,136 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'featured_member_list' %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al listado
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white p-4 border-bottom border-light">
+                <h5 class="fw-bold mb-0 text-dark">{{ title }}</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row g-4">
+                        <!-- Foto actual -->
+                        {% if object.photo %}
+                        <div class="col-12 text-center">
+                            <img src="{{ object.photo.url }}" alt="{{ object.full_name }}"
+                                 class="rounded-circle mb-3"
+                                 style="width: 120px; height: 120px; object-fit: cover;">
+                            <p class="small text-muted">Foto actual</p>
+                        </div>
+                        {% endif %}
+
+                        <!-- Nombre completo -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-person me-2 text-primary"></i>Nombre Completo *
+                            </label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                            <div class="text-danger small mt-1">{{ form.full_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Foto -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-camera me-2 text-primary"></i>Foto {% if not object %}*{% endif %}
+                            </label>
+                            {{ form.photo }}
+                            {% if form.photo.errors %}
+                            <div class="text-danger small mt-1">{{ form.photo.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted d-block mt-1">Imagen cuadrada recomendada (min. 300x300px)</small>
+                        </div>
+
+                        <!-- Cargo en la asociación -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-award me-2 text-primary"></i>Cargo en la ASNC *
+                            </label>
+                            {{ form.association_position }}
+                            {% if form.association_position.errors %}
+                            <div class="text-danger small mt-1">{{ form.association_position.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Profesión -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-briefcase me-2 text-primary"></i>Profesión *
+                            </label>
+                            {{ form.profession }}
+                            {% if form.profession.errors %}
+                            <div class="text-danger small mt-1">{{ form.profession.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Trayectoria profesional -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-file-text me-2 text-primary"></i>Trayectoria Profesional *
+                            </label>
+                            {{ form.professional_trajectory }}
+                            {% if form.professional_trajectory.errors %}
+                            <div class="text-danger small mt-1">{{ form.professional_trajectory.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- LinkedIn -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-linkedin me-2 text-primary"></i>LinkedIn (opcional)
+                            </label>
+                            {{ form.linkedin_url }}
+                            {% if form.linkedin_url.errors %}
+                            <div class="text-danger small mt-1">{{ form.linkedin_url.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <hr class="my-2">
+
+                        <!-- Orden de visualización -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-sort-numeric-up me-2 text-primary"></i>Orden de visualización
+                            </label>
+                            {{ form.display_order }}
+                            <small class="text-muted d-block mt-1">Menor número = aparece primero</small>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold d-block">
+                                <i class="bi bi-toggle-on me-2 text-primary"></i>Estado
+                            </label>
+                            <div class="form-check form-switch mt-2">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="id_is_active">
+                                    Visible en la página pública
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                        <a href="{% url 'featured_member_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">
+                            <i class="bi bi-check-lg me-2"></i>{{ button_text }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

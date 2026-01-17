@@ -213,9 +213,15 @@
                 <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.6em;">{{ pending_count }}</span>
                 {% endif %}
             </a>
-            
+
             <a href="#" class="nav-link disabled">
                 <i class="bi bi-people"></i> Directorio Oficial
+            </a>
+
+            <div class="menu-label">Contenido Web</div>
+
+            <a href="{% url 'featured_member_list' %}" class="nav-link {% if 'asociados-destacados' in request.path %}active{% endif %}">
+                <i class="bi bi-star"></i> Asociados Destacados
             </a>
 
             <div class="menu-label">Administración</div>

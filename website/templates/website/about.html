@@ -1,0 +1,1263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quiénes Somos{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section (Se mantiene igual) -->
+<section class="about-hero">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <span class="hero-tag">Nuestra Asociación</span>
+                <h1 class="hero-title">Quiénes Somos</h1>
+                <p class="hero-description">
+                    La Asociación Nuclear Colombiana (ASNC) reúne a los profesionales,
+                    investigadores y entusiastas del sector nuclear en Colombia, promoviendo
+                    el desarrollo pacífico y sostenible de la ciencia y tecnología nuclear.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Section - Rediseñada -->
+<section class="mission-section">
+    <div class="container">
+        <div class="mission-grid">
+            <!-- Misión -->
+            <div class="mission-card mission-primary">
+                <div class="mission-glow"></div>
+                <div class="mission-content">
+                    <div class="mission-icon-wrapper">
+                        <div class="mission-icon">
+                            <i class="bi bi-bullseye"></i>
+                        </div>
+                        <span class="mission-label">Misión</span>
+                    </div>
+                    <p>Divulgar, educar y promover el conocimiento sobre la ciencia y tecnología nuclear en Colombia, derribando mitos y acercando la información científica verificada a toda la sociedad.</p>
+                </div>
+            </div>
+
+            <!-- Visión -->
+            <div class="mission-card mission-secondary">
+                <div class="mission-content">
+                    <div class="mission-icon-wrapper">
+                        <div class="mission-icon icon-gold">
+                            <i class="bi bi-rocket-takeoff"></i>
+                        </div>
+                        <span class="mission-label">Visión 2030</span>
+                    </div>
+                    <p>Ser la organización referente en divulgación nuclear en Colombia y Latinoamérica, reconocida por transformar la percepción pública sobre la energía nuclear.</p>
+                </div>
+            </div>
+
+            <!-- Valores -->
+            <div class="mission-card mission-tertiary">
+                <div class="mission-content">
+                    <div class="mission-icon-wrapper">
+                        <div class="mission-icon icon-gradient">
+                            <i class="bi bi-stars"></i>
+                        </div>
+                        <span class="mission-label">Valores</span>
+                    </div>
+                    <div class="values-list">
+                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> Rigor científico</span>
+                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> Transparencia</span>
+                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> Educación</span>
+                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> Colaboración</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Organization Structure Section - Rediseñada -->
+<section class="structure-section">
+    <div class="structure-bg">
+        <div class="structure-pattern"></div>
+    </div>
+    <div class="container position-relative">
+        <div class="section-header text-center">
+            <span class="section-tag-dark">Nuestra Organización</span>
+            <h2 class="section-title-light">Estructura de la ASNC</h2>
+            <p class="section-subtitle-light">
+                Una organización sólida construida para cumplir nuestra misión
+            </p>
+        </div>
+
+        <div class="org-chart">
+            <!-- Junta Directiva - Principal -->
+            <div class="org-main-wrapper">
+                <div class="org-main-card">
+                    <div class="org-main-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="org-main-content">
+                        <span class="org-main-badge">Máximo Órgano</span>
+                        <h3>Junta Directiva</h3>
+                        <p>Gobierno y dirección estratégica de la asociación</p>
+                    </div>
+                    <div class="org-main-glow"></div>
+                </div>
+            </div>
+
+            <!-- Línea de conexión -->
+            <div class="org-connection">
+                <div class="connection-vertical"></div>
+                <div class="connection-horizontal"></div>
+                <div class="connection-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <!-- Comités -->
+            <div class="org-committees">
+                <div class="org-committee-card committee-divulgacion">
+                    <div class="committee-icon">
+                        <i class="bi bi-megaphone-fill"></i>
+                    </div>
+                    <h4>Comité de Divulgación</h4>
+                    <p>Comunicación, contenido educativo y presencia en redes sociales</p>
+                    <div class="committee-decoration"></div>
+                </div>
+
+                <div class="org-committee-card committee-tecnico">
+                    <div class="committee-icon">
+                        <i class="bi bi-cpu-fill"></i>
+                    </div>
+                    <h4>Comité Técnico</h4>
+                    <p>Validación científica, investigación y asesoría especializada</p>
+                    <div class="committee-decoration"></div>
+                </div>
+
+                <div class="org-committee-card committee-financiero">
+                    <div class="committee-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h4>Comité Financiero</h4>
+                    <p>Gestión de recursos y sostenibilidad económica</p>
+                    <div class="committee-decoration"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section - Rediseñada -->
+<section class="team-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-tag">Nuestro Equipo</span>
+            <h2 class="section-title">Asociados Destacados</h2>
+            <p class="section-subtitle">
+                Conoce a los profesionales que lideran nuestra asociación
+            </p>
+        </div>
+
+        {% if members %}
+        <div class="team-grid">
+            {% for member in members %}
+            <div class="team-card">
+                <div class="team-card-bg"></div>
+                <div class="team-card-content">
+                    <div class="member-photo-wrapper">
+                        <div class="photo-ring"></div>
+                        <div class="member-photo">
+                            {% if member.photo %}
+                            <img src="{{ member.photo.url }}" alt="{{ member.full_name }}">
+                            {% else %}
+                            <div class="photo-placeholder">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="member-info">
+                        <h4 class="member-name">{{ member.full_name }}</h4>
+                        <span class="member-position">{{ member.association_position }}</span>
+                    </div>
+                    <button class="btn-know-more" onclick="openMemberModal({{ member.pk }})">
+                        <span>Conocer más</span>
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Member Modal -->
+        <div class="member-modal-overlay" id="memberModal" onclick="closeMemberModal(event)">
+            <div class="member-modal" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeMemberModal(event)">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="modal-body">
+                    <div class="modal-header-section">
+                        <div class="modal-photo-container" id="modalPhoto"></div>
+                        <div class="modal-header-info">
+                            <span class="modal-badge" id="modalPosition"></span>
+                            <h2 class="modal-name" id="modalName"></h2>
+                            <p class="modal-profession" id="modalProfession"></p>
+                        </div>
+                    </div>
+                    <div class="modal-content-section">
+                        <h5 class="trajectory-title"><i class="bi bi-briefcase-fill me-2"></i>Trayectoria Profesional</h5>
+                        <div class="modal-trajectory" id="modalTrajectory"></div>
+                        <a href="#" class="modal-linkedin-btn" id="modalLinkedIn" target="_blank">
+                            <i class="bi bi-linkedin"></i>
+                            <span>Ver perfil en LinkedIn</span>
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h4>Próximamente</h4>
+            <p>Conocerás a nuestro increíble equipo muy pronto</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="about-cta">
+    <div class="container">
+        <div class="cta-card">
+            <div class="cta-content">
+                <h3>¿Quieres ser parte de la ASNC?</h3>
+                <p>Únete a la comunidad científica nuclear más importante de Colombia</p>
+            </div>
+            <a href="{% url 'application_create' %}" class="cta-button">
+                <span>Solicitar Ingreso</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Member Data for JavaScript -->
+<script type="application/json" id="membersData">
+[
+{% for member in members %}
+{
+    "id": {{ member.pk }},
+    "name": "{{ member.full_name }}",
+    "position": "{{ member.association_position }}",
+    "profession": "{{ member.profession }}",
+    "trajectory": "{{ member.professional_trajectory|escapejs }}",
+    "photo": "{% if member.photo %}{{ member.photo.url }}{% endif %}",
+    "linkedin": "{{ member.linkedin_url }}"
+}{% if not forloop.last %},{% endif %}
+{% endfor %}
+]
+</script>
+
+<style>
+/* ===== HERO (Se mantiene) ===== */
+.about-hero {
+    padding: 7rem 0 5rem;
+    background: linear-gradient(135deg, rgba(27, 42, 65, 0.9) 0%, rgba(33, 58, 92, 0.9) 100%),
+                url("{% static 'images/about.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    text-align: center;
+}
+
+.hero-tag {
+    display: inline-block;
+    background: rgba(244, 195, 67, 0.2);
+    color: var(--asnc-gold);
+    padding: 0.5rem 1.5rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid rgba(244, 195, 67, 0.3);
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    letter-spacing: -1px;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.8;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+/* ===== MISSION SECTION ===== */
+.mission-section {
+    padding: 5rem 0;
+    background: #ffffff;
+    position: relative;
+}
+
+.mission-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.mission-card {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e2e8f0;
+}
+
+.mission-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+}
+
+.mission-primary {
+    background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+    border: none;
+    grid-row: span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.mission-primary .mission-content {
+    color: white;
+}
+
+.mission-primary p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.9;
+}
+
+.mission-glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(244, 195, 67, 0.15) 0%, transparent 70%);
+    top: -100px;
+    right: -100px;
+    pointer-events: none;
+}
+
+.mission-icon-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.mission-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--asnc-gold);
+}
+
+.mission-secondary .mission-icon,
+.mission-tertiary .mission-icon {
+    background: linear-gradient(135deg, var(--asnc-navy), var(--asnc-blue));
+    color: white;
+}
+
+.icon-gold {
+    background: linear-gradient(135deg, var(--asnc-gold), #fbbf24) !important;
+    color: var(--asnc-navy) !important;
+}
+
+.icon-gradient {
+    background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
+}
+
+.mission-label {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: white;
+}
+
+.mission-secondary .mission-label,
+.mission-tertiary .mission-label {
+    color: var(--asnc-navy);
+}
+
+.mission-secondary p,
+.mission-tertiary p {
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.values-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.value-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #f1f5f9;
+    color: var(--asnc-navy);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.value-chip i {
+    color: var(--asnc-gold);
+    font-size: 0.75rem;
+}
+
+/* ===== STRUCTURE SECTION ===== */
+.structure-section {
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.structure-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--asnc-navy) 0%, #0f172a 100%);
+}
+
+.structure-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(rgba(244, 195, 67, 0.08) 1px, transparent 1px),
+        radial-gradient(rgba(244, 195, 67, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px, 20px 20px;
+    background-position: 0 0, 10px 10px;
+}
+
+.section-tag-dark {
+    display: inline-block;
+    background: rgba(244, 195, 67, 0.15);
+    color: var(--asnc-gold);
+    padding: 0.5rem 1.25rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid rgba(244, 195, 67, 0.2);
+}
+
+.section-title-light {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.section-subtitle-light {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 500px;
+    margin: 0 auto 3rem;
+}
+
+/* Org Chart */
+.org-chart {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.org-main-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.org-main-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    padding: 2.5rem 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.org-main-card:hover {
+    transform: scale(1.02);
+    border-color: var(--asnc-gold);
+}
+
+.org-main-glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(244, 195, 67, 0.2) 0%, transparent 70%);
+    top: -50%;
+    right: -10%;
+    pointer-events: none;
+}
+
+.org-main-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--asnc-gold), #fbbf24);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--asnc-navy);
+    flex-shrink: 0;
+}
+
+.org-main-content h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.org-main-content p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.org-main-badge {
+    display: inline-block;
+    background: var(--asnc-gold);
+    color: var(--asnc-navy);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+/* Connection Lines */
+.org-connection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.connection-vertical {
+    width: 3px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--asnc-gold), rgba(244, 195, 67, 0.3));
+    border-radius: 2px;
+}
+
+.connection-horizontal {
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(244, 195, 67, 0.3), var(--asnc-gold), rgba(244, 195, 67, 0.3));
+    border-radius: 2px;
+}
+
+.connection-dots {
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    margin-top: -6px;
+}
+
+.connection-dots span {
+    width: 12px;
+    height: 12px;
+    background: var(--asnc-gold);
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(244, 195, 67, 0.5);
+}
+
+/* Committees */
+.org-committees {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.org-committee-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.org-committee-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.committee-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.committee-divulgacion .committee-icon {
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+}
+
+.committee-tecnico .committee-icon {
+    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+}
+
+.committee-financiero .committee-icon {
+    background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.org-committee-card h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.75rem;
+}
+
+.org-committee-card p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.committee-decoration {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.committee-divulgacion .committee-decoration {
+    background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+}
+
+.committee-tecnico .committee-decoration {
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+}
+
+.committee-financiero .committee-decoration {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.org-committee-card:hover .committee-decoration {
+    opacity: 1;
+}
+
+/* ===== TEAM SECTION ===== */
+.team-section {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.section-header {
+    margin-bottom: 3.5rem;
+}
+
+.section-tag {
+    display: inline-block;
+    background: rgba(33, 58, 92, 0.08);
+    color: var(--asnc-blue);
+    padding: 0.5rem 1.25rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.section-title {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--asnc-navy);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #64748b;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Team Grid */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Team Card */
+.team-card {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.team-card:hover {
+    transform: translateY(-10px);
+}
+
+.team-card-bg {
+    position: absolute;
+    inset: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    transition: all 0.4s ease;
+}
+
+.team-card:hover .team-card-bg {
+    border-color: var(--asnc-gold);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+}
+
+.team-card-content {
+    position: relative;
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+
+.member-photo-wrapper {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.5rem;
+}
+
+.photo-ring {
+    position: absolute;
+    inset: -8px;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--asnc-gold), var(--asnc-blue)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.team-card:hover .photo-ring {
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+.member-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.team-card:hover .member-photo img {
+    transform: scale(1.1);
+}
+
+.photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--asnc-navy), var(--asnc-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+}
+
+.member-info {
+    margin-bottom: 1.5rem;
+}
+
+.member-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--asnc-navy);
+    margin-bottom: 0.5rem;
+}
+
+.member-position {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--asnc-gold), #fbbf24);
+    color: var(--asnc-navy);
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.btn-know-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: var(--asnc-blue);
+    border: 2px solid var(--asnc-blue);
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-know-more:hover {
+    background: var(--asnc-blue);
+    color: white;
+}
+
+.btn-know-more i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-know-more:hover i {
+    transform: translateX(4px);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8fafc;
+    border-radius: 24px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--asnc-navy), var(--asnc-blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: white;
+}
+
+.empty-state h4 {
+    color: var(--asnc-navy);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #64748b;
+    margin: 0;
+}
+
+/* ===== MODAL ===== */
+.member-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 1rem;
+}
+
+.member-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.member-modal {
+    background: white;
+    border-radius: 28px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.member-modal-overlay.active .member-modal {
+    transform: scale(1) translateY(0);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close:hover {
+    background: var(--asnc-navy);
+    color: white;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header-section {
+    background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.modal-photo-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-photo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-header-info {
+    color: white;
+}
+
+.modal-badge {
+    display: inline-block;
+    background: var(--asnc-gold);
+    color: var(--asnc-navy);
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.modal-name {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+}
+
+.modal-profession {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    font-size: 1rem;
+}
+
+.modal-content-section {
+    padding: 2rem 2.5rem 2.5rem;
+}
+
+.trajectory-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--asnc-navy);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.trajectory-title i {
+    color: var(--asnc-gold);
+}
+
+.modal-trajectory {
+    color: #475569;
+    line-height: 1.9;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    white-space: pre-wrap;
+}
+
+.modal-linkedin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #0077b5;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.85rem 1.5rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.modal-linkedin-btn:hover {
+    background: #005a87;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 119, 181, 0.3);
+}
+
+.modal-linkedin-btn.hidden {
+    display: none;
+}
+
+/* ===== CTA SECTION ===== */
+.about-cta {
+    padding: 3rem 0 5rem;
+    background: white;
+}
+
+.cta-card {
+    background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+    border-radius: 24px;
+    padding: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-card::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(244, 195, 67, 0.15) 0%, transparent 70%);
+    top: -200px;
+    right: -100px;
+    pointer-events: none;
+}
+
+.cta-content h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.cta-content p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--asnc-gold);
+    color: var(--asnc-navy);
+    padding: 1rem 2rem;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.cta-button:hover {
+    background: white;
+    color: var(--asnc-navy);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.cta-button i {
+    transition: transform 0.3s ease;
+}
+
+.cta-button:hover i {
+    transform: translateX(4px);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .mission-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mission-primary {
+        grid-row: auto;
+    }
+
+    .org-committees {
+        grid-template-columns: 1fr;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+
+    .connection-horizontal,
+    .connection-dots {
+        display: none;
+    }
+
+    .cta-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .section-title,
+    .section-title-light {
+        font-size: 2rem;
+    }
+
+    .team-grid {
+        grid-template-columns: 1fr;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+
+    .modal-header-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .org-main-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+    }
+}
+</style>
+
+<script>
+let membersData = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    const dataElement = document.getElementById('membersData');
+    if (dataElement) {
+        membersData = JSON.parse(dataElement.textContent);
+    }
+});
+
+function openMemberModal(memberId) {
+    const member = membersData.find(m => m.id === memberId);
+    if (!member) return;
+
+    document.getElementById('modalName').textContent = member.name;
+    document.getElementById('modalPosition').textContent = member.position;
+    document.getElementById('modalProfession').textContent = member.profession;
+    document.getElementById('modalTrajectory').textContent = member.trajectory;
+
+    const photoContainer = document.getElementById('modalPhoto');
+    if (member.photo) {
+        photoContainer.innerHTML = `<img src="${member.photo}" alt="${member.name}">`;
+    } else {
+        photoContainer.innerHTML = `<i class="bi bi-person-fill" style="font-size: 3rem; color: rgba(255,255,255,0.5);"></i>`;
+    }
+
+    const linkedinLink = document.getElementById('modalLinkedIn');
+    if (member.linkedin) {
+        linkedinLink.href = member.linkedin;
+        linkedinLink.classList.remove('hidden');
+    } else {
+        linkedinLink.classList.add('hidden');
+    }
+
+    document.getElementById('memberModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeMemberModal(event) {
+    if (event.target === event.currentTarget || event.currentTarget.classList.contains('modal-close')) {
+        document.getElementById('memberModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeMemberModal({ target: document.getElementById('memberModal'), currentTarget: document.getElementById('memberModal') });
+    }
+});
+</script>
+
+{% endblock %}

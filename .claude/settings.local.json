@@ -16,7 +16,8 @@
       "WebFetch(domain:api.github.com)",
       "Bash(source venv/Scripts/activate)",
       "Bash(venv/Scripts/python.exe manage.py makemigrations:*)",
-      "Bash(venv/Scripts/python.exe:*)"
+      "Bash(venv/Scripts/python.exe:*)",
+      "Bash(venv/Scripts/pip.exe install:*)"
     ]
   }
 }
