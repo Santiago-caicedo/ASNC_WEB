@@ -2038,7 +2038,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     animatedElements.forEach(el => observer.observe(el));
 
-    // ==================== NUCLEAR FISSION SCROLL ANIMATION ====================
+    // ==================== NUCLEAR FISSION LOOP ANIMATION ====================
     const fissionSection = document.getElementById('fission');
     const incomingNeutron = document.getElementById('incomingNeutron');
     const uraniumNucleus = document.getElementById('uraniumNucleus');
@@ -2052,17 +2052,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const energyValue = document.getElementById('energyValue');
     const stepItems = document.querySelectorAll('.step-item');
 
-    let fissionAnimated = false;
+    // Animation loop configuration
+    const ANIMATION_DURATION = 5000; // 5 seconds per cycle
+    const PAUSE_DURATION = 1500; // 1.5 seconds pause between cycles
+    let fissionStartTime = null;
+    let fissionAnimationId = null;
 
-    function updateFission() {
-        if (!fissionSection) return;
+    function resetFissionState() {
+        // Reset all elements to initial state
+        if (incomingNeutron) {
+            incomingNeutron.style.opacity = 1;
+            incomingNeutron.querySelector('circle').setAttribute('cx', 50);
+            if (incomingNeutron.querySelector('circle:nth-child(2)')) {
+                incomingNeutron.querySelector('circle:nth-child(2)').setAttribute('cx', 50);
+            }
+            if (incomingNeutron.querySelector('ellipse')) {
+                incomingNeutron.querySelector('ellipse').setAttribute('cx', 30);
+            }
+        }
+        if (uraniumNucleus) {
+            uraniumNucleus.style.opacity = 1;
+            uraniumNucleus.style.transform = 'translateX(0)';
+        }
+        if (fragment1) {
+            fragment1.style.opacity = 0;
+            fragment1.style.transform = 'translate(0, 0)';
+        }
+        if (fragment2) {
+            fragment2.style.opacity = 0;
+            fragment2.style.transform = 'translate(0, 0)';
+        }
+        if (releasedNeutrons) {
+            releasedNeutrons.style.opacity = 0;
+            const neutrons = releasedNeutrons.querySelectorAll('.neutron');
+            neutrons.forEach(n => n.style.transform = 'translate(0, 0)');
+        }
+        if (energyBurst) {
+            energyBurst.setAttribute('r', 0);
+            energyBurst.style.opacity = 0;
+        }
+        if (energyRays) energyRays.style.opacity = 0;
+        if (chainIndicator) chainIndicator.style.opacity = 0;
+        if (fissionProgress) fissionProgress.setAttribute('width', 0);
+        if (energyValue) energyValue.textContent = '0';
+        stepItems.forEach(item => item.classList.remove('active'));
+    }
 
-        const rect = fissionSection.getBoundingClientRect();
-        const sectionHeight = rect.height;
-        const scrolled = -rect.top;
-        const viewportHeight = window.innerHeight;
-        const progress = Math.max(0, Math.min(1, scrolled / (sectionHeight - viewportHeight)));
-
+    function updateFissionLoop(progress) {
         // Update progress bar
         if (fissionProgress) {
             fissionProgress.setAttribute('width', progress * 200);
@@ -2087,15 +2123,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Phase 1: Neutron approaches (0-25%)
         if (progress < 0.25) {
             const neutronProgress = progress / 0.25;
-            const neutronX = 50 + neutronProgress * 160; // Move from 50 to 210
+            const neutronX = 50 + neutronProgress * 160;
 
             if (incomingNeutron) {
+                incomingNeutron.style.opacity = 1;
                 incomingNeutron.querySelector('circle').setAttribute('cx', neutronX);
-                incomingNeutron.querySelector('circle:nth-child(2)').setAttribute('cx', neutronX);
-                incomingNeutron.querySelector('ellipse').setAttribute('cx', neutronX - 20);
+                if (incomingNeutron.querySelector('circle:nth-child(2)')) {
+                    incomingNeutron.querySelector('circle:nth-child(2)').setAttribute('cx', neutronX);
+                }
+                if (incomingNeutron.querySelector('ellipse')) {
+                    incomingNeutron.querySelector('ellipse').setAttribute('cx', neutronX - 20);
+                }
             }
 
-            // Reset other elements
             if (uraniumNucleus) uraniumNucleus.style.opacity = 1;
             if (fragment1) fragment1.style.opacity = 0;
             if (fragment2) fragment2.style.opacity = 0;
@@ -2108,16 +2148,13 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (progress < 0.4) {
             const impactProgress = (progress - 0.25) / 0.15;
 
-            // Hide incoming neutron
             if (incomingNeutron) incomingNeutron.style.opacity = 1 - impactProgress;
 
-            // Nucleus starts to deform (shake effect)
             if (uraniumNucleus) {
                 const shake = Math.sin(impactProgress * Math.PI * 8) * 5 * (1 - impactProgress);
                 uraniumNucleus.style.transform = `translateX(${shake}px)`;
             }
 
-            // Start energy burst
             if (energyBurst) {
                 energyBurst.setAttribute('r', impactProgress * 30);
                 energyBurst.style.opacity = impactProgress * 0.5;
@@ -2128,11 +2165,9 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (progress < 0.7) {
             const splitProgress = (progress - 0.4) / 0.3;
 
-            // Hide original nucleus
             if (uraniumNucleus) uraniumNucleus.style.opacity = 1 - splitProgress;
             if (incomingNeutron) incomingNeutron.style.opacity = 0;
 
-            // Show and separate fragments
             if (fragment1) {
                 fragment1.style.opacity = splitProgress;
                 const f1X = 250 - splitProgress * 120;
@@ -2147,13 +2182,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 fragment2.style.transform = `translate(${f2X - 250}px, ${f2Y - 250}px)`;
             }
 
-            // Energy burst expands
             if (energyBurst) {
                 energyBurst.setAttribute('r', 30 + splitProgress * 150);
                 energyBurst.style.opacity = 0.5 - splitProgress * 0.3;
             }
 
-            // Energy rays appear
             if (energyRays) {
                 energyRays.style.opacity = splitProgress;
                 const rays = energyRays.querySelectorAll('.ray');
@@ -2169,7 +2202,6 @@ document.addEventListener('DOMContentLoaded', function() {
         else {
             const chainProgress = (progress - 0.7) / 0.3;
 
-            // Keep fragments visible and moving
             if (fragment1) {
                 fragment1.style.opacity = 1;
                 const f1X = 130 - chainProgress * 30;
@@ -2184,42 +2216,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 fragment2.style.transform = `translate(${f2X - 250}px, ${f2Y - 250}px)`;
             }
 
-            // Release neutrons
             if (releasedNeutrons) {
                 releasedNeutrons.style.opacity = 1;
                 const neutrons = releasedNeutrons.querySelectorAll('.neutron');
 
-                // Neutron 1 - goes up-left
-                const n1X = 250 - chainProgress * 150;
-                const n1Y = 250 - chainProgress * 120;
-                neutrons[0].style.transform = `translate(${n1X - 250}px, ${n1Y - 250}px)`;
+                if (neutrons[0]) {
+                    const n1X = 250 - chainProgress * 150;
+                    const n1Y = 250 - chainProgress * 120;
+                    neutrons[0].style.transform = `translate(${n1X - 250}px, ${n1Y - 250}px)`;
+                }
 
-                // Neutron 2 - goes up-right
-                const n2X = 250 + chainProgress * 140;
-                const n2Y = 250 - chainProgress * 100;
-                neutrons[1].style.transform = `translate(${n2X - 250}px, ${n2Y - 250}px)`;
+                if (neutrons[1]) {
+                    const n2X = 250 + chainProgress * 140;
+                    const n2Y = 250 - chainProgress * 100;
+                    neutrons[1].style.transform = `translate(${n2X - 250}px, ${n2Y - 250}px)`;
+                }
 
-                // Neutron 3 - goes down
-                const n3X = 250 + chainProgress * 50;
-                const n3Y = 250 + chainProgress * 130;
-                neutrons[2].style.transform = `translate(${n3X - 250}px, ${n3Y - 250}px)`;
+                if (neutrons[2]) {
+                    const n3X = 250 + chainProgress * 50;
+                    const n3Y = 250 + chainProgress * 130;
+                    neutrons[2].style.transform = `translate(${n3X - 250}px, ${n3Y - 250}px)`;
+                }
             }
 
-            // Fade energy burst
             if (energyBurst) {
                 energyBurst.setAttribute('r', 180 + chainProgress * 50);
                 energyBurst.style.opacity = 0.2 - chainProgress * 0.2;
             }
 
-            // Show chain reaction indicator
             if (chainIndicator) {
                 chainIndicator.style.opacity = chainProgress;
             }
         }
     }
 
-    window.addEventListener('scroll', updateFission);
-    updateFission();
+    function animateFissionLoop(timestamp) {
+        if (!fissionStartTime) fissionStartTime = timestamp;
+
+        const elapsed = timestamp - fissionStartTime;
+        const totalCycleDuration = ANIMATION_DURATION + PAUSE_DURATION;
+        const cycleTime = elapsed % totalCycleDuration;
+
+        if (cycleTime < ANIMATION_DURATION) {
+            // Animation phase
+            const progress = cycleTime / ANIMATION_DURATION;
+            updateFissionLoop(progress);
+        } else {
+            // Pause phase - hold at end state briefly, then reset
+            const pauseProgress = (cycleTime - ANIMATION_DURATION) / PAUSE_DURATION;
+            if (pauseProgress > 0.7) {
+                // Reset near end of pause
+                resetFissionState();
+            }
+        }
+
+        fissionAnimationId = requestAnimationFrame(animateFissionLoop);
+    }
+
+    // Start the fission animation loop
+    if (fissionSection) {
+        resetFissionState();
+        fissionAnimationId = requestAnimationFrame(animateFissionLoop);
+    }
 
     // ==================== DATA VISUALIZATION ANIMATIONS ====================
     const dataVisual = document.getElementById('dataVisual');
