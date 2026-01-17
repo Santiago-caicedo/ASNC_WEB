@@ -14,3 +14,8 @@ class AboutView(ListView):
 
     def get_queryset(self):
         return FeaturedMember.objects.filter(is_active=True).order_by('display_order', 'full_name')
+
+
+class EventsView(TemplateView):
+    """Página de Eventos"""
+    template_name = 'website/events.html'

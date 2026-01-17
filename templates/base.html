@@ -206,7 +206,7 @@
                             <a class="nav-link px-3 {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">Quiénes Somos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="#">Eventos</a>
+                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="{% url 'events' %}">Eventos</a>
                         </li>
                         
                         <li class="nav-item d-none d-lg-block mx-2 border-end border-2" style="height: 20px; opacity: 0.2;"></li>
