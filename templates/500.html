@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Error del servidor | ASNC</title>
+    <link rel="icon" type="image/png" href="{% static 'images/icon_asnc.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --asnc-navy: #1B2A41;
+            --asnc-blue: #213a5c;
+            --asnc-gold: #f4c343;
+            --asnc-bg: #F5F7FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(rgba(244, 195, 67, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
+        }
+
+        .error-container {
+            text-align: center;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .error-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(251, 146, 60, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .error-icon::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px dashed #fb923c;
+            opacity: 0.5;
+            animation: spin 20s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-icon i {
+            font-size: 3.5rem;
+            color: #fb923c;
+        }
+
+        .error-code {
+            font-size: 7rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fb923c;
+            margin-bottom: 1rem;
+        }
+
+        .error-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--asnc-gold);
+            color: var(--asnc-navy);
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-home:hover {
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-reload {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: white;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-reload:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo img {
+            height: 50px;
+            opacity: 0.9;
+        }
+
+        .atom {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(251, 146, 60, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .atom:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .atom:nth-child(2) { top: 20%; right: 15%; width: 40px; height: 40px; animation-delay: 1s; }
+        .atom:nth-child(3) { bottom: 15%; left: 20%; width: 80px; height: 80px; animation-delay: 2s; }
+        .atom:nth-child(4) { bottom: 25%; right: 10%; animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        @media (max-width: 576px) {
+            .error-code { font-size: 5rem; }
+            .error-title { font-size: 1.25rem; }
+            .error-actions { flex-direction: column; }
+            .btn-home, .btn-reload { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="atom"></div>
+    <div class="atom"></div>
+    <div class="atom"></div>
+    <div class="atom"></div>
+
+    <a href="/" class="logo">
+        <img src="{% static 'images/asnc_logo_full.png' %}" alt="ASNC">
+    </a>
+
+    <div class="error-container">
+        <div class="error-icon">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div class="error-code">500</div>
+        <h1 class="error-title">Error del servidor</h1>
+        <p class="error-description">
+            Algo salió mal en nuestro servidor. Estamos trabajando para solucionarlo.
+            Por favor, intenta de nuevo en unos momentos.
+        </p>
+        <div class="error-actions">
+            <a href="/" class="btn-home">
+                <i class="bi bi-house-fill"></i>
+                Ir al Inicio
+            </a>
+            <button onclick="location.reload()" class="btn-reload">
+                <i class="bi bi-arrow-clockwise"></i>
+                Reintentar
+            </button>
+        </div>
+    </div>
+</body>
+</html>
