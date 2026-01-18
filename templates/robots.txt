@@ -1,0 +1,16 @@
+# robots.txt - Asociación Nuclear Colombiana (ASNC)
+# https://www.asncol.com
+
+User-agent: *
+Allow: /
+
+# Bloquear acceso a áreas administrativas y privadas
+Disallow: /admin/
+Disallow: /portal/
+Disallow: /static/admin/
+
+# Bloquear archivos de media privados (CVs, documentos)
+Disallow: /media/applications/
+
+# Sitemap
+Sitemap: https://www.asncol.com/sitemap.xml
