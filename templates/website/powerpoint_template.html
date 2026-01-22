@@ -1,0 +1,882 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantilla PowerPoint - ASNC</title>
+    <link rel="icon" type="image/png" href="{% static 'images/icon_asnc.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --asnc-navy: #1B2A41;
+            --asnc-blue: #213a5c;
+            --asnc-gold: #f4c343;
+            --asnc-light: #F5F7FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .template-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .template-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .template-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+
+        .slides-container {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .slide-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .slide-label {
+            color: var(--asnc-gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Base slide - 16:9 aspect ratio */
+        .slide {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        /* ========== SLIDE 1: PORTADA ========== */
+        .slide-cover {
+            background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 6% 5% 6% 8%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-right {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cover-right::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(244, 195, 67, 0.1) 100%);
+        }
+
+        /* Átomo decorativo animado */
+        .cover-atom {
+            position: relative;
+            width: 280px;
+            height: 280px;
+        }
+
+        .cover-atom .nucleus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            background: var(--asnc-gold);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(244, 195, 67, 0.6);
+        }
+
+        .cover-atom .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border: 2px solid rgba(244, 195, 67, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cover-atom .orbit-1 {
+            width: 120px;
+            height: 120px;
+            transform: translate(-50%, -50%) rotateX(70deg);
+        }
+
+        .cover-atom .orbit-2 {
+            width: 200px;
+            height: 200px;
+            transform: translate(-50%, -50%) rotateX(70deg) rotateY(60deg);
+        }
+
+        .cover-atom .orbit-3 {
+            width: 280px;
+            height: 280px;
+            transform: translate(-50%, -50%) rotateX(70deg) rotateY(-60deg);
+        }
+
+        .cover-logo {
+            width: 200px;
+            margin-bottom: 2.5rem;
+            filter: brightness(0) invert(1); /* Hace el logo blanco */
+        }
+
+        .cover-title {
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .cover-subtitle {
+            font-size: 1.35rem;
+            color: var(--asnc-gold);
+            font-weight: 500;
+            margin-bottom: 2.5rem;
+            line-height: 1.4;
+        }
+
+        .cover-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .cover-author {
+            font-size: 1.05rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .cover-role {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .cover-date {
+            font-size: 0.9rem;
+            color: var(--asnc-gold);
+            margin-top: 0.25rem;
+        }
+
+        .cover-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: var(--asnc-gold);
+        }
+
+        .cover-footer::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--asnc-gold) 0%, rgba(244, 195, 67, 0.3) 100%);
+        }
+
+        /* Decoración esquina */
+        .cover-corner {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, transparent 50%, rgba(244, 195, 67, 0.1) 50%);
+        }
+
+        /* ========== SLIDE 2: CONTENIDO ESTÁNDAR ========== */
+        .slide-content {
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            background: var(--asnc-navy);
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .content-header .header-logo {
+            height: 40px;
+        }
+
+        .content-body {
+            flex: 1;
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .content-text {
+            color: var(--asnc-navy);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .content-bullets {
+            list-style: none;
+            padding: 0;
+        }
+
+        .content-bullets li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--asnc-navy);
+            font-size: 1.05rem;
+        }
+
+        .content-bullets li::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--asnc-gold);
+            border-radius: 50%;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .content-footer {
+            padding: 1rem 3rem;
+            background: var(--asnc-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--asnc-blue);
+        }
+
+        .slide-number {
+            background: var(--asnc-navy);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        /* ========== SLIDE 3: DOS COLUMNAS ========== */
+        .slide-two-columns .content-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .column-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--asnc-blue);
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--asnc-gold);
+        }
+
+        /* ========== SLIDE 4: IMAGEN + TEXTO ========== */
+        .slide-image-text .content-body {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .image-placeholder {
+            background: linear-gradient(135deg, var(--asnc-light) 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .image-placeholder i {
+            font-size: 3rem;
+            color: #94a3b8;
+        }
+
+        /* ========== SLIDE 5: ESTADÍSTICAS ========== */
+        .slide-stats .content-body {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .stat-card {
+            background: var(--asnc-light);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            border-left: 4px solid var(--asnc-gold);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--asnc-navy);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--asnc-blue);
+            margin-top: 0.5rem;
+        }
+
+        /* ========== SLIDE 6: CITA/QUOTE ========== */
+        .slide-quote {
+            background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5%;
+            position: relative;
+        }
+
+        .quote-content {
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .quote-icon {
+            font-size: 4rem;
+            color: var(--asnc-gold);
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        .quote-text {
+            font-size: 1.75rem;
+            color: white;
+            font-weight: 500;
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        .quote-author {
+            font-size: 1rem;
+            color: var(--asnc-gold);
+            font-weight: 600;
+        }
+
+        .quote-footer {
+            position: absolute;
+            bottom: 2rem;
+            left: 3rem;
+        }
+
+        .quote-footer img {
+            height: 35px;
+            opacity: 0.7;
+            filter: brightness(0) invert(1); /* Logo blanco */
+        }
+
+        /* ========== SLIDE 7: SECCIÓN/DIVISOR ========== */
+        .slide-section {
+            background: var(--asnc-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' stroke='%231B2A41' stroke-width='0.5' fill='none' opacity='0.1'/%3E%3Ccircle cx='50' cy='50' r='30' stroke='%231B2A41' stroke-width='0.5' fill='none' opacity='0.1'/%3E%3Ccircle cx='50' cy='50' r='15' stroke='%231B2A41' stroke-width='0.5' fill='none' opacity='0.1'/%3E%3C/svg%3E");
+            background-size: 200px;
+            background-position: right center;
+            background-repeat: no-repeat;
+        }
+
+        .section-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-number {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--asnc-navy);
+            opacity: 0.2;
+            line-height: 1;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--asnc-navy);
+            margin-top: -1rem;
+        }
+
+        /* ========== SLIDE 8: CIERRE/GRACIAS ========== */
+        .slide-closing {
+            background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-closing::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(244, 195, 67, 0.1) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+        }
+
+        .closing-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .closing-logo {
+            width: 150px;
+            margin-bottom: 2rem;
+            filter: brightness(0) invert(1); /* Logo blanco */
+        }
+
+        .closing-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .closing-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2rem;
+        }
+
+        .closing-contact {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            color: var(--asnc-gold);
+            font-size: 1rem;
+        }
+
+        .closing-contact span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ========== ACCIONES ========== */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1.75rem;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--asnc-gold);
+            color: var(--asnc-navy);
+        }
+
+        .btn-primary:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        /* ========== PRINT STYLES ========== */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .template-header,
+            .slide-label,
+            .actions {
+                display: none;
+            }
+
+            .slides-container {
+                gap: 0;
+            }
+
+            .slide-wrapper {
+                page-break-after: always;
+                gap: 0;
+            }
+
+            .slide {
+                box-shadow: none;
+                border-radius: 0;
+                height: 100vh;
+            }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .slide-cover {
+                grid-template-columns: 1fr;
+            }
+
+            .cover-right {
+                display: none;
+            }
+
+            .cover-left {
+                padding: 8%;
+            }
+
+            .cover-title {
+                font-size: 1.5rem;
+            }
+
+            .cover-subtitle {
+                font-size: 1rem;
+            }
+
+            .cover-logo {
+                width: 120px;
+            }
+
+            .content-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .slide-two-columns .content-body,
+            .slide-image-text .content-body,
+            .slide-stats .content-body {
+                grid-template-columns: 1fr;
+            }
+
+            .quote-text {
+                font-size: 1.25rem;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+
+            .closing-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="template-header">
+    <h1>Plantilla de Presentación ASNC</h1>
+    <p>Formato oficial para presentaciones de la Asociación Nuclear Colombiana</p>
+</div>
+
+<div class="slides-container">
+
+    <!-- SLIDE 1: PORTADA -->
+    <div class="slide-wrapper">
+        <span class="slide-label">Diapositiva 1 - Portada</span>
+        <div class="slide slide-cover">
+            <div class="cover-corner"></div>
+            <div class="cover-left">
+                <img src="{% static 'images/asnc_logo_full.png' %}" alt="ASNC" class="cover-logo">
+                <h1 class="cover-title">Título de la Presentación</h1>
+                <p class="cover-subtitle">Subtítulo descriptivo o tema principal de la presentación</p>
+                <div class="cover-meta">
+                    <p class="cover-author">Nombre del Presentador</p>
+                    <p class="cover-role">Cargo o Rol en la Asociación</p>
+                    <p class="cover-date">Enero 2025</p>
+                </div>
+            </div>
+            <div class="cover-right">
+                <div class="cover-atom">
+                    <div class="nucleus"></div>
+                    <div class="orbit orbit-1"></div>
+                    <div class="orbit orbit-2"></div>
+                    <div class="orbit orbit-3"></div>
+                </div>
+            </div>
+            <div class="cover-footer"></div>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: CONTENIDO ESTÁNDAR -->
+    <div class="slide-wrapper">
+        <span class="slide-label">Diapositiva 2 - Contenido Estándar</span>
+        <div class="slide slide-content">
+            <div class="content-header">
+                <h2>Título de la Diapositiva</h2>
+                <img src="{% static 'images/icon_asnc.png' %}" alt="ASNC" class="header-logo">
+            </div>
+            <div class="content-body">
+                <p class="content-text">
+                    Texto introductorio o explicativo sobre el tema de esta diapositiva.
+                    Puede incluir información relevante y contexto.
+                </p>
+                <ul class="content-bullets">
+                    <li>Primer punto importante a destacar</li>
+                    <li>Segundo punto con información relevante</li>
+                    <li>Tercer punto que complementa la información</li>
+                    <li>Cuarto punto para cerrar la idea principal</li>
+                </ul>
+            </div>
+            <div class="content-footer">
+                <span>Asociación Nuclear Colombiana</span>
+                <span class="slide-number">2</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: DOS COLUMNAS -->
+    <div class="slide-wrapper">
+        <span class="slide-label">Diapositiva 3 - Dos Columnas</span>
+        <div class="slide slide-content slide-two-columns">
+            <div class="content-header">
+                <h2>Comparación o Dos Temas</h2>
+                <img src="{% static 'images/icon_asnc.png' %}" alt="ASNC" class="header-logo">
+            </div>
+            <div class="content-body">
+                <div class="column">
+                    <h3 class="column-title">Columna Izquierda</h3>
+                    <ul class="content-bullets">
+                        <li>Punto del primer tema</li>
+                        <li>Otro aspecto importante</li>
+                        <li>Información adicional</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3 class="column-title">Columna Derecha</h3>
+                    <ul class="content-bullets">
+                        <li>Punto del segundo tema</li>
+                        <li>Comparación relevante</li>
+                        <li>Conclusión parcial</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="content-footer">
+                <span>Asociación Nuclear Colombiana</span>
+                <span class="slide-number">3</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: IMAGEN + TEXTO -->
+    <div class="slide-wrapper">
+        <span class="slide-label">Diapositiva 4 - Imagen y Texto</span>
+        <div class="slide slide-content slide-image-text">
+            <div class="content-header">
+                <h2>Título con Imagen</h2>
+                <img src="{% static 'images/icon_asnc.png' %}" alt="ASNC" class="header-logo">
+            </div>
+            <div class="content-body">
+                <div class="image-placeholder">
+                    <i class="bi bi-image"></i>
+                </div>
+                <div class="column">
+                    <p class="content-text">
+                        Descripción de la imagen o gráfico mostrado a la izquierda.
+                    </p>
+                    <ul class="content-bullets">
+                        <li>Punto explicativo sobre la imagen</li>
+                        <li>Dato relevante a destacar</li>
+                        <li>Conclusión visual</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="content-footer">
+                <span>Asociación Nuclear Colombiana</span>
+                <span class="slide-number">4</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: ESTADÍSTICAS -->
+    <div class="slide-wrapper">
+        <span class="slide-label">Diapositiva 5 - Estadísticas</span>
+        <div class="slide slide-content slide-stats">
+            <div class="content-header">
+                <h2>Datos y Estadísticas</h2>
+                <img src="{% static 'images/icon_asnc.png' %}" alt="ASNC" class="header-logo">
+            </div>
+            <div class="content-body">
+                <div class="stat-card">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Asociados Activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Eventos Realizados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Alianzas Estratégicas</div>
+                </div>
+            </div>
+            <div class="content-footer">
+                <span>Asociación Nuclear Colombiana</span>
+                <span class="slide-number">5</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: CITA -->
+    <div class="slide-wrapper">
+        <span class="slide-label">Diapositiva 6 - Cita o Quote</span>
+        <div class="slide slide-quote">
+            <div class="quote-content">
+                <div class="quote-icon">"</div>
+                <p class="quote-text">
+                    La energía nuclear es la fuente de energía más densa y limpia que la humanidad ha desarrollado.
+                </p>
+                <p class="quote-author">— Autor de la Cita</p>
+            </div>
+            <div class="quote-footer">
+                <img src="{% static 'images/asnc_logo_full.png' %}" alt="ASNC">
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: SECCIÓN -->
+    <div class="slide-wrapper">
+        <span class="slide-label">Diapositiva 7 - Divisor de Sección</span>
+        <div class="slide slide-section">
+            <div class="section-content">
+                <div class="section-number">01</div>
+                <h2 class="section-title">Nombre de la Sección</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: CIERRE -->
+    <div class="slide-wrapper">
+        <span class="slide-label">Diapositiva 8 - Cierre / Gracias</span>
+        <div class="slide slide-closing">
+            <div class="closing-content">
+                <img src="{% static 'images/asnc_logo_full.png' %}" alt="ASNC" class="closing-logo">
+                <h1 class="closing-title">¡Gracias!</h1>
+                <p class="closing-subtitle">¿Preguntas o comentarios?</p>
+                <div class="closing-contact">
+                    <span><i class="bi bi-envelope-fill"></i> info@asncol.com</span>
+                    <span><i class="bi bi-globe"></i> www.asncol.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="actions">
+    <button class="btn-action btn-primary" onclick="window.print()">
+        <i class="bi bi-printer-fill"></i>
+        Imprimir / Guardar PDF
+    </button>
+    <a href="{% url 'home' %}" class="btn-action btn-secondary">
+        <i class="bi bi-arrow-left"></i>
+        Volver al Inicio
+    </a>
+</div>
+
+</body>
+</html>

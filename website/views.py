@@ -19,3 +19,8 @@ class AboutView(ListView):
 class EventsView(TemplateView):
     """Página de Eventos"""
     template_name = 'website/events.html'
+
+
+class PowerPointTemplateView(TemplateView):
+    """Plantilla PowerPoint ASNC"""
+    template_name = 'website/powerpoint_template.html'
