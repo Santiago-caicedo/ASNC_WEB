@@ -160,30 +160,44 @@
         {% if members %}
         <div class="team-grid">
             {% for member in members %}
-            <div class="team-card">
-                <div class="team-card-bg"></div>
-                <div class="team-card-content">
-                    <div class="member-photo-wrapper">
-                        <div class="photo-ring"></div>
-                        <div class="member-photo">
-                            {% if member.photo %}
-                            <img src="{{ member.photo.url }}" alt="{{ member.full_name }}">
-                            {% else %}
-                            <div class="photo-placeholder">
-                                <i class="bi bi-person-fill"></i>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="member-info">
-                        <h4 class="member-name">{{ member.full_name }}</h4>
-                        <span class="member-position">{{ member.association_position }}</span>
-                    </div>
-                    <button class="btn-know-more" onclick="openMemberModal({{ member.pk }})">
-                        <span>Conocer más</span>
-                        <i class="bi bi-arrow-right-circle-fill"></i>
-                    </button>
+            <div class="team-card" onclick="openMemberModal({{ member.pk }})">
+                <!-- Header con gradiente -->
+                <div class="card-header-bg">
+                    <div class="header-pattern"></div>
+                    <div class="header-glow"></div>
                 </div>
+
+                <!-- Foto del miembro -->
+                <div class="member-photo-container">
+                    <div class="photo-border"></div>
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.full_name }}" class="member-photo">
+                    {% else %}
+                    <div class="photo-placeholder">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    {% endif %}
+                    {% if member.linkedin_url %}
+                    <a href="{{ member.linkedin_url }}" target="_blank" class="linkedin-badge" onclick="event.stopPropagation()">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Info del miembro -->
+                <div class="member-content">
+                    <h4 class="member-name">{{ member.full_name }}</h4>
+                    <span class="member-position">{{ member.association_position }}</span>
+                    <p class="member-profession">{{ member.profession }}</p>
+
+                    <div class="card-action">
+                        <span>Ver perfil completo</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Decoración inferior -->
+                <div class="card-bottom-accent"></div>
             </div>
             {% endfor %}
         </div>
@@ -733,149 +747,222 @@
 /* Team Grid */
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1100px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2.5rem;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
-/* Team Card */
+/* Team Card - Nuevo Diseño */
 .team-card {
     position: relative;
+    background: white;
     border-radius: 24px;
     overflow: hidden;
+    cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .team-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-12px);
+    box-shadow: 0 30px 60px rgba(27, 42, 65, 0.15);
 }
 
-.team-card-bg {
+/* Header con gradiente */
+.card-header-bg {
+    position: relative;
+    height: 100px;
+    background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+    overflow: hidden;
+}
+
+.header-pattern {
     position: absolute;
     inset: 0;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f4c343' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.header-glow {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(244, 195, 67, 0.3) 0%, transparent 70%);
+    top: -75px;
+    right: -30px;
     transition: all 0.4s ease;
 }
 
-.team-card:hover .team-card-bg {
-    border-color: var(--asnc-gold);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+.team-card:hover .header-glow {
+    transform: scale(1.3);
+    opacity: 0.8;
 }
 
-.team-card-content {
+/* Foto del miembro */
+.member-photo-container {
     position: relative;
-    padding: 2.5rem 2rem;
-    text-align: center;
+    width: 130px;
+    height: 130px;
+    margin: -65px auto 0;
+    z-index: 2;
 }
 
-.member-photo-wrapper {
-    position: relative;
-    width: 140px;
-    height: 140px;
-    margin: 0 auto 1.5rem;
-}
-
-.photo-ring {
+.photo-border {
     position: absolute;
-    inset: -8px;
-    border: 3px solid transparent;
+    inset: -5px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--asnc-gold), var(--asnc-blue)) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    background: linear-gradient(135deg, var(--asnc-gold), var(--asnc-blue));
+    padding: 4px;
     opacity: 0;
     transition: all 0.4s ease;
 }
 
-.team-card:hover .photo-ring {
+.team-card:hover .photo-border {
     opacity: 1;
-    transform: rotate(90deg);
+    animation: rotate-border 3s linear infinite;
+}
+
+@keyframes rotate-border {
+    100% { transform: rotate(360deg); }
 }
 
 .member-photo {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid white;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.member-photo img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
+    border: 5px solid white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 1;
     transition: transform 0.4s ease;
 }
 
-.team-card:hover .member-photo img {
-    transform: scale(1.1);
+.team-card:hover .member-photo {
+    transform: scale(1.05);
 }
 
 .photo-placeholder {
     width: 100%;
     height: 100%;
+    border-radius: 50%;
     background: linear-gradient(135deg, var(--asnc-navy), var(--asnc-blue));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3rem;
     color: white;
+    border: 5px solid white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 1;
 }
 
-.member-info {
-    margin-bottom: 1.5rem;
+/* LinkedIn Badge */
+.linkedin-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 36px;
+    height: 36px;
+    background: #0077b5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    z-index: 3;
+    border: 3px solid white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.linkedin-badge:hover {
+    background: #005a87;
+    transform: scale(1.15);
+    color: white;
+}
+
+/* Contenido del miembro */
+.member-content {
+    padding: 1.5rem 2rem 2rem;
+    text-align: center;
 }
 
 .member-name {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--asnc-navy);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
 }
 
 .member-position {
     display: inline-block;
     background: linear-gradient(135deg, var(--asnc-gold), #fbbf24);
     color: var(--asnc-navy);
-    padding: 0.35rem 1rem;
-    border-radius: 20px;
+    padding: 0.4rem 1.25rem;
+    border-radius: 25px;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 4px 15px rgba(244, 195, 67, 0.3);
 }
 
-.btn-know-more {
-    display: inline-flex;
+.member-profession {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0 0 1.25rem 0;
+    line-height: 1.5;
+}
+
+/* Acción de la tarjeta */
+.card-action {
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    background: transparent;
     color: var(--asnc-blue);
-    border: 2px solid var(--asnc-blue);
-    padding: 0.75rem 1.5rem;
-    border-radius: 30px;
     font-size: 0.9rem;
     font-weight: 600;
-    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px);
     transition: all 0.3s ease;
 }
 
-.btn-know-more:hover {
-    background: var(--asnc-blue);
-    color: white;
+.team-card:hover .card-action {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.btn-know-more i {
-    font-size: 1.1rem;
+.card-action i {
     transition: transform 0.3s ease;
 }
 
-.btn-know-more:hover i {
-    transform: translateX(4px);
+.team-card:hover .card-action i {
+    animation: bounce-right 1s ease infinite;
+}
+
+@keyframes bounce-right {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
+/* Acento inferior */
+.card-bottom-accent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--asnc-gold), var(--asnc-blue));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.team-card:hover .card-bottom-accent {
+    transform: scaleX(1);
 }
 
 /* Empty State */
@@ -1191,8 +1278,32 @@
 
     .team-grid {
         grid-template-columns: 1fr;
-        max-width: 350px;
+        max-width: 380px;
         margin: 0 auto;
+        gap: 2rem;
+    }
+
+    .card-header-bg {
+        height: 80px;
+    }
+
+    .member-photo-container {
+        width: 110px;
+        height: 110px;
+        margin-top: -55px;
+    }
+
+    .member-content {
+        padding: 1.25rem 1.5rem 1.5rem;
+    }
+
+    .member-name {
+        font-size: 1.2rem;
+    }
+
+    .card-action {
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .modal-header-section {
