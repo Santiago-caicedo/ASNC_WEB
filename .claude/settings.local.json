@@ -17,7 +17,9 @@
       "Bash(source venv/Scripts/activate)",
       "Bash(venv/Scripts/python.exe manage.py makemigrations:*)",
       "Bash(venv/Scripts/python.exe:*)",
-      "Bash(venv/Scripts/pip.exe install:*)"
+      "Bash(venv/Scripts/pip.exe install:*)",
+      "Bash(python manage.py shell:*)",
+      "Bash(./venv/Scripts/python manage.py shell:*)"
     ]
   }
 }
