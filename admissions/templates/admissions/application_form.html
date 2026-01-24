@@ -30,7 +30,7 @@
                             <!-- Nombre -->
                             <div class="col-sm-6">
                                 <label class="form-label">
-                                    <i class="bi bi-person me-2"></i>Nombres
+                                    <i class="bi bi-person me-2"></i>Nombres <span class="text-danger">*</span>
                                 </label>
                                 {{ form.first_name }}
                                 {% if form.first_name.errors %}
@@ -41,7 +41,7 @@
                             <!-- Apellido -->
                             <div class="col-sm-6">
                                 <label class="form-label">
-                                    <i class="bi bi-person me-2"></i>Apellidos
+                                    <i class="bi bi-person me-2"></i>Apellidos <span class="text-danger">*</span>
                                 </label>
                                 {{ form.last_name }}
                                 {% if form.last_name.errors %}
@@ -50,9 +50,9 @@
                             </div>
 
                             <!-- Email -->
-                            <div class="col-12">
+                            <div class="col-sm-6">
                                 <label class="form-label">
-                                    <i class="bi bi-envelope me-2"></i>Correo electrónico
+                                    <i class="bi bi-envelope me-2"></i>Correo electrónico <span class="text-danger">*</span>
                                 </label>
                                 {{ form.email }}
                                 {% if form.email.errors %}
@@ -60,10 +60,21 @@
                                 {% endif %}
                             </div>
 
+                            <!-- Teléfono -->
+                            <div class="col-sm-6">
+                                <label class="form-label">
+                                    <i class="bi bi-telephone me-2"></i>Teléfono
+                                </label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
                             <!-- Profesión -->
                             <div class="col-12">
                                 <label class="form-label">
-                                    <i class="bi bi-briefcase me-2"></i>Profesión
+                                    <i class="bi bi-briefcase me-2"></i>Profesión <span class="text-danger">*</span>
                                 </label>
                                 {{ form.profession }}
                                 {% if form.profession.errors %}
@@ -77,9 +88,6 @@
                                     <i class="bi bi-lightbulb me-2"></i>¿Cómo puedes aportar a la ASNC?
                                 </label>
                                 {{ form.contribution_statement }}
-                                <small class="form-text text-muted mt-1 d-block">
-                                    Cuéntanos brevemente sobre tu experiencia en el sector nuclear y cómo crees que puedes contribuir al crecimiento de la asociación.
-                                </small>
                                 {% if form.contribution_statement.errors %}
                                     <div class="invalid-feedback d-block">{{ form.contribution_statement.errors.0 }}</div>
                                 {% endif %}

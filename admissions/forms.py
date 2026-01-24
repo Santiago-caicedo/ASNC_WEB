@@ -25,7 +25,7 @@ class MembershipApplicationForm(forms.ModelForm):
                 'class': 'form-control form-control-lg'
             }),
             'profession': forms.TextInput(attrs={
-                'placeholder': 'Ej: Ingeniero Nuclear, Físico Médico',
+                'placeholder': 'Ej: Ingeniero, Médico, Abogado, Comunicador',
                 'class': 'form-control form-control-lg'
             }),
             'contribution_statement': forms.Textarea(attrs={
