@@ -17,7 +17,7 @@ class MembershipApplication(models.Model):
     first_name = models.CharField(_('Nombres'), max_length=150)
     last_name = models.CharField(_('Apellidos'), max_length=150)
     email = models.EmailField(_('Correo Electrónico'), unique=True)
-    phone = models.CharField(_('Teléfono'), max_length=20)
+    phone = models.CharField(_('Teléfono'), max_length=20, blank=True)
 
     # Perfil Profesional
     profession = models.CharField(_('Profesión / Título'), max_length=100)
