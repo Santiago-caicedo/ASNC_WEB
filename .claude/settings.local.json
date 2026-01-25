@@ -19,7 +19,10 @@
       "Bash(venv/Scripts/python.exe:*)",
       "Bash(venv/Scripts/pip.exe install:*)",
       "Bash(python manage.py shell:*)",
-      "Bash(./venv/Scripts/python manage.py shell:*)"
+      "Bash(./venv/Scripts/python manage.py shell:*)",
+      "Bash(nslookup:*)",
+      "Bash(dig:*)",
+      "WebFetch(domain:dns.google)"
     ]
   }
 }

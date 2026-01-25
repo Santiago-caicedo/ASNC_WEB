@@ -23,6 +23,7 @@ def send_application_email(application):
     context = {
         'first_name': application.first_name,
         'last_name': application.last_name,
+        'email': application.email,
         'uuid': application.uuid,
     }
 
