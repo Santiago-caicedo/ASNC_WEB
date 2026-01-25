@@ -1,5 +1,9 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from website.models import FeaturedMember
+from admissions.models import MembershipApplication
+
+User = get_user_model()
 
 
 class FeaturedMemberForm(forms.ModelForm):
@@ -43,3 +47,102 @@ class FeaturedMemberForm(forms.ModelForm):
                 'min': 0
             }),
         }
+
+
+class EmailComposeForm(forms.Form):
+    """Formulario para componer y enviar correos masivos"""
+
+    RECIPIENT_CHOICES = [
+        ('manual', 'Ingresar correos manualmente'),
+        ('users', 'Usuarios del sistema'),
+        ('applicants', 'Solicitantes de membresía'),
+    ]
+
+    recipient_type = forms.ChoiceField(
+        label='Tipo de destinatarios',
+        choices=RECIPIENT_CHOICES,
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
+        initial='manual'
+    )
+
+    manual_emails = forms.CharField(
+        label='Correos electrónicos',
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Ingresa los correos separados por coma o salto de línea\nEj: correo1@ejemplo.com, correo2@ejemplo.com'
+        }),
+        help_text='Separa los correos con coma (,) o salto de línea'
+    )
+
+    selected_users = forms.ModelMultipleChoiceField(
+        label='Seleccionar usuarios',
+        queryset=User.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'})
+    )
+
+    selected_applicants = forms.ModelMultipleChoiceField(
+        label='Seleccionar solicitantes',
+        queryset=MembershipApplication.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'})
+    )
+
+    subject = forms.CharField(
+        label='Asunto',
+        max_length=255,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Asunto del correo'
+        })
+    )
+
+    message = forms.CharField(
+        label='Mensaje',
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 10,
+            'placeholder': 'Escribe el contenido del correo aquí...'
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        recipient_type = cleaned_data.get('recipient_type')
+        manual_emails = cleaned_data.get('manual_emails', '')
+        selected_users = cleaned_data.get('selected_users')
+        selected_applicants = cleaned_data.get('selected_applicants')
+
+        if recipient_type == 'manual':
+            if not manual_emails.strip():
+                raise forms.ValidationError('Debes ingresar al menos un correo electrónico.')
+        elif recipient_type == 'users':
+            if not selected_users:
+                raise forms.ValidationError('Debes seleccionar al menos un usuario.')
+        elif recipient_type == 'applicants':
+            if not selected_applicants:
+                raise forms.ValidationError('Debes seleccionar al menos un solicitante.')
+
+        return cleaned_data
+
+    def get_recipients(self):
+        """Retorna lista de correos según la selección"""
+        recipient_type = self.cleaned_data.get('recipient_type')
+        emails = []
+
+        if recipient_type == 'manual':
+            raw_emails = self.cleaned_data.get('manual_emails', '')
+            raw_emails = raw_emails.replace('\n', ',').replace('\r', '')
+            emails = [e.strip() for e in raw_emails.split(',') if e.strip()]
+
+        elif recipient_type == 'users':
+            users = self.cleaned_data.get('selected_users', [])
+            emails = [user.email for user in users if user.email]
+
+        elif recipient_type == 'applicants':
+            applicants = self.cleaned_data.get('selected_applicants', [])
+            emails = [app.email for app in applicants if app.email]
+
+        return list(set(emails))

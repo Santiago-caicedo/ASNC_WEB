@@ -3,7 +3,8 @@ from django.contrib.auth.views import LogoutView
 from .views import (
     CustomLoginView, DashboardHomeView,
     FeaturedMemberListView, FeaturedMemberCreateView,
-    FeaturedMemberUpdateView, FeaturedMemberDeleteView
+    FeaturedMemberUpdateView, FeaturedMemberDeleteView,
+    EmailComposeView, EmailHistoryView, EmailDetailView
 )
 from admissions.views import ApplicationDetailView, ApplicationListView, change_application_status
 
@@ -22,4 +23,9 @@ urlpatterns = [
     path('asociados-destacados/nuevo/', FeaturedMemberCreateView.as_view(), name='featured_member_create'),
     path('asociados-destacados/<int:pk>/editar/', FeaturedMemberUpdateView.as_view(), name='featured_member_update'),
     path('asociados-destacados/<int:pk>/eliminar/', FeaturedMemberDeleteView.as_view(), name='featured_member_delete'),
+
+    # Módulo de Correos
+    path('correos/', EmailHistoryView.as_view(), name='email_history'),
+    path('correos/redactar/', EmailComposeView.as_view(), name='email_compose'),
+    path('correos/<int:pk>/', EmailDetailView.as_view(), name='email_detail'),
 ]

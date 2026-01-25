@@ -1,0 +1,204 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="top-bar-area">
+    <div>
+        <h1 class="page-title">Redactar Correo</h1>
+        <p class="text-muted mb-0">Envía correos con la identidad de marca ASNC</p>
+    </div>
+    <a href="{% url 'email_history' %}" class="btn btn-outline-secondary rounded-pill px-4">
+        <i class="bi bi-clock-history me-2"></i> Ver Historial
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="kpi-card">
+            <form method="post" id="emailForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger rounded-3 mb-4">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- Tipo de destinatarios -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">
+                        <i class="bi bi-people text-primary me-2"></i>Destinatarios
+                    </label>
+                    <div class="bg-light rounded-3 p-3">
+                        {% for radio in form.recipient_type %}
+                        <div class="form-check mb-2">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                {{ radio.choice_label }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Campo para correos manuales -->
+                <div class="mb-4" id="manualEmailsSection">
+                    <label class="form-label fw-bold">{{ form.manual_emails.label }}</label>
+                    {{ form.manual_emails }}
+                    <small class="text-muted">{{ form.manual_emails.help_text }}</small>
+                </div>
+
+                <!-- Selector de usuarios -->
+                <div class="mb-4 d-none" id="usersSection">
+                    <label class="form-label fw-bold">{{ form.selected_users.label }}</label>
+                    <div class="bg-light rounded-3 p-3" style="max-height: 200px; overflow-y: auto;">
+                        {% for checkbox in form.selected_users %}
+                        <div class="form-check">
+                            {{ checkbox.tag }}
+                            <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                {{ checkbox.choice_label }}
+                            </label>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted mb-0">No hay usuarios registrados</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Selector de solicitantes -->
+                <div class="mb-4 d-none" id="applicantsSection">
+                    <label class="form-label fw-bold">{{ form.selected_applicants.label }}</label>
+                    <div class="bg-light rounded-3 p-3" style="max-height: 200px; overflow-y: auto;">
+                        {% for checkbox in form.selected_applicants %}
+                        <div class="form-check">
+                            {{ checkbox.tag }}
+                            <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                {{ checkbox.choice_label }}
+                            </label>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted mb-0">No hay solicitantes registrados</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Asunto -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">
+                        <i class="bi bi-chat-left-text text-primary me-2"></i>{{ form.subject.label }}
+                    </label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                    <div class="text-danger small mt-1">{{ form.subject.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Mensaje -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">
+                        <i class="bi bi-body-text text-primary me-2"></i>{{ form.message.label }}
+                    </label>
+                    {{ form.message }}
+                    {% if form.message.errors %}
+                    <div class="text-danger small mt-1">{{ form.message.errors }}</div>
+                    {% endif %}
+                    <small class="text-muted">El mensaje se enviará con la plantilla de marca ASNC automáticamente.</small>
+                </div>
+
+                <!-- Botón enviar -->
+                <div class="d-flex justify-content-end gap-3">
+                    <a href="{% url 'email_history' %}" class="btn btn-light rounded-pill px-4">Cancelar</a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5">
+                        <i class="bi bi-send me-2"></i>Enviar Correo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Preview Panel -->
+    <div class="col-lg-4">
+        <div class="kpi-card">
+            <h6 class="fw-bold mb-3">
+                <i class="bi bi-eye text-primary me-2"></i>Vista Previa
+            </h6>
+            <div class="bg-light rounded-3 p-3 text-center">
+                <img src="https://vadomdata.s3.amazonaws.com/asnc/static/images/asnc_logo_full.png" alt="ASNC" style="height: 40px;" class="mb-3">
+                <div class="bg-primary text-white py-2 px-3 rounded mb-3" style="font-size: 0.85rem;">
+                    <strong id="previewSubject">Asunto del correo</strong>
+                </div>
+                <div class="text-start text-muted small" id="previewMessage" style="min-height: 100px;">
+                    El contenido del mensaje aparecerá aquí...
+                </div>
+                <hr>
+                <small class="text-muted">Asociación Nuclear Colombiana</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: var(--asnc-blue);
+        box-shadow: 0 0 0 0.2rem rgba(33, 58, 92, 0.15);
+    }
+    .btn-primary {
+        background-color: var(--asnc-blue);
+        border-color: var(--asnc-blue);
+    }
+    .btn-primary:hover {
+        background-color: var(--asnc-navy);
+        border-color: var(--asnc-navy);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const recipientType = document.querySelectorAll('input[name="recipient_type"]');
+    const manualSection = document.getElementById('manualEmailsSection');
+    const usersSection = document.getElementById('usersSection');
+    const applicantsSection = document.getElementById('applicantsSection');
+
+    const subjectInput = document.querySelector('input[name="subject"]');
+    const messageInput = document.querySelector('textarea[name="message"]');
+    const previewSubject = document.getElementById('previewSubject');
+    const previewMessage = document.getElementById('previewMessage');
+
+    function updateSections() {
+        const selected = document.querySelector('input[name="recipient_type"]:checked').value;
+
+        manualSection.classList.add('d-none');
+        usersSection.classList.add('d-none');
+        applicantsSection.classList.add('d-none');
+
+        if (selected === 'manual') {
+            manualSection.classList.remove('d-none');
+        } else if (selected === 'users') {
+            usersSection.classList.remove('d-none');
+        } else if (selected === 'applicants') {
+            applicantsSection.classList.remove('d-none');
+        }
+    }
+
+    recipientType.forEach(radio => {
+        radio.addEventListener('change', updateSections);
+    });
+
+    // Preview en tiempo real
+    if (subjectInput) {
+        subjectInput.addEventListener('input', function() {
+            previewSubject.textContent = this.value || 'Asunto del correo';
+        });
+    }
+
+    if (messageInput) {
+        messageInput.addEventListener('input', function() {
+            previewMessage.textContent = this.value || 'El contenido del mensaje aparecerá aquí...';
+        });
+    }
+
+    updateSections();
+});
+</script>
+{% endblock %}

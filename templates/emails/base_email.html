@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa;">
+
+    <!-- Container -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f5f7fa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+
+                <!-- Email Card -->
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+
+                    <!-- Header con Logo -->
+                    <tr>
+                        <td style="background-color: #ffffff; padding: 30px 40px; text-align: center; border-bottom: 3px solid #f4c343;">
+                            <img src="https://vadomdata.s3.amazonaws.com/asnc/static/images/asnc_logo_full.png" alt="ASNC - Asociación Nuclear Colombiana" style="height: 70px; width: auto;">
+                        </td>
+                    </tr>
+
+                    <!-- Subject Banner -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #1B2A41 0%, #213a5c 100%); padding: 25px 40px; text-align: center;">
+                            <h1 style="color: #ffffff; font-size: 22px; margin: 0; font-weight: 600;">
+                                {{ subject }}
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <!-- Message Content -->
+                            <div style="font-size: 16px; color: #475569; line-height: 1.8;">
+                                {{ message|linebreaks }}
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #1B2A41; padding: 30px 40px;">
+
+                            <!-- Social Links -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="https://www.linkedin.com/company/asncol" style="display: inline-block; margin: 0 8px;">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" style="width: 32px; height: 32px;">
+                                        </a>
+                                        <a href="https://www.instagram.com/asncol" style="display: inline-block; margin: 0 8px;">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram" style="width: 32px; height: 32px;">
+                                        </a>
+                                        <a href="https://www.facebook.com/asncol" style="display: inline-block; margin: 0 8px;">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/174/174848.png" alt="Facebook" style="width: 32px; height: 32px;">
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <p style="font-size: 14px; color: #ffffff; text-align: center; margin: 0 0 15px; font-weight: 600;">
+                                            Asociación Nuclear Colombiana
+                                        </p>
+                                        <p style="font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; margin: 0;">
+                                            &copy; {% now "Y" %} ASNC. Todos los derechos reservados.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                </table>
+
+                <!-- Unsubscribe note -->
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="margin-top: 20px;">
+                    <tr>
+                        <td align="center">
+                            <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+                                Este correo fue enviado por la Asociación Nuclear Colombiana.<br>
+                                Si tienes preguntas, responde a este correo o escríbenos a info@asncol.com
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

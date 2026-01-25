@@ -1,0 +1,111 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="top-bar-area">
+    <div>
+        <a href="{% url 'email_history' %}" class="text-muted text-decoration-none mb-2 d-inline-block">
+            <i class="bi bi-arrow-left me-1"></i> Volver al historial
+        </a>
+        <h1 class="page-title">Detalle del Correo</h1>
+    </div>
+    <div>
+        {% if email.success %}
+        <span class="badge bg-success rounded-pill px-3 py-2">
+            <i class="bi bi-check-circle me-1"></i>Enviado exitosamente
+        </span>
+        {% else %}
+        <span class="badge bg-danger rounded-pill px-3 py-2">
+            <i class="bi bi-x-circle me-1"></i>Error en envío
+        </span>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Contenido del correo -->
+        <div class="kpi-card mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h4 class="fw-bold mb-1">{{ email.subject }}</h4>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar me-1"></i>{{ email.sent_at|date:"d/m/Y H:i" }}
+                    </small>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="py-3">
+                <label class="text-muted small text-uppercase mb-2 d-block">Mensaje</label>
+                <div class="bg-light rounded-3 p-4" style="white-space: pre-wrap; line-height: 1.8;">{{ email.message }}</div>
+            </div>
+        </div>
+
+        {% if not email.success and email.error_message %}
+        <!-- Error details -->
+        <div class="kpi-card border-danger">
+            <h6 class="fw-bold text-danger mb-3">
+                <i class="bi bi-exclamation-triangle me-2"></i>Detalles del Error
+            </h6>
+            <div class="bg-danger bg-opacity-10 rounded-3 p-3">
+                <code class="text-danger">{{ email.error_message }}</code>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Información del envío -->
+        <div class="kpi-card mb-4">
+            <h6 class="fw-bold mb-3">
+                <i class="bi bi-info-circle text-primary me-2"></i>Información del Envío
+            </h6>
+
+            <div class="mb-3">
+                <label class="text-muted small text-uppercase d-block">Enviado por</label>
+                {% if email.sent_by %}
+                <span class="fw-medium">{{ email.sent_by.first_name }} {{ email.sent_by.last_name }}</span>
+                {% else %}
+                <span class="text-muted">Sistema automático</span>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="text-muted small text-uppercase d-block">Fecha y hora</label>
+                <span class="fw-medium">{{ email.sent_at|date:"d/m/Y" }} a las {{ email.sent_at|time:"H:i" }}</span>
+            </div>
+
+            <div>
+                <label class="text-muted small text-uppercase d-block">Total destinatarios</label>
+                <span class="badge bg-primary rounded-pill">{{ email.recipients_count }}</span>
+            </div>
+        </div>
+
+        <!-- Lista de destinatarios -->
+        <div class="kpi-card">
+            <h6 class="fw-bold mb-3">
+                <i class="bi bi-people text-primary me-2"></i>Destinatarios
+            </h6>
+            <div class="bg-light rounded-3 p-3" style="max-height: 300px; overflow-y: auto;">
+                {% for recipient in email.get_recipients_list %}
+                <div class="d-flex align-items-center mb-2 {% if not forloop.last %}pb-2 border-bottom{% endif %}">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2">
+                        <i class="bi bi-envelope text-primary small"></i>
+                    </div>
+                    <small class="text-break">{{ recipient }}</small>
+                </div>
+                {% empty %}
+                <p class="text-muted mb-0 small">Sin destinatarios registrados</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge.bg-primary {
+        background-color: var(--asnc-blue) !important;
+    }
+</style>
+{% endblock %}
