@@ -13,6 +13,7 @@ class UserAdmin(BaseUserAdmin):
         'email',
         'full_name',
         'is_staff_badge',
+        'password_status',
         'has_card_badge',
         'is_active',
         'date_joined',
@@ -62,6 +63,21 @@ class UserAdmin(BaseUserAdmin):
             '<span style="background-color: #6c757d; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Usuario</span>'
         )
     is_staff_badge.short_description = 'Rol'
+
+    def password_status(self, obj):
+        if obj.has_usable_password():
+            if obj.last_login:
+                return mark_safe(
+                    '<span style="background-color: #28a745; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Configurada</span>'
+                )
+            else:
+                return mark_safe(
+                    '<span style="background-color: #17a2b8; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Configurada (sin login)</span>'
+                )
+        return mark_safe(
+            '<span style="background-color: #ffc107; color: #212529; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Pendiente</span>'
+        )
+    password_status.short_description = 'Contraseña'
 
     def has_card_badge(self, obj):
         try:
