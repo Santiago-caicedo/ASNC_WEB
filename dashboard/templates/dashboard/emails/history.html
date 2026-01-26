@@ -1,13 +1,13 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
 {% block content %}
-<div class="top-bar-area">
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-2">
     <div>
-        <h1 class="page-title">Historial de Correos</h1>
-        <p class="text-muted mb-0">Registro de todos los correos enviados desde el sistema</p>
+        <h1 class="page-title mb-0">Historial de Correos</h1>
+        <p class="text-muted mb-0 small d-none d-sm-block">Registro de correos enviados</p>
     </div>
-    <a href="{% url 'email_compose' %}" class="btn btn-primary rounded-pill px-4">
-        <i class="bi bi-plus-lg me-2"></i> Redactar Correo
+    <a href="{% url 'email_compose' %}" class="btn btn-primary rounded-pill px-3 px-md-4 btn-sm">
+        <i class="bi bi-plus-lg me-1 me-md-2"></i> <span class="d-none d-sm-inline">Redactar</span><span class="d-sm-none">Nuevo</span>
     </a>
 </div>
 
@@ -17,34 +17,35 @@
         <table class="table table-hover align-middle mb-0">
             <thead class="bg-light">
                 <tr>
-                    <th class="border-0 rounded-start">Fecha</th>
-                    <th class="border-0">Asunto</th>
-                    <th class="border-0">Destinatarios</th>
-                    <th class="border-0">Enviado por</th>
+                    <th class="border-0 rounded-start d-none d-md-table-cell">Fecha</th>
+                    <th class="border-0 ps-3 ps-md-0">Asunto</th>
+                    <th class="border-0 d-none d-sm-table-cell">Dest.</th>
+                    <th class="border-0 d-none d-lg-table-cell">Enviado por</th>
                     <th class="border-0">Estado</th>
-                    <th class="border-0 rounded-end text-end">Acciones</th>
+                    <th class="border-0 rounded-end text-end pe-3">Ver</th>
                 </tr>
             </thead>
             <tbody>
                 {% for email in emails %}
                 <tr>
-                    <td>
+                    <td class="d-none d-md-table-cell">
                         <small class="text-muted">
                             {{ email.sent_at|date:"d/m/Y" }}<br>
                             <span class="text-secondary">{{ email.sent_at|time:"H:i" }}</span>
                         </small>
                     </td>
-                    <td>
-                        <strong>{{ email.subject|truncatewords:8 }}</strong>
+                    <td class="ps-3 ps-md-0">
+                        <strong class="d-block text-truncate" style="max-width: 180px;">{{ email.subject|truncatewords:5 }}</strong>
+                        <small class="text-muted d-md-none">{{ email.sent_at|date:"d/m" }}</small>
                     </td>
-                    <td>
+                    <td class="d-none d-sm-table-cell">
                         <span class="badge bg-light text-dark rounded-pill">
-                            <i class="bi bi-people me-1"></i>{{ email.recipients_count }}
+                            <i class="bi bi-people d-none d-md-inline me-1"></i>{{ email.recipients_count }}
                         </span>
                     </td>
-                    <td>
+                    <td class="d-none d-lg-table-cell">
                         {% if email.sent_by %}
-                        <small>{{ email.sent_by.first_name }} {{ email.sent_by.last_name }}</small>
+                        <small>{{ email.sent_by.first_name }}</small>
                         {% else %}
                         <small class="text-muted">Sistema</small>
                         {% endif %}
@@ -52,17 +53,17 @@
                     <td>
                         {% if email.success %}
                         <span class="badge bg-success rounded-pill">
-                            <i class="bi bi-check-circle me-1"></i>Enviado
+                            <i class="bi bi-check-circle d-none d-sm-inline me-1"></i><span class="d-none d-sm-inline">OK</span><span class="d-sm-none"><i class="bi bi-check"></i></span>
                         </span>
                         {% else %}
                         <span class="badge bg-danger rounded-pill">
-                            <i class="bi bi-x-circle me-1"></i>Error
+                            <i class="bi bi-x-circle d-none d-sm-inline me-1"></i><span class="d-none d-sm-inline">Error</span><span class="d-sm-none"><i class="bi bi-x"></i></span>
                         </span>
                         {% endif %}
                     </td>
-                    <td class="text-end">
+                    <td class="text-end pe-3">
                         <a href="{% url 'email_detail' email.pk %}" class="btn btn-sm btn-outline-primary rounded-pill">
-                            <i class="bi bi-eye me-1"></i>Ver
+                            <i class="bi bi-eye"></i>
                         </a>
                     </td>
                 </tr>
@@ -71,10 +72,10 @@
         </table>
     </div>
 
-    <!-- Paginación -->
+    <!-- Paginacion -->
     {% if is_paginated %}
-    <nav class="mt-4">
-        <ul class="pagination justify-content-center mb-0">
+    <nav class="mt-3 mt-md-4 px-3">
+        <ul class="pagination pagination-sm justify-content-center mb-0">
             {% if page_obj.has_previous %}
             <li class="page-item">
                 <a class="page-link rounded-pill me-1" href="?page={{ page_obj.previous_page_number }}">
@@ -83,11 +84,9 @@
             </li>
             {% endif %}
 
-            {% for num in page_obj.paginator.page_range %}
-            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-                <a class="page-link rounded-pill mx-1" href="?page={{ num }}">{{ num }}</a>
+            <li class="page-item active">
+                <span class="page-link rounded-pill">{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>
             </li>
-            {% endfor %}
 
             {% if page_obj.has_next %}
             <li class="page-item">

@@ -2,23 +2,23 @@
 
 {% block content %}
 
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Solicitudes de Ingreso</h2>
-        <p class="text-muted small">Gestione los candidatos aspirantes a la Asociación.</p>
+        <h2 class="fw-bold text-dark mb-1 fs-4 fs-md-3">Solicitudes de Ingreso</h2>
+        <p class="text-muted small mb-0 d-none d-sm-block">Gestione los candidatos aspirantes a la Asociacion.</p>
     </div>
-    
-    <div class="d-flex gap-2">
-        <div class="input-group shadow-sm" style="width: 300px;">
+
+    <div class="d-flex gap-2 flex-wrap w-100 w-md-auto">
+        <div class="input-group shadow-sm flex-grow-1" style="min-width: 200px; max-width: 300px;">
             <span class="input-group-text bg-white border-end-0 ps-3">
                 <i class="bi bi-search text-muted"></i>
             </span>
-            <input type="text" class="form-control border-start-0 ps-2" placeholder="Buscar por nombre o email..." style="font-size: 0.9rem;">
+            <input type="text" class="form-control border-start-0 ps-2" placeholder="Buscar..." style="font-size: 0.9rem;">
         </div>
         <button class="btn btn-white shadow-sm border px-3" title="Filtrar">
             <i class="bi bi-funnel"></i>
         </button>
-        <button class="btn btn-dark shadow-sm px-3">
+        <button class="btn btn-dark shadow-sm px-3 d-none d-sm-inline-block">
             <i class="bi bi-download me-2"></i> Exportar
         </button>
     </div>
@@ -30,30 +30,31 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4 py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px; width: 30%;">Candidato</th>
-                        <th class="py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Perfil Profesional</th>
+                        <th class="ps-3 ps-md-4 py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Candidato</th>
+                        <th class="py-3 text-uppercase text-muted fw-bold small d-none d-lg-table-cell" style="letter-spacing: 1px;">Perfil Profesional</th>
                         <th class="py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Estado</th>
-                        <th class="py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Fecha</th>
-                        <th class="pe-4 py-3 text-end text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Acciones</th>
+                        <th class="py-3 text-uppercase text-muted fw-bold small d-none d-md-table-cell" style="letter-spacing: 1px;">Fecha</th>
+                        <th class="pe-3 pe-md-4 py-3 text-end text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for app in applications %}
                     <tr>
-                        <td class="ps-4 py-3">
+                        <td class="ps-3 ps-md-4 py-3">
                             <div class="d-flex align-items-center">
-                                <div class="rounded-circle d-flex justify-content-center align-items-center me-3 fw-bold text-white shadow-sm" 
-                                     style="width: 45px; height: 45px; background: linear-gradient(135deg, var(--asnc-blue), #4a6fa5); font-size: 0.9rem;">
+                                <div class="rounded-circle d-flex justify-content-center align-items-center me-2 me-md-3 fw-bold text-white shadow-sm flex-shrink-0"
+                                     style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--asnc-blue), #4a6fa5); font-size: 0.85rem;">
                                     {{ app.first_name|first }}{{ app.last_name|first }}
                                 </div>
-                                <div>
-                                    <div class="fw-bold text-dark">{{ app.first_name }} {{ app.last_name }}</div>
-                                    <div class="small text-muted">{{ app.email }}</div>
+                                <div class="overflow-hidden">
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 150px;">{{ app.first_name }} {{ app.last_name }}</div>
+                                    <div class="small text-muted text-truncate d-none d-sm-block" style="max-width: 150px;">{{ app.email }}</div>
+                                    <div class="small text-muted d-lg-none">{{ app.profession|truncatewords:3 }}</div>
                                 </div>
                             </div>
                         </td>
 
-                        <td>
+                        <td class="d-none d-lg-table-cell">
                             <div class="fw-semibold text-secondary">{{ app.profession }}</div>
                             <div class="small text-muted">
                                 {% if app.current_job %}{{ app.current_job }}{% else %}Consultor Independiente{% endif %}
@@ -62,34 +63,34 @@
 
                         <td>
                             {% if app.status == 'PENDING' %}
-                                <span class="badge rounded-pill bg-warning bg-opacity-10 text-warning px-3 py-2 border border-warning border-opacity-10">
-                                    <i class="bi bi-clock me-1"></i> Pendiente
+                                <span class="badge rounded-pill bg-warning bg-opacity-10 text-warning px-2 px-md-3 py-1 py-md-2 border border-warning border-opacity-10">
+                                    <i class="bi bi-clock d-none d-sm-inline me-1"></i><span class="d-none d-sm-inline">Pendiente</span><span class="d-sm-none">Pend.</span>
                                 </span>
                             {% elif app.status == 'REVIEW' %}
-                                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2 border border-primary border-opacity-10">
-                                    <i class="bi bi-search me-1"></i> En Estudio
+                                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-2 px-md-3 py-1 py-md-2 border border-primary border-opacity-10">
+                                    <i class="bi bi-search d-none d-sm-inline me-1"></i><span class="d-none d-sm-inline">En Estudio</span><span class="d-sm-none">Estudio</span>
                                 </span>
                             {% elif app.status == 'APPROVED' %}
-                                <span class="badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2 border border-success border-opacity-10">
-                                    <i class="bi bi-check-circle me-1"></i> Aprobado
+                                <span class="badge rounded-pill bg-success bg-opacity-10 text-success px-2 px-md-3 py-1 py-md-2 border border-success border-opacity-10">
+                                    <i class="bi bi-check-circle d-none d-sm-inline me-1"></i><span class="d-none d-sm-inline">Aprobado</span><span class="d-sm-none">Aprob.</span>
                                 </span>
                             {% elif app.status == 'REJECTED' %}
-                                <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger px-3 py-2 border border-danger border-opacity-10">
-                                    <i class="bi bi-x-circle me-1"></i> Rechazado
+                                <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger px-2 px-md-3 py-1 py-md-2 border border-danger border-opacity-10">
+                                    <i class="bi bi-x-circle d-none d-sm-inline me-1"></i><span class="d-none d-sm-inline">Rechazado</span><span class="d-sm-none">Rech.</span>
                                 </span>
                             {% else %}
-                                <span class="badge rounded-pill bg-dark bg-opacity-10 text-dark px-3 py-2">
+                                <span class="badge rounded-pill bg-dark bg-opacity-10 text-dark px-2 px-md-3 py-1 py-md-2">
                                     {{ app.get_status_display }}
                                 </span>
                             {% endif %}
                         </td>
 
-                        <td class="text-muted small">
+                        <td class="text-muted small d-none d-md-table-cell">
                             {{ app.created_at|date:"d M, Y" }} <br>
                             <span class="text-muted opacity-50">{{ app.created_at|time:"H:i" }}</span>
                         </td>
 
-                        <td class="pe-4 text-end">
+                        <td class="pe-3 pe-md-4 text-end">
                             <div class="dropdown">
                                 <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
                                     <i class="bi bi-three-dots-vertical text-muted"></i>
@@ -135,12 +136,12 @@
         </div>
         
         {% if applications %}
-        <div class="card-footer bg-white border-top border-light py-3 px-4 d-flex justify-content-between align-items-center">
-            <small class="text-muted">Mostrando {{ applications.count }} registros</small>
+        <div class="card-footer bg-white border-top border-light py-3 px-3 px-md-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+            <small class="text-muted">{{ applications.count }} registros</small>
             <nav aria-label="Page navigation">
                 <ul class="pagination pagination-sm mb-0">
                     <li class="page-item disabled">
-                        <a class="page-link border-0 bg-light text-muted rounded-start-3 ms-1" href="#">Anterior</a>
+                        <a class="page-link border-0 bg-light text-muted rounded-start-3 ms-1" href="#"><span class="d-none d-sm-inline">Anterior</span><span class="d-sm-none">&laquo;</span></a>
                     </li>
                     <li class="page-item active">
                         <a class="page-link bg-asnc-blue border-0 rounded-3 mx-1 shadow-sm" href="#">1</a>
@@ -149,7 +150,7 @@
                         <a class="page-link border-0 bg-light text-dark rounded-3 mx-1" href="#">2</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link border-0 bg-light text-dark rounded-end-3 me-1" href="#">Siguiente</a>
+                        <a class="page-link border-0 bg-light text-dark rounded-end-3 me-1" href="#"><span class="d-none d-sm-inline">Siguiente</span><span class="d-sm-none">&raquo;</span></a>
                     </li>
                 </ul>
             </nav>
@@ -161,13 +162,12 @@
 <style>
     /* Estilos extra */
     .table-responsive {
-        overflow: visible !important; /* CRÍTICO: Permite que el menú salga */
+        overflow: visible !important; /* Permite que el menu salga */
     }
     .card {
-        /* Eliminado min-height */
-        overflow: visible; /* Asegura que la tarjeta no corte hijos */
+        overflow: visible;
     }
-    
+
     .table-hover tbody tr:hover {
         background-color: rgba(33, 58, 92, 0.02);
         transition: background-color 0.2s ease;
@@ -183,6 +183,24 @@
     .page-link.bg-asnc-blue {
         background-color: var(--asnc-blue) !important;
         color: white !important;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+        .table-responsive {
+            overflow-x: auto !important;
+        }
+        .table th, .table td {
+            white-space: nowrap;
+        }
+        .dropdown-menu {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 90%;
+            max-width: 280px;
+        }
     }
 </style>
 
