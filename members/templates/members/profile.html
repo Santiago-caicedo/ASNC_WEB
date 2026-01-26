@@ -4,17 +4,17 @@
 {% block content %}
 <h1 class="page-title">Mi Perfil</h1>
 
-<div class="row">
-    <div class="col-lg-8">
+<div class="row g-4">
+    <div class="col-lg-8 order-2 order-lg-1">
         <div class="kpi-card">
-            <div class="d-flex align-items-center mb-4">
-                <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
-                     style="width: 70px; height: 70px; background-color: #f4c343; color: #1B2A41; font-size: 1.5rem; font-weight: bold;">
+            <div class="d-flex align-items-center mb-4 flex-wrap flex-sm-nowrap">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3 mb-2 mb-sm-0 flex-shrink-0"
+                     style="width: 60px; height: 60px; background-color: #f4c343; color: #1B2A41; font-size: 1.25rem; font-weight: bold;">
                     {{ user.first_name|first|default:"A" }}{{ user.last_name|first|default:"S" }}
                 </div>
-                <div>
-                    <h4 class="mb-0 fw-bold">{{ user.get_full_name|default:"Asociado ASNC" }}</h4>
-                    <span class="text-muted">{{ user.email }}</span>
+                <div class="overflow-hidden">
+                    <h4 class="mb-0 fw-bold text-truncate" style="font-size: 1.1rem;">{{ user.get_full_name|default:"Asociado ASNC" }}</h4>
+                    <span class="text-muted small text-break">{{ user.email }}</span>
                 </div>
             </div>
 
@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-4 order-1 order-lg-2">
         <!-- Card Summary -->
         {% if user.member_card %}
         <div class="kpi-card">
