@@ -160,12 +160,8 @@ def send_set_password_email(user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-    # Build password reset URL
-    if settings.DEBUG:
-        domain = 'http://127.0.0.1:8000'
-    else:
-        domain = 'https://www.asncol.com'
-
+    # Build password reset URL using SITE_URL from settings
+    domain = settings.SITE_URL.rstrip('/')
     reset_url = f"{domain}{reverse('password_set', kwargs={'uidb64': uid, 'token': token})}"
 
     context = {

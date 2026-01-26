@@ -35,6 +35,9 @@ CSRF_TRUSTED_ORIGINS = config(
     cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
 )
 
+# Site URL for emails and external links
+SITE_URL = config('SITE_URL', default='http://127.0.0.1:8000')
+
 
 # Application definition
 

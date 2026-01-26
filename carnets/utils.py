@@ -59,12 +59,8 @@ def get_verification_url(card):
     Returns:
         Full URL string
     """
-    # Build the full URL based on environment
-    if settings.DEBUG:
-        domain = 'http://127.0.0.1:8000'
-    else:
-        domain = 'https://www.asncol.com'
-
+    # Build the full URL using SITE_URL from settings
+    domain = settings.SITE_URL.rstrip('/')
     path = reverse('carnets:verificar', kwargs={'uuid': str(card.uuid)})
     return f"{domain}{path}"
 
@@ -433,12 +429,8 @@ def send_photo_request_email(card):
     from django.template.loader import render_to_string
     from django.utils.html import strip_tags
 
-    # Build photo upload URL
-    if settings.DEBUG:
-        domain = 'http://127.0.0.1:8000'
-    else:
-        domain = 'https://www.asncol.com'
-
+    # Build photo upload URL using SITE_URL from settings
+    domain = settings.SITE_URL.rstrip('/')
     upload_url = f"{domain}{reverse('carnets:subir_foto', kwargs={'token': str(card.photo_token)})}"
 
     context = {
@@ -473,12 +465,8 @@ def send_card_ready_email(card):
     from django.template.loader import render_to_string
     from django.utils.html import strip_tags
 
-    # Build card view URL
-    if settings.DEBUG:
-        domain = 'http://127.0.0.1:8000'
-    else:
-        domain = 'https://www.asncol.com'
-
+    # Build card view URL using SITE_URL from settings
+    domain = settings.SITE_URL.rstrip('/')
     card_url = f"{domain}/mi-portal/carnet/"
 
     context = {
