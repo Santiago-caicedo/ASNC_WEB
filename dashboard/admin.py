@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import SentEmail
 
 
@@ -48,10 +48,10 @@ class SentEmailAdmin(admin.ModelAdmin):
 
     def success_badge(self, obj):
         if obj.success:
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #28a745; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Enviado</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Error</span>'
         )
     success_badge.short_description = 'Estado'

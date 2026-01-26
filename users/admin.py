@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import User
 
 
@@ -50,20 +51,20 @@ class UserAdmin(BaseUserAdmin):
 
     def is_staff_badge(self, obj):
         if obj.is_superuser:
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Superadmin</span>'
             )
         elif obj.is_staff:
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #17a2b8; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Staff</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="background-color: #6c757d; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Usuario</span>'
         )
     is_staff_badge.short_description = 'Rol'
 
     def has_card_badge(self, obj):
-        if hasattr(obj, 'member_card'):
+        try:
             card = obj.member_card
             if card.status == 'ACTIVE':
                 return format_html(
@@ -77,5 +78,7 @@ class UserAdmin(BaseUserAdmin):
                     card.get_status_display(),
                     card.card_number
                 )
-        return format_html('<span style="color: #999;">Sin carné</span>')
+        except Exception:
+            pass
+        return mark_safe('<span style="color: #999;">Sin carné</span>')
     has_card_badge.short_description = 'Carné'

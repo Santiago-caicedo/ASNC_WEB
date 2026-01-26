@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import FeaturedMember
 
 
@@ -42,15 +43,15 @@ class FeaturedMemberAdmin(admin.ModelAdmin):
                 '<img src="{}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />',
                 obj.photo.url
             )
-        return format_html('<span style="color: #999;">Sin foto</span>')
+        return mark_safe('<span style="color: #999;">Sin foto</span>')
     photo_thumbnail.short_description = 'Foto'
 
     def is_active_badge(self, obj):
         if obj.is_active:
-            return format_html(
+            return mark_safe(
                 '<span style="background-color: #28a745; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Activo</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Inactivo</span>'
         )
     is_active_badge.short_description = 'Estado'

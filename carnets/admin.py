@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.contrib import messages
 from .models import MemberCard, CardVerification
 
@@ -77,9 +78,7 @@ class MemberCardAdmin(admin.ModelAdmin):
                 '<img src="{}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />',
                 obj.photo.url
             )
-        return format_html(
-            '<span style="color: #999;">Sin foto</span>'
-        )
+        return mark_safe('<span style="color: #999;">Sin foto</span>')
     photo_thumbnail.short_description = 'Foto'
 
     def category_badge(self, obj):
