@@ -1,16 +1,42 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, TemplateView
 from django.views.generic import ListView
 from django.views.generic import DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from .models import MembershipApplication
 from .forms import MembershipApplicationForm
+
+User = get_user_model()
+
+
+class StaffRequiredMixin(UserPassesTestMixin):
+    """Mixin to restrict views to staff/superuser only."""
+    login_url = '/acceso/'
+
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return redirect('/mi-portal/')
+        return super().handle_no_permission()
+
+
+def staff_required(view_func):
+    """Decorator to restrict function views to staff/superuser only."""
+    def check_staff(user):
+        return user.is_staff or user.is_superuser
+    return user_passes_test(check_staff, login_url='/acceso/')(view_func)
 
 
 def send_application_email(application):
@@ -54,6 +80,158 @@ Asociación Nuclear Colombiana
     email.send(fail_silently=False)
 
 
+def create_user_from_application(application):
+    """
+    Creates a user account from an approved application.
+    Returns the created user or None if user already exists.
+    """
+    # Check if user already exists
+    if User.objects.filter(email=application.email).exists():
+        return User.objects.get(email=application.email)
+
+    # Create username from email (before @)
+    base_username = application.email.split('@')[0]
+    username = base_username
+    counter = 1
+
+    # Ensure unique username
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}{counter}"
+        counter += 1
+
+    # Create user with unusable password (will be set via email)
+    user = User.objects.create_user(
+        username=username,
+        email=application.email,
+        first_name=application.first_name,
+        last_name=application.last_name,
+        password=None,  # No password yet
+    )
+    user.set_unusable_password()
+    user.save()
+
+    return user
+
+
+def send_approval_email(application, user):
+    """Sends approval/welcome email to the new member."""
+    subject = '¡Bienvenido a la ASNC! - Tu solicitud ha sido aprobada'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = application.email
+
+    context = {
+        'first_name': application.first_name,
+        'last_name': application.last_name,
+        'email': application.email,
+    }
+
+    html_content = render_to_string('admissions/emails/application_approved.html', context)
+    text_content = f"""
+Hola {application.first_name},
+
+¡Felicidades! Tu solicitud de membresía ha sido APROBADA por el Comité de Admisiones
+de la Asociación Nuclear Colombiana.
+
+Ahora eres oficialmente parte de nuestra comunidad de profesionales comprometidos
+con el desarrollo pacífico de la ciencia y tecnología nuclear en Colombia.
+
+En breve recibirás otro correo con instrucciones para configurar tu contraseña
+y acceder al portal de asociados.
+
+¡Bienvenido(a) a la ASNC!
+
+Atentamente,
+Junta Directiva
+Asociación Nuclear Colombiana
+    """
+
+    email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    email.attach_alternative(html_content, "text/html")
+    email.send(fail_silently=False)
+
+
+def send_set_password_email(user):
+    """Sends email with link to set password for the first time."""
+    subject = 'Configura tu contraseña - Portal ASNC'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = user.email
+
+    # Generate password reset token
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+    # Build password reset URL
+    if settings.DEBUG:
+        domain = 'http://127.0.0.1:8000'
+    else:
+        domain = 'https://www.asncol.com'
+
+    reset_url = f"{domain}{reverse('password_set', kwargs={'uidb64': uid, 'token': token})}"
+
+    context = {
+        'user': user,
+        'reset_url': reset_url,
+        'first_name': user.first_name,
+    }
+
+    html_content = render_to_string('admissions/emails/set_password.html', context)
+    text_content = f"""
+Hola {user.first_name},
+
+Tu cuenta en el Portal de Asociados de la ASNC ha sido creada.
+Para acceder, primero debes configurar tu contraseña.
+
+Haz clic en el siguiente enlace para crear tu contraseña:
+{reset_url}
+
+Este enlace expirará en 3 días por seguridad.
+
+Si no solicitaste esta cuenta, puedes ignorar este mensaje.
+
+Saludos,
+Asociación Nuclear Colombiana
+    """
+
+    email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    email.attach_alternative(html_content, "text/html")
+    email.send(fail_silently=False)
+
+
+def send_rejection_email(application):
+    """Sends rejection email to the applicant."""
+    subject = 'Resultado de tu solicitud - Asociación Nuclear Colombiana'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = application.email
+
+    context = {
+        'first_name': application.first_name,
+        'last_name': application.last_name,
+    }
+
+    html_content = render_to_string('admissions/emails/application_rejected.html', context)
+    text_content = f"""
+Hola {application.first_name},
+
+Gracias por tu interés en formar parte de la Asociación Nuclear Colombiana.
+
+Después de una cuidadosa evaluación, lamentamos informarte que en esta ocasión
+tu solicitud no ha sido aprobada por el Comité de Admisiones.
+
+Esta decisión no es definitiva. Te invitamos a volver a postularte en el futuro
+cuando consideres que tu perfil se ajuste mejor a los objetivos de la asociación.
+
+Si tienes preguntas sobre esta decisión, puedes escribirnos a info@asncol.com
+
+Atentamente,
+Comité de Admisiones
+Asociación Nuclear Colombiana
+    """
+
+    email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    email.attach_alternative(html_content, "text/html")
+    email.send(fail_silently=False)
+
+
 class ApplicationCreateView(CreateView):
     model = MembershipApplication
     form_class = MembershipApplicationForm
@@ -73,41 +251,70 @@ class ApplicationCreateView(CreateView):
 
         return super().form_valid(form)
 
+
 class ApplicationSuccessView(TemplateView):
     template_name = 'admissions/application_success.html'
 
 
-class ApplicationListView(LoginRequiredMixin, ListView):
+class ApplicationListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
     model = MembershipApplication
-    template_name = 'dashboard/application_list.html' # Ojo a la ruta
+    template_name = 'dashboard/application_list.html'
     context_object_name = 'applications'
     ordering = ['-created_at']
 
 
-
-# 1. VISTA DE DETALLE (El Expediente)
-class ApplicationDetailView(LoginRequiredMixin, DetailView):
+class ApplicationDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
     model = MembershipApplication
-    template_name = 'dashboard/application_detail.html' # Ojo: usaremos la carpeta dashboard
+    template_name = 'dashboard/application_detail.html'
     context_object_name = 'app'
 
-# 2. VISTA DE ACCIÓN (Para los botones)
+
 @login_required
+@staff_required
 def change_application_status(request, pk, status):
+    """Handle application status changes (approve/reject)."""
     application = get_object_or_404(MembershipApplication, pk=pk)
-    
+
     if status == 'approved':
-        application.status = 'APPROVED'
-        application.save()
-        messages.success(request, f'El candidato {application.first_name} ha sido APROBADO exitosamente.')
-        # AQUÍ IRÍA LA LÓGICA DE CREAR USUARIO AUTOMÁTICO (Lo haremos en la siguiente fase)
-        
-        # Enviar correo (Opcional por ahora)
-        # send_mail(...) 
+        try:
+            # 1. Create user account
+            user = create_user_from_application(application)
+
+            # 2. Update application status to COMPLETED
+            application.status = MembershipApplication.Status.COMPLETED
+            application.save()
+
+            # 3. Send welcome email
+            try:
+                send_approval_email(application, user)
+            except Exception as e:
+                messages.warning(request, f'Usuario creado, pero falló el envío del correo de bienvenida: {e}')
+
+            # 4. Send password setup email
+            try:
+                send_set_password_email(user)
+            except Exception as e:
+                messages.warning(request, f'Falló el envío del correo para configurar contraseña: {e}')
+
+            messages.success(
+                request,
+                f'¡{application.first_name} {application.last_name} ha sido APROBADO y VINCULADO! '
+                f'Se han enviado los correos de bienvenida y configuración de contraseña.'
+            )
+
+        except Exception as e:
+            messages.error(request, f'Error al procesar la aprobación: {e}')
 
     elif status == 'rejected':
-        application.status = 'REJECTED'
+        application.status = MembershipApplication.Status.REJECTED
         application.save()
+
+        # Send rejection email
+        try:
+            send_rejection_email(application)
+        except Exception:
+            pass  # Don't block if email fails
+
         messages.warning(request, f'La solicitud de {application.first_name} ha sido rechazada.')
-    
+
     return redirect('application_detail', pk=pk)

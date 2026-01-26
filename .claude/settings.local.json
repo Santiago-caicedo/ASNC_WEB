@@ -22,7 +22,13 @@
       "Bash(./venv/Scripts/python manage.py shell:*)",
       "Bash(nslookup:*)",
       "Bash(dig:*)",
-      "WebFetch(domain:dns.google)"
+      "WebFetch(domain:dns.google)",
+      "Bash(xargs:*)",
+      "Bash(tree:*)",
+      "Bash(python manage.py startapp:*)",
+      "Bash(xxd:*)",
+      "Bash(iconv:*)",
+      "Bash(python:*)"
     ]
   }
 }

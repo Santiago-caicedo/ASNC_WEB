@@ -1,0 +1,447 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="mb-4">
+    <a href="{% url 'directory_list' %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al Directorio
+    </a>
+</div>
+
+<div class="row g-4">
+
+    <!-- Left Column: Profile Card -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 text-center overflow-hidden h-100">
+            <div class="card-body p-5">
+                <!-- Avatar / Photo -->
+                {% if member.photo %}
+                    <div class="mx-auto mb-4 rounded-circle overflow-hidden shadow"
+                         style="width: 130px; height: 130px;">
+                        <img src="{{ member.photo.url }}" alt="Foto"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                {% else %}
+                    <div class="mx-auto rounded-circle d-flex justify-content-center align-items-center mb-4 text-white shadow fw-bold display-4"
+                         style="width: 130px; height: 130px; background: linear-gradient(135deg, var(--asnc-blue), #4a6fa5);">
+                        {% if member.user and member.user.first_name %}
+                            {{ member.user.first_name|first }}{{ member.user.last_name|first }}
+                        {% elif member.application %}
+                            {{ member.application.first_name|first }}{{ member.application.last_name|first }}
+                        {% else %}
+                            AS
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <!-- Name -->
+                <h3 class="fw-bold text-dark mb-1">
+                    {% if member.user and member.user.get_full_name %}
+                        {{ member.user.get_full_name }}
+                    {% elif member.application %}
+                        {{ member.application.first_name }} {{ member.application.last_name }}
+                    {% else %}
+                        Asociado ASNC
+                    {% endif %}
+                </h3>
+
+                <!-- Profession -->
+                <p class="text-muted mb-3">
+                    {% if member.application %}{{ member.application.profession }}{% else %}Asociado{% endif %}
+                </p>
+
+                <!-- Category Badge -->
+                <div class="mb-4">
+                    {% if member.category == 'FOUNDER' %}
+                        <span class="badge rounded-pill px-3 py-2" style="background-color: var(--asnc-gold); color: var(--asnc-navy);">
+                            <i class="bi bi-award me-1"></i> Miembro Fundador
+                        </span>
+                    {% else %}
+                        <span class="badge rounded-pill bg-primary px-3 py-2">
+                            <i class="bi bi-person-check me-1"></i> Asociado Activo
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="d-grid gap-2">
+                    <a href="mailto:{% if member.user %}{{ member.user.email }}{% elif member.application %}{{ member.application.email }}{% endif %}"
+                       class="btn btn-outline-dark rounded-pill">
+                        <i class="bi bi-envelope me-2"></i> Enviar Correo
+                    </a>
+
+                    {% if member.application and member.application.linkedin_url %}
+                    <a href="{{ member.application.linkedin_url }}" target="_blank"
+                       class="btn btn-outline-primary rounded-pill border-0 bg-light text-primary">
+                        <i class="bi bi-linkedin me-2"></i> Ver LinkedIn
+                    </a>
+                    {% endif %}
+
+                    {% if member.application and member.application.cv_file %}
+                    <a href="{{ member.application.cv_file.url }}" target="_blank"
+                       class="btn btn-outline-secondary rounded-pill">
+                        <i class="bi bi-file-earmark-pdf me-2"></i> Descargar CV
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer bg-light p-3 border-top border-light text-muted small">
+                <i class="bi bi-calendar3 me-1"></i> Vinculado: {{ member.issue_date|date:"d M, Y" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Details -->
+    <div class="col-lg-8">
+
+        <!-- Digital Card Preview -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+            <div class="card-header bg-white p-4 border-bottom border-light d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-person-badge me-2 text-primary"></i>Carnet Digital
+                </h5>
+                <div>
+                    {% if member.status == 'ACTIVE' %}
+                        <span class="badge bg-success rounded-pill px-3">
+                            <i class="bi bi-check-circle me-1"></i> Activo
+                        </span>
+                    {% elif member.status == 'PENDING_PHOTO' %}
+                        <span class="badge bg-warning text-dark rounded-pill px-3">
+                            <i class="bi bi-camera me-1"></i> Pendiente Foto
+                        </span>
+                    {% elif member.status == 'EXPIRED' %}
+                        <span class="badge bg-secondary rounded-pill px-3">
+                            <i class="bi bi-calendar-x me-1"></i> Expirado
+                        </span>
+                    {% elif member.status == 'SUSPENDED' %}
+                        <span class="badge bg-danger rounded-pill px-3">
+                            <i class="bi bi-slash-circle me-1"></i> Suspendido
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <!-- Card Visual Preview -->
+                <div class="d-flex justify-content-center mb-4">
+                    <div style="width: 380px; max-width: 100%;">
+                        <div style="
+                            background: linear-gradient(135deg, #213a5c 0%, #1B2A41 100%);
+                            border-radius: 16px;
+                            padding: 20px;
+                            color: white;
+                            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+                            aspect-ratio: 1.6;
+                            position: relative;
+                            overflow: hidden;
+                        ">
+                            <!-- Decorative element -->
+                            <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.03); border-radius: 50%;"></div>
+                            <div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: rgba(244,195,67,0.1); border-radius: 50%;"></div>
+
+                            <!-- Header -->
+                            <div class="d-flex justify-content-between align-items-start mb-3 position-relative">
+                                <div>
+                                    <div style="font-size: 0.65rem; letter-spacing: 2px; opacity: 0.7;">ASOCIACION NUCLEAR COLOMBIANA</div>
+                                    <div style="font-size: 0.55rem; opacity: 0.5; margin-top: 2px;">CARNET DE ASOCIADO</div>
+                                </div>
+                                {% if member.category == 'FOUNDER' %}
+                                <span style="background: #f4c343; color: #1B2A41; padding: 3px 10px; border-radius: 4px; font-size: 0.6rem; font-weight: bold;">
+                                    FUNDADOR
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Content -->
+                            <div class="d-flex align-items-end position-relative" style="margin-top: auto;">
+                                <!-- Photo -->
+                                <div style="width: 70px; height: 85px; background: white; border-radius: 8px; overflow: hidden; margin-right: 15px; flex-shrink: 0;">
+                                    {% if member.photo %}
+                                        <img src="{{ member.photo.url }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                            <i class="bi bi-person text-secondary" style="font-size: 1.8rem;"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Info -->
+                                <div class="flex-grow-1">
+                                    <div style="font-size: 1.1rem; font-weight: 700; line-height: 1.2; margin-bottom: 4px;">
+                                        {% if member.user and member.user.get_full_name %}
+                                            {{ member.user.get_full_name|truncatechars:22 }}
+                                        {% elif member.application %}
+                                            {{ member.application.first_name }} {{ member.application.last_name|truncatechars:10 }}
+                                        {% endif %}
+                                    </div>
+                                    <div style="color: #f4c343; font-size: 0.85rem; font-weight: 600;">{{ member.card_number }}</div>
+                                    <div style="font-size: 0.65rem; opacity: 0.6; margin-top: 8px;">
+                                        VALIDO HASTA: {{ member.expiry_date|date:"d/m/Y" }}
+                                    </div>
+                                </div>
+
+                                <!-- QR placeholder -->
+                                <div style="width: 55px; height: 55px; background: white; border-radius: 6px; padding: 3px;">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ request.scheme }}://{{ request.get_host }}{% url 'carnets:verificar' member.uuid %}"
+                                         alt="QR" style="width: 100%; height: 100%;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Details -->
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="bg-light rounded-3 p-3 text-center">
+                            <div class="text-muted small mb-1">Numero de Carnet</div>
+                            <div class="fw-bold text-primary">{{ member.card_number }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="bg-light rounded-3 p-3 text-center">
+                            <div class="text-muted small mb-1">Fecha de Emision</div>
+                            <div class="fw-bold">{{ member.issue_date|date:"d/m/Y" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="bg-light rounded-3 p-3 text-center">
+                            <div class="text-muted small mb-1">Vencimiento</div>
+                            <div class="fw-bold">{{ member.expiry_date|date:"d/m/Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white p-3 border-top border-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-qr-code-scan me-1"></i>
+                        {{ member.verifications.count }} verificaciones registradas
+                    </small>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'carnets:verificar' member.uuid %}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill">
+                            <i class="bi bi-qr-code me-1"></i> Verificar
+                        </a>
+                        <a href="{% url 'carnets:card_detail' member.pk %}" class="btn btn-sm btn-primary rounded-pill">
+                            <i class="bi bi-gear me-1"></i> Gestionar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact & Professional Info -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white p-4 border-bottom border-light">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-person-lines-fill me-2 text-primary"></i>Informacion del Asociado
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Contacto</h6>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Correo Electronico</label>
+                            <span class="fw-medium text-dark">
+                                {% if member.user %}{{ member.user.email }}{% elif member.application %}{{ member.application.email }}{% else %}-{% endif %}
+                            </span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Telefono</label>
+                            <span class="fw-medium text-dark">
+                                {% if member.application and member.application.phone %}{{ member.application.phone }}{% else %}No registrado{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Perfil Profesional</h6>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Profesion / Titulo</label>
+                            <span class="fw-medium text-dark">
+                                {% if member.application %}{{ member.application.profession }}{% else %}No especificado{% endif %}
+                            </span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Cargo Actual</label>
+                            <span class="fw-medium text-dark">
+                                {% if member.application and member.application.current_job %}{{ member.application.current_job }}{% else %}No especificado{% endif %}
+                            </span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Institucion / Empresa</label>
+                            <span class="fw-medium text-dark">
+                                {% if member.application and member.application.institution %}{{ member.application.institution }}{% else %}No especificado{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if member.application and member.application.contribution_statement %}
+                <hr class="my-4 text-muted opacity-25">
+                <div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-3">
+                        <i class="bi bi-lightbulb text-warning me-2"></i>Aporte a la ASNC
+                    </h6>
+                    <div class="bg-light p-3 rounded-3">
+                        <p class="mb-0 text-dark" style="white-space: pre-wrap;">{{ member.application.contribution_statement }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Account Info -->
+        {% if member.user %}
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white p-4 border-bottom border-light">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-shield-check me-2 text-primary"></i>Cuenta de Usuario
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
+                                <i class="bi bi-person text-primary"></i>
+                            </div>
+                            <div>
+                                <div class="small text-muted">Username</div>
+                                <div class="fw-medium"><code>{{ member.user.username }}</code></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-2 me-3">
+                                <i class="bi bi-patch-check text-success"></i>
+                            </div>
+                            <div>
+                                <div class="small text-muted">Estado de Cuenta</div>
+                                <div class="fw-medium">
+                                    {% if member.user.is_active %}
+                                        <span class="text-success">Activa</span>
+                                    {% else %}
+                                        <span class="text-danger">Inactiva</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                            <div class="rounded-circle bg-info bg-opacity-10 p-2 me-3">
+                                <i class="bi bi-calendar-plus text-info"></i>
+                            </div>
+                            <div>
+                                <div class="small text-muted">Fecha de Registro</div>
+                                <div class="fw-medium">{{ member.user.date_joined|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                            <div class="rounded-circle bg-warning bg-opacity-10 p-2 me-3">
+                                <i class="bi bi-clock-history text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="small text-muted">Ultimo Acceso</div>
+                                <div class="fw-medium">{{ member.user.last_login|date:"d/m/Y H:i"|default:"Nunca ha ingresado" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Verification History -->
+        {% if verifications %}
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white p-4 border-bottom border-light d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-qr-code-scan me-2 text-primary"></i>Historial de Verificaciones
+                </h5>
+                <span class="badge bg-light text-dark rounded-pill">
+                    Ultimas {{ verifications|length }}
+                </span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Fecha y Hora</th>
+                                <th>Direccion IP</th>
+                                <th class="pe-4">Dispositivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in verifications %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-medium">{{ v.verified_at|date:"d/m/Y" }}</div>
+                                    <small class="text-muted">{{ v.verified_at|date:"H:i:s" }}</small>
+                                </td>
+                                <td><code class="text-primary">{{ v.ip_address|default:"-" }}</code></td>
+                                <td class="pe-4">
+                                    <small class="text-muted text-truncate d-inline-block" style="max-width: 250px;">
+                                        {{ v.user_agent|truncatechars:40|default:"-" }}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Admin Notes -->
+        {% if member.application and member.application.admin_notes %}
+        <div class="card border-0 shadow-sm rounded-4 mb-4 border-start border-warning border-4">
+            <div class="card-header bg-white p-4 border-bottom border-light">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-sticky me-2 text-warning"></i>Notas Internas del Comite
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="bg-warning bg-opacity-10 p-3 rounded-3">
+                    <p class="mb-0" style="white-space: pre-wrap;">{{ member.application.admin_notes }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Links -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: linear-gradient(135deg, #213a5c 0%, #1B2A41 100%);">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="text-white fw-bold mb-1">
+                            <i class="bi bi-folder2-open me-2"></i>Accesos Rapidos
+                        </h5>
+                        <p class="text-white-50 mb-0 small">Gestiona el expediente completo del asociado.</p>
+                    </div>
+                    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+                        <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                            {% if member.application %}
+                            <a href="{% url 'application_detail' member.application.pk %}" class="btn btn-outline-light rounded-pill btn-sm">
+                                <i class="bi bi-file-earmark-person me-1"></i> Solicitud
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'carnets:card_detail' member.pk %}" class="btn btn-warning rounded-pill btn-sm fw-bold">
+                                <i class="bi bi-gear me-1"></i> Gestionar Carnet
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

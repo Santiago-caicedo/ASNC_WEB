@@ -1,0 +1,149 @@
+{% extends 'members/base_members.html' %}
+{% load static %}
+
+{% block content %}
+<h1 class="page-title">Bienvenido, {{ user.first_name|default:"Asociado" }}</h1>
+
+<div class="row g-4">
+    <!-- Card Status -->
+    <div class="col-lg-6">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 50px; height: 50px; background-color: rgba(244, 195, 67, 0.1);">
+                    <i class="bi bi-person-badge fs-4" style="color: #f4c343;"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">Mi Carnet Digital</h5>
+                    <small class="text-muted">Estado de tu identificacion</small>
+                </div>
+            </div>
+
+            {% if card %}
+                {% if card.status == 'ACTIVE' %}
+                    <div class="alert alert-success border-0 rounded-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                            <div>
+                                <strong>Carnet Activo</strong>
+                                <br><small>Vigente hasta: {{ card.expiry_date|date:"d/m/Y" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'members:card' %}" class="btn btn-asnc-gold w-100">
+                        <i class="bi bi-eye me-2"></i> Ver mi Carnet
+                    </a>
+                {% elif card.status == 'PENDING_PHOTO' %}
+                    <div class="alert alert-warning border-0 rounded-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-camera-fill me-2 fs-5"></i>
+                            <div>
+                                <strong>Pendiente de Foto</strong>
+                                <br><small>Revisa tu correo para subir tu foto</small>
+                            </div>
+                        </div>
+                    </div>
+                {% elif card.status == 'EXPIRED' %}
+                    <div class="alert alert-secondary border-0 rounded-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-calendar-x me-2 fs-5"></i>
+                            <div>
+                                <strong>Carnet Expirado</strong>
+                                <br><small>Contacta a la asociacion para renovar</small>
+                            </div>
+                        </div>
+                    </div>
+                {% elif card.status == 'SUSPENDED' %}
+                    <div class="alert alert-danger border-0 rounded-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                            <div>
+                                <strong>Carnet Suspendido</strong>
+                                <br><small>Contacta a la asociacion</small>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info border-0 rounded-3 mb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock-fill me-2 fs-5"></i>
+                        <div>
+                            <strong>Carnet en Proceso</strong>
+                            <br><small>Tu carnet digital sera emitido pronto</small>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Info -->
+    <div class="col-lg-6">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 50px; height: 50px; background-color: rgba(33, 58, 92, 0.1);">
+                    <i class="bi bi-person-circle fs-4" style="color: #213a5c;"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">Mis Datos</h5>
+                    <small class="text-muted">Informacion de tu cuenta</small>
+                </div>
+            </div>
+
+            <table class="table table-borderless mb-0">
+                <tr>
+                    <td class="text-muted ps-0" style="width: 100px;">Nombre</td>
+                    <td class="fw-medium">{{ user.get_full_name|default:"No registrado" }}</td>
+                </tr>
+                <tr>
+                    <td class="text-muted ps-0">Correo</td>
+                    <td class="fw-medium">{{ user.email }}</td>
+                </tr>
+                {% if card %}
+                <tr>
+                    <td class="text-muted ps-0">No. Carnet</td>
+                    <td class="fw-medium">{{ card.card_number }}</td>
+                </tr>
+                <tr>
+                    <td class="text-muted ps-0">Categoria</td>
+                    <td>
+                        {% if card.category == 'FOUNDER' %}
+                            <span class="badge bg-warning text-dark">Fundador</span>
+                        {% else %}
+                            <span class="badge bg-primary">Asociado</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+            </table>
+
+            <hr class="my-3">
+            <a href="{% url 'members:profile' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil me-1"></i> Ver perfil completo
+            </a>
+        </div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="col-12">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #213a5c 0%, #1B2A41 100%); color: white;">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="fw-bold mb-2">Asociacion Nuclear Colombiana</h5>
+                    <p class="mb-0 opacity-75">
+                        Gracias por ser parte de nuestra comunidad. Juntos impulsamos el desarrollo
+                        de la ciencia y tecnologia nuclear en Colombia.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a href="https://www.asncol.com" target="_blank" class="btn btn-asnc-gold">
+                        <i class="bi bi-globe me-1"></i> Visitar Sitio Web
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,6 +3,67 @@
 
 {% block title %}Quiénes Somos{% endblock %}
 
+{% block meta_description %}Conoce al equipo directivo de la Asociación Nuclear Colombiana (ASNC). Profesionales comprometidos con la divulgación y desarrollo de la ciencia nuclear en Colombia.{% endblock %}
+
+{% block extra_structured_data %}
+{% if members %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "Quiénes Somos - ASNC",
+    "description": "Equipo directivo de la Asociación Nuclear Colombiana",
+    "mainEntity": {
+        "@type": "Organization",
+        "name": "Asociación Nuclear Colombiana",
+        "alternateName": "ASNC",
+        "member": [
+            {% for member in members %}
+            {
+                "@type": "Person",
+                "name": "{{ member.full_name }}",
+                "jobTitle": "{{ member.association_position }}",
+                "description": "{{ member.profession }}",
+                {% if member.photo %}"image": "{{ member.photo.url }}",{% endif %}
+                {% if member.linkedin_url %}"sameAs": "{{ member.linkedin_url }}",{% endif %}
+                "worksFor": {
+                    "@type": "Organization",
+                    "name": "Asociación Nuclear Colombiana",
+                    "url": "https://www.asncol.com"
+                },
+                "memberOf": {
+                    "@type": "Organization",
+                    "name": "Asociación Nuclear Colombiana"
+                }
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }
+}
+</script>
+{% for member in members %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{ member.full_name }}",
+    "jobTitle": "{{ member.association_position }} - Asociación Nuclear Colombiana",
+    "description": "{{ member.profession }}. Miembro de la Junta Directiva de la Asociación Nuclear Colombiana (ASNC).",
+    {% if member.photo %}"image": "{{ member.photo.url }}",{% endif %}
+    {% if member.linkedin_url %}"sameAs": ["{{ member.linkedin_url }}"],{% endif %}
+    "affiliation": {
+        "@type": "Organization",
+        "name": "Asociación Nuclear Colombiana",
+        "alternateName": "ASNC",
+        "url": "https://www.asncol.com"
+    },
+    "knowsAbout": ["Energía Nuclear", "Ciencia Nuclear", "Tecnología Nuclear", "Divulgación Científica"]
+}
+</script>
+{% endfor %}
+{% endif %}
+{% endblock %}
+
 {% block content %}
 
 <!-- Hero Section (Se mantiene igual) -->
@@ -171,7 +232,7 @@
                 <div class="member-photo-container">
                     <div class="photo-border"></div>
                     {% if member.photo %}
-                    <img src="{{ member.photo.url }}" alt="{{ member.full_name }}" class="member-photo">
+                    <img src="{{ member.photo.url }}" alt="{{ member.full_name }} - {{ member.association_position }} de la Asociación Nuclear Colombiana ASNC" class="member-photo">
                     {% else %}
                     <div class="photo-placeholder">
                         <i class="bi bi-person-fill"></i>

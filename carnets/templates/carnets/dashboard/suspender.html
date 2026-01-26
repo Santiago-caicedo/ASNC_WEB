@@ -1,0 +1,56 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+
+<div class="mb-4">
+    <a href="{% url 'carnets:card_detail' card.pk %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al carné
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-danger text-white p-4 text-center">
+                <i class="bi bi-pause-circle display-4 mb-2"></i>
+                <h4 class="fw-bold mb-0">Suspender Carné</h4>
+            </div>
+            <div class="card-body p-4">
+                <!-- Card Summary -->
+                <div class="text-center mb-4">
+                    <span class="font-monospace fw-bold text-primary fs-5">{{ card.card_number }}</span>
+                    <p class="text-muted mb-0">{{ card.user.get_full_name }}</p>
+                </div>
+
+                <div class="alert alert-warning border-0 rounded-3 mb-4">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Atención:</strong> Al suspender el carné, el asociado no podrá utilizarlo hasta que sea reactivado.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label for="{{ form.reason.id_for_label }}" class="form-label fw-bold">
+                            {{ form.reason.label }} <span class="text-danger">*</span>
+                        </label>
+                        {{ form.reason }}
+                        {% if form.reason.errors %}
+                        <div class="text-danger small mt-1">{{ form.reason.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg rounded-pill">
+                            <i class="bi bi-pause-circle me-2"></i> Confirmar Suspensión
+                        </button>
+                        <a href="{% url 'carnets:card_detail' card.pk %}" class="btn btn-outline-secondary rounded-pill">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

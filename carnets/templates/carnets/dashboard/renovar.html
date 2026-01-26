@@ -1,0 +1,64 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+
+<div class="mb-4">
+    <a href="{% url 'carnets:card_detail' card.pk %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al carné
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-primary text-white p-4 text-center">
+                <i class="bi bi-arrow-repeat display-4 mb-2"></i>
+                <h4 class="fw-bold mb-0">Renovar Carné</h4>
+            </div>
+            <div class="card-body p-4">
+                <!-- Card Summary -->
+                <div class="text-center mb-4">
+                    <span class="font-monospace fw-bold text-primary fs-5">{{ card.card_number }}</span>
+                    <p class="text-muted mb-0">{{ card.user.get_full_name }}</p>
+                </div>
+
+                <div class="bg-light rounded-3 p-3 mb-4 text-center">
+                    <small class="text-muted d-block">Vencimiento actual</small>
+                    <span class="fw-bold {% if not card.is_valid %}text-danger{% endif %}">
+                        {{ card.expiry_date|date:"d/m/Y" }}
+                    </span>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label for="{{ form.new_expiry_year.id_for_label }}" class="form-label fw-bold">
+                            {{ form.new_expiry_year.label }}
+                        </label>
+                        {{ form.new_expiry_year }}
+                        <small class="text-muted d-block mt-1">{{ form.new_expiry_year.help_text }}</small>
+                        {% if form.new_expiry_year.errors %}
+                        <div class="text-danger small mt-1">{{ form.new_expiry_year.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="alert alert-info border-0 rounded-3 mb-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        El carné se renovará hasta el <strong>31 de diciembre</strong> del año seleccionado.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="bi bi-arrow-repeat me-2"></i> Confirmar Renovación
+                        </button>
+                        <a href="{% url 'carnets:card_detail' card.pk %}" class="btn btn-outline-secondary rounded-pill">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

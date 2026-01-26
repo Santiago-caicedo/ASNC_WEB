@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASNC | Portal del Asociado</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --asnc-navy: #1B2A41;
+            --asnc-blue: #213a5c;
+            --asnc-gold: #f4c343;
+            --bg-body: #F5F7FA;
+            --sidebar-width: 260px;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
+            --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--asnc-navy);
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background-color: #ffffff;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0,0,0,0.03);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.02);
+        }
+
+        .sidebar-brand {
+            padding: 2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 1.5rem;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .menu-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            margin-top: 1.5rem;
+            padding-left: 10px;
+        }
+
+        .nav-link {
+            color: #64748b;
+            padding: 0.9rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            font-size: 1.25rem;
+            margin-right: 12px;
+            color: #94a3b8;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #f8fafc;
+            color: var(--asnc-blue);
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background-color: rgba(33, 58, 92, 0.05);
+            color: var(--asnc-blue);
+            font-weight: 600;
+        }
+
+        .nav-link.active i {
+            color: var(--asnc-gold);
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(0,0,0,0.03);
+            background: linear-gradient(to bottom, #ffffff, #fafafa);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background-color: var(--asnc-gold);
+            color: var(--asnc-navy);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-weight: 700;
+            font-size: 1.75rem;
+            color: var(--asnc-navy);
+            letter-spacing: -0.5px;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: none;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .btn-logout {
+            border: none;
+            background: transparent;
+            color: #dc3545;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover {
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .btn-asnc-primary {
+            background-color: var(--asnc-blue);
+            border-color: var(--asnc-blue);
+            color: white;
+        }
+        .btn-asnc-primary:hover {
+            background-color: var(--asnc-navy);
+            border-color: var(--asnc-navy);
+            color: white;
+        }
+
+        .btn-asnc-gold {
+            background-color: var(--asnc-gold);
+            border-color: var(--asnc-gold);
+            color: var(--asnc-navy);
+            font-weight: 600;
+        }
+        .btn-asnc-gold:hover {
+            background-color: #e5b63d;
+            border-color: #e5b63d;
+            color: var(--asnc-navy);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="{% static 'images/asnc_logo_full.png' %}" alt="ASNC" style="max-width: 100%; height: auto; max-height: 60px;">
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-label">Mi Portal</div>
+
+            <a href="{% url 'members:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-house"></i> Inicio
+            </a>
+
+            <a href="{% url 'members:card' %}" class="nav-link {% if 'carnet' in request.path %}active{% endif %}">
+                <i class="bi bi-person-badge"></i> Mi Carnet
+            </a>
+
+            <a href="{% url 'members:profile' %}" class="nav-link {% if 'perfil' in request.path %}active{% endif %}">
+                <i class="bi bi-person-circle"></i> Mi Perfil
+            </a>
+
+            <div class="menu-label">Enlaces</div>
+
+            <a href="/" class="nav-link" target="_blank">
+                <i class="bi bi-globe"></i> Sitio Web ASNC
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">
+                    {{ user.first_name|first|default:"A" }}{{ user.last_name|first|default:"S" }}
+                </div>
+                <div class="flex-grow-1" style="line-height: 1.2;">
+                    <small class="d-block fw-bold text-dark">{{ user.first_name|default:"Asociado" }}</small>
+                    <small class="text-muted" style="font-size: 0.7rem;">Asociado</small>
+                </div>
+                <form action="{% url 'members:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout" title="Cerrar Sesion">
+                        <i class="bi bi-power"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-2 fs-5"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

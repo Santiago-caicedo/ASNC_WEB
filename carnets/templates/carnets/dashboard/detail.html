@@ -1,0 +1,206 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+
+<div class="mb-4">
+    <a href="{% url 'carnets:card_list' %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al listado
+    </a>
+</div>
+
+<div class="row g-4">
+
+    <!-- Left Column: Card Preview -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 text-center overflow-hidden h-100">
+            <div class="card-body p-5">
+                <!-- Photo -->
+                {% if card.photo %}
+                <img src="{{ card.photo.url }}" alt="{{ card.full_name }}"
+                     class="rounded-circle shadow mb-4"
+                     style="width: 140px; height: 140px; object-fit: cover;">
+                {% else %}
+                <div class="mx-auto rounded-circle d-flex justify-content-center align-items-center mb-4 text-white shadow fw-bold display-4"
+                     style="width: 140px; height: 140px; background: linear-gradient(135deg, var(--asnc-blue), #4a6fa5);">
+                    {{ card.user.first_name|first }}{{ card.user.last_name|first }}
+                </div>
+                {% endif %}
+
+                <!-- Name & Category -->
+                <h3 class="fw-bold text-dark mb-1">{{ card.user.get_full_name }}</h3>
+
+                {% if card.category == 'FOUNDER' %}
+                <span class="badge bg-warning text-dark rounded-pill px-3 mb-3">
+                    <i class="bi bi-star-fill me-1"></i> Fundador
+                </span>
+                {% else %}
+                <span class="badge bg-info text-white rounded-pill px-3 mb-3">Asociado</span>
+                {% endif %}
+
+                <!-- Card Number -->
+                <p class="font-monospace text-primary fw-bold mb-3">{{ card.card_number }}</p>
+
+                <!-- Status -->
+                <div class="mb-4">
+                    {% if card.status == 'ACTIVE' %}
+                    <span class="badge rounded-pill bg-success text-white px-4 py-2">
+                        <i class="bi bi-check-circle-fill me-1"></i> Activo
+                    </span>
+                    {% elif card.status == 'PENDING_PHOTO' %}
+                    <span class="badge rounded-pill bg-warning text-dark px-4 py-2">
+                        <i class="bi bi-camera me-1"></i> Pendiente de Foto
+                    </span>
+                    {% elif card.status == 'EXPIRED' %}
+                    <span class="badge rounded-pill bg-secondary text-white px-4 py-2">
+                        <i class="bi bi-calendar-x me-1"></i> Expirado
+                    </span>
+                    {% elif card.status == 'SUSPENDED' %}
+                    <span class="badge rounded-pill bg-danger text-white px-4 py-2">
+                        <i class="bi bi-pause-circle me-1"></i> Suspendido
+                    </span>
+                    {% elif card.status == 'CANCELLED' %}
+                    <span class="badge rounded-pill bg-dark text-white px-4 py-2">
+                        <i class="bi bi-x-circle me-1"></i> Cancelado
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Actions based on status -->
+                <div class="d-grid gap-2">
+                    {% if card.status == 'PENDING_PHOTO' %}
+                    <a href="{% url 'carnets:resend_photo_request' card.pk %}" class="btn btn-warning rounded-pill">
+                        <i class="bi bi-envelope me-2"></i> Reenviar Solicitud de Foto
+                    </a>
+                    {% endif %}
+
+                    {% if card.status == 'ACTIVE' %}
+                    <a href="{% url 'carnets:card_suspend' card.pk %}" class="btn btn-outline-danger rounded-pill">
+                        <i class="bi bi-pause-circle me-2"></i> Suspender Carné
+                    </a>
+                    {% endif %}
+
+                    {% if card.status == 'SUSPENDED' %}
+                    <a href="{% url 'carnets:card_reactivate' card.pk %}" class="btn btn-success rounded-pill">
+                        <i class="bi bi-play-circle me-2"></i> Reactivar Carné
+                    </a>
+                    {% endif %}
+
+                    {% if card.status in 'ACTIVE,EXPIRED' %}
+                    <a href="{% url 'carnets:card_renew' card.pk %}" class="btn btn-outline-primary rounded-pill">
+                        <i class="bi bi-arrow-repeat me-2"></i> Renovar Carné
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer bg-light p-3 border-top border-light">
+                <div class="row text-center small">
+                    <div class="col-6">
+                        <span class="text-muted d-block">Emisión</span>
+                        <span class="fw-bold">{{ card.issue_date|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted d-block">Vencimiento</span>
+                        <span class="fw-bold {% if not card.is_valid %}text-danger{% endif %}">{{ card.expiry_date|date:"d/m/Y" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Details -->
+    <div class="col-lg-8">
+
+        <!-- Card Information -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white p-4 border-bottom border-light">
+                <h5 class="fw-bold mb-0 text-dark">Información del Carné</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Datos del Asociado</h6>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Correo Electrónico</label>
+                            <span class="fw-medium text-dark">{{ card.user.email }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">UUID de Verificación</label>
+                            <code class="small">{{ card.uuid }}</code>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Administración</h6>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Emitido por</label>
+                            <span class="fw-medium text-dark">{% if card.issued_by %}{{ card.issued_by.get_full_name }}{% else %}Sistema{% endif %}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Fecha de Creación</label>
+                            <span class="fw-medium text-dark">{{ card.created_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if card.suspension_reason %}
+                <hr class="my-4 text-muted opacity-25">
+                <div>
+                    <h6 class="text-uppercase text-danger small fw-bold mb-3">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Motivo de Suspensión
+                    </h6>
+                    <div class="bg-danger-subtle p-3 rounded-3">
+                        <p class="mb-0 text-dark">{{ card.suspension_reason }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if card.application %}
+                <hr class="my-4 text-muted opacity-25">
+                <div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-3">Solicitud Asociada</h6>
+                    <a href="{% url 'application_detail' card.application.pk %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                        <i class="bi bi-file-earmark-person me-1"></i> Ver Expediente
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Verification History -->
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white p-4 border-bottom border-light d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark">Historial de Verificaciones</h5>
+                <span class="badge bg-primary rounded-pill">{{ card.verifications.count }} escaneos</span>
+            </div>
+            <div class="card-body p-4">
+                {% if recent_verifications %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th class="border-0 text-muted small">Fecha/Hora</th>
+                                <th class="border-0 text-muted small">Dirección IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in recent_verifications %}
+                            <tr>
+                                <td class="small">{{ v.verified_at|date:"d/m/Y H:i:s" }}</td>
+                                <td class="small font-monospace">{{ v.ip_address|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted small mb-0 text-center py-3">
+                    <i class="bi bi-qr-code me-2"></i>
+                    Este carné no ha sido verificado aún.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

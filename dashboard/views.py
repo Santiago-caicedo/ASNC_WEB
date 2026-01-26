@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView, FormView
 from django.urls import reverse_lazy
@@ -10,8 +10,23 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from admissions.models import MembershipApplication
 from website.models import FeaturedMember
+from carnets.models import MemberCard
 from .forms import FeaturedMemberForm, EmailComposeForm
 from .models import SentEmail
+
+
+class StaffRequiredMixin(UserPassesTestMixin):
+    """Mixin to restrict views to staff/superuser only."""
+    login_url = '/acceso/'
+
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            # If logged in but not staff, redirect to member portal
+            return redirect('/mi-portal/')
+        return super().handle_no_permission()
 
 
 # 1. Login Personalizado
@@ -19,9 +34,17 @@ class CustomLoginView(LoginView):
     template_name = 'dashboard/login.html'
     redirect_authenticated_user = True
 
+    def get_success_url(self):
+        user = self.request.user
+        # If user is staff/superuser, redirect to admin dashboard
+        if user.is_staff or user.is_superuser:
+            return '/portal/'
+        # Regular users go to member portal
+        return '/mi-portal/'
+
 
 # 2. Home del Dashboard (Resumen)
-class DashboardHomeView(LoginRequiredMixin, TemplateView):
+class DashboardHomeView(StaffRequiredMixin, LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/home.html'
 
     def get_context_data(self, **kwargs):
@@ -30,6 +53,12 @@ class DashboardHomeView(LoginRequiredMixin, TemplateView):
         context['pending_count'] = MembershipApplication.objects.filter(status='PENDING').count()
         context['review_count'] = MembershipApplication.objects.filter(status='REVIEW').count()
         context['members_count'] = FeaturedMember.objects.filter(is_active=True).count()
+        # Card counters
+        context['active_cards'] = MemberCard.objects.filter(status=MemberCard.Status.ACTIVE).count()
+        context['pending_photo_cards'] = MemberCard.objects.filter(status=MemberCard.Status.PENDING_PHOTO).count()
+        # Directory counters
+        context['total_associates'] = MemberCard.objects.count()
+        context['founders_count'] = MemberCard.objects.filter(category=MemberCard.Category.FOUNDER).count()
         return context
 
 
@@ -37,7 +66,7 @@ class DashboardHomeView(LoginRequiredMixin, TemplateView):
 # CRUD para Asociados Destacados
 # ============================================
 
-class FeaturedMemberListView(LoginRequiredMixin, ListView):
+class FeaturedMemberListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
     """Lista de asociados destacados"""
     model = FeaturedMember
     template_name = 'dashboard/featured_members/list.html'
@@ -45,7 +74,7 @@ class FeaturedMemberListView(LoginRequiredMixin, ListView):
     ordering = ['display_order', 'full_name']
 
 
-class FeaturedMemberCreateView(LoginRequiredMixin, CreateView):
+class FeaturedMemberCreateView(StaffRequiredMixin, LoginRequiredMixin, CreateView):
     """Crear nuevo asociado destacado"""
     model = FeaturedMember
     form_class = FeaturedMemberForm
@@ -63,7 +92,7 @@ class FeaturedMemberCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
-class FeaturedMemberUpdateView(LoginRequiredMixin, UpdateView):
+class FeaturedMemberUpdateView(StaffRequiredMixin, LoginRequiredMixin, UpdateView):
     """Editar asociado destacado"""
     model = FeaturedMember
     form_class = FeaturedMemberForm
@@ -81,7 +110,7 @@ class FeaturedMemberUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class FeaturedMemberDeleteView(LoginRequiredMixin, DeleteView):
+class FeaturedMemberDeleteView(StaffRequiredMixin, LoginRequiredMixin, DeleteView):
     """Eliminar asociado destacado"""
     model = FeaturedMember
     template_name = 'dashboard/featured_members/confirm_delete.html'
@@ -96,7 +125,7 @@ class FeaturedMemberDeleteView(LoginRequiredMixin, DeleteView):
 # Módulo de Correos / Mailing
 # ============================================
 
-class EmailComposeView(LoginRequiredMixin, FormView):
+class EmailComposeView(StaffRequiredMixin, LoginRequiredMixin, FormView):
     """Vista para componer y enviar correos"""
     template_name = 'dashboard/emails/compose.html'
     form_class = EmailComposeForm
@@ -157,7 +186,7 @@ class EmailComposeView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class EmailHistoryView(LoginRequiredMixin, ListView):
+class EmailHistoryView(StaffRequiredMixin, LoginRequiredMixin, ListView):
     """Lista de correos enviados"""
     model = SentEmail
     template_name = 'dashboard/emails/history.html'
@@ -166,8 +195,82 @@ class EmailHistoryView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
 
-class EmailDetailView(LoginRequiredMixin, DetailView):
+class EmailDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
     """Detalle de un correo enviado"""
     model = SentEmail
     template_name = 'dashboard/emails/detail.html'
     context_object_name = 'email'
+
+
+# ============================================
+# Directorio Oficial de Asociados
+# ============================================
+
+class DirectoryListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
+    """Lista del directorio oficial de asociados vinculados."""
+    model = MemberCard
+    template_name = 'dashboard/directory/list.html'
+    context_object_name = 'members'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = MemberCard.objects.select_related(
+            'user', 'application', 'issued_by'
+        ).order_by('-created_at')
+
+        # Filter by category
+        category = self.request.GET.get('category')
+        if category:
+            queryset = queryset.filter(category=category)
+
+        # Filter by status
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+
+        # Search
+        search = self.request.GET.get('q')
+        if search:
+            from django.db.models import Q
+            queryset = queryset.filter(
+                Q(card_number__icontains=search) |
+                Q(user__first_name__icontains=search) |
+                Q(user__last_name__icontains=search) |
+                Q(user__email__icontains=search) |
+                Q(application__profession__icontains=search)
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category_choices'] = MemberCard.Category.choices
+        context['status_choices'] = MemberCard.Status.choices
+        context['current_category'] = self.request.GET.get('category', '')
+        context['current_status'] = self.request.GET.get('status', '')
+        context['search_query'] = self.request.GET.get('q', '')
+
+        # Stats
+        context['total_members'] = MemberCard.objects.count()
+        context['active_members'] = MemberCard.objects.filter(status=MemberCard.Status.ACTIVE).count()
+        context['founders_count'] = MemberCard.objects.filter(category=MemberCard.Category.FOUNDER).count()
+
+        return context
+
+
+class DirectoryDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
+    """Expediente detallado de un asociado."""
+    model = MemberCard
+    template_name = 'dashboard/directory/detail.html'
+    context_object_name = 'member'
+
+    def get_queryset(self):
+        return MemberCard.objects.select_related(
+            'user', 'application', 'issued_by'
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get verification history
+        context['verifications'] = self.object.verifications.all()[:10]
+        return context

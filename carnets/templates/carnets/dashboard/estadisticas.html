@@ -1,0 +1,227 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="top-bar-area">
+    <h1 class="page-title">Estadísticas de Carnés</h1>
+    <a href="{% url 'carnets:card_list' %}" class="btn btn-outline-primary rounded-pill px-4">
+        <i class="bi bi-list me-2"></i> Ver Listado
+    </a>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-primary bg-opacity-10 me-3">
+                    <i class="bi bi-person-badge text-primary fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">{{ total_cards }}</h2>
+                    <span class="text-muted small">Total Carnés</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-success bg-opacity-10 me-3">
+                    <i class="bi bi-check-circle text-success fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">{{ active_cards }}</h2>
+                    <span class="text-muted small">Activos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-warning bg-opacity-10 me-3">
+                    <i class="bi bi-camera text-warning fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">{{ pending_photo }}</h2>
+                    <span class="text-muted small">Pendientes Foto</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-info bg-opacity-10 me-3">
+                    <i class="bi bi-qr-code-scan text-info fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">{{ total_verifications }}</h2>
+                    <span class="text-muted small">Verificaciones</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Status Distribution -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white p-4 border-bottom border-light">
+                <h5 class="fw-bold mb-0">Distribución por Estado</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small">Activos</span>
+                        <span class="small fw-bold text-success">{{ active_cards }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: {% widthratio active_cards total_cards 100 %}%;"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small">Pendientes de Foto</span>
+                        <span class="small fw-bold text-warning">{{ pending_photo }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: {% widthratio pending_photo total_cards 100 %}%;"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small">Expirados</span>
+                        <span class="small fw-bold text-secondary">{{ expired_cards }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-secondary" style="width: {% widthratio expired_cards total_cards 100 %}%;"></div>
+                    </div>
+                </div>
+
+                <div class="mb-0">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small">Suspendidos</span>
+                        <span class="small fw-bold text-danger">{{ suspended_cards }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-danger" style="width: {% widthratio suspended_cards total_cards 100 %}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Distribution -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white p-4 border-bottom border-light">
+                <h5 class="fw-bold mb-0">Distribución por Categoría</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="rounded-4 bg-warning bg-opacity-10 p-4">
+                            <i class="bi bi-star-fill text-warning display-4"></i>
+                            <h2 class="fw-bold mt-3 mb-0">{{ founder_cards }}</h2>
+                            <span class="text-muted">Fundadores</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="rounded-4 bg-info bg-opacity-10 p-4">
+                            <i class="bi bi-person-check text-info display-4"></i>
+                            <h2 class="fw-bold mt-3 mb-0">{{ associate_cards }}</h2>
+                            <span class="text-muted">Asociados</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <span class="text-muted small d-block">Verificaciones Hoy</span>
+                            <span class="fs-4 fw-bold text-info">{{ verifications_today }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <span class="text-muted small d-block">Por Vencer (30 días)</span>
+                            <span class="fs-4 fw-bold text-danger">{{ expiring_soon }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Cards -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white p-4 border-bottom border-light d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Carnés Recientes</h5>
+                <a href="{% url 'carnets:card_list' %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                    Ver todos
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_cards %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 ps-4 py-3">Número</th>
+                                <th class="border-0 py-3">Asociado</th>
+                                <th class="border-0 py-3">Categoría</th>
+                                <th class="border-0 py-3">Estado</th>
+                                <th class="border-0 py-3">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for card in recent_cards %}
+                            <tr>
+                                <td class="ps-4">
+                                    <a href="{% url 'carnets:card_detail' card.pk %}" class="font-monospace fw-semibold text-primary text-decoration-none">
+                                        {{ card.card_number }}
+                                    </a>
+                                </td>
+                                <td>{{ card.user.get_full_name }}</td>
+                                <td>
+                                    {% if card.category == 'FOUNDER' %}
+                                    <span class="badge bg-warning text-dark rounded-pill">Fundador</span>
+                                    {% else %}
+                                    <span class="badge bg-info rounded-pill">Asociado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if card.status == 'ACTIVE' %}
+                                    <span class="badge bg-success-subtle text-success rounded-pill">Activo</span>
+                                    {% elif card.status == 'PENDING_PHOTO' %}
+                                    <span class="badge bg-warning-subtle text-warning rounded-pill">Pendiente</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill">{{ card.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small">{{ card.created_at|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4 mb-0">No hay carnés registrados.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

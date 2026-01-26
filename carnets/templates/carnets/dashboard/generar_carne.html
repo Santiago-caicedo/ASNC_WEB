@@ -1,0 +1,104 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+
+<div class="mb-4">
+    <a href="{% url 'application_detail' application.pk %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al expediente
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white p-4 border-bottom border-light text-center">
+                <i class="bi bi-person-badge display-4 text-primary mb-3"></i>
+                <h4 class="fw-bold mb-1">Generar Carné Digital</h4>
+                <p class="text-muted mb-0">Para {{ application.first_name }} {{ application.last_name }}</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Applicant Summary -->
+                    <div class="bg-light rounded-3 p-3 mb-4">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Correo</small>
+                                <span class="small fw-medium">{{ application.email }}</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Profesión</small>
+                                <span class="small fw-medium">{{ application.profession }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Categoría de Membresía</label>
+                        <div class="row g-3">
+                            {% for choice in form.category %}
+                            <div class="col-6">
+                                <div class="form-check card border rounded-3 p-3 h-100 {{ choice.data.attrs.checked }}">
+                                    {{ choice.tag }}
+                                    <label class="form-check-label w-100 ms-2" for="{{ choice.id_for_label }}">
+                                        {% if choice.data.value == 'FOUNDER' %}
+                                        <span class="fw-bold text-warning">
+                                            <i class="bi bi-star-fill me-1"></i> Fundador
+                                        </span>
+                                        <small class="d-block text-muted mt-1">Miembro fundador de la asociación</small>
+                                        {% else %}
+                                        <span class="fw-bold text-info">
+                                            <i class="bi bi-person-check me-1"></i> Asociado
+                                        </span>
+                                        <small class="d-block text-muted mt-1">Nuevo miembro de la asociación</small>
+                                        {% endif %}
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Email Option -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            {{ form.send_email }}
+                            <label class="form-check-label" for="{{ form.send_email.id_for_label }}">
+                                {{ form.send_email.label }}
+                            </label>
+                            <small class="d-block text-muted mt-1">
+                                Se enviará un correo a {{ application.email }} con un enlace para subir su foto.
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Info Box -->
+                    <div class="alert alert-info border-0 rounded-3 mb-4">
+                        <h6 class="fw-bold mb-2"><i class="bi bi-info-circle me-2"></i>Proceso de generación</h6>
+                        <ol class="mb-0 small ps-3">
+                            <li>Se crea el carné con número único</li>
+                            <li>Se envía email solicitando foto (opcional)</li>
+                            <li>El asociado sube su foto mediante un enlace seguro</li>
+                            <li>El carné se activa automáticamente</li>
+                        </ol>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="bi bi-plus-circle me-2"></i> Generar Carné
+                        </button>
+                        <a href="{% url 'application_detail' application.pk %}" class="btn btn-outline-secondary rounded-pill">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

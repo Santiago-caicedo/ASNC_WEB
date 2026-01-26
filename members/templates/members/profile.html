@@ -1,0 +1,128 @@
+{% extends 'members/base_members.html' %}
+{% load static %}
+
+{% block content %}
+<h1 class="page-title">Mi Perfil</h1>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center mb-4">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 70px; height: 70px; background-color: #f4c343; color: #1B2A41; font-size: 1.5rem; font-weight: bold;">
+                    {{ user.first_name|first|default:"A" }}{{ user.last_name|first|default:"S" }}
+                </div>
+                <div>
+                    <h4 class="mb-0 fw-bold">{{ user.get_full_name|default:"Asociado ASNC" }}</h4>
+                    <span class="text-muted">{{ user.email }}</span>
+                </div>
+            </div>
+
+            <hr>
+
+            <h6 class="text-muted mb-3"><i class="bi bi-person me-2"></i>Informacion Personal</h6>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Nombre</label>
+                    <div class="fw-medium">{{ user.first_name|default:"No registrado" }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Apellido</label>
+                    <div class="fw-medium">{{ user.last_name|default:"No registrado" }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Correo Electronico</label>
+                    <div class="fw-medium">{{ user.email }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Usuario</label>
+                    <div class="fw-medium">{{ user.username }}</div>
+                </div>
+            </div>
+
+            <h6 class="text-muted mb-3"><i class="bi bi-shield-check me-2"></i>Seguridad</h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Fecha de Registro</label>
+                    <div class="fw-medium">{{ user.date_joined|date:"d/m/Y" }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Ultimo Acceso</label>
+                    <div class="fw-medium">{{ user.last_login|date:"d/m/Y H:i"|default:"Nunca" }}</div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="alert alert-info border-0 mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Para actualizar tu informacion personal o cambiar tu contrasena,
+                por favor contacta a <a href="mailto:info@asncol.com">info@asncol.com</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Card Summary -->
+        {% if user.member_card %}
+        <div class="kpi-card">
+            <h6 class="text-muted mb-3"><i class="bi bi-person-badge me-2"></i>Mi Carnet</h6>
+
+            <div class="text-center py-3">
+                <div style="
+                    background: linear-gradient(135deg, #213a5c 0%, #1B2A41 100%);
+                    border-radius: 12px;
+                    padding: 16px;
+                    color: white;
+                    margin-bottom: 16px;
+                ">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <small class="opacity-75">ASNC</small>
+                        {% if user.member_card.category == 'FOUNDER' %}
+                        <span class="badge" style="background: #f4c343; color: #1B2A41; font-size: 0.65rem;">FUNDADOR</span>
+                        {% endif %}
+                    </div>
+                    <div class="fw-bold fs-5 mb-1">{{ user.member_card.card_number }}</div>
+                    <small class="opacity-75">{{ user.member_card.full_name }}</small>
+                </div>
+
+                <table class="table table-sm table-borderless text-start mb-3">
+                    <tr>
+                        <td class="text-muted">Estado</td>
+                        <td class="text-end">
+                            {% if user.member_card.status == 'ACTIVE' %}
+                                <span class="badge bg-success">Activo</span>
+                            {% elif user.member_card.status == 'PENDING_PHOTO' %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif user.member_card.status == 'EXPIRED' %}
+                                <span class="badge bg-secondary">Expirado</span>
+                            {% elif user.member_card.status == 'SUSPENDED' %}
+                                <span class="badge bg-danger">Suspendido</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Vencimiento</td>
+                        <td class="text-end">{{ user.member_card.expiry_date|date:"d/m/Y" }}</td>
+                    </tr>
+                </table>
+
+                <a href="{% url 'members:card' %}" class="btn btn-asnc-gold btn-sm w-100">
+                    <i class="bi bi-eye me-1"></i> Ver Carnet
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="kpi-card">
+            <h6 class="text-muted mb-3"><i class="bi bi-person-badge me-2"></i>Mi Carnet</h6>
+            <div class="text-center py-4">
+                <i class="bi bi-hourglass-split text-muted" style="font-size: 2.5rem;"></i>
+                <p class="text-muted mt-3 mb-0">Tu carnet digital esta siendo procesado.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

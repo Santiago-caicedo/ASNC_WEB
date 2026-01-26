@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'admissions',
     'dashboard',
     'website',
+    'carnets',
+    'members',
 ]
 
 MIDDLEWARE = [
@@ -217,6 +219,6 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='info@asncol.com')
 
 
 # Redirecciones
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'dashboard_home'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = '/acceso/'
+LOGIN_REDIRECT_URL = '/mi-portal/'
+LOGOUT_REDIRECT_URL = '/acceso/'

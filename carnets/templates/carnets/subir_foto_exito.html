@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Foto Recibida{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow rounded-4 text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                </div>
+
+                <h2 class="fw-bold text-success mb-3">Foto Recibida</h2>
+
+                <p class="text-muted mb-4">
+                    Tu foto ha sido subida exitosamente. Tu carné digital ASNC ya está activo.
+                </p>
+
+                {% if card %}
+                <div class="bg-light rounded-3 p-4 mb-4">
+                    <div class="row text-center">
+                        <div class="col-6 border-end">
+                            <small class="text-muted d-block">Número de Carné</small>
+                            <span class="font-monospace fw-bold text-primary">{{ card.card_number }}</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Válido hasta</small>
+                            <span class="fw-bold">{{ card.expiry_date|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="alert alert-info border-0 rounded-3 text-start mb-4">
+                    <h6 class="fw-bold mb-2"><i class="bi bi-envelope-check me-2"></i>Te hemos enviado un correo</h6>
+                    <p class="small mb-0">
+                        Revisa tu bandeja de entrada para acceder a tu carné digital. También puedes acceder desde el portal de asociados.
+                    </p>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'login' %}" class="btn btn-primary rounded-pill">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Ir al Portal de Asociados
+                    </a>
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill">
+                        <i class="bi bi-house me-2"></i> Volver al Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

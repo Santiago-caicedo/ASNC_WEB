@@ -22,6 +22,12 @@ urlpatterns = [
     path('', include('website.urls')),
     path('', include('admissions.urls')),
     path('portal/', include('dashboard.urls')),
+
+    # Carnets (Digital Member Cards)
+    path('', include('carnets.urls')),
+
+    # Members Portal (for regular associates)
+    path('', include('members.urls')),
 ]
 
 # Configuración para servir archivos media en modo DEBUG

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Carné Digital está Listo - ASNC</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa;">
+
+    <!-- Container -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f5f7fa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+
+                <!-- Email Card -->
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+
+                    <!-- Header con Logo -->
+                    <tr>
+                        <td style="background-color: #ffffff; padding: 30px 40px; text-align: center; border-bottom: 3px solid #f4c343;">
+                            <img src="https://vadomdata.s3.amazonaws.com/asnc/static/images/asnc_logo_full.png" alt="ASNC - Asociación Nuclear Colombiana" style="height: 70px; width: auto;">
+                        </td>
+                    </tr>
+
+                    <!-- Banner de Éxito -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); padding: 35px 40px; text-align: center;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                                <tr>
+                                    <td style="width: 50px; vertical-align: middle;">
+                                        <div style="width: 44px; height: 44px; background-color: #ffffff; border-radius: 50%; text-align: center; line-height: 44px;">
+                                            <span style="color: #059669; font-size: 22px;">&#10003;</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding-left: 15px; vertical-align: middle;">
+                                        <h1 style="color: #ffffff; font-size: 24px; margin: 0; font-weight: 600;">
+                                            ¡Tu Carné está Listo!
+                                        </h1>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 40px;">
+
+                            <!-- Greeting -->
+                            <p style="font-size: 18px; color: #1B2A41; margin: 0 0 20px;">
+                                Hola <strong>{{ user.first_name }}</strong>,
+                            </p>
+
+                            <p style="font-size: 16px; color: #64748b; line-height: 1.7; margin: 0 0 30px;">
+                                ¡Excelente noticia! Tu carné digital de la <strong style="color: #1B2A41;">Asociación Nuclear Colombiana</strong> ha sido activado exitosamente.
+                                Ya puedes acceder a él desde el portal de asociados.
+                            </p>
+
+                            <!-- Card Info Box -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td style="background-color: #f0fdf4; border-radius: 12px; padding: 25px; text-align: center; border: 2px solid #86efac;">
+                                        <p style="color: #15803d; font-size: 14px; margin: 0 0 8px; font-weight: 600;">
+                                            TU CARNÉ DIGITAL
+                                        </p>
+                                        <p style="color: #166534; font-size: 28px; font-weight: 700; margin: 0 0 15px; font-family: monospace;">
+                                            {{ card.card_number }}
+                                        </p>
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td width="50%" style="text-align: center; border-right: 1px solid #bbf7d0;">
+                                                    <p style="color: #64748b; font-size: 12px; margin: 0;">Válido hasta</p>
+                                                    <p style="color: #1B2A41; font-size: 16px; font-weight: 600; margin: 5px 0 0;">{{ card.expiry_date|date:"d/m/Y" }}</p>
+                                                </td>
+                                                <td width="50%" style="text-align: center;">
+                                                    <p style="color: #64748b; font-size: 12px; margin: 0;">Categoría</p>
+                                                    <p style="color: #1B2A41; font-size: 16px; font-weight: 600; margin: 5px 0 0;">{{ card.get_category_display }}</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Features -->
+                            <p style="font-size: 16px; color: #1B2A41; font-weight: 600; margin: 0 0 15px;">
+                                ¿Qué puedes hacer con tu carné?
+                            </p>
+
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding: 12px 0; color: #475569; font-size: 15px; border-bottom: 1px solid #e2e8f0;">
+                                        <span style="color: #f4c343; font-size: 18px; margin-right: 10px;">★</span>
+                                        Descargarlo en formato PDF para imprimir o guardar
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; color: #475569; font-size: 15px; border-bottom: 1px solid #e2e8f0;">
+                                        <span style="color: #f4c343; font-size: 18px; margin-right: 10px;">★</span>
+                                        Escanearlo con QR para verificar tu membresía en eventos
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; color: #475569; font-size: 15px;">
+                                        <span style="color: #f4c343; font-size: 18px; margin-right: 10px;">★</span>
+                                        Identificarte como miembro oficial de la ASNC
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{{ card_url }}" style="display: inline-block; background-color: #213a5c; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 16px 40px; border-radius: 50px;">
+                                            Ver Mi Carné
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Closing -->
+                            <p style="font-size: 15px; color: #64748b; line-height: 1.7; margin: 0;">
+                                ¡Bienvenido a la comunidad nuclear colombiana! Si tienes alguna pregunta, contáctanos en <a href="mailto:info@asncol.com" style="color: #213a5c; font-weight: 600;">info@asncol.com</a>
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #1B2A41; padding: 30px 40px;">
+
+                            <!-- Social Links -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="https://www.linkedin.com/company/asncol" style="display: inline-block; margin: 0 8px;">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" style="width: 32px; height: 32px;">
+                                        </a>
+                                        <a href="https://www.instagram.com/asncol" style="display: inline-block; margin: 0 8px;">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram" style="width: 32px; height: 32px;">
+                                        </a>
+                                        <a href="https://www.facebook.com/asncol" style="display: inline-block; margin: 0 8px;">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/174/174848.png" alt="Facebook" style="width: 32px; height: 32px;">
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <p style="font-size: 14px; color: #ffffff; text-align: center; margin: 0 0 15px; font-weight: 600;">
+                                            Asociación Nuclear Colombiana
+                                        </p>
+                                        <p style="font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; margin: 0;">
+                                            &copy; {% now "Y" %} ASNC. Todos los derechos reservados.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                </table>
+
+                <!-- Unsubscribe note -->
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="margin-top: 20px;">
+                    <tr>
+                        <td align="center">
+                            <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+                                Este correo fue enviado a {{ user.email }} porque tu carné digital ASNC está listo.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

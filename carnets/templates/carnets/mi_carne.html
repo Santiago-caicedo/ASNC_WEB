@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Carné Digital{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            {% if not card %}
+            <!-- No Card -->
+            <div class="card border-0 shadow rounded-4 text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-person-badge text-muted" style="font-size: 5rem;"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-3">Sin Carné Digital</h2>
+                <p class="text-muted mb-4">
+                    Aún no tienes un carné digital asociado a tu cuenta. Si eres miembro de la ASNC, contacta al administrador.
+                </p>
+                <a href="{% url 'dashboard_home' %}" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-2"></i> Volver al Portal
+                </a>
+            </div>
+
+            {% elif card.status == 'PENDING_PHOTO' %}
+            <!-- Pending Photo -->
+            <div class="card border-0 shadow rounded-4 text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-camera text-warning" style="font-size: 5rem;"></i>
+                </div>
+                <h2 class="fw-bold text-warning mb-3">Carné Pendiente</h2>
+                <p class="text-muted mb-4">
+                    Tu carné está pendiente de activación. Revisa tu correo electrónico para subir tu foto y activar tu carné digital.
+                </p>
+                <p class="text-muted small">
+                    ¿No recibiste el correo? Contacta a <a href="mailto:info@asncol.com">info@asncol.com</a>
+                </p>
+            </div>
+
+            {% elif card.status == 'ACTIVE' %}
+            <!-- Active Card -->
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+                <div class="position-relative">
+                    <!-- Card Preview (Credit card style) -->
+                    <div class="p-4" style="background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);">
+
+                        <!-- Gold stripe -->
+                        <div class="position-absolute top-0 start-0 end-0 py-2 text-center" style="background: var(--asnc-gold);">
+                            <span class="fw-bold text-dark small">ASOCIACIÓN NUCLEAR COLOMBIANA</span>
+                        </div>
+
+                        <div class="row align-items-center pt-4 mt-2">
+                            <!-- Photo -->
+                            <div class="col-4 text-center">
+                                {% if card.photo %}
+                                <img src="{{ card.photo.url }}" alt="{{ card.full_name }}"
+                                     class="rounded shadow"
+                                     style="width: 100px; height: 120px; object-fit: cover; border: 3px solid white;">
+                                {% else %}
+                                <div class="rounded bg-white d-flex justify-content-center align-items-center mx-auto"
+                                     style="width: 100px; height: 120px;">
+                                    <span class="text-muted display-4 fw-bold">{{ card.user.first_name|first }}{{ card.user.last_name|first }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Info -->
+                            <div class="col-8 text-white">
+                                <h4 class="fw-bold mb-1">{{ card.user.get_full_name }}</h4>
+                                {% if card.category == 'FOUNDER' %}
+                                <span class="badge bg-warning text-dark rounded-pill px-3 mb-2">
+                                    <i class="bi bi-star-fill me-1"></i> Fundador
+                                </span>
+                                {% else %}
+                                <span class="badge bg-light text-dark rounded-pill px-3 mb-2">Asociado</span>
+                                {% endif %}
+                                <p class="font-monospace mb-1 fs-5">{{ card.card_number }}</p>
+                                <small class="opacity-75">Válido hasta: {{ card.expiry_date|date:"d/m/Y" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Status -->
+                    <div class="text-center mb-4">
+                        <span class="badge bg-success rounded-pill px-4 py-2 fs-6">
+                            <i class="bi bi-patch-check-fill me-1"></i> Carné Activo
+                        </span>
+                    </div>
+
+                    <!-- QR Code Info -->
+                    <div class="alert alert-light border rounded-3 text-center mb-4">
+                        <i class="bi bi-qr-code display-6 text-primary mb-2"></i>
+                        <p class="small mb-0">
+                            Tu carné incluye un código QR que puede ser escaneado para verificar tu membresía.
+                        </p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'carnets:mi_carne_descargar' %}" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="bi bi-download me-2"></i> Descargar Carné PDF
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light border-top py-3 text-center">
+                    <small class="text-muted">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        Emitido: {{ card.issue_date|date:"d/m/Y" }} |
+                        Vence: {{ card.expiry_date|date:"d/m/Y" }}
+                    </small>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- Suspended/Expired/Cancelled -->
+            <div class="card border-0 shadow rounded-4 text-center p-5">
+                <div class="mb-4">
+                    {% if card.status == 'EXPIRED' %}
+                    <i class="bi bi-calendar-x text-secondary" style="font-size: 5rem;"></i>
+                    {% elif card.status == 'SUSPENDED' %}
+                    <i class="bi bi-pause-circle text-danger" style="font-size: 5rem;"></i>
+                    {% else %}
+                    <i class="bi bi-x-circle text-dark" style="font-size: 5rem;"></i>
+                    {% endif %}
+                </div>
+
+                <h2 class="fw-bold mb-3">
+                    {% if card.status == 'EXPIRED' %}
+                    Carné Expirado
+                    {% elif card.status == 'SUSPENDED' %}
+                    Carné Suspendido
+                    {% else %}
+                    Carné Cancelado
+                    {% endif %}
+                </h2>
+
+                <p class="font-monospace text-primary fw-bold mb-3">{{ card.card_number }}</p>
+
+                <p class="text-muted mb-4">
+                    {% if card.status == 'EXPIRED' %}
+                    Tu carné venció el {{ card.expiry_date|date:"d/m/Y" }}. Contacta al administrador para renovarlo.
+                    {% elif card.status == 'SUSPENDED' %}
+                    Tu carné ha sido suspendido. Contacta al administrador para más información.
+                    {% else %}
+                    Tu carné ha sido cancelado. Contacta al administrador si crees que es un error.
+                    {% endif %}
+                </p>
+
+                <a href="mailto:info@asncol.com" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-envelope me-2"></i> Contactar Administrador
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

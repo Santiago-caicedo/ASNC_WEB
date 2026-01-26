@@ -1,0 +1,158 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="top-bar-area">
+    <h1 class="page-title">Carnés Digitales</h1>
+    <a href="{% url 'carnets:card_stats' %}" class="btn btn-outline-primary rounded-pill px-4">
+        <i class="bi bi-bar-chart me-2"></i> Estadísticas
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Buscar</label>
+                <input type="text" name="q" class="form-control" placeholder="Nombre, correo o número de carné..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Estado</label>
+                <select name="status" class="form-select">
+                    <option value="">Todos los estados</option>
+                    {% for code, label in status_choices %}
+                    <option value="{{ code }}" {% if current_status == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i> Filtrar
+                </button>
+            </div>
+            {% if search_query or current_status %}
+            <div class="col-md-2">
+                <a href="{% url 'carnets:card_list' %}" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-x-lg me-1"></i> Limpiar
+                </a>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0">
+        {% if cards %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="border-0 ps-4 py-3" style="width: 80px;">Foto</th>
+                        <th class="border-0 py-3">Número</th>
+                        <th class="border-0 py-3">Asociado</th>
+                        <th class="border-0 py-3">Categoría</th>
+                        <th class="border-0 py-3 text-center">Estado</th>
+                        <th class="border-0 py-3">Vencimiento</th>
+                        <th class="border-0 py-3 text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in cards %}
+                    <tr>
+                        <td class="ps-4">
+                            {% if card.photo %}
+                            <img src="{{ card.photo.url }}" alt="{{ card.full_name }}"
+                                 class="rounded-circle"
+                                 style="width: 50px; height: 50px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold"
+                                 style="width: 50px; height: 50px;">
+                                {{ card.user.first_name|first }}{{ card.user.last_name|first }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="font-monospace fw-semibold text-primary">{{ card.card_number }}</span>
+                        </td>
+                        <td>
+                            <span class="fw-semibold text-dark">{{ card.user.get_full_name }}</span>
+                            <br>
+                            <small class="text-muted">{{ card.user.email }}</small>
+                        </td>
+                        <td>
+                            {% if card.category == 'FOUNDER' %}
+                            <span class="badge bg-warning text-dark rounded-pill px-3">
+                                <i class="bi bi-star-fill me-1"></i> Fundador
+                            </span>
+                            {% else %}
+                            <span class="badge bg-info text-white rounded-pill px-3">Asociado</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if card.status == 'ACTIVE' %}
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3">Activo</span>
+                            {% elif card.status == 'PENDING_PHOTO' %}
+                            <span class="badge bg-warning-subtle text-warning rounded-pill px-3">Pendiente Foto</span>
+                            {% elif card.status == 'EXPIRED' %}
+                            <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Expirado</span>
+                            {% elif card.status == 'SUSPENDED' %}
+                            <span class="badge bg-danger-subtle text-danger rounded-pill px-3">Suspendido</span>
+                            {% elif card.status == 'CANCELLED' %}
+                            <span class="badge bg-dark-subtle text-dark rounded-pill px-3">Cancelado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="{% if card.expiry_date < today %}text-danger{% endif %}">
+                                {{ card.expiry_date|date:"d/m/Y" }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'carnets:card_detail' card.pk %}"
+                               class="btn btn-sm btn-outline-primary rounded-pill" title="Ver detalle">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="card-footer bg-white border-top-0 py-3">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-person-badge text-muted" style="font-size: 4rem;"></i>
+            </div>
+            <h5 class="text-muted mb-3">No hay carnés digitales</h5>
+            <p class="text-muted small mb-4">Los carnés se generan desde el expediente de solicitudes aprobadas con status "Vinculado"</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
