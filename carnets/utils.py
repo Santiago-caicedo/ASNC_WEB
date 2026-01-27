@@ -206,12 +206,15 @@ def generate_card_pdf(card):
     # Add actual photo
     if card.photo:
         try:
-            img = Image.open(card.photo.path)
-            img.thumbnail((int(photo_w * 6), int(photo_h * 6)), Image.Resampling.LANCZOS)
-            img_reader = ImageReader(img)
-            c.drawImage(img_reader, photo_x + 1.5*mm, photo_y + 1.5*mm,
-                       photo_w - 3*mm, photo_h - 3*mm,
-                       preserveAspectRatio=True, anchor='c', mask='auto')
+            # Use Django's storage backend (works with both local and S3)
+            with card.photo.open('rb') as photo_file:
+                img = Image.open(photo_file)
+                img.load()  # Force load the image data before closing the file
+                img.thumbnail((int(photo_w * 6), int(photo_h * 6)), Image.Resampling.LANCZOS)
+                img_reader = ImageReader(img)
+                c.drawImage(img_reader, photo_x + 1.5*mm, photo_y + 1.5*mm,
+                           photo_w - 3*mm, photo_h - 3*mm,
+                           preserveAspectRatio=True, anchor='c', mask='auto')
         except Exception:
             c.setFont("Helvetica", 10)
             c.setFillColor(colors.HexColor('#cbd5e1'))
