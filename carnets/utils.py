@@ -184,10 +184,27 @@ def generate_card_pdf(card):
     c.setFont("Helvetica", 7)
     c.drawString(card_x + 10*mm, card_y + card_h - 14*mm, "ASOCIACION NUCLEAR COLOMBIANA")
 
-    # ASNC text/logo on RIGHT side of gold bar (in navy)
-    c.setFillColor(ASNC_NAVY)
-    c.setFont("Helvetica-Bold", 14)
-    c.drawRightString(card_x + card_w - 10*mm, card_y + card_h - 12*mm, "ASNC")
+    # Logo on RIGHT side of gold bar
+    if logo_path:
+        try:
+            card_logo_img = Image.open(logo_path)
+            card_logo_reader = ImageReader(card_logo_img)
+            card_logo_h = 12*mm
+            card_logo_w = card_logo_h * 3.5  # Approximate aspect ratio
+            c.drawImage(card_logo_reader,
+                       card_x + card_w - card_logo_w - 8*mm,
+                       card_y + card_h - 15*mm,
+                       card_logo_w, card_logo_h,
+                       preserveAspectRatio=True, mask='auto')
+        except Exception:
+            # Fallback to text if logo fails
+            c.setFillColor(ASNC_NAVY)
+            c.setFont("Helvetica-Bold", 14)
+            c.drawRightString(card_x + card_w - 10*mm, card_y + card_h - 12*mm, "ASNC")
+    else:
+        c.setFillColor(ASNC_NAVY)
+        c.setFont("Helvetica-Bold", 14)
+        c.drawRightString(card_x + card_w - 10*mm, card_y + card_h - 12*mm, "ASNC")
 
     # Founder badge (below ASNC text if founder)
     if card.category == 'FOUNDER':
