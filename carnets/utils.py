@@ -184,16 +184,25 @@ def generate_card_pdf(card):
     c.setFont("Helvetica", 7)
     c.drawString(card_x + 10*mm, card_y + card_h - 14*mm, "ASOCIACION NUCLEAR COLOMBIANA")
 
-    # Logo on RIGHT side of gold bar
+    # Logo on RIGHT side of gold bar (with white background for visibility)
     if logo_path:
         try:
             card_logo_img = Image.open(logo_path)
             card_logo_reader = ImageReader(card_logo_img)
             card_logo_h = 12*mm
             card_logo_w = card_logo_h * 3.5  # Approximate aspect ratio
-            c.drawImage(card_logo_reader,
-                       card_x + card_w - card_logo_w - 8*mm,
-                       card_y + card_h - 15*mm,
+            logo_x = card_x + card_w - card_logo_w - 8*mm
+            logo_y = card_y + card_h - 15*mm
+
+            # White rounded background behind logo
+            padding = 1.5*mm
+            c.setFillColor(colors.white)
+            c.roundRect(logo_x - padding, logo_y - padding,
+                       card_logo_w + padding*2, card_logo_h + padding*2,
+                       2*mm, fill=1, stroke=0)
+
+            # Draw logo on white background
+            c.drawImage(card_logo_reader, logo_x, logo_y,
                        card_logo_w, card_logo_h,
                        preserveAspectRatio=True, mask='auto')
         except Exception:
