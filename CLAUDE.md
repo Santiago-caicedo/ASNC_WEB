@@ -19,7 +19,7 @@ This is the **ASNC Platform** (Asociación Nuclear Colombiana) - a Django 6.0 we
 - **Config**: python-decouple for environment variables
 - **Images**: Pillow (for ImageField support)
 - **PDF Generation**: ReportLab
-- **QR Codes**: qrcode[pil]
+- **QR Codes**: qrcode (with PIL support)
 - **SEO**: django.contrib.sitemaps
 - **Email**: SMTP with SSL (BanaHosting/MailChannels)
 - **Localization**: Spanish Colombia (es-co), Timezone America/Bogota
@@ -37,7 +37,7 @@ asnc_platform/
 │   ├── models.py                # MemberCard, CardVerification
 │   ├── views.py                 # Card generation, verification, photo upload
 │   ├── utils.py                 # PDF and QR code generation
-│   ├── forms.py                 # PhotoUploadForm
+│   ├── forms.py                 # PhotoUploadForm, GenerateCardForm, CardSuspendForm, CardRenewForm
 │   └── templates/carnets/       # Card templates and emails
 ├── members/                     # Member portal for associates (NEW)
 │   ├── views.py                 # Member dashboard, card view, profile
@@ -191,21 +191,22 @@ Log of card verification scans (QR code scans).
 /solicitud/                    → Membership application form
 /gracias/                      → Application success page
 
-# Public Card Verification (NEW)
-/verificar/<uuid>/             → Public card verification page (QR scan destination)
+# Public Card Verification
+/verificar/<uuid>/             → Public card verification page (CardVerificationView)
 
-# Card Photo Upload (NEW - no login required, token-based)
-/carnes/subir-foto/<token>/    → Photo upload form for new members
+# Card Photo Upload (no login required, token-based)
+/carnes/subir-foto/<token>/       → Photo upload form (PhotoUploadView)
+/carnes/subir-foto/<token>/exito/ → Photo upload success (PhotoUploadSuccessView)
 
 # SEO
 /sitemap.xml                   → Dynamic XML sitemap
 /robots.txt                    → Robots file for crawlers
 
 # Member Portal (NEW - requires login, regular users)
-/mi-portal/                    → Member dashboard
-/mi-portal/carnet/             → View my digital card
-/mi-portal/carnet/descargar/   → Download card as PDF
-/mi-portal/perfil/             → View/edit my profile
+/mi-portal/                    → Member dashboard (MemberDashboardView)
+/mi-portal/carnet/             → View my digital card (MemberCardView)
+/mi-portal/carnet/descargar/   → Download card as PDF (MemberCardDownloadView)
+/mi-portal/perfil/             → View my profile (MemberProfileView)
 
 # Admin Dashboard (Protected - staff/superuser only)
 /portal/                       → Dashboard home with KPIs
@@ -222,6 +223,20 @@ Log of card verification scans (QR code scans).
 /portal/asociados-destacados/nuevo/        → Create new member
 /portal/asociados-destacados/<id>/editar/  → Edit member
 /portal/asociados-destacados/<id>/eliminar/ → Delete member
+
+# Carnets - Member URLs (requires login)
+/mi-carne/                     → View my digital card (MyCardView)
+/mi-carne/descargar/           → Download card as PDF (MyCardDownloadView)
+
+# Carnets Dashboard (Protected - staff/superuser only)
+/portal/carnes/                → Card list with filters
+/portal/carnes/<id>/           → Card detail
+/portal/carnes/<id>/suspender/ → Suspend card form
+/portal/carnes/<id>/reactivar/ → Reactivate suspended card
+/portal/carnes/<id>/renovar/   → Renew card expiry
+/portal/carnes/<id>/reenviar-solicitud/ → Resend photo request email
+/portal/carnes/estadisticas/   → Card statistics
+/portal/solicitudes/<id>/generar-carne/ → Generate card from application
 
 # Email Module (Protected)
 /portal/correos/               → Email history list
@@ -248,7 +263,8 @@ Log of card verification scans (QR code scans).
 All models are registered with full-featured admin interfaces:
 
 ### UserAdmin (`users/admin.py`)
-- List: email, full name, role badge (Superadmin/Staff/Usuario), card badge, active status, date joined
+- List: email, full name, role badge (Superadmin/Staff/Usuario), password status, card badge, active status, date joined
+- Password status indicator: "Configurada" (green), "Configurada (sin login)" (blue), "Pendiente" (yellow)
 - Filters: is_staff, is_superuser, is_active, date_joined
 - Search: email, first_name, last_name, username
 
@@ -453,8 +469,8 @@ python manage.py showmigrations
 | boto3 | 1.42.29 | AWS SDK for S3 |
 | python-decouple | 3.8 | Environment variables |
 | Pillow | 11.1.0 | Image processing |
-| qrcode[pil] | 7.4.2 | QR code generation (NEW) |
-| reportlab | 4.1.0 | PDF generation (NEW) |
+| qrcode | 8.2 | QR code generation |
+| reportlab | 4.4.9 | PDF generation |
 
 ## Migration History
 
@@ -491,11 +507,22 @@ python manage.py showmigrations
 - `change_application_status()` - Status change with user creation on COMPLETED
 
 ### Carnets App (NEW)
-- `VerificarCarnetView` (TemplateView) - Public QR verification page
-- `SubirFotoView` (FormView) - Photo upload (token-based, no login)
-- `GenerarCarnetView` (StaffRequiredMixin, View) - Admin generates card
+- `CardVerificationView` (TemplateView) - Public QR verification page
+- `PhotoUploadView` (FormView) - Photo upload (token-based, no login)
+- `PhotoUploadSuccessView` (TemplateView) - Photo upload success page
+- `MyCardView` (LoginRequiredMixin, TemplateView) - Member's card view
+- `MyCardDownloadView` (LoginRequiredMixin, View) - Member's card PDF download
+- `GenerateCardView` (StaffRequiredMixin, FormView) - Admin generates card
+- `CardListView` (StaffRequiredMixin, ListView) - Dashboard card list with filters
+- `CardDetailView` (StaffRequiredMixin, DetailView) - Card detail and actions
+- `CardStatsView` (StaffRequiredMixin, TemplateView) - Card statistics dashboard
+- `CardSuspendView` (StaffRequiredMixin, FormView) - Suspend a card with reason
+- `CardRenewView` (StaffRequiredMixin, FormView) - Renew card expiry date
+- `reactivate_card()` - Function view to reactivate suspended card
+- `resend_photo_request()` - Function view to resend photo request email
 
 ### Members App (NEW)
+- `MemberLoginView` (LoginView) - Member login page
 - `MemberDashboardView` (LoginRequiredMixin, TemplateView) - Member home
 - `MemberCardView` (LoginRequiredMixin, TemplateView) - View my card
 - `MemberCardDownloadView` (LoginRequiredMixin, View) - Download PDF
@@ -542,32 +569,43 @@ carnets/templates/carnets/           # NEW
 ├── verificar.html                   # Public verification page
 ├── subir_foto.html                  # Photo upload form
 ├── subir_foto_exito.html            # Upload success
+├── mi_carne.html                    # Member's card view
+├── dashboard/                       # Admin dashboard (Mobile Responsive)
+│   ├── list.html                    # Card list with filters
+│   ├── detail.html                  # Card detail view
+│   ├── generar_carne.html           # Generate new card form
+│   ├── estadisticas.html            # Card statistics
+│   ├── suspender.html               # Suspend card form
+│   └── renovar.html                 # Renew card form
 └── emails/
     ├── solicitar_foto.html
     └── carne_listo.html
 
-members/templates/members/           # NEW
-├── base_members.html                # Member portal base
-├── dashboard.html                   # Member home
-├── card.html                        # View my card
-└── profile.html                     # My profile
+members/templates/members/           # NEW (Mobile Responsive)
+├── base_members.html                # Member portal base (hamburger menu, sidebar toggle)
+├── login.html                       # Member login page
+├── dashboard.html                   # Member home (responsive grid)
+├── card.html                        # View my card (responsive card preview)
+└── profile.html                     # My profile (reordered for mobile)
 
-dashboard/templates/dashboard/
-├── base_dashboard.html
+dashboard/templates/dashboard/       # Mobile Responsive
+├── base_dashboard.html              # Hamburger menu, sidebar toggle, overlay
 ├── login.html
-├── home.html
-├── application_list.html
-├── application_detail.html
-├── directory/                       # NEW
-│   ├── list.html
+├── home.html                        # Responsive KPI cards
+├── application_list.html            # Hidden columns, compact badges
+├── application_detail.html          # Stacked buttons on mobile
+├── password_set.html
+├── password_set_done.html
+├── directory/
+│   ├── list.html                    # Simplified table for mobile
 │   └── detail.html
 ├── featured_members/
-│   ├── list.html
+│   ├── list.html                    # Hidden columns on mobile
 │   ├── form.html
 │   └── confirm_delete.html
 └── emails/
     ├── compose.html
-    ├── history.html
+    ├── history.html                 # Compact email list
     └── detail.html
 ```
 
@@ -579,10 +617,8 @@ PRINCIPAL
 
 GESTIÓN DE ASOCIADOS
 ├── Solicitudes (application_list)
-└── Directorio Oficial (directory_list) ← NEW
-
-CARNETS DIGITALES                    ← NEW section
-└── (Managed via Directory expediente)
+├── Carnés Digitales (carnets:card_list)
+└── Directorio Oficial (directory_list)
 
 CONTENIDO WEB
 └── Asociados Destacados (featured_member_list)
@@ -614,6 +650,43 @@ ADMINISTRACIÓN
 --asnc-blue: #213a5c
 --asnc-gold: #f4c343
 --asnc-bg: #F5F7FA
+--sidebar-width: 280px (desktop), 240px (tablet)
+```
+
+### Responsive Design (Mobile-First)
+Both portals (member and admin) are fully responsive with the following breakpoints:
+
+**Breakpoints:**
+- Desktop: > 992px (full sidebar visible)
+- Tablet: 768px - 992px (reduced sidebar width)
+- Mobile: < 768px (hamburger menu, collapsible sidebar)
+- Small phones: < 400px (compact padding)
+
+**Mobile Features:**
+- Fixed header with hamburger menu button
+- Sidebar slides in from left with overlay
+- Auto-close sidebar when clicking links
+- Tables with hidden columns (d-none d-md-table-cell)
+- Compact badges and buttons on small screens
+- Stacked cards instead of horizontal layouts
+- Simplified pagination (arrows instead of text)
+
+**Responsive Templates:**
+```
+members/templates/members/
+├── base_members.html        # Mobile header, sidebar toggle, overlay
+├── dashboard.html           # 2-column grid on mobile
+├── card.html                # Responsive card preview
+└── profile.html             # Reordered columns for mobile
+
+dashboard/templates/dashboard/
+├── base_dashboard.html      # Mobile header, sidebar toggle, overlay
+├── home.html                # Responsive KPI cards
+├── application_list.html    # Hidden columns, compact badges
+├── application_detail.html  # Stacked decision buttons
+├── directory/list.html      # Simplified table
+├── emails/history.html      # Compact email list
+└── featured_members/list.html # Hidden columns on mobile
 ```
 
 ## Security Notes
@@ -656,6 +729,7 @@ sudo systemctl restart gunicorn  # or your server process
 - [x] ~~Auto-create user account on approval~~ (Implemented)
 - [x] ~~Digital member cards with QR~~ (Implemented)
 - [x] ~~Role-based access control~~ (Implemented)
+- [x] ~~Mobile responsive design~~ (Implemented - both portals)
 - [ ] REST API endpoints
 - [ ] Payment integration
 - [ ] Two-factor authentication
@@ -664,5 +738,5 @@ sudo systemctl restart gunicorn  # or your server process
 - [ ] Events management system (replace placeholder)
 - [ ] Email open/click tracking
 - [ ] Bulk email with rate limiting
-- [ ] Card renewal workflow
+- [x] ~~Card renewal workflow~~ (Implemented - CardRenewView)
 - [ ] Member self-service profile editing

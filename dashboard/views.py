@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+from email.utils import formataddr
 from admissions.models import MembershipApplication
 from website.models import FeaturedMember
 from carnets.models import MemberCard
@@ -152,11 +153,14 @@ class EmailComposeView(StaffRequiredMixin, LoginRequiredMixin, FormView):
         error_msg = ''
 
         try:
+            # Configurar remitente con nombre
+            from_email = formataddr(('Asociación Nuclear Colombiana', settings.DEFAULT_FROM_EMAIL))
+
             # Enviar correo (BCC para privacidad de destinatarios)
             email = EmailMultiAlternatives(
                 subject=subject,
                 body=text_content,
-                from_email=settings.DEFAULT_FROM_EMAIL,
+                from_email=from_email,
                 to=[settings.DEFAULT_FROM_EMAIL],  # A nosotros mismos
                 bcc=recipients  # Destinatarios en BCC
             )
