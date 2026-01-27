@@ -96,40 +96,48 @@ def generate_card_pdf(card):
             break
 
     # =========================================
-    # PAGE HEADER WITH LOGO
+    # PAGE HEADER WITH LOGO (Light background)
     # =========================================
 
-    # Header background
-    c.setFillColor(ASNC_NAVY)
-    c.rect(0, height - 50*mm, width, 50*mm, fill=1, stroke=0)
-
-    # Gold accent line
+    # Top gold accent bar
     c.setFillColor(ASNC_GOLD)
-    c.rect(0, height - 51*mm, width, 1.5*mm, fill=1, stroke=0)
+    c.rect(0, height - 3*mm, width, 3*mm, fill=1, stroke=0)
 
-    # Logo
+    # Main header - light/white background for logo visibility
+    c.setFillColor(colors.white)
+    c.rect(0, height - 38*mm, width, 35*mm, fill=1, stroke=0)
+
+    # Logo on light background
     if logo_path:
         try:
             logo_img = Image.open(logo_path)
             logo_reader = ImageReader(logo_img)
-            logo_height = 18*mm
+            logo_height = 20*mm
             logo_width = logo_height * 3.5  # Approximate aspect ratio
-            c.drawImage(logo_reader, width/2 - logo_width/2, height - 32*mm,
+            c.drawImage(logo_reader, width/2 - logo_width/2, height - 28*mm,
                        logo_width, logo_height, preserveAspectRatio=True, mask='auto')
         except Exception:
             # Fallback to text if logo fails
-            c.setFillColor(colors.white)
+            c.setFillColor(ASNC_NAVY)
             c.setFont("Helvetica-Bold", 20)
-            c.drawCentredString(width/2, height - 25*mm, "ASOCIACION NUCLEAR COLOMBIANA")
+            c.drawCentredString(width/2, height - 22*mm, "ASOCIACION NUCLEAR COLOMBIANA")
     else:
-        c.setFillColor(colors.white)
+        c.setFillColor(ASNC_NAVY)
         c.setFont("Helvetica-Bold", 20)
-        c.drawCentredString(width/2, height - 25*mm, "ASOCIACION NUCLEAR COLOMBIANA")
+        c.drawCentredString(width/2, height - 22*mm, "ASOCIACION NUCLEAR COLOMBIANA")
 
-    # Subtitle
-    c.setFillColor(colors.HexColor('#94a3b8'))
-    c.setFont("Helvetica", 11)
-    c.drawCentredString(width/2, height - 42*mm, "Carnet Digital de Asociado")
+    # Navy subtitle bar
+    c.setFillColor(ASNC_NAVY)
+    c.rect(0, height - 52*mm, width, 14*mm, fill=1, stroke=0)
+
+    # Subtitle text on navy bar
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 11)
+    c.drawCentredString(width/2, height - 46*mm, "CARNET DIGITAL DE ASOCIADO")
+
+    # Bottom gold accent line
+    c.setFillColor(ASNC_GOLD)
+    c.rect(0, height - 53.5*mm, width, 1.5*mm, fill=1, stroke=0)
 
     # =========================================
     # MAIN CARD - EXTRA LARGE
@@ -139,7 +147,7 @@ def generate_card_pdf(card):
     card_w = 160*mm
     card_h = 100*mm
     card_x = (width - card_w) / 2
-    card_y = height - 165*mm
+    card_y = height - 163*mm
 
     # Card shadow effect
     c.setFillColor(colors.HexColor('#d1d5db'))
