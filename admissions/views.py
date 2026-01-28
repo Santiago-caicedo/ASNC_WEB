@@ -114,15 +114,24 @@ def create_user_from_application(application):
 
 
 def send_approval_email(application, user):
-    """Sends approval/welcome email to the new member."""
+    """Sends approval/welcome email to the new member with password setup link."""
     subject = '¡Bienvenido a la ASNC! - Tu solicitud ha sido aprobada'
     from_email = settings.DEFAULT_FROM_EMAIL
     to_email = application.email
+
+    # Generate password reset token
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+    # Build password reset URL using SITE_URL from settings
+    domain = settings.SITE_URL.rstrip('/')
+    password_url = f"{domain}{reverse('password_set', kwargs={'uidb64': uid, 'token': token})}"
 
     context = {
         'first_name': application.first_name,
         'last_name': application.last_name,
         'email': application.email,
+        'password_url': password_url,
     }
 
     html_content = render_to_string('admissions/emails/application_approved.html', context)
@@ -135,8 +144,12 @@ de la Asociación Nuclear Colombiana.
 Ahora eres oficialmente parte de nuestra comunidad de profesionales comprometidos
 con el desarrollo pacífico de la ciencia y tecnología nuclear en Colombia.
 
-En breve recibirás otro correo con instrucciones para configurar tu contraseña
-y acceder al portal de asociados.
+Para comenzar, configura tu contraseña haciendo clic en el siguiente enlace:
+{password_url}
+
+Este enlace expirará en 3 días por seguridad.
+
+Una vez configures tu contraseña, podrás acceder al portal con tu correo {application.email}.
 
 ¡Bienvenido(a) a la ASNC!
 
@@ -280,22 +293,16 @@ def change_application_status(request, pk, status):
             application.status = MembershipApplication.Status.COMPLETED
             application.save()
 
-            # 3. Send welcome email
+            # 3. Send welcome email (includes password setup link)
             try:
                 send_approval_email(application, user)
             except Exception as e:
                 messages.warning(request, f'Usuario creado, pero falló el envío del correo de bienvenida: {e}')
 
-            # 4. Send password setup email
-            try:
-                send_set_password_email(user)
-            except Exception as e:
-                messages.warning(request, f'Falló el envío del correo para configurar contraseña: {e}')
-
             messages.success(
                 request,
                 f'¡{application.first_name} {application.last_name} ha sido APROBADO y VINCULADO! '
-                f'Se han enviado los correos de bienvenida y configuración de contraseña.'
+                f'Se ha enviado el correo de bienvenida con el enlace para configurar contraseña.'
             )
 
         except Exception as e:
