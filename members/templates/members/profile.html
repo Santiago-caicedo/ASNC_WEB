@@ -9,9 +9,9 @@
     </a>
 </div>
 
-<div class="row g-4">
-    <div class="col-lg-8 order-2 order-lg-1">
-        <div class="kpi-card mb-4">
+<div class="row g-4 align-items-stretch">
+    <div class="col-lg-8 order-2 order-lg-1 d-flex">
+        <div class="kpi-card flex-grow-1">
             <!-- Header with avatar -->
             <div class="d-flex align-items-center mb-4 flex-wrap flex-sm-nowrap">
                 <div class="rounded-circle d-flex align-items-center justify-content-center me-3 mb-2 mb-sm-0 flex-shrink-0"
@@ -138,13 +138,13 @@
         </div>
     </div>
 
-    <div class="col-lg-4 order-1 order-lg-2">
+    <div class="col-lg-4 order-1 order-lg-2 d-flex flex-column" style="gap: 1.5rem;">
         <!-- Profile Completion -->
-        <div class="kpi-card mb-4">
+        <div class="kpi-card flex-grow-1 d-flex flex-column">
             <h6 class="text-muted mb-3"><i class="bi bi-bar-chart me-2"></i>Perfil Completado</h6>
 
-            <div class="text-center py-2">
-                <div class="position-relative d-inline-flex">
+            <div class="text-center flex-grow-1 d-flex flex-column justify-content-center">
+                <div class="position-relative d-inline-flex mx-auto">
                     <svg width="100" height="100" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="45" fill="none" stroke="#e9ecef" stroke-width="8"/>
                         <circle cx="50" cy="50" r="45" fill="none"
@@ -161,25 +161,25 @@
             </div>
 
             {% if user.profile_completion < 100 %}
-            <hr>
-            <a href="{% url 'members:profile_edit' %}" class="btn btn-outline-primary btn-sm w-100">
-                <i class="bi bi-plus-circle me-1"></i> Completar Perfil
-            </a>
+            <div class="mt-auto pt-3 border-top">
+                <a href="{% url 'members:profile_edit' %}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-plus-circle me-1"></i> Completar Perfil
+                </a>
+            </div>
             {% endif %}
         </div>
 
         <!-- Card Summary -->
         {% if user.member_card %}
-        <div class="kpi-card">
+        <div class="kpi-card flex-grow-1 d-flex flex-column">
             <h6 class="text-muted mb-3"><i class="bi bi-person-badge me-2"></i>Mi Carnet</h6>
 
-            <div class="text-center py-3">
+            <div class="flex-grow-1 d-flex flex-column justify-content-center">
                 <div style="
                     background: linear-gradient(135deg, #213a5c 0%, #1B2A41 100%);
                     border-radius: 12px;
                     padding: 16px;
                     color: white;
-                    margin-bottom: 16px;
                 ">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <small class="opacity-75">ASNC</small>
@@ -191,10 +191,10 @@
                     <small class="opacity-75">{{ user.member_card.full_name }}</small>
                 </div>
 
-                <table class="table table-sm table-borderless text-start mb-3">
+                <table class="table table-sm table-borderless text-start mb-0 mt-3">
                     <tr>
-                        <td class="text-muted">Estado</td>
-                        <td class="text-end">
+                        <td class="text-muted py-1">Estado</td>
+                        <td class="text-end py-1">
                             {% if user.member_card.status == 'ACTIVE' %}
                                 <span class="badge bg-success">Activo</span>
                             {% elif user.member_card.status == 'PENDING_PHOTO' %}
@@ -207,20 +207,22 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-muted">Vencimiento</td>
-                        <td class="text-end">{{ user.member_card.expiry_date|date:"d/m/Y" }}</td>
+                        <td class="text-muted py-1">Vencimiento</td>
+                        <td class="text-end py-1">{{ user.member_card.expiry_date|date:"d/m/Y" }}</td>
                     </tr>
                 </table>
+            </div>
 
+            <div class="mt-auto pt-3">
                 <a href="{% url 'members:card' %}" class="btn btn-asnc-gold btn-sm w-100">
                     <i class="bi bi-eye me-1"></i> Ver Carnet
                 </a>
             </div>
         </div>
         {% else %}
-        <div class="kpi-card">
+        <div class="kpi-card flex-grow-1 d-flex flex-column justify-content-center">
             <h6 class="text-muted mb-3"><i class="bi bi-person-badge me-2"></i>Mi Carnet</h6>
-            <div class="text-center py-4">
+            <div class="text-center">
                 <i class="bi bi-hourglass-split text-muted" style="font-size: 2.5rem;"></i>
                 <p class="text-muted mt-3 mb-0">Tu carnet digital esta siendo procesado.</p>
             </div>
