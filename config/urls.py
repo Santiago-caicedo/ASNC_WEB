@@ -5,14 +5,13 @@ from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
-from django.contrib.staticfiles.storage import staticfiles_storage
 
 from website.sitemaps import StaticViewSitemap
 
 
 def favicon_redirect(request):
-    """Redirect to favicon using Django's static file storage (works with S3)."""
-    favicon_url = staticfiles_storage.url('images/icon_asnc.png')
+    """Redirect to favicon using STATIC_URL from settings (works with S3)."""
+    favicon_url = f"{settings.STATIC_URL}images/icon_asnc.png"
     return HttpResponseRedirect(favicon_url)
 
 sitemaps = {
