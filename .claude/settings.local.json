@@ -30,7 +30,9 @@
       "Bash(iconv:*)",
       "Bash(python:*)",
       "Bash(py manage.py migrate:*)",
-      "Bash(python.exe manage.py:*)"
+      "Bash(python.exe manage.py:*)",
+      "Bash(python3:*)",
+      "Bash(identify:*)"
     ]
   }
 }
