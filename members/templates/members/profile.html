@@ -41,9 +41,24 @@
                 </div>
             </div>
 
+            <h6 class="text-muted mb-3"><i class="bi bi-calendar-check me-2"></i>Membresia</h6>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Miembro Desde</label>
+                    <div class="fw-medium">{{ membership.start_date|date:"d/m/Y" }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Tiempo como Asociado</label>
+                    <div class="fw-medium">
+                        <span class="badge bg-success fs-6">{{ membership.formatted }}</span>
+                    </div>
+                </div>
+            </div>
+
             <h6 class="text-muted mb-3"><i class="bi bi-shield-check me-2"></i>Seguridad</h6>
 
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col-md-6 mb-3">
                     <label class="form-label text-muted small mb-1">Fecha de Registro</label>
                     <div class="fw-medium">{{ user.date_joined|date:"d/m/Y" }}</div>
@@ -54,11 +69,15 @@
                 </div>
             </div>
 
+            <a href="{% url 'members:password_change' %}" class="btn btn-outline-primary">
+                <i class="bi bi-key me-1"></i> Cambiar Contrasena
+            </a>
+
             <hr class="my-4">
 
             <div class="alert alert-info border-0 mb-0">
                 <i class="bi bi-info-circle me-2"></i>
-                Para actualizar tu informacion personal o cambiar tu contrasena,
+                Para actualizar tu informacion personal,
                 por favor contacta a <a href="mailto:info@asncol.com">info@asncol.com</a>
             </div>
         </div>

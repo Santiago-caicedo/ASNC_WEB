@@ -1,12 +1,51 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.views.generic import TemplateView, View
 from django.http import HttpResponse
 from django.contrib import messages
+from django.urls import reverse_lazy
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 from carnets.models import MemberCard
 from carnets.utils import generate_card_pdf
+
+
+def get_membership_duration(user):
+    """
+    Calculate the membership duration for a user.
+    Returns a dict with years, months, and a formatted string.
+    """
+    # Try to get the card issue date first, fallback to user registration
+    try:
+        card = MemberCard.objects.get(user=user)
+        start_date = card.issue_date
+    except MemberCard.DoesNotExist:
+        start_date = user.date_joined.date()
+
+    today = timezone.now().date()
+    delta = relativedelta(today, start_date)
+
+    return {
+        'years': delta.years,
+        'months': delta.months,
+        'days': delta.days,
+        'start_date': start_date,
+        'formatted': format_duration(delta.years, delta.months),
+    }
+
+
+def format_duration(years, months):
+    """Format the duration as a readable string in Spanish."""
+    parts = []
+    if years > 0:
+        parts.append(f"{years} {'año' if years == 1 else 'años'}")
+    if months > 0:
+        parts.append(f"{months} {'mes' if months == 1 else 'meses'}")
+    if not parts:
+        return "Menos de un mes"
+    return ', '.join(parts)
 
 
 class MemberLoginView(LoginView):
@@ -42,6 +81,8 @@ class MemberDashboardView(LoginRequiredMixin, TemplateView):
             context['card'] = MemberCard.objects.get(user=self.request.user)
         except MemberCard.DoesNotExist:
             context['card'] = None
+        # Add membership duration
+        context['membership'] = get_membership_duration(self.request.user)
         return context
 
 
@@ -91,4 +132,22 @@ class MemberProfileView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
+        context['membership'] = get_membership_duration(self.request.user)
         return context
+
+
+class MemberPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    """View for members to change their password."""
+    template_name = 'members/password_change.html'
+    success_url = reverse_lazy('members:password_change_done')
+    login_url = '/acceso/'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Tu contraseña ha sido actualizada exitosamente.')
+        return super().form_valid(form)
+
+
+class MemberPasswordChangeDoneView(LoginRequiredMixin, TemplateView):
+    """View shown after successful password change."""
+    template_name = 'members/password_change_done.html'
+    login_url = '/acceso/'

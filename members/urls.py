@@ -6,6 +6,8 @@ from .views import (
     MemberCardView,
     MemberCardDownloadView,
     MemberProfileView,
+    MemberPasswordChangeView,
+    MemberPasswordChangeDoneView,
 )
 
 app_name = 'members'
@@ -20,4 +22,8 @@ urlpatterns = [
     path('mi-portal/carnet/', MemberCardView.as_view(), name='card'),
     path('mi-portal/carnet/descargar/', MemberCardDownloadView.as_view(), name='card_download'),
     path('mi-portal/perfil/', MemberProfileView.as_view(), name='profile'),
+
+    # Password Change
+    path('mi-portal/cambiar-contrasena/', MemberPasswordChangeView.as_view(), name='password_change'),
+    path('mi-portal/contrasena-actualizada/', MemberPasswordChangeDoneView.as_view(), name='password_change_done'),
 ]

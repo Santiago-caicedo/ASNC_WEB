@@ -124,6 +124,68 @@
         </div>
     </div>
 
+    <!-- Membership Duration -->
+    <div class="col-md-6">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 50px; height: 50px; background-color: rgba(40, 167, 69, 0.1);">
+                    <i class="bi bi-calendar-check fs-4 text-success"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">Mi Membresia</h5>
+                    <small class="text-muted">Tiempo como asociado</small>
+                </div>
+            </div>
+
+            <div class="text-center py-3">
+                <div class="display-6 fw-bold" style="color: var(--asnc-blue);">
+                    {% if membership.years > 0 %}
+                        {{ membership.years }}
+                        <small class="fs-5 fw-normal text-muted">{{ membership.years|pluralize:"año,años" }}</small>
+                    {% else %}
+                        {{ membership.months }}
+                        <small class="fs-5 fw-normal text-muted">{{ membership.months|pluralize:"mes,meses" }}</small>
+                    {% endif %}
+                </div>
+                <p class="text-muted mb-0 mt-2">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    Miembro desde {{ membership.start_date|date:"d/m/Y" }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-md-6">
+        <div class="kpi-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 50px; height: 50px; background-color: rgba(108, 117, 125, 0.1);">
+                    <i class="bi bi-lightning-charge fs-4 text-secondary"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">Acciones Rapidas</h5>
+                    <small class="text-muted">Accesos directos</small>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                {% if card and card.status == 'ACTIVE' %}
+                <a href="{% url 'members:card_download' %}" class="btn btn-outline-primary btn-sm text-start">
+                    <i class="bi bi-download me-2"></i> Descargar Carnet PDF
+                </a>
+                {% endif %}
+                <a href="{% url 'members:password_change' %}" class="btn btn-outline-secondary btn-sm text-start">
+                    <i class="bi bi-key me-2"></i> Cambiar Contrasena
+                </a>
+                <a href="mailto:info@asncol.com" class="btn btn-outline-secondary btn-sm text-start">
+                    <i class="bi bi-envelope me-2"></i> Contactar Soporte
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Info Card -->
     <div class="col-12">
         <div class="kpi-card" style="background: linear-gradient(135deg, #213a5c 0%, #1B2A41 100%); color: white;">

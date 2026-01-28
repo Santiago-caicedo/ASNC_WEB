@@ -207,6 +207,8 @@ Log of card verification scans (QR code scans).
 /mi-portal/carnet/             → View my digital card (MemberCardView)
 /mi-portal/carnet/descargar/   → Download card as PDF (MemberCardDownloadView)
 /mi-portal/perfil/             → View my profile (MemberProfileView)
+/mi-portal/cambiar-contrasena/ → Change password (MemberPasswordChangeView)
+/mi-portal/contrasena-actualizada/ → Password changed confirmation
 
 # Admin Dashboard (Protected - staff/superuser only)
 /portal/                       → Dashboard home with KPIs
@@ -523,10 +525,16 @@ python manage.py showmigrations
 
 ### Members App (NEW)
 - `MemberLoginView` (LoginView) - Member login page
-- `MemberDashboardView` (LoginRequiredMixin, TemplateView) - Member home
+- `MemberDashboardView` (LoginRequiredMixin, TemplateView) - Member home with membership duration
 - `MemberCardView` (LoginRequiredMixin, TemplateView) - View my card
 - `MemberCardDownloadView` (LoginRequiredMixin, View) - Download PDF
-- `MemberProfileView` (LoginRequiredMixin, TemplateView) - View profile
+- `MemberProfileView` (LoginRequiredMixin, TemplateView) - View profile with membership info
+- `MemberPasswordChangeView` (LoginRequiredMixin, PasswordChangeView) - Change password
+- `MemberPasswordChangeDoneView` (LoginRequiredMixin, TemplateView) - Password change confirmation
+
+**Helper Functions:**
+- `get_membership_duration(user)` - Calculate years/months as member
+- `format_duration(years, months)` - Format duration in Spanish
 
 ### Dashboard App
 - `CustomLoginView` (LoginView) - Redirects based on user role
@@ -584,9 +592,11 @@ carnets/templates/carnets/           # NEW
 members/templates/members/           # NEW (Mobile Responsive)
 ├── base_members.html                # Member portal base (hamburger menu, sidebar toggle)
 ├── login.html                       # Member login page
-├── dashboard.html                   # Member home (responsive grid)
+├── dashboard.html                   # Member home (with membership duration)
 ├── card.html                        # View my card (responsive card preview)
-└── profile.html                     # My profile (reordered for mobile)
+├── profile.html                     # My profile (with membership info)
+├── password_change.html             # Change password form
+└── password_change_done.html        # Password change success
 
 dashboard/templates/dashboard/       # Mobile Responsive
 ├── base_dashboard.html              # Hamburger menu, sidebar toggle, overlay
