@@ -28,7 +28,9 @@
       "Bash(python manage.py startapp:*)",
       "Bash(xxd:*)",
       "Bash(iconv:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(py manage.py migrate:*)",
+      "Bash(python.exe manage.py:*)"
     ]
   }
 }

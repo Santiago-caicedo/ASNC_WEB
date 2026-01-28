@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView, View, UpdateView
 from django.http import HttpResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 
 from carnets.models import MemberCard
 from carnets.utils import generate_card_pdf
+from .forms import ProfileEditForm
 
 
 def get_membership_duration(user):
@@ -151,3 +152,23 @@ class MemberPasswordChangeDoneView(LoginRequiredMixin, TemplateView):
     """View shown after successful password change."""
     template_name = 'members/password_change_done.html'
     login_url = '/acceso/'
+
+
+class MemberProfileEditView(LoginRequiredMixin, UpdateView):
+    """View for members to edit their profile information."""
+    template_name = 'members/profile_edit.html'
+    form_class = ProfileEditForm
+    success_url = reverse_lazy('members:profile')
+    login_url = '/acceso/'
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Tu perfil ha sido actualizado exitosamente.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['membership'] = get_membership_duration(self.request.user)
+        return context

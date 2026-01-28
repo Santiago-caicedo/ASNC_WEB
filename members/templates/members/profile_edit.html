@@ -1,0 +1,162 @@
+{% extends 'members/base_members.html' %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <h1 class="page-title mb-0">Editar Perfil</h1>
+    <a href="{% url 'members:profile' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Volver al Perfil
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Información Personal -->
+            <div class="kpi-card mb-4">
+                <h6 class="text-muted mb-3">
+                    <i class="bi bi-person me-2"></i>Informacion Personal
+                </h6>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_first_name" class="form-label">Nombre <span class="text-danger">*</span></label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_last_name" class="form-label">Apellido <span class="text-danger">*</span></label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_phone" class="form-label">Telefono</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Profesional -->
+            <div class="kpi-card mb-4">
+                <h6 class="text-muted mb-3">
+                    <i class="bi bi-briefcase me-2"></i>Informacion Profesional
+                </h6>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_profession" class="form-label">Profesion / Titulo</label>
+                        {{ form.profession }}
+                        {% if form.profession.errors %}
+                            <div class="text-danger small mt-1">{{ form.profession.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_current_job" class="form-label">Cargo Actual</label>
+                        {{ form.current_job }}
+                        {% if form.current_job.errors %}
+                            <div class="text-danger small mt-1">{{ form.current_job.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_institution" class="form-label">Empresa / Institucion</label>
+                        {{ form.institution }}
+                        {% if form.institution.errors %}
+                            <div class="text-danger small mt-1">{{ form.institution.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_linkedin_url" class="form-label">
+                            <i class="bi bi-linkedin me-1"></i>Perfil de LinkedIn
+                        </label>
+                        {{ form.linkedin_url }}
+                        {% if form.linkedin_url.errors %}
+                            <div class="text-danger small mt-1">{{ form.linkedin_url.errors.0 }}</div>
+                        {% endif %}
+                        <div class="form-text">Opcional. Ayuda a otros asociados a conectar contigo.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biografía -->
+            <div class="kpi-card mb-4">
+                <h6 class="text-muted mb-3">
+                    <i class="bi bi-file-text me-2"></i>Biografia Profesional
+                </h6>
+
+                <div class="mb-3">
+                    {{ form.bio }}
+                    {% if form.bio.errors %}
+                        <div class="text-danger small mt-1">{{ form.bio.errors.0 }}</div>
+                    {% endif %}
+                    <div class="form-text">
+                        Comparte tu experiencia, logros y areas de interes en el sector nuclear.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="submit" class="btn btn-asnc-gold">
+                    <i class="bi bi-check-lg me-1"></i> Guardar Cambios
+                </button>
+                <a href="{% url 'members:profile' %}" class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Completion Card -->
+        <div class="kpi-card mb-4">
+            <h6 class="text-muted mb-3">
+                <i class="bi bi-bar-chart me-2"></i>Completar Perfil
+            </h6>
+
+            <div class="text-center py-2">
+                <div class="position-relative d-inline-flex">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="#e9ecef" stroke-width="8"/>
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="#f4c343" stroke-width="8"
+                                stroke-dasharray="{{ user.profile_completion|default:0|floatformat:0 }}% 339.292"
+                                stroke-linecap="round"
+                                transform="rotate(-90 60 60)"/>
+                    </svg>
+                    <div class="position-absolute top-50 start-50 translate-middle text-center">
+                        <span class="fs-3 fw-bold" style="color: var(--asnc-blue);">{{ user.profile_completion|default:0 }}%</span>
+                    </div>
+                </div>
+                <p class="text-muted small mt-2 mb-0">Perfil completado</p>
+            </div>
+
+            <hr>
+
+            <p class="small text-muted mb-0">
+                <i class="bi bi-info-circle me-1"></i>
+                Un perfil completo te ayuda a conectar con otros asociados y aprovechar al maximo tu membresia.
+            </p>
+        </div>
+
+        <!-- Tips Card -->
+        <div class="kpi-card">
+            <h6 class="text-muted mb-3">
+                <i class="bi bi-lightbulb me-2"></i>Consejos
+            </h6>
+            <ul class="small mb-0 ps-3">
+                <li class="mb-2">Usa tu nombre completo como aparece en documentos oficiales.</li>
+                <li class="mb-2">Incluye tu titulo profesional mas relevante.</li>
+                <li class="mb-2">Agrega tu LinkedIn para facilitar el networking.</li>
+                <li>Tu biografia ayuda a otros miembros a conocer tu experiencia.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -2,45 +2,102 @@
 {% load static %}
 
 {% block content %}
-<h1 class="page-title">Mi Perfil</h1>
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <h1 class="page-title mb-0">Mi Perfil</h1>
+    <a href="{% url 'members:profile_edit' %}" class="btn btn-asnc-gold btn-sm">
+        <i class="bi bi-pencil me-1"></i> Editar Perfil
+    </a>
+</div>
 
 <div class="row g-4">
     <div class="col-lg-8 order-2 order-lg-1">
-        <div class="kpi-card">
+        <div class="kpi-card mb-4">
+            <!-- Header with avatar -->
             <div class="d-flex align-items-center mb-4 flex-wrap flex-sm-nowrap">
                 <div class="rounded-circle d-flex align-items-center justify-content-center me-3 mb-2 mb-sm-0 flex-shrink-0"
-                     style="width: 60px; height: 60px; background-color: #f4c343; color: #1B2A41; font-size: 1.25rem; font-weight: bold;">
+                     style="width: 70px; height: 70px; background-color: #f4c343; color: #1B2A41; font-size: 1.5rem; font-weight: bold;">
                     {{ user.first_name|first|default:"A" }}{{ user.last_name|first|default:"S" }}
                 </div>
-                <div class="overflow-hidden">
-                    <h4 class="mb-0 fw-bold text-truncate" style="font-size: 1.1rem;">{{ user.get_full_name|default:"Asociado ASNC" }}</h4>
-                    <span class="text-muted small text-break">{{ user.email }}</span>
+                <div class="overflow-hidden flex-grow-1">
+                    <h4 class="mb-1 fw-bold text-truncate">{{ user.get_full_name|default:"Asociado ASNC" }}</h4>
+                    <p class="text-muted mb-0 small">{{ user.email }}</p>
+                    {% if user.profession %}
+                    <span class="badge bg-primary mt-1">{{ user.profession }}</span>
+                    {% endif %}
                 </div>
             </div>
 
+            <!-- Profile Completion Alert -->
+            {% if user.profile_completion < 100 %}
+            <div class="alert border-0 mb-4" style="background-color: rgba(244, 195, 67, 0.1); color: #856404;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    <div class="flex-grow-1">
+                        <strong>Tu perfil esta al {{ user.profile_completion }}%</strong>
+                        <span class="d-none d-sm-inline"> - Completalo para aprovechar al maximo tu membresia.</span>
+                    </div>
+                    <a href="{% url 'members:profile_edit' %}" class="btn btn-sm btn-warning ms-2">Completar</a>
+                </div>
+            </div>
+            {% endif %}
+
             <hr>
 
+            <!-- Personal Information -->
             <h6 class="text-muted mb-3"><i class="bi bi-person me-2"></i>Informacion Personal</h6>
 
             <div class="row mb-4">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label text-muted small mb-1">Nombre</label>
-                    <div class="fw-medium">{{ user.first_name|default:"No registrado" }}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label text-muted small mb-1">Apellido</label>
-                    <div class="fw-medium">{{ user.last_name|default:"No registrado" }}</div>
+                    <label class="form-label text-muted small mb-1">Nombre Completo</label>
+                    <div class="fw-medium">{{ user.get_full_name|default:"No registrado" }}</div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label text-muted small mb-1">Correo Electronico</label>
                     <div class="fw-medium">{{ user.email }}</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label text-muted small mb-1">Usuario</label>
-                    <div class="fw-medium">{{ user.username }}</div>
+                    <label class="form-label text-muted small mb-1">Telefono</label>
+                    <div class="fw-medium">{{ user.phone|default:"No registrado" }}</div>
                 </div>
             </div>
 
+            <!-- Professional Information -->
+            <h6 class="text-muted mb-3"><i class="bi bi-briefcase me-2"></i>Informacion Profesional</h6>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Profesion / Titulo</label>
+                    <div class="fw-medium">{{ user.profession|default:"No registrado" }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Cargo Actual</label>
+                    <div class="fw-medium">{{ user.current_job|default:"No registrado" }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">Empresa / Institucion</label>
+                    <div class="fw-medium">{{ user.institution|default:"No registrado" }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small mb-1">LinkedIn</label>
+                    <div class="fw-medium">
+                        {% if user.linkedin_url %}
+                        <a href="{{ user.linkedin_url }}" target="_blank" class="text-decoration-none">
+                            <i class="bi bi-linkedin me-1"></i>Ver perfil
+                        </a>
+                        {% else %}
+                        No registrado
+                        {% endif %}
+                    </div>
+                </div>
+                {% if user.bio %}
+                <div class="col-12">
+                    <label class="form-label text-muted small mb-1">Biografia Profesional</label>
+                    <div class="fw-medium">{{ user.bio }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Membership -->
             <h6 class="text-muted mb-3"><i class="bi bi-calendar-check me-2"></i>Membresia</h6>
 
             <div class="row mb-4">
@@ -56,6 +113,7 @@
                 </div>
             </div>
 
+            <!-- Security -->
             <h6 class="text-muted mb-3"><i class="bi bi-shield-check me-2"></i>Seguridad</h6>
 
             <div class="row mb-4">
@@ -69,21 +127,47 @@
                 </div>
             </div>
 
-            <a href="{% url 'members:password_change' %}" class="btn btn-outline-primary">
-                <i class="bi bi-key me-1"></i> Cambiar Contrasena
-            </a>
-
-            <hr class="my-4">
-
-            <div class="alert alert-info border-0 mb-0">
-                <i class="bi bi-info-circle me-2"></i>
-                Para actualizar tu informacion personal,
-                por favor contacta a <a href="mailto:info@asncol.com">info@asncol.com</a>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'members:profile_edit' %}" class="btn btn-asnc-gold">
+                    <i class="bi bi-pencil me-1"></i> Editar Perfil
+                </a>
+                <a href="{% url 'members:password_change' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-key me-1"></i> Cambiar Contrasena
+                </a>
             </div>
         </div>
     </div>
 
     <div class="col-lg-4 order-1 order-lg-2">
+        <!-- Profile Completion -->
+        <div class="kpi-card mb-4">
+            <h6 class="text-muted mb-3"><i class="bi bi-bar-chart me-2"></i>Perfil Completado</h6>
+
+            <div class="text-center py-2">
+                <div class="position-relative d-inline-flex">
+                    <svg width="100" height="100" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="#e9ecef" stroke-width="8"/>
+                        <circle cx="50" cy="50" r="45" fill="none"
+                                stroke="{% if user.profile_completion == 100 %}#28a745{% else %}#f4c343{% endif %}"
+                                stroke-width="8"
+                                stroke-dasharray="{{ user.profile_completion|floatformat:0 }}% 283"
+                                stroke-linecap="round"
+                                transform="rotate(-90 50 50)"/>
+                    </svg>
+                    <div class="position-absolute top-50 start-50 translate-middle text-center">
+                        <span class="fs-4 fw-bold" style="color: var(--asnc-blue);">{{ user.profile_completion }}%</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.profile_completion < 100 %}
+            <hr>
+            <a href="{% url 'members:profile_edit' %}" class="btn btn-outline-primary btn-sm w-100">
+                <i class="bi bi-plus-circle me-1"></i> Completar Perfil
+            </a>
+            {% endif %}
+        </div>
+
         <!-- Card Summary -->
         {% if user.member_card %}
         <div class="kpi-card">

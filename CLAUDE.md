@@ -82,8 +82,15 @@ asnc_platform/
 ### User (`users/models.py`)
 - Extends `AbstractUser`
 - `email` is the primary authentication field (unique)
+- `phone`: CharField - Contact phone number
+- `profession`: CharField - Professional title
+- `current_job`: CharField - Current position
+- `institution`: CharField - Company/Institution
+- `linkedin_url`: URLField - LinkedIn profile
+- `bio`: TextField - Professional biography
 - Standard Django auth fields
 - OneToOne relation to `MemberCard` (via `member_card` related_name)
+- `profile_completion` property: Calculates profile completion percentage
 
 ### MembershipApplication (`admissions/models.py`)
 - `uuid`: Unique identifier for tracking
@@ -207,6 +214,7 @@ Log of card verification scans (QR code scans).
 /mi-portal/carnet/             → View my digital card (MemberCardView)
 /mi-portal/carnet/descargar/   → Download card as PDF (MemberCardDownloadView)
 /mi-portal/perfil/             → View my profile (MemberProfileView)
+/mi-portal/perfil/editar/      → Edit profile (MemberProfileEditView)
 /mi-portal/cambiar-contrasena/ → Change password (MemberPasswordChangeView)
 /mi-portal/contrasena-actualizada/ → Password changed confirmation
 
@@ -478,6 +486,7 @@ python manage.py showmigrations
 
 ### users
 - `0001_initial.py` - Creates User model with email as unique USERNAME_FIELD
+- `0002_add_profile_fields.py` - Adds phone, profession, current_job, institution, linkedin_url, bio
 
 ### admissions
 - `0001_initial.py` (2025-12-20) - Creates MembershipApplication model
@@ -529,12 +538,16 @@ python manage.py showmigrations
 - `MemberCardView` (LoginRequiredMixin, TemplateView) - View my card
 - `MemberCardDownloadView` (LoginRequiredMixin, View) - Download PDF
 - `MemberProfileView` (LoginRequiredMixin, TemplateView) - View profile with membership info
+- `MemberProfileEditView` (LoginRequiredMixin, UpdateView) - Edit profile information
 - `MemberPasswordChangeView` (LoginRequiredMixin, PasswordChangeView) - Change password
 - `MemberPasswordChangeDoneView` (LoginRequiredMixin, TemplateView) - Password change confirmation
 
 **Helper Functions:**
 - `get_membership_duration(user)` - Calculate years/months as member
 - `format_duration(years, months)` - Format duration in Spanish
+
+**Forms (`members/forms.py`):**
+- `ProfileEditForm` - Form for editing user profile (phone, profession, job, institution, LinkedIn, bio)
 
 ### Dashboard App
 - `CustomLoginView` (LoginView) - Redirects based on user role
@@ -594,7 +607,8 @@ members/templates/members/           # NEW (Mobile Responsive)
 ├── login.html                       # Member login page
 ├── dashboard.html                   # Member home (with membership duration)
 ├── card.html                        # View my card (responsive card preview)
-├── profile.html                     # My profile (with membership info)
+├── profile.html                     # My profile (with completion indicator)
+├── profile_edit.html                # Edit profile form
 ├── password_change.html             # Change password form
 └── password_change_done.html        # Password change success
 
@@ -749,4 +763,4 @@ sudo systemctl restart gunicorn  # or your server process
 - [ ] Email open/click tracking
 - [ ] Bulk email with rate limiting
 - [x] ~~Card renewal workflow~~ (Implemented - CardRenewView)
-- [ ] Member self-service profile editing
+- [x] ~~Member self-service profile editing~~ (Implemented - MemberProfileEditView)
