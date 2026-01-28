@@ -11,7 +11,7 @@ from .views import (
     EmailComposeView, EmailHistoryView, EmailDetailView,
     DirectoryListView, DirectoryDetailView,
 )
-from admissions.views import ApplicationDetailView, ApplicationListView, change_application_status
+from admissions.views import ApplicationDetailView, ApplicationListView, change_application_status, resend_password_email
 
 urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
@@ -39,6 +39,7 @@ urlpatterns = [
     path('solicitudes/', ApplicationListView.as_view(), name='application_list'),
     path('solicitudes/<int:pk>/', ApplicationDetailView.as_view(), name='application_detail'),
     path('solicitudes/<int:pk>/cambiar-estado/<str:status>/', change_application_status, name='change_status'),
+    path('solicitudes/<int:pk>/reenviar-correo-contrasena/', resend_password_email, name='resend_password_email'),
 
     # CRUD Asociados Destacados
     path('asociados-destacados/', FeaturedMemberListView.as_view(), name='featured_member_list'),

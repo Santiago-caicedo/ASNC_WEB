@@ -271,11 +271,41 @@ class ApplicationListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
     context_object_name = 'applications'
     ordering = ['-created_at']
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Build a dictionary of password status for completed applications
+        password_status = {}
+        for app in context['applications']:
+            if app.status == MembershipApplication.Status.COMPLETED:
+                user = User.objects.filter(email=app.email).first()
+                if user:
+                    password_status[app.pk] = {
+                        'user_exists': True,
+                        'has_password': user.has_usable_password(),
+                        'last_login': user.last_login,
+                    }
+                else:
+                    password_status[app.pk] = {'user_exists': False}
+        context['password_status'] = password_status
+        return context
+
 
 class ApplicationDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
     model = MembershipApplication
     template_name = 'dashboard/application_detail.html'
     context_object_name = 'app'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        app = self.object
+        # Get user info for completed applications
+        if app.status == MembershipApplication.Status.COMPLETED:
+            user = User.objects.filter(email=app.email).first()
+            if user:
+                context['linked_user'] = user
+                context['has_password'] = user.has_usable_password()
+                context['last_login'] = user.last_login
+        return context
 
 
 @login_required
@@ -319,5 +349,40 @@ def change_application_status(request, pk, status):
             pass  # Don't block if email fails
 
         messages.warning(request, f'La solicitud de {application.first_name} ha sido rechazada.')
+
+    return redirect('application_detail', pk=pk)
+
+
+@login_required
+@staff_required
+def resend_password_email(request, pk):
+    """Resend the password setup email to a user."""
+    application = get_object_or_404(MembershipApplication, pk=pk)
+
+    # Only for completed applications
+    if application.status != MembershipApplication.Status.COMPLETED:
+        messages.error(request, 'Solo se puede reenviar el correo a usuarios vinculados.')
+        return redirect('application_detail', pk=pk)
+
+    # Find the user
+    user = User.objects.filter(email=application.email).first()
+    if not user:
+        messages.error(request, 'No se encontró un usuario asociado a esta solicitud.')
+        return redirect('application_detail', pk=pk)
+
+    # Check if user already has a password
+    if user.has_usable_password():
+        messages.warning(request, f'{user.first_name} ya configuró su contraseña.')
+        return redirect('application_detail', pk=pk)
+
+    # Send the password setup email
+    try:
+        send_set_password_email(user)
+        messages.success(
+            request,
+            f'Se ha reenviado el correo de configuración de contraseña a {user.email}.'
+        )
+    except Exception as e:
+        messages.error(request, f'Error al enviar el correo: {e}')
 
     return redirect('application_detail', pk=pk)
