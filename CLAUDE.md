@@ -8,6 +8,12 @@ This is the **ASNC Platform** (Asociación Nuclear Colombiana) - a Django 6.0 we
 **Contact Email:** info@asncol.com
 **Location:** Bucaramanga, Santander, Colombia
 
+**Official Social Media:**
+- **LinkedIn:** https://www.linkedin.com/company/asociaci%C3%B3n-nuclear-colombiana/
+- **Instagram:** https://www.instagram.com/asncol_oficial
+- **Facebook:** https://www.facebook.com/share/1BhF3tqKT7/
+- **X (Twitter):** https://x.com/asncol_oficial
+
 ## Tech Stack
 
 - **Framework**: Django 6.0
@@ -20,6 +26,7 @@ This is the **ASNC Platform** (Asociación Nuclear Colombiana) - a Django 6.0 we
 - **Images**: Pillow (for ImageField support)
 - **PDF Generation**: ReportLab
 - **QR Codes**: qrcode (with PIL support)
+- **Date Utilities**: python-dateutil (relativedelta for membership duration)
 - **SEO**: django.contrib.sitemaps
 - **Email**: SMTP with SSL (BanaHosting/MailChannels)
 - **Localization**: Spanish Colombia (es-co), Timezone America/Bogota
@@ -33,14 +40,15 @@ asnc_platform/
 ├── admissions/                  # Membership application workflow
 │   └── templates/admissions/    # Form, success page
 │       └── emails/              # HTML email templates
-├── carnets/                     # Digital member card system (NEW)
+├── carnets/                     # Digital member card system
 │   ├── models.py                # MemberCard, CardVerification
 │   ├── views.py                 # Card generation, verification, photo upload
 │   ├── utils.py                 # PDF and QR code generation
 │   ├── forms.py                 # PhotoUploadForm, GenerateCardForm, CardSuspendForm, CardRenewForm
 │   └── templates/carnets/       # Card templates and emails
-├── members/                     # Member portal for associates (NEW)
-│   ├── views.py                 # Member dashboard, card view, profile
+├── members/                     # Member portal for associates
+│   ├── views.py                 # Member dashboard, card view, profile, password change
+│   ├── forms.py                 # ProfileEditForm
 │   └── templates/members/       # Member portal templates
 ├── dashboard/                   # Admin portal for committee members
 │   ├── models.py                # SentEmail model (email history)
@@ -73,7 +81,7 @@ asnc_platform/
 | `users` | Custom User model extending AbstractUser, email-based auth |
 | `admissions` | MembershipApplication model, form submission, email notifications, user creation on approval |
 | `carnets` | Digital member cards with QR verification, PDF generation, photo upload system |
-| `members` | Member portal for associates to view their card, profile, and download PDF |
+| `members` | Member portal for associates: dashboard, card view/download, profile view/edit, password change, membership duration |
 | `dashboard` | Protected admin views, KPIs, application management, directory, featured members CRUD, email mailing |
 | `website` | Public pages: homepage, about, events, PowerPoint template |
 
@@ -90,7 +98,25 @@ asnc_platform/
 - `bio`: TextField - Professional biography
 - Standard Django auth fields
 - OneToOne relation to `MemberCard` (via `member_card` related_name)
-- `profile_completion` property: Calculates profile completion percentage
+- `profile_completion` property: Calculates profile completion percentage (0-100%)
+
+**Profile Completion Calculation:**
+```python
+@property
+def profile_completion(self):
+    fields = ['first_name', 'last_name', 'phone', 'profession',
+              'current_job', 'institution', 'linkedin_url', 'bio']
+    filled = sum(1 for f in fields if getattr(self, f, None))
+    return int((filled / len(fields)) * 100)
+```
+
+**Completion Level Badges (in profile.html):**
+| Percentage | Badge | Color | Message |
+|------------|-------|-------|---------|
+| 100% | Completo | Green | "Tu perfil esta completo" |
+| 75-99% | Casi listo | Gold | "Solo faltan algunos datos" |
+| 50-74% | Buen avance | Blue | "Continua completando tu perfil" |
+| < 50% | En progreso | Gray | "Completa tu informacion" |
 
 ### MembershipApplication (`admissions/models.py`)
 - `uuid`: Unique identifier for tracking
@@ -113,7 +139,7 @@ asnc_platform/
 | REJECTED | Rechazado |
 | COMPLETED | Vinculado (Usuario Creado) |
 
-### MemberCard (`carnets/models.py`) - NEW
+### MemberCard (`carnets/models.py`)
 Digital member card for ASNC associates.
 
 **Fields:**
@@ -153,7 +179,7 @@ Digital member card for ASNC associates.
 - `full_name`: Property to get cardholder's name
 - `get_verification_url()`: Returns public verification URL
 
-### CardVerification (`carnets/models.py`) - NEW
+### CardVerification (`carnets/models.py`)
 Log of card verification scans (QR code scans).
 
 **Fields:**
@@ -209,7 +235,7 @@ Log of card verification scans (QR code scans).
 /sitemap.xml                   → Dynamic XML sitemap
 /robots.txt                    → Robots file for crawlers
 
-# Member Portal (NEW - requires login, regular users)
+# Member Portal (requires login, regular users)
 /mi-portal/                    → Member dashboard (MemberDashboardView)
 /mi-portal/carnet/             → View my digital card (MemberCardView)
 /mi-portal/carnet/descargar/   → Download card as PDF (MemberCardDownloadView)
@@ -224,7 +250,7 @@ Log of card verification scans (QR code scans).
 /portal/solicitudes/<id>/      → Application detail
 /portal/solicitudes/<id>/cambiar-estado/<status>/  → Change status
 
-# Directory (NEW - Protected)
+# Directory (Protected)
 /portal/directorio/            → Official member directory
 /portal/directorio/<id>/       → Member expediente (detailed record)
 
@@ -324,16 +350,27 @@ Application APPROVED → Admin clicks "Vincular y Crear Usuario"
 ### PDF Generation (`carnets/utils.py`)
 - Uses ReportLab for PDF creation
 - Card dimensions: 160mm x 100mm (large format)
+- **S3 Compatible**: Uses `card.photo.open('rb')` instead of `card.photo.path` for AWS S3 storage compatibility
 - Features:
-  - ASNC branded header with logo
-  - Gold header bar with "CARNET DE ASOCIADO"
+  - Header with white background section for logo visibility
+  - Gold accent bars at top and bottom of header
+  - Navy subtitle bar with "CARNET DE ASOCIADO" in white
   - Member photo (38mm x 50mm)
   - Name, card number, category
+  - Gold bar with ASNC logo (white rounded background for contrast)
   - Issue and expiry dates
   - QR code for verification
   - Information boxes below card
   - Verification section with full URL
   - Footer with contact info
+
+**Photo Loading for S3:**
+```python
+if card.photo:
+    with card.photo.open('rb') as photo_file:
+        img = Image.open(photo_file)
+        img.load()  # Force load before closing file
+```
 
 ### QR Code Generation (`carnets/utils.py`)
 - Uses qrcode library with PIL
@@ -376,6 +413,14 @@ class StaffRequiredMixin(UserPassesTestMixin):
 - **Host**: bh8928.banahosting.com (BanaHosting/MailChannels)
 - **Port**: 465 (SSL)
 - **From**: info@asncol.com
+- **Sender Name**: "Asociación Nuclear Colombiana" (using `email.utils.formataddr`)
+
+### Email Sender Formatting
+Emails are sent with a proper display name using `formataddr`:
+```python
+from email.utils import formataddr
+from_email = formataddr(('Asociación Nuclear Colombiana', settings.DEFAULT_FROM_EMAIL))
+```
 
 ### Email Templates
 ```
@@ -478,6 +523,7 @@ python manage.py showmigrations
 | django-storages | 1.14.6 | S3 storage backend |
 | boto3 | 1.42.29 | AWS SDK for S3 |
 | python-decouple | 3.8 | Environment variables |
+| python-dateutil | 2.9.0 | Date calculations (relativedelta for membership duration) |
 | Pillow | 11.1.0 | Image processing |
 | qrcode | 8.2 | QR code generation |
 | reportlab | 4.4.9 | PDF generation |
@@ -517,7 +563,7 @@ python manage.py showmigrations
 - `ApplicationDetailView` (StaffRequiredMixin, DetailView)
 - `change_application_status()` - Status change with user creation on COMPLETED
 
-### Carnets App (NEW)
+### Carnets App
 - `CardVerificationView` (TemplateView) - Public QR verification page
 - `PhotoUploadView` (FormView) - Photo upload (token-based, no login)
 - `PhotoUploadSuccessView` (TemplateView) - Photo upload success page
@@ -532,7 +578,7 @@ python manage.py showmigrations
 - `reactivate_card()` - Function view to reactivate suspended card
 - `resend_photo_request()` - Function view to resend photo request email
 
-### Members App (NEW)
+### Members App
 - `MemberLoginView` (LoginView) - Member login page
 - `MemberDashboardView` (LoginRequiredMixin, TemplateView) - Member home with membership duration
 - `MemberCardView` (LoginRequiredMixin, TemplateView) - View my card
@@ -586,7 +632,7 @@ admissions/templates/admissions/
     ├── application_rejected.html
     └── set_password.html
 
-carnets/templates/carnets/           # NEW
+carnets/templates/carnets/
 ├── verificar.html                   # Public verification page
 ├── subir_foto.html                  # Photo upload form
 ├── subir_foto_exito.html            # Upload success
@@ -602,7 +648,7 @@ carnets/templates/carnets/           # NEW
     ├── solicitar_foto.html
     └── carne_listo.html
 
-members/templates/members/           # NEW (Mobile Responsive)
+members/templates/members/           # Mobile Responsive
 ├── base_members.html                # Member portal base (hamburger menu, sidebar toggle)
 ├── login.html                       # Member login page
 ├── dashboard.html                   # Member home (with membership duration)
@@ -631,6 +677,19 @@ dashboard/templates/dashboard/       # Mobile Responsive
     ├── compose.html
     ├── history.html                 # Compact email list
     └── detail.html
+```
+
+## Member Portal Sidebar Structure
+
+```
+MI PORTAL
+├── Inicio (dashboard)
+├── Mi Carnet (card)
+└── Mi Perfil (profile)
+
+CUENTA
+├── Cambiar Contraseña (password_change)
+└── Cerrar Sesión (logout)
 ```
 
 ## Dashboard Sidebar Structure
@@ -695,13 +754,27 @@ Both portals (member and admin) are fully responsive with the following breakpoi
 - Stacked cards instead of horizontal layouts
 - Simplified pagination (arrows instead of text)
 
+**Member Profile Page Layout (`profile.html`):**
+The profile page uses a two-column layout with flexbox for equal heights:
+- **Left Column (col-lg-8)**: Main profile card with all user information
+  - Header with avatar initials and profession badge
+  - Profile completion alert (if < 100%)
+  - Personal Information section
+  - Professional Information section
+  - Membership section (with duration)
+  - Security section (dates)
+  - Action buttons (Edit Profile, Change Password)
+- **Right Column (col-lg-4)**: Two equal-height cards using `flex-grow-1`
+  - **Profile Completion Card**: Gradient header, circular progress with gradient stroke, dynamic status badges (Completo/Casi listo/Buen avance/En progreso)
+  - **Member Card Summary**: Mini card preview with status and expiry
+
 **Responsive Templates:**
 ```
 members/templates/members/
 ├── base_members.html        # Mobile header, sidebar toggle, overlay
 ├── dashboard.html           # 2-column grid on mobile
 ├── card.html                # Responsive card preview
-└── profile.html             # Reordered columns for mobile
+└── profile.html             # Two-column layout with equal-height cards
 
 dashboard/templates/dashboard/
 ├── base_dashboard.html      # Mobile header, sidebar toggle, overlay
@@ -764,3 +837,5 @@ sudo systemctl restart gunicorn  # or your server process
 - [ ] Bulk email with rate limiting
 - [x] ~~Card renewal workflow~~ (Implemented - CardRenewView)
 - [x] ~~Member self-service profile editing~~ (Implemented - MemberProfileEditView)
+- [x] ~~Password change for members~~ (Implemented - MemberPasswordChangeView)
+- [x] ~~Membership duration display~~ (Implemented - years/months calculation)
