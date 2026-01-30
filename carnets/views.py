@@ -1,3 +1,5 @@
+import logging
+from datetime import timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -7,8 +9,14 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.db.models import Count, Q
+from django.db import transaction
 
 from .models import MemberCard, CardVerification
+
+logger = logging.getLogger(__name__)
+
+# Token expiration time in hours
+PHOTO_TOKEN_EXPIRY_HOURS = 72  # 3 days
 
 
 class StaffRequiredMixin(UserPassesTestMixin):
@@ -102,6 +110,15 @@ class PhotoUploadView(FormView):
                 'card': self.card
             })
 
+        # Check if token has expired (72 hours / 3 days)
+        if self.card.photo_token_created_at:
+            expiry_time = self.card.photo_token_created_at + timedelta(hours=PHOTO_TOKEN_EXPIRY_HOURS)
+            if timezone.now() > expiry_time:
+                return render(request, 'carnets/subir_foto.html', {
+                    'token_expired': True,
+                    'card': self.card
+                })
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -110,19 +127,41 @@ class PhotoUploadView(FormView):
         return context
 
     def form_valid(self, form):
-        # Save the photo
-        self.card.photo = form.cleaned_data['photo']
-        self.card.photo_token_used = True
-        self.card.status = MemberCard.Status.ACTIVE
-        self.card.save()
-
-        # Send notification email
+        """
+        Save the photo using atomic transaction with row locking
+        to prevent race conditions from concurrent uploads.
+        """
         try:
-            send_card_ready_email(self.card)
-        except Exception:
-            pass  # Don't break the flow if email fails
+            with transaction.atomic():
+                # Lock the card row to prevent concurrent updates
+                card = MemberCard.objects.select_for_update().get(pk=self.card.pk)
 
-        return redirect('carnets:subir_foto_exito', token=self.card.photo_token)
+                # Double-check token hasn't been used (race condition guard)
+                if card.photo_token_used:
+                    return render(self.request, 'carnets/subir_foto.html', {
+                        'token_used': True,
+                        'card': card
+                    })
+
+                # Save the photo and update status atomically
+                card.photo = form.cleaned_data['photo']
+                card.photo_token_used = True
+                card.status = MemberCard.Status.ACTIVE
+                card.save()
+
+            # Send notification email OUTSIDE transaction
+            try:
+                send_card_ready_email(card)
+            except Exception as e:
+                logger.error(f'Failed to send card ready email to {card.user.email}: {e}')
+                # Don't break the flow if email fails - card is still activated
+
+            return redirect('carnets:subir_foto_exito', token=card.photo_token)
+
+        except Exception as e:
+            logger.error(f'Error uploading photo for card {self.card.card_number}: {e}')
+            messages.error(self.request, 'Error al procesar la foto. Por favor intente de nuevo.')
+            return self.form_invalid(form)
 
 
 class PhotoUploadSuccessView(TemplateView):
@@ -261,6 +300,7 @@ class GenerateCardView(StaffRequiredMixin, LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         from django.contrib.auth import get_user_model
+        from django.db import IntegrityError
         User = get_user_model()
 
         # Try to find the user associated with this application
@@ -274,20 +314,35 @@ class GenerateCardView(StaffRequiredMixin, LoginRequiredMixin, FormView):
             )
             return redirect('application_detail', pk=self.application.pk)
 
-        # Generate card number
-        card_number = MemberCard.generate_card_number()
+        try:
+            # Use atomic transaction to ensure card number uniqueness
+            with transaction.atomic():
+                # Generate card number (already uses select_for_update internally)
+                card_number = MemberCard.generate_card_number()
 
-        # Create the card
-        card = MemberCard.objects.create(
-            card_number=card_number,
-            user=user,
-            application=self.application,
-            category=form.cleaned_data['category'],
-            issued_by=self.request.user,
-            status=MemberCard.Status.PENDING_PHOTO
-        )
+                # Create the card
+                card = MemberCard.objects.create(
+                    card_number=card_number,
+                    user=user,
+                    application=self.application,
+                    category=form.cleaned_data['category'],
+                    issued_by=self.request.user,
+                    status=MemberCard.Status.PENDING_PHOTO,
+                    photo_token_created_at=timezone.now()  # Track token creation time
+                )
 
-        # Send photo request email if requested
+        except IntegrityError as e:
+            logger.error(f'IntegrityError creating card for {user.email}: {e}')
+            # Check if it's a duplicate card number (race condition) or duplicate user
+            if 'card_number' in str(e):
+                messages.error(self.request, 'Error de concurrencia al generar el número de carné. Por favor intente de nuevo.')
+            elif 'user' in str(e):
+                messages.error(self.request, 'Este usuario ya tiene un carné asignado.')
+            else:
+                messages.error(self.request, f'Error al crear el carné: {e}')
+            return redirect('application_detail', pk=self.application.pk)
+
+        # Send photo request email OUTSIDE transaction
         if form.cleaned_data.get('send_email', True):
             try:
                 send_photo_request_email(card)
@@ -297,6 +352,7 @@ class GenerateCardView(StaffRequiredMixin, LoginRequiredMixin, FormView):
                     f'Se ha enviado un correo a {user.email} solicitando la foto.'
                 )
             except Exception as e:
+                logger.error(f'Failed to send photo request email to {user.email}: {e}')
                 messages.warning(
                     self.request,
                     f'Carné {card_number} generado, pero hubo un error al enviar el correo: {str(e)}'

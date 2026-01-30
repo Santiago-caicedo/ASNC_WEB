@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
@@ -13,8 +14,11 @@ from django.utils.encoding import force_bytes
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.db import transaction, IntegrityError
 from .models import MembershipApplication
 from .forms import MembershipApplicationForm
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -80,37 +84,53 @@ Asociación Nuclear Colombiana
     email.send(fail_silently=False)
 
 
-def create_user_from_application(application):
-    """
-    Creates a user account from an approved application.
-    Returns the created user or None if user already exists.
-    """
-    # Check if user already exists
-    if User.objects.filter(email=application.email).exists():
-        return User.objects.get(email=application.email)
-
-    # Create username from email (before @)
-    base_username = application.email.split('@')[0]
+def _generate_unique_username(email):
+    """Generate a unique username from email address."""
+    base_username = email.split('@')[0]
     username = base_username
     counter = 1
 
-    # Ensure unique username
     while User.objects.filter(username=username).exists():
         username = f"{base_username}{counter}"
         counter += 1
 
-    # Create user with unusable password (will be set via email)
-    user = User.objects.create_user(
-        username=username,
-        email=application.email,
-        first_name=application.first_name,
-        last_name=application.last_name,
-        password=None,  # No password yet
-    )
-    user.set_unusable_password()
-    user.save()
+    return username
 
-    return user
+
+def create_user_from_application(application):
+    """
+    Creates a user account from an approved application.
+    Returns the created user (existing or new).
+    Uses atomic transaction to prevent race conditions.
+    """
+    try:
+        with transaction.atomic():
+            # Try to get existing user first
+            user = User.objects.filter(email=application.email).first()
+            if user:
+                return user
+
+            # Create username from email
+            username = _generate_unique_username(application.email)
+
+            # Create user with unusable password (will be set via email)
+            user = User.objects.create_user(
+                username=username,
+                email=application.email,
+                first_name=application.first_name,
+                last_name=application.last_name,
+                password=None,
+            )
+            user.set_unusable_password()
+            user.save()
+
+            return user
+
+    except IntegrityError:
+        # Race condition: another request created the user between our check and create
+        # This is safe - just return the existing user
+        logger.warning(f"Race condition detected for email {application.email}, fetching existing user")
+        return User.objects.get(email=application.email)
 
 
 def send_approval_email(application, user):
@@ -311,44 +331,74 @@ class ApplicationDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
 @login_required
 @staff_required
 def change_application_status(request, pk, status):
-    """Handle application status changes (approve/reject)."""
+    """
+    Handle application status changes (approve/reject).
+    Uses atomic transaction to ensure data consistency.
+    """
     application = get_object_or_404(MembershipApplication, pk=pk)
 
     if status == 'approved':
+        user = None
         try:
-            # 1. Create user account
-            user = create_user_from_application(application)
+            # Use atomic transaction to ensure user + status update are consistent
+            with transaction.atomic():
+                # Lock the application row to prevent concurrent updates
+                application = MembershipApplication.objects.select_for_update().get(pk=pk)
 
-            # 2. Update application status to COMPLETED
-            application.status = MembershipApplication.Status.COMPLETED
-            application.save()
+                # Verify status hasn't changed (idempotency check)
+                if application.status == MembershipApplication.Status.COMPLETED:
+                    messages.info(request, f'{application.first_name} ya fue vinculado anteriormente.')
+                    return redirect('application_detail', pk=pk)
 
-            # 3. Send welcome email (includes password setup link)
+                # 1. Create user account
+                user = create_user_from_application(application)
+
+                # 2. Update application status to COMPLETED
+                application.status = MembershipApplication.Status.COMPLETED
+                application.save()
+
+            # 3. Send welcome email OUTSIDE transaction (email can fail without rollback)
             try:
                 send_approval_email(application, user)
+                messages.success(
+                    request,
+                    f'¡{application.first_name} {application.last_name} ha sido APROBADO y VINCULADO! '
+                    f'Se ha enviado el correo de bienvenida con el enlace para configurar contraseña.'
+                )
             except Exception as e:
-                messages.warning(request, f'Usuario creado, pero falló el envío del correo de bienvenida: {e}')
-
-            messages.success(
-                request,
-                f'¡{application.first_name} {application.last_name} ha sido APROBADO y VINCULADO! '
-                f'Se ha enviado el correo de bienvenida con el enlace para configurar contraseña.'
-            )
+                logger.error(f'Failed to send approval email to {application.email}: {e}')
+                messages.warning(
+                    request,
+                    f'Usuario creado exitosamente, pero falló el envío del correo de bienvenida: {e}. '
+                    f'Puede reenviar el correo desde el detalle de la solicitud.'
+                )
 
         except Exception as e:
+            logger.error(f'Error processing approval for application {pk}: {e}')
             messages.error(request, f'Error al procesar la aprobación: {e}')
 
     elif status == 'rejected':
-        application.status = MembershipApplication.Status.REJECTED
-        application.save()
-
-        # Send rejection email
         try:
-            send_rejection_email(application)
-        except Exception:
-            pass  # Don't block if email fails
+            with transaction.atomic():
+                application = MembershipApplication.objects.select_for_update().get(pk=pk)
+                application.status = MembershipApplication.Status.REJECTED
+                application.save()
 
-        messages.warning(request, f'La solicitud de {application.first_name} ha sido rechazada.')
+            # Send rejection email outside transaction
+            try:
+                send_rejection_email(application)
+            except Exception as e:
+                logger.error(f'Failed to send rejection email to {application.email}: {e}')
+                messages.warning(
+                    request,
+                    f'Solicitud rechazada, pero falló el envío del correo de notificación: {e}'
+                )
+
+            messages.warning(request, f'La solicitud de {application.first_name} ha sido rechazada.')
+
+        except Exception as e:
+            logger.error(f'Error rejecting application {pk}: {e}')
+            messages.error(request, f'Error al rechazar la solicitud: {e}')
 
     return redirect('application_detail', pk=pk)
 

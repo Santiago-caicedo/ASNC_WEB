@@ -1,5 +1,5 @@
 import uuid as uuid_lib
-from django.db import models
+from django.db import models, transaction
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -36,7 +36,7 @@ class MemberCard(models.Model):
     # Relations
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,  # Prevent accidental deletion of user with card
         related_name='member_card',
         verbose_name=_('Usuario')
     )
@@ -92,6 +92,11 @@ class MemberCard(models.Model):
         _('Token de foto usado'),
         default=False
     )
+    photo_token_created_at = models.DateTimeField(
+        _('Token creado en'),
+        default=timezone.now,
+        help_text=_('Fecha de creación del token para control de expiración')
+    )
 
     # Administrative
     issued_by = models.ForeignKey(
@@ -128,26 +133,31 @@ class MemberCard(models.Model):
 
     @classmethod
     def generate_card_number(cls):
-        """Generate next card number in sequence: ASNC-YYYY-NNNN"""
+        """
+        Generate next card number in sequence: ASNC-YYYY-NNNN
+        Uses database-level locking to prevent race conditions.
+        """
         current_year = timezone.now().year
         prefix = f"ASNC-{current_year}-"
 
-        # Get the last card number for this year
-        last_card = cls.objects.filter(
-            card_number__startswith=prefix
-        ).order_by('-card_number').first()
+        # Use atomic transaction with select_for_update to prevent race conditions
+        with transaction.atomic():
+            # Lock the rows we're querying to prevent concurrent access
+            last_card = cls.objects.select_for_update().filter(
+                card_number__startswith=prefix
+            ).order_by('-card_number').first()
 
-        if last_card:
-            # Extract the sequence number and increment
-            try:
-                last_seq = int(last_card.card_number.split('-')[-1])
-                new_seq = last_seq + 1
-            except ValueError:
+            if last_card:
+                # Extract the sequence number and increment
+                try:
+                    last_seq = int(last_card.card_number.split('-')[-1])
+                    new_seq = last_seq + 1
+                except ValueError:
+                    new_seq = 1
+            else:
                 new_seq = 1
-        else:
-            new_seq = 1
 
-        return f"{prefix}{new_seq:04d}"
+            return f"{prefix}{new_seq:04d}"
 
     @property
     def is_valid(self):
