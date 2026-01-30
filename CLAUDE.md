@@ -28,6 +28,7 @@ This is the **ASNC Platform** (Asociación Nuclear Colombiana) - a Django 6.0 we
 - **QR Codes**: qrcode (with PIL support)
 - **Date Utilities**: python-dateutil (relativedelta for membership duration)
 - **SEO**: django.contrib.sitemaps
+- **Analytics**: Google Analytics 4 (gtag.js) - ID: G-1H2FNJ5PB8
 - **Email**: SMTP with SSL (BanaHosting/MailChannels)
 - **Localization**: Spanish Colombia (es-co), Timezone America/Bogota
 
@@ -53,9 +54,11 @@ asnc_platform/
 ├── dashboard/                   # Admin portal for committee members
 │   ├── models.py                # SentEmail model (email history)
 │   ├── forms.py                 # FeaturedMemberForm, EmailComposeForm
+│   ├── templatetags/            # Custom template tags
+│   │   └── dashboard_extras.py  # get_item filter for dict access
 │   └── templates/dashboard/     # Dashboard templates
 │       ├── featured_members/    # CRUD templates for featured members
-│       ├── directory/           # Official member directory (NEW)
+│       ├── directory/           # Official member directory
 │       └── emails/              # Email compose, history, detail templates
 ├── website/                     # Public-facing pages
 │   ├── templates/website/       # Home, About, Events, PowerPoint template
@@ -232,8 +235,9 @@ Log of card verification scans (QR code scans).
 /carnes/subir-foto/<token>/exito/ → Photo upload success (PhotoUploadSuccessView)
 
 # SEO
-/sitemap.xml                   → Dynamic XML sitemap
+/sitemap.xml                   → Dynamic XML sitemap (home, about, events, application_create)
 /robots.txt                    → Robots file for crawlers
+/favicon.ico                   → Redirects to S3 static icon
 
 # Member Portal (requires login, regular users)
 /mi-portal/                    → Member dashboard (MemberDashboardView)
@@ -249,6 +253,7 @@ Log of card verification scans (QR code scans).
 /portal/solicitudes/           → Application list
 /portal/solicitudes/<id>/      → Application detail
 /portal/solicitudes/<id>/cambiar-estado/<status>/  → Change status
+/portal/solicitudes/<id>/reenviar-correo-contrasena/ → Resend password setup email
 
 # Directory (Protected)
 /portal/directorio/            → Official member directory
@@ -333,12 +338,29 @@ All models are registered with full-featured admin interfaces:
 
 ## Carnets System (Digital Member Cards)
 
-### Card Generation Flow
+### Application Approval Flow
 ```
-Application APPROVED → Admin clicks "Vincular y Crear Usuario"
+Application PENDING → Admin reviews application
+    → Admin clicks "Aprobar y Vincular"
     → User created with unusable password
     → Application status = COMPLETED
-    → Admin clicks "Generar Carné" from expediente
+    → Single email sent with welcome message + password setup link
+    → User configures password via link
+    → User can access /mi-portal/
+```
+
+**Password Status Tracking:**
+- Application list shows password status badge for COMPLETED applications:
+  - Green key icon = Password configured
+  - Yellow key icon = Password pending
+- Application detail shows "Estado de la Cuenta" section with:
+  - Password status (Configurada / Pendiente)
+  - Last login date
+  - "Reenviar Correo" button (only if password not configured)
+
+### Card Generation Flow
+```
+Application COMPLETED → Admin clicks "Generar Carné" from expediente
     → MemberCard created with status = PENDING_PHOTO
     → Email sent to member with photo upload link
     → Member uploads photo via unique token link
@@ -442,11 +464,13 @@ carnets/templates/carnets/emails/
 | Function | Location | Purpose |
 |----------|----------|---------|
 | `send_application_email()` | admissions/views.py | Confirmation on form submit |
-| `send_approval_email()` | admissions/views.py | Welcome on approval |
-| `send_set_password_email()` | admissions/views.py | Password setup link |
+| `send_approval_email()` | admissions/views.py | Welcome + password setup link (unified email) |
+| `send_set_password_email()` | admissions/views.py | Password setup link (for resending) |
 | `send_rejection_email()` | admissions/views.py | Rejection notification |
 | `send_photo_request_email()` | carnets/utils.py | Request card photo |
 | `send_card_ready_email()` | carnets/utils.py | Card activation notification |
+
+**Note:** When an application is approved, only ONE email is sent (`send_approval_email`) which includes both the welcome message and the password setup link. The `send_set_password_email` function is kept for resending the password link if needed.
 
 ## Environment Variables (.env)
 
@@ -559,9 +583,10 @@ python manage.py showmigrations
 ### Admissions App
 - `ApplicationCreateView` (CreateView) - Membership form
 - `ApplicationSuccessView` (TemplateView) - Confirmation
-- `ApplicationListView` (StaffRequiredMixin, ListView)
-- `ApplicationDetailView` (StaffRequiredMixin, DetailView)
+- `ApplicationListView` (StaffRequiredMixin, ListView) - With password status indicators
+- `ApplicationDetailView` (StaffRequiredMixin, DetailView) - With user account status section
 - `change_application_status()` - Status change with user creation on COMPLETED
+- `resend_password_email()` - Resend password setup email to users who haven't configured it
 
 ### Carnets App
 - `CardVerificationView` (TemplateView) - Public QR verification page
@@ -662,8 +687,8 @@ dashboard/templates/dashboard/       # Mobile Responsive
 ├── base_dashboard.html              # Hamburger menu, sidebar toggle, overlay
 ├── login.html
 ├── home.html                        # Responsive KPI cards
-├── application_list.html            # Hidden columns, compact badges
-├── application_detail.html          # Stacked buttons on mobile
+├── application_list.html            # Hidden columns, compact badges, password status indicators
+├── application_detail.html          # Stacked buttons, user account status section
 ├── password_set.html
 ├── password_set_done.html
 ├── directory/
@@ -712,6 +737,22 @@ COMUNICACIONES
 ADMINISTRACIÓN
 ├── Pagos y Cartera (placeholder)
 └── Configuración (placeholder)
+```
+
+## Custom Template Tags
+
+### dashboard_extras (`dashboard/templatetags/dashboard_extras.py`)
+
+| Filter | Usage | Purpose |
+|--------|-------|---------|
+| `get_item` | `{{ dict\|get_item:key }}` | Access dictionary items with variable keys |
+
+**Usage Example:**
+```django
+{% load dashboard_extras %}
+{% with status=password_status|get_item:app.pk %}
+    {{ status.has_password }}
+{% endwith %}
 ```
 
 ## Code Conventions
@@ -786,6 +827,26 @@ dashboard/templates/dashboard/
 └── featured_members/list.html # Hidden columns on mobile
 ```
 
+## SEO Configuration
+
+### Sitemap (`website/sitemaps.py`)
+The sitemap includes the following pages with priorities:
+
+| Page | Priority | Change Frequency |
+|------|----------|------------------|
+| home | 1.0 | weekly |
+| application_create | 0.9 | weekly |
+| about | 0.8 | weekly |
+| events | 0.7 | weekly |
+
+### Google Analytics
+Google Analytics 4 is integrated via gtag.js in `base.html`:
+- **Tracking ID**: G-1H2FNJ5PB8
+- Loaded asynchronously in the `<head>` section
+
+### Favicon
+The favicon is configured in `config/urls.py` to redirect `/favicon.ico` to the S3 static URL using `settings.STATIC_URL`.
+
 ## Security Notes
 
 - CSRF protection enabled on all forms
@@ -839,3 +900,8 @@ sudo systemctl restart gunicorn  # or your server process
 - [x] ~~Member self-service profile editing~~ (Implemented - MemberProfileEditView)
 - [x] ~~Password change for members~~ (Implemented - MemberPasswordChangeView)
 - [x] ~~Membership duration display~~ (Implemented - years/months calculation)
+- [x] ~~Unified approval email~~ (Welcome + password link in single email)
+- [x] ~~Password status tracking~~ (Indicators in application list/detail)
+- [x] ~~Resend password email~~ (Button in application detail for pending users)
+- [x] ~~Google Analytics integration~~ (GA4 with gtag.js)
+- [x] ~~SEO sitemap~~ (Includes home, about, events, application pages)

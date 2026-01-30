@@ -32,7 +32,11 @@
       "Bash(py manage.py migrate:*)",
       "Bash(python.exe manage.py:*)",
       "Bash(python3:*)",
-      "Bash(identify:*)"
+      "Bash(identify:*)",
+      "mcp__claude_ai_Canva__request-outline-review",
+      "mcp__claude_ai_Canva__generate-design-structured",
+      "mcp__claude_ai_Canva__search-designs",
+      "Bash(pip show:*)"
     ]
   }
 }

@@ -413,7 +413,12 @@ def generate_card_pdf(card):
 
     c.setFillColor(ASNC_NAVY)
     c.setFont("Helvetica-Bold", 9)
-    c.drawCentredString(width/2, 8*mm, "www.asncol.com  |  info@asncol.com  |  Bucaramanga, Colombia")
+    c.drawCentredString(width/2, 10*mm, "www.asncol.com  |  info@asncol.com  |  Bucaramanga, Colombia")
+
+    # Vadom credit
+    c.setFillColor(colors.HexColor('#94a3b8'))
+    c.setFont("Helvetica", 7)
+    c.drawCentredString(width/2, 5*mm, "Plataforma desarrollada por Vadom Data Consulting  |  vadomdata.com")
 
     # Finish and save
     c.showPage()
