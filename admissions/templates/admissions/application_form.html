@@ -26,6 +26,22 @@
                     <form method="post" class="application-form">
                         {% csrf_token %}
 
+                        <!-- Anti-spam: honeypot field (invisible to humans) -->
+                        <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;">
+                            <label for="id_website">Website</label>
+                            {{ form.website }}
+                        </div>
+                        <!-- Anti-spam: timestamp token -->
+                        <input type="hidden" name="form_token" value="{{ form_token }}">
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger mb-3">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
                         <div class="row g-3">
                             <!-- Nombre -->
                             <div class="col-sm-6">

@@ -1,4 +1,7 @@
+from PIL import Image
+
 from django import forms
+
 from .models import MemberCard
 
 
@@ -9,7 +12,7 @@ class PhotoUploadForm(forms.Form):
         label='Foto para el carné',
         widget=forms.FileInput(attrs={
             'class': 'form-control form-control-lg',
-            'accept': 'image/*'
+            'accept': 'image/jpeg,image/png'
         }),
         help_text='Sube una foto tipo documento (fondo claro, rostro visible, formato JPG o PNG)'
     )
@@ -23,12 +26,31 @@ class PhotoUploadForm(forms.Form):
                     'La imagen es demasiado grande. El tamaño máximo es 5MB.'
                 )
 
-            # Validate content type
+            # Validate content type (browser-reported)
             content_type = photo.content_type
             if content_type not in ['image/jpeg', 'image/png', 'image/jpg']:
                 raise forms.ValidationError(
                     'Solo se permiten imágenes en formato JPG o PNG.'
                 )
+
+            # Validate actual file content using PIL (magic bytes verification)
+            try:
+                img = Image.open(photo)
+                img.verify()  # Verifies file is not corrupted
+                photo.seek(0)  # Reset file pointer after verify
+            except Exception:
+                raise forms.ValidationError(
+                    'El archivo no es una imagen válida o está corrupto.'
+                )
+
+            # Confirm the real format matches allowed types
+            img = Image.open(photo)
+            if img.format not in ('JPEG', 'PNG'):
+                photo.seek(0)
+                raise forms.ValidationError(
+                    'Solo se permiten imágenes en formato JPG o PNG.'
+                )
+            photo.seek(0)
 
         return photo
 

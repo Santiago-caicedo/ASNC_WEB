@@ -170,7 +170,7 @@
                 <div class="connection-vertical"></div>
                 <div class="connection-horizontal"></div>
                 <div class="connection-dots">
-                    <span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span>
                 </div>
             </div>
 
@@ -185,12 +185,21 @@
                     <div class="committee-decoration"></div>
                 </div>
 
-                <div class="org-committee-card committee-tecnico">
+                <div class="org-committee-card committee-cientifico">
                     <div class="committee-icon">
                         <i class="bi bi-cpu-fill"></i>
                     </div>
-                    <h4>Comité Técnico</h4>
+                    <h4>Comité Científico</h4>
                     <p>Validación científica, investigación y asesoría especializada</p>
+                    <div class="committee-decoration"></div>
+                </div>
+
+                <div class="org-committee-card committee-regulacion">
+                    <div class="committee-icon">
+                        <i class="bi bi-bank2"></i>
+                    </div>
+                    <h4>Comité de Regulación y Gobierno</h4>
+                    <p>Asuntos regulatorios, políticas públicas y relaciones institucionales</p>
                     <div class="committee-decoration"></div>
                 </div>
 
@@ -683,7 +692,7 @@
 /* Committees */
 .org-committees {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
 }
 
@@ -720,8 +729,12 @@
     background: linear-gradient(135deg, #8b5cf6, #a78bfa);
 }
 
-.committee-tecnico .committee-icon {
+.committee-cientifico .committee-icon {
     background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+}
+
+.committee-regulacion .committee-icon {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
 }
 
 .committee-financiero .committee-icon {
@@ -756,8 +769,12 @@
     background: linear-gradient(90deg, #8b5cf6, #a78bfa);
 }
 
-.committee-tecnico .committee-decoration {
+.committee-cientifico .committee-decoration {
     background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+}
+
+.committee-regulacion .committee-decoration {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
 }
 
 .committee-financiero .committee-decoration {
@@ -1308,8 +1325,8 @@
     }
 
     .org-committees {
-        grid-template-columns: 1fr;
-        max-width: 350px;
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 600px;
         margin: 0 auto;
     }
 
@@ -1321,6 +1338,13 @@
     .cta-card {
         flex-direction: column;
         text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .org-committees {
+        grid-template-columns: 1fr;
+        max-width: 350px;
     }
 }
 

@@ -339,7 +339,7 @@ class GenerateCardView(StaffRequiredMixin, LoginRequiredMixin, FormView):
             elif 'user' in str(e):
                 messages.error(self.request, 'Este usuario ya tiene un carné asignado.')
             else:
-                messages.error(self.request, f'Error al crear el carné: {e}')
+                messages.error(self.request, 'Error al crear el carné. Por favor intente de nuevo.')
             return redirect('application_detail', pk=self.application.pk)
 
         # Send photo request email OUTSIDE transaction
@@ -355,7 +355,7 @@ class GenerateCardView(StaffRequiredMixin, LoginRequiredMixin, FormView):
                 logger.error(f'Failed to send photo request email to {user.email}: {e}')
                 messages.warning(
                     self.request,
-                    f'Carné {card_number} generado, pero hubo un error al enviar el correo: {str(e)}'
+                    f'Carné {card_number} generado, pero hubo un error al enviar el correo.'
                 )
         else:
             messages.success(self.request, f'Carné {card_number} generado exitosamente.')
@@ -494,6 +494,6 @@ def resend_photo_request(request, pk):
         send_photo_request_email(card)
         messages.success(request, f'Se ha reenviado la solicitud de foto a {card.user.email}.')
     except Exception as e:
-        messages.error(request, f'Error al enviar el correo: {str(e)}')
+        messages.error(request, 'Error al enviar el correo. Por favor intente de nuevo.')
 
     return redirect('carnets:card_detail', pk=pk)

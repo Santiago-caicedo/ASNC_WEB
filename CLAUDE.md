@@ -14,6 +14,8 @@ This is the **ASNC Platform** (Asociación Nuclear Colombiana) - a Django 6.0 we
 - **Facebook:** https://www.facebook.com/share/1BhF3tqKT7/
 - **X (Twitter):** https://x.com/asncol_oficial
 
+**Developed by:** Vadom Data Consulting (https://vadomdata.com/)
+
 ## Tech Stack
 
 - **Framework**: Django 6.0
@@ -148,7 +150,7 @@ Digital member card for ASNC associates.
 **Fields:**
 - `uuid`: UUIDField - Unique identifier for verification URL
 - `card_number`: CharField - Format: ASNC-YYYY-NNNN (e.g., ASNC-2026-0001)
-- `user`: OneToOneField → User
+- `user`: OneToOneField → User (on_delete=PROTECT to prevent accidental deletion)
 - `application`: OneToOneField → MembershipApplication (nullable)
 - `photo`: ImageField - Member photo (upload to `carnets/photos/`)
 - `category`: FOUNDER | ASSOCIATE
@@ -157,6 +159,7 @@ Digital member card for ASNC associates.
 - `status`: PENDING_PHOTO | ACTIVE | EXPIRED | SUSPENDED | CANCELLED
 - `photo_token`: UUIDField - Unique token for photo upload link
 - `photo_token_used`: BooleanField
+- `photo_token_created_at`: DateTimeField - Token creation time for expiration control (72 hours)
 - `issued_by`: ForeignKey → User (admin who issued)
 - `suspension_reason`: TextField
 - `created_at`, `updated_at`: Timestamps
@@ -177,7 +180,7 @@ Digital member card for ASNC associates.
 | ASSOCIATE | Asociado |
 
 **Methods:**
-- `generate_card_number()`: Class method to generate next sequential number
+- `generate_card_number()`: Class method to generate next sequential number (uses `select_for_update()` to prevent race conditions)
 - `is_valid`: Property to check if card is active and not expired
 - `full_name`: Property to get cardholder's name
 - `get_verification_url()`: Returns public verification URL
@@ -563,8 +566,9 @@ python manage.py showmigrations
 - `0002_add_contribution_statement.py` (2026-01-16) - Adds contribution_statement field
 - `0003_alter_membershipapplication_phone.py` (2026-01-24) - Makes phone optional
 
-### carnets (NEW)
+### carnets
 - `0001_initial.py` (2026-01-25) - Creates MemberCard and CardVerification models
+- `0002_add_photo_token_expiration.py` (2026-01-29) - Adds photo_token_created_at field, changes user on_delete to PROTECT
 
 ### website
 - `0001_initial.py` (2026-01-17) - Creates FeaturedMember model
@@ -659,7 +663,7 @@ admissions/templates/admissions/
 
 carnets/templates/carnets/
 ├── verificar.html                   # Public verification page
-├── subir_foto.html                  # Photo upload form
+├── subir_foto.html                  # Photo upload form (handles token_used and token_expired states)
 ├── subir_foto_exito.html            # Upload success
 ├── mi_carne.html                    # Member's card view
 ├── dashboard/                       # Admin dashboard (Mobile Responsive)
@@ -767,6 +771,8 @@ ADMINISTRACIÓN
 - Forms use `crispy_forms` with Bootstrap 5
 - Use `mark_safe()` for static HTML in admin (Django 6.0 requirement)
 - Use `format_html()` only when formatting dynamic content
+- Use `transaction.atomic()` with `select_for_update()` for concurrent operations
+- Use Python's `logging` module for error tracking (logger per module)
 
 ### CSS Variables
 ```css
@@ -855,9 +861,87 @@ The favicon is configured in `config/urls.py` to redirect `/favicon.ico` to the 
 - Sensitive data in `.env` file (not committed)
 - Protected views use Django's authentication mixins
 - Photo upload uses unique UUID tokens (not user auth)
+- Photo upload tokens expire after 72 hours
 - robots.txt blocks admin, portal, and media paths
 - Email recipients sent via BCC for privacy
 - Password reset tokens with expiration
+
+## Data Integrity & Race Condition Protection
+
+The system uses atomic transactions and row-level locking to prevent race conditions:
+
+### Card Number Generation (`carnets/models.py`)
+```python
+@classmethod
+def generate_card_number(cls):
+    with transaction.atomic():
+        last_card = cls.objects.select_for_update().filter(
+            card_number__startswith=prefix
+        ).order_by('-card_number').first()
+        # ... generates unique sequential number
+```
+
+### User Creation (`admissions/views.py`)
+```python
+def create_user_from_application(application):
+    try:
+        with transaction.atomic():
+            user = User.objects.filter(email=application.email).first()
+            if user:
+                return user
+            # ... create new user
+    except IntegrityError:
+        # Race condition: return existing user
+        return User.objects.get(email=application.email)
+```
+
+### Application Approval (`admissions/views.py`)
+```python
+def change_application_status(request, pk, status):
+    with transaction.atomic():
+        application = MembershipApplication.objects.select_for_update().get(pk=pk)
+        # ... create user and update status atomically
+    # Email sent OUTSIDE transaction (won't rollback on email failure)
+```
+
+### Photo Upload (`carnets/views.py`)
+```python
+def form_valid(self, form):
+    with transaction.atomic():
+        card = MemberCard.objects.select_for_update().get(pk=self.card.pk)
+        if card.photo_token_used:
+            return render(...)  # Already used
+        card.photo = form.cleaned_data['photo']
+        card.photo_token_used = True
+        card.status = MemberCard.Status.ACTIVE
+        card.save()
+```
+
+### Cascade Delete Protection
+- `MemberCard.user` uses `on_delete=models.PROTECT` to prevent accidental user deletion
+- Attempting to delete a user with a card will raise `ProtectedError`
+
+### Token Expiration
+- Photo upload tokens expire after 72 hours (configurable via `PHOTO_TOKEN_EXPIRY_HOURS`)
+- Expired tokens show a friendly message directing users to contact support
+
+## Developer Branding (Vadom Data Consulting)
+
+The platform includes developer credit for Vadom Data Consulting in the following locations:
+
+| Location | Logo Type | File |
+|----------|-----------|------|
+| Public website footer | White logo | `templates/base.html` |
+| Admin login page | Color logo | `dashboard/templates/dashboard/login.html` |
+| Member login page | Color logo | `members/templates/members/login.html` |
+| Card verification page (QR) | Color logo | `carnets/templates/carnets/verificar.html` |
+| Member card PDF footer | Text credit | `carnets/utils.py` |
+| All email templates | White logo (S3) | `templates/emails/`, `admissions/templates/admissions/emails/`, `carnets/templates/carnets/emails/` |
+
+**Logo Files:**
+- `static/images/vadom/vadom_logo.png` - Color logo for light backgrounds
+- `static/images/vadom/vadom_logo_white.png` - White logo for dark backgrounds
+- S3 URL: `https://vadomdata.s3.amazonaws.com/asnc/static/images/vadom/vadom_logo_white.png`
 
 ## Deployment Checklist
 
@@ -905,3 +989,7 @@ sudo systemctl restart gunicorn  # or your server process
 - [x] ~~Resend password email~~ (Button in application detail for pending users)
 - [x] ~~Google Analytics integration~~ (GA4 with gtag.js)
 - [x] ~~SEO sitemap~~ (Includes home, about, events, application pages)
+- [x] ~~Race condition protection~~ (Atomic transactions with select_for_update)
+- [x] ~~Photo token expiration~~ (72-hour expiry for security)
+- [x] ~~Cascade delete protection~~ (PROTECT on MemberCard.user)
+- [x] ~~Developer branding~~ (Vadom Data Consulting credit in footer, emails, PDF)

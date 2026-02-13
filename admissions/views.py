@@ -12,6 +12,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.core.mail import EmailMultiAlternatives
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
+from django.core.cache import cache
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.db import transaction, IntegrityError
@@ -267,9 +269,51 @@ class ApplicationCreateView(CreateView):
     template_name = 'admissions/application_form.html'
     success_url = reverse_lazy('application_success')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        signer = TimestampSigner()
+        context['form_token'] = signer.sign('form')
+        return context
+
     def form_valid(self, form):
-        # Guardamos el objeto en la BD
+        # Capa 2: Timestamp validation (minimum 3 seconds to fill form)
+        token = form.cleaned_data.get('form_token', '')
+        if token:
+            try:
+                signer = TimestampSigner()
+                signer.unsign(token, max_age=86400)  # Valid for 24 hours
+            except (BadSignature, SignatureExpired):
+                # Invalid or expired token - likely a bot
+                form.add_error(None, 'La sesión del formulario ha expirado. Por favor recarga la página.')
+                return self.form_invalid(form)
+            # Check minimum time using the signer's timestamp
+            try:
+                signer.unsign(token, max_age=3)
+                # If this succeeds, the form was submitted in < 3 seconds
+                form.add_error(None, 'Por favor toma un momento para completar el formulario.')
+                return self.form_invalid(form)
+            except SignatureExpired:
+                # Good - form took more than 3 seconds (expected for humans)
+                pass
+            except BadSignature:
+                form.add_error(None, 'Error en el formulario. Por favor recarga la página.')
+                return self.form_invalid(form)
+        else:
+            # No token at all - suspicious
+            form.add_error(None, 'Error en el formulario. Por favor recarga la página.')
+            return self.form_invalid(form)
+
+        # Capa 4: Rate limiting by IP (3 submissions per hour)
+        ip = self._get_client_ip()
+        cache_key = f'admission_rate_{ip}'
+        submissions = cache.get(cache_key, 0)
+        if submissions >= 3:
+            form.add_error(None, 'Has enviado demasiadas solicitudes. Intenta más tarde.')
+            return self.form_invalid(form)
+
+        # Save and increment rate limit counter
         self.object = form.save()
+        cache.set(cache_key, submissions + 1, 3600)  # 1 hour TTL
 
         # Enviamos el correo HTML
         try:
@@ -279,6 +323,13 @@ class ApplicationCreateView(CreateView):
             pass
 
         return super().form_valid(form)
+
+    def _get_client_ip(self):
+        """Extract client IP from request, handling proxies."""
+        x_forwarded_for = self.request.META.get('HTTP_X_FORWARDED_FOR', '')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0].strip()
+        return self.request.META.get('REMOTE_ADDR', '')
 
 
 class ApplicationSuccessView(TemplateView):
@@ -369,13 +420,13 @@ def change_application_status(request, pk, status):
                 logger.error(f'Failed to send approval email to {application.email}: {e}')
                 messages.warning(
                     request,
-                    f'Usuario creado exitosamente, pero falló el envío del correo de bienvenida: {e}. '
-                    f'Puede reenviar el correo desde el detalle de la solicitud.'
+                    'Usuario creado exitosamente, pero falló el envío del correo de bienvenida. '
+                    'Puede reenviar el correo desde el detalle de la solicitud.'
                 )
 
         except Exception as e:
             logger.error(f'Error processing approval for application {pk}: {e}')
-            messages.error(request, f'Error al procesar la aprobación: {e}')
+            messages.error(request, 'Error al procesar la aprobación. Por favor intente de nuevo.')
 
     elif status == 'rejected':
         try:
@@ -391,14 +442,14 @@ def change_application_status(request, pk, status):
                 logger.error(f'Failed to send rejection email to {application.email}: {e}')
                 messages.warning(
                     request,
-                    f'Solicitud rechazada, pero falló el envío del correo de notificación: {e}'
+                    'Solicitud rechazada, pero falló el envío del correo de notificación.'
                 )
 
             messages.warning(request, f'La solicitud de {application.first_name} ha sido rechazada.')
 
         except Exception as e:
             logger.error(f'Error rejecting application {pk}: {e}')
-            messages.error(request, f'Error al rechazar la solicitud: {e}')
+            messages.error(request, 'Error al rechazar la solicitud. Por favor intente de nuevo.')
 
     return redirect('application_detail', pk=pk)
 
@@ -433,6 +484,6 @@ def resend_password_email(request, pk):
             f'Se ha reenviado el correo de configuración de contraseña a {user.email}.'
         )
     except Exception as e:
-        messages.error(request, f'Error al enviar el correo: {e}')
+        messages.error(request, 'Error al enviar el correo. Por favor intente de nuevo.')
 
     return redirect('application_detail', pk=pk)
