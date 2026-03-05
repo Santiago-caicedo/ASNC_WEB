@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Noticias{% endblock %}
+
+{% block meta_description %}Noticias y novedades de la Asociación Nuclear Colombiana (ASNC). Mantente informado sobre el sector nuclear en Colombia.{% endblock %}
+
+{% block content %}
+
+<section class="news-hero">
+    <div class="container">
+        <div class="news-hero-content text-center">
+            <span class="news-tag">Blog ASNC</span>
+            <h1>Noticias y Novedades</h1>
+            <p>Lo último del sector nuclear colombiano y la comunidad ASNC</p>
+        </div>
+    </div>
+</section>
+
+<section class="news-list-section">
+    <div class="container">
+        {% if articles %}
+        <div class="row g-4">
+            {% for article in articles %}
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'public_news_detail' article.slug %}" class="news-card-link">
+                    <div class="news-card">
+                        <div class="news-card-image">
+                            {% if article.cover_image %}
+                            <img src="{{ article.cover_image.url }}" alt="{{ article.title }}">
+                            {% else %}
+                            <div class="news-card-placeholder">
+                                <i class="bi bi-newspaper"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="news-card-body">
+                            <div class="news-card-date">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                {{ article.published_at|date:"d M Y" }}
+                            </div>
+                            <h3>{{ article.title }}</h3>
+                            <p>{{ article.excerpt }}</p>
+                            <span class="news-card-read">
+                                Leer más <i class="bi bi-arrow-right"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if is_paginated %}
+        <div class="d-flex justify-content-center mt-5">
+            <nav>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-newspaper" style="font-size: 4rem; color: var(--asnc-gold);"></i>
+            <h3 class="mt-3 fw-bold" style="color: var(--asnc-navy);">Próximamente</h3>
+            <p class="text-muted">Estamos preparando contenido para ti. ¡Vuelve pronto!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.news-hero {
+    background: var(--asnc-navy);
+    padding: 5rem 0 3.5rem;
+    text-align: center;
+}
+
+.news-tag {
+    display: inline-block;
+    background: rgba(244, 195, 67, 0.15);
+    color: var(--asnc-gold);
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.news-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.news-hero p {
+    color: rgba(255,255,255,0.5);
+    font-size: 1.05rem;
+}
+
+.news-list-section {
+    padding: 4rem 0 6rem;
+    background: var(--asnc-bg);
+}
+
+.news-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.news-card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: all 0.35s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.news-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+}
+
+.news-card-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.news-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.news-card:hover .news-card-image img {
+    transform: scale(1.05);
+}
+
+.news-card-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--asnc-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: rgba(0,0,0,0.1);
+}
+
+.news-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.news-card-date {
+    font-size: 0.78rem;
+    color: var(--asnc-gold);
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+}
+
+.news-card-body h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--asnc-navy);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-card-body p {
+    font-size: 0.88rem;
+    color: #6b7280;
+    line-height: 1.6;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-card-read {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--asnc-blue);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    transition: gap 0.3s ease;
+}
+
+.news-card:hover .news-card-read {
+    gap: 0.7rem;
+    color: var(--asnc-gold);
+}
+
+.pagination .page-link {
+    border: none;
+    color: var(--asnc-navy);
+    border-radius: 8px;
+    margin: 0 2px;
+    font-weight: 500;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--asnc-navy);
+    color: white;
+}
+
+@media (max-width: 767px) {
+    .news-hero {
+        padding: 3.5rem 0 2.5rem;
+    }
+    .news-hero h1 {
+        font-size: 1.8rem;
+    }
+    .news-list-section {
+        padding: 2.5rem 0 4rem;
+    }
+}
+</style>
+{% endblock %}

@@ -10,9 +10,9 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from email.utils import formataddr
 from admissions.models import MembershipApplication
-from website.models import FeaturedMember
+from website.models import FeaturedMember, NewsArticle
 from carnets.models import MemberCard
-from .forms import FeaturedMemberForm, EmailComposeForm
+from .forms import FeaturedMemberForm, NewsArticleForm, EmailComposeForm
 from .models import SentEmail
 
 
@@ -119,6 +119,67 @@ class FeaturedMemberDeleteView(StaffRequiredMixin, LoginRequiredMixin, DeleteVie
 
     def form_valid(self, form):
         messages.success(self.request, 'Asociado destacado eliminado exitosamente.')
+        return super().form_valid(form)
+
+
+# ============================================
+# CRUD para Noticias
+# ============================================
+
+class NewsListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
+    """Lista de noticias"""
+    model = NewsArticle
+    template_name = 'dashboard/news/list.html'
+    context_object_name = 'articles'
+    ordering = ['-created_at']
+    paginate_by = 20
+
+
+class NewsCreateView(StaffRequiredMixin, LoginRequiredMixin, CreateView):
+    """Crear nueva noticia"""
+    model = NewsArticle
+    form_class = NewsArticleForm
+    template_name = 'dashboard/news/form.html'
+    success_url = reverse_lazy('news_list')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        messages.success(self.request, 'Noticia creada exitosamente.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Nueva Noticia'
+        context['button_text'] = 'Crear Noticia'
+        return context
+
+
+class NewsUpdateView(StaffRequiredMixin, LoginRequiredMixin, UpdateView):
+    """Editar noticia"""
+    model = NewsArticle
+    form_class = NewsArticleForm
+    template_name = 'dashboard/news/form.html'
+    success_url = reverse_lazy('news_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Noticia actualizada exitosamente.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar Noticia'
+        context['button_text'] = 'Guardar Cambios'
+        return context
+
+
+class NewsDeleteView(StaffRequiredMixin, LoginRequiredMixin, DeleteView):
+    """Eliminar noticia"""
+    model = NewsArticle
+    template_name = 'dashboard/news/confirm_delete.html'
+    success_url = reverse_lazy('news_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Noticia eliminada exitosamente.')
         return super().form_valid(form)
 
 

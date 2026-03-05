@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from website.models import FeaturedMember
+from website.models import FeaturedMember, NewsArticle
 from admissions.models import MembershipApplication
 
 User = get_user_model()
@@ -45,6 +45,36 @@ class FeaturedMemberForm(forms.ModelForm):
             'display_order': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': 0
+            }),
+        }
+
+
+class NewsArticleForm(forms.ModelForm):
+    class Meta:
+        model = NewsArticle
+        fields = [
+            'title', 'cover_image', 'excerpt', 'content', 'is_published'
+        ]
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Título de la noticia'
+            }),
+            'cover_image': forms.FileInput(attrs={
+                'class': 'form-control'
+            }),
+            'excerpt': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Resumen corto que aparecerá en el listado de noticias...'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 15,
+                'placeholder': 'Contenido completo de la noticia...'
+            }),
+            'is_published': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
             }),
         }
 

@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block meta_description %}{{ article.excerpt }}{% endblock %}
+
+{% block og_title %}{{ article.title }} | ASNC{% endblock %}
+{% block og_description %}{{ article.excerpt }}{% endblock %}
+{% if article.cover_image %}
+{% block og_image %}{{ article.cover_image.url }}{% endblock %}
+{% endif %}
+
+{% block content %}
+
+<article class="article-page">
+    <!-- Header -->
+    <div class="article-header">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <a href="{% url 'public_news_list' %}" class="article-back">
+                        <i class="bi bi-arrow-left me-1"></i> Todas las noticias
+                    </a>
+                    <h1>{{ article.title }}</h1>
+                    <div class="article-meta">
+                        <span>
+                            <i class="bi bi-calendar3 me-1"></i>
+                            {{ article.published_at|date:"d \d\e F \d\e Y" }}
+                        </span>
+                        {% if article.author %}
+                        <span>
+                            <i class="bi bi-person me-1"></i>
+                            {{ article.author.first_name }} {{ article.author.last_name }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cover Image -->
+    {% if article.cover_image %}
+    <div class="article-cover">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <img src="{{ article.cover_image.url }}" alt="{{ article.title }}">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Content -->
+    <div class="article-content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="article-body">
+                        {{ article.content|linebreaks }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share -->
+    <div class="article-share">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="share-bar">
+                        <span class="share-label">Compartir:</span>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" target="_blank" rel="noopener" class="share-btn" title="LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <a href="https://x.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ article.title|urlencode }}" target="_blank" rel="noopener" class="share-btn" title="X (Twitter)">
+                            <i class="bi bi-twitter-x"></i>
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" rel="noopener" class="share-btn" title="Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="https://wa.me/?text={{ article.title|urlencode }}%20{{ request.build_absolute_uri }}" target="_blank" rel="noopener" class="share-btn" title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Articles -->
+    {% if recent_articles %}
+    <div class="related-section">
+        <div class="container">
+            <h3 class="related-title">Más noticias</h3>
+            <div class="row g-4 justify-content-center">
+                {% for related in recent_articles %}
+                <div class="col-md-4">
+                    <a href="{% url 'public_news_detail' related.slug %}" class="news-card-link">
+                        <div class="related-card">
+                            {% if related.cover_image %}
+                            <img src="{{ related.cover_image.url }}" alt="{{ related.title }}">
+                            {% endif %}
+                            <div class="related-card-body">
+                                <span class="related-date">{{ related.published_at|date:"d M Y" }}</span>
+                                <h4>{{ related.title }}</h4>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</article>
+
+<style>
+.article-header {
+    background: var(--asnc-navy);
+    padding: 4rem 0 3rem;
+}
+
+.article-back {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
+}
+
+.article-back:hover {
+    color: var(--asnc-gold);
+}
+
+.article-header h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1.3;
+    margin-bottom: 1.25rem;
+}
+
+.article-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.article-meta span {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.article-cover {
+    margin-top: -1.5rem;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 2.5rem;
+}
+
+.article-cover img {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    max-height: 480px;
+    object-fit: cover;
+}
+
+.article-content-section {
+    padding: 2rem 0 3rem;
+    background: white;
+}
+
+.article-body {
+    font-size: 1.05rem;
+    color: #374151;
+    line-height: 1.9;
+}
+
+.article-body p {
+    margin-bottom: 1.5rem;
+}
+
+.article-body img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+}
+
+.article-body h2, .article-body h3 {
+    color: var(--asnc-navy);
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.article-body blockquote {
+    border-left: 4px solid var(--asnc-gold);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    background: var(--asnc-bg);
+    border-radius: 0 12px 12px 0;
+    font-style: italic;
+    color: #4b5563;
+}
+
+/* Share */
+.article-share {
+    background: white;
+    padding: 0 0 3rem;
+}
+
+.share-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--asnc-bg);
+}
+
+.share-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--asnc-navy);
+    margin-right: 0.25rem;
+}
+
+.share-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--asnc-bg);
+    color: var(--asnc-navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: all 0.25s ease;
+}
+
+.share-btn:hover {
+    background: var(--asnc-navy);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Related */
+.related-section {
+    padding: 4rem 0 5rem;
+    background: var(--asnc-bg);
+}
+
+.related-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--asnc-navy);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.related-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.related-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.related-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.related-card-body {
+    padding: 1.25rem;
+}
+
+.related-date {
+    font-size: 0.75rem;
+    color: var(--asnc-gold);
+    font-weight: 600;
+}
+
+.related-card-body h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--asnc-navy);
+    margin: 0.4rem 0 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+@media (max-width: 767px) {
+    .article-header {
+        padding: 3rem 0 2rem;
+    }
+    .article-header h1 {
+        font-size: 1.6rem;
+    }
+    .article-body {
+        font-size: 0.95rem;
+    }
+    .article-cover img {
+        border-radius: 12px;
+    }
+}
+</style>
+{% endblock %}

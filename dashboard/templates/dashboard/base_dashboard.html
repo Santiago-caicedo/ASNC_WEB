@@ -371,6 +371,10 @@
                 <i class="bi bi-star"></i> Asociados Destacados
             </a>
 
+            <a href="{% url 'news_list' %}" class="nav-link {% if 'noticias' in request.path %}active{% endif %}">
+                <i class="bi bi-newspaper"></i> Noticias
+            </a>
+
             <div class="menu-label">Comunicaciones</div>
 
             <a href="{% url 'email_history' %}" class="nav-link {% if 'correos' in request.path %}active{% endif %}">

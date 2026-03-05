@@ -155,8 +155,8 @@
         /* --- 2. NAVBAR PRINCIPAL --- */
         .navbar-asnc {
             background-color: white;
-            padding-top: 0.5rem;  /* Reducimos un poco el padding vertical para compensar el logo grande */
-            padding-bottom: 0.5rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
         }
 
         .navbar-brand-logo {
@@ -270,6 +270,11 @@
                     <img src="{% static 'images/asnc_logo_full.png' %}" alt="Logo ASNC" class="navbar-brand-logo">
                 </a>
 
+                <a href="https://las-ans.org.br/" target="_blank" class="d-none d-xl-flex align-items-center ms-3 me-auto ps-3 border-start text-decoration-none" style="border-color: rgba(0,0,0,0.1) !important;">
+                    <img src="{% static 'images/las-anc.png' %}" alt="ANS Latin American Section" style="height: 50px; width: auto;">
+                    <span class="ms-2 small fw-semibold" style="color: var(--asnc-navy); font-size: 0.7rem; line-height: 1.2;">Miembro Institucional<br>LAS-American Nuclear Society</span>
+                </a>
+
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -285,7 +290,10 @@
                         <li class="nav-item">
                             <a class="nav-link px-3 {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="{% url 'events' %}">Eventos</a>
                         </li>
-                        
+                        <li class="nav-item">
+                            <a class="nav-link px-3 {% if 'noticias' in request.path %}active{% endif %}" href="{% url 'public_news_list' %}">Noticias</a>
+                        </li>
+
                         <li class="nav-item d-none d-lg-block mx-2 border-end border-2" style="height: 20px; opacity: 0.2;"></li>
 
                         <li class="nav-item ms-lg-2">
@@ -313,7 +321,7 @@
         <div class="container">
             <div class="row gy-4">
                 <div class="col-lg-4 col-md-6">
-                    <h5 class="fw-bold text-white mb-3">ASNC</h5>
+                    <img src="{% static 'images/asnc_logo_full.png' %}" alt="Logo ASNC" style="height: 50px; width: auto; filter: brightness(0) invert(1); margin-bottom: 0.75rem;">
                     <p class="small text-white-50">
                         Promoviendo el desarrollo pacífico, seguro y sostenible de la ciencia y tecnología nuclear en Colombia.
                     </p>
@@ -323,17 +331,21 @@
                         <a href="https://www.instagram.com/asncol_oficial" target="_blank" class="text-white fs-5" title="Instagram"><i class="bi bi-instagram"></i></a>
                         <a href="https://www.facebook.com/share/1BhF3tqKT7/" target="_blank" class="text-white fs-5" title="Facebook"><i class="bi bi-facebook"></i></a>
                     </div>
+                    <a href="https://las-ans.org.br/" target="_blank" class="d-flex align-items-center gap-2 mt-4 text-decoration-none">
+                        <img src="{% static 'images/las-anc.png' %}" alt="ANS Latin American Section" style="height: 40px; width: auto;">
+                        <span class="small text-white-50" style="font-size: 0.75rem; line-height: 1.2;">Miembro Institucional<br>LAS-American Nuclear Society</span>
+                    </a>
                 </div>
                 <div class="col-lg-2 col-md-6">
                     <h6 class="fw-bold text-gold mb-3">Navegación</h6>
                     <a href="{% url 'home' %}" class="footer-link">Inicio</a>
-                    <a href="#" class="footer-link">Sobre Nosotros</a>
+                    <a href="{% url 'about' %}" class="footer-link">Sobre Nosotros</a>
                     <a href="{% url 'application_create' %}" class="footer-link">Afiliarse</a>
                 </div>
                 <div class="col-lg-2 col-md-6">
                     <h6 class="fw-bold text-gold mb-3">Legal</h6>
                     <a href="#" class="footer-link">Estatutos</a>
-                    <a href="#" class="footer-link">Política de Datos</a>
+                    <a href="{% url 'privacy_policy' %}" class="footer-link">Política de Datos</a>
                 </div>
                 <div class="col-lg-4 col-md-6">
                     <h6 class="fw-bold text-gold mb-3">Contacto</h6>
