@@ -36,7 +36,8 @@
       "mcp__claude_ai_Canva__request-outline-review",
       "mcp__claude_ai_Canva__generate-design-structured",
       "mcp__claude_ai_Canva__search-designs",
-      "Bash(pip show:*)"
+      "Bash(pip show:*)",
+      "Bash(venv/Scripts/pip.exe freeze:*)"
     ]
   }
 }

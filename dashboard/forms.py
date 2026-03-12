@@ -1,3 +1,4 @@
+import nh3
 from django import forms
 from django.contrib.auth import get_user_model
 from website.models import FeaturedMember, NewsArticle
@@ -53,9 +54,12 @@ class NewsArticleForm(forms.ModelForm):
     class Meta:
         model = NewsArticle
         fields = [
-            'title', 'cover_image', 'excerpt', 'content', 'is_published'
+            'category', 'title', 'cover_image', 'excerpt', 'content', 'is_published'
         ]
         widgets = {
+            'category': forms.RadioSelect(attrs={
+                'class': 'form-check-input'
+            }),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Título de la noticia'
@@ -77,6 +81,23 @@ class NewsArticleForm(forms.ModelForm):
                 'class': 'form-check-input'
             }),
         }
+
+    def clean_content(self):
+        content = self.cleaned_data.get('content', '')
+        return nh3.clean(
+            content,
+            tags={
+                'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3',
+                'ul', 'ol', 'li', 'blockquote', 'a', 'img', 'span',
+                'iframe', 'sub', 'sup', 'pre', 'code',
+            },
+            attributes={
+                '*': {'class', 'style'},
+                'a': {'href', 'target', 'rel'},
+                'img': {'src', 'alt', 'width', 'height'},
+                'iframe': {'src', 'width', 'height', 'frameborder', 'allowfullscreen'},
+            },
+        )
 
 
 class EmailComposeForm(forms.Form):

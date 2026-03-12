@@ -18,6 +18,30 @@
                     {% csrf_token %}
 
                     <div class="row g-4">
+                        <!-- Categoría -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold d-block">
+                                <i class="bi bi-tag me-2 text-primary"></i>Categoría *
+                            </label>
+                            <div class="d-flex gap-4 mt-2">
+                                {% for radio in form.category %}
+                                <div class="form-check">
+                                    {{ radio.tag }}
+                                    <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                <strong>De la Asociación:</strong> eventos ASNC, bienvenida a miembros, logros internos.
+                                <strong>Temática Nuclear:</strong> noticias del sector nuclear, ciencia, tecnología.
+                            </small>
+                            {% if form.category.errors %}
+                            <div class="text-danger small mt-1">{{ form.category.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
                         <!-- Imagen actual -->
                         {% if object.cover_image %}
                         <div class="col-12 text-center">
@@ -63,12 +87,13 @@
                             <small class="text-muted d-block mt-1">Resumen corto que aparece en el listado (máx. 300 caracteres)</small>
                         </div>
 
-                        <!-- Contenido -->
+                        <!-- Contenido (Editor de texto enriquecido) -->
                         <div class="col-12">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-file-richtext me-2 text-primary"></i>Contenido *
                             </label>
-                            {{ form.content }}
+                            <div id="quill-editor">{%if form.content.value %}{{ form.content.value|safe }}{% endif %}</div>
+                            <div style="display:none;">{{ form.content }}</div>
                             {% if form.content.errors %}
                             <div class="text-danger small mt-1">{{ form.content.errors.0 }}</div>
                             {% endif %}
@@ -103,4 +128,67 @@
         </div>
     </div>
 </div>
+<!-- Quill Editor -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+<style>
+    #quill-editor {
+        min-height: 300px;
+        border-radius: 0 0 12px 12px;
+        font-size: 1rem;
+        background: white;
+    }
+    .ql-toolbar.ql-snow {
+        border-radius: 12px 12px 0 0;
+        border-color: #dee2e6;
+        background: #f8f9fa;
+    }
+    .ql-container.ql-snow {
+        border-color: #dee2e6;
+        border-radius: 0 0 12px 12px;
+    }
+    .ql-editor {
+        min-height: 280px;
+        line-height: 1.8;
+    }
+    .ql-editor h1, .ql-editor h2, .ql-editor h3 {
+        color: #1B2A41;
+        font-weight: 700;
+    }
+    .ql-editor blockquote {
+        border-left: 4px solid #f4c343;
+        padding: 0.75rem 1rem;
+        background: #f8fafc;
+        border-radius: 0 8px 8px 0;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'Escribe el contenido de la noticia...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'align': [] }],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['blockquote'],
+                ['link', 'image', 'video'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Sync Quill content to hidden textarea on form submit
+    const form = document.querySelector('form');
+    const hiddenInput = document.getElementById('id_content');
+
+    form.addEventListener('submit', function() {
+        const content = quill.root.innerHTML;
+        hiddenInput.value = (content === '<p><br></p>') ? '' : content;
+    });
+});
+</script>
 {% endblock %}

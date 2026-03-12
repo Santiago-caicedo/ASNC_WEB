@@ -40,6 +40,17 @@
                         </td>
                         <td class="ps-3 ps-md-0">
                             <span class="fw-semibold text-dark d-block text-truncate" style="max-width: 250px;">{{ article.title }}</span>
+                            <span class="d-block mt-1">
+                                {% if article.category == 'ASSOCIATION' %}
+                                <span class="badge bg-warning-subtle text-dark rounded-pill" style="font-size: 0.7rem;">
+                                    <i class="bi bi-flag-fill me-1"></i>Asociación
+                                </span>
+                                {% else %}
+                                <span class="badge bg-primary-subtle text-primary rounded-pill" style="font-size: 0.7rem;">
+                                    <i class="bi bi-atom me-1"></i>Nuclear
+                                </span>
+                                {% endif %}
+                            </span>
                             <span class="text-muted small d-lg-none">{{ article.author.first_name }} {{ article.author.last_name }}</span>
                         </td>
                         <td class="d-none d-lg-table-cell">

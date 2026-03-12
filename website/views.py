@@ -5,6 +5,17 @@ from .models import FeaturedMember, NewsArticle
 class HomeView(TemplateView):
     template_name = 'website/home.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        published = NewsArticle.objects.filter(is_published=True)
+        context['news_association'] = published.filter(
+            category=NewsArticle.Category.ASSOCIATION
+        )[:4]
+        context['news_nuclear'] = published.filter(
+            category=NewsArticle.Category.NUCLEAR
+        )[:4]
+        return context
+
 
 class AboutView(ListView):
     """Página Quiénes Somos con asociados destacados"""

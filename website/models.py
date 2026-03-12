@@ -55,6 +55,17 @@ class FeaturedMember(models.Model):
 class NewsArticle(models.Model):
     """Modelo para noticias/blog de la ASNC"""
 
+    class Category(models.TextChoices):
+        ASSOCIATION = 'ASSOCIATION', _('De la Asociación')
+        NUCLEAR = 'NUCLEAR', _('Temática Nuclear')
+
+    category = models.CharField(
+        _('Categoría'),
+        max_length=15,
+        choices=Category.choices,
+        default=Category.NUCLEAR,
+        help_text=_('Selecciona si es una noticia de la asociación o sobre temática nuclear')
+    )
     title = models.CharField(_('Título'), max_length=255)
     slug = models.SlugField(_('Slug'), max_length=280, unique=True, blank=True)
     cover_image = models.ImageField(_('Imagen de portada'), upload_to='news/')
