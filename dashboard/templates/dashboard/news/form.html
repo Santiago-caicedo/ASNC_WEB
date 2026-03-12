@@ -1,6 +1,40 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
 {% block content %}
+<!-- Quill CSS -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+<style>
+    #quill-editor {
+        min-height: 300px;
+        border-radius: 0 0 12px 12px;
+        font-size: 1rem;
+        background: white;
+    }
+    .ql-toolbar.ql-snow {
+        border-radius: 12px 12px 0 0;
+        border-color: #dee2e6;
+        background: #f8f9fa;
+    }
+    .ql-container.ql-snow {
+        border-color: #dee2e6;
+        border-radius: 0 0 12px 12px;
+    }
+    .ql-editor {
+        min-height: 280px;
+        line-height: 1.8;
+    }
+    .ql-editor h1, .ql-editor h2, .ql-editor h3 {
+        color: #1B2A41;
+        font-weight: 700;
+    }
+    .ql-editor blockquote {
+        border-left: 4px solid #f4c343;
+        padding: 0.75rem 1rem;
+        background: #f8fafc;
+        border-radius: 0 8px 8px 0;
+    }
+</style>
+
 <div class="mb-4">
     <a href="{% url 'news_list' %}" class="text-decoration-none text-muted small fw-bold">
         <i class="bi bi-arrow-left me-1"></i> Volver al listado
@@ -14,7 +48,7 @@
                 <h5 class="fw-bold mb-0 text-dark">{{ title }}</h5>
             </div>
             <div class="card-body p-4">
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" id="news-form">
                     {% csrf_token %}
 
                     <div class="row g-4">
@@ -92,8 +126,8 @@
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-file-richtext me-2 text-primary"></i>Contenido *
                             </label>
-                            <div id="quill-editor">{%if form.content.value %}{{ form.content.value|safe }}{% endif %}</div>
-                            <div style="display:none;">{{ form.content }}</div>
+                            <div id="quill-editor">{% if form.content.value %}{{ form.content.value|safe }}{% endif %}</div>
+                            <textarea name="content" id="id_content" style="display:none;">{{ form.content.value|default:"" }}</textarea>
                             {% if form.content.errors %}
                             <div class="text-danger small mt-1">{{ form.content.errors.0 }}</div>
                             {% endif %}
@@ -128,39 +162,8 @@
         </div>
     </div>
 </div>
-<!-- Quill Editor -->
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
-<style>
-    #quill-editor {
-        min-height: 300px;
-        border-radius: 0 0 12px 12px;
-        font-size: 1rem;
-        background: white;
-    }
-    .ql-toolbar.ql-snow {
-        border-radius: 12px 12px 0 0;
-        border-color: #dee2e6;
-        background: #f8f9fa;
-    }
-    .ql-container.ql-snow {
-        border-color: #dee2e6;
-        border-radius: 0 0 12px 12px;
-    }
-    .ql-editor {
-        min-height: 280px;
-        line-height: 1.8;
-    }
-    .ql-editor h1, .ql-editor h2, .ql-editor h3 {
-        color: #1B2A41;
-        font-weight: 700;
-    }
-    .ql-editor blockquote {
-        border-left: 4px solid #f4c343;
-        padding: 0.75rem 1rem;
-        background: #f8fafc;
-        border-radius: 0 8px 8px 0;
-    }
-</style>
+
+<!-- Quill JS -->
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -182,10 +185,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Sync Quill content to hidden textarea on form submit
-    const form = document.querySelector('form');
+    const form = document.getElementById('news-form');
     const hiddenInput = document.getElementById('id_content');
 
-    form.addEventListener('submit', function() {
+    form.addEventListener('submit', function(e) {
         const content = quill.root.innerHTML;
         hiddenInput.value = (content === '<p><br></p>') ? '' : content;
     });

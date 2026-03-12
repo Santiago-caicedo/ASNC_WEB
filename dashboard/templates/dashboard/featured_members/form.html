@@ -97,6 +97,20 @@
 
                         <hr class="my-2">
 
+                        <!-- Asociado Internacional -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold d-block">
+                                <i class="bi bi-globe2 me-2 text-primary"></i>Clasificación
+                            </label>
+                            <div class="form-check form-switch mt-2">
+                                {{ form.is_international }}
+                                <label class="form-check-label" for="id_is_international">
+                                    Es asociado internacional
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-1">Si se marca, aparecerá en la sección de Asociados Internacionales</small>
+                        </div>
+
                         <!-- Orden de visualización -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">

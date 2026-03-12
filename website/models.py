@@ -31,6 +31,13 @@ class FeaturedMember(models.Model):
     # Social
     linkedin_url = models.URLField(_('Perfil de LinkedIn'), blank=True)
 
+    # Classification
+    is_international = models.BooleanField(
+        _('Asociado Internacional'),
+        default=False,
+        help_text=_('Marcar si es un asociado o colaborador internacional')
+    )
+
     # Display control
     is_active = models.BooleanField(_('Activo'), default=True)
     display_order = models.PositiveIntegerField(

@@ -40,6 +40,11 @@
                         </td>
                         <td class="ps-3 ps-md-0">
                             <span class="fw-semibold text-dark d-block text-truncate" style="max-width: 150px;">{{ member.full_name }}</span>
+                            {% if member.is_international %}
+                            <span class="badge bg-info-subtle text-info rounded-pill" style="font-size: 0.68rem;">
+                                <i class="bi bi-globe2 me-1"></i>Internacional
+                            </span>
+                            {% endif %}
                             <span class="text-muted small d-lg-none">{{ member.association_position|truncatechars:20 }}</span>
                         </td>
                         <td class="d-none d-lg-table-cell">

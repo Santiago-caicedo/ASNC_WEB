@@ -13,7 +13,7 @@ class FeaturedMemberForm(forms.ModelForm):
         fields = [
             'full_name', 'photo', 'association_position',
             'profession', 'professional_trajectory', 'linkedin_url',
-            'is_active', 'display_order'
+            'is_international', 'is_active', 'display_order'
         ]
         widgets = {
             'full_name': forms.TextInput(attrs={
@@ -39,6 +39,9 @@ class FeaturedMemberForm(forms.ModelForm):
             'linkedin_url': forms.URLInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'https://linkedin.com/in/...'
+            }),
+            'is_international': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
             }),
             'is_active': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
@@ -93,10 +96,11 @@ class NewsArticleForm(forms.ModelForm):
             },
             attributes={
                 '*': {'class', 'style'},
-                'a': {'href', 'target', 'rel'},
+                'a': {'href', 'target'},
                 'img': {'src', 'alt', 'width', 'height'},
                 'iframe': {'src', 'width', 'height', 'frameborder', 'allowfullscreen'},
             },
+            link_rel='noopener noreferrer',
         )
 
 

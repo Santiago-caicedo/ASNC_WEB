@@ -24,7 +24,14 @@ class AboutView(ListView):
     context_object_name = 'members'
 
     def get_queryset(self):
-        return FeaturedMember.objects.filter(is_active=True).order_by('display_order', 'full_name')
+        return FeaturedMember.objects.filter(is_active=True, is_international=False).order_by('display_order', 'full_name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['international_members'] = FeaturedMember.objects.filter(
+            is_active=True, is_international=True
+        ).order_by('display_order', 'full_name')
+        return context
 
 
 class EventsView(TemplateView):

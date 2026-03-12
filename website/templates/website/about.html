@@ -312,6 +312,69 @@
     </div>
 </section>
 
+<!-- International Members Section -->
+<section class="international-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-tag-intl"><i class="bi bi-globe2 me-1"></i> Red Global</span>
+            <h2 class="section-title">Asociados Internacionales</h2>
+            <p class="section-subtitle">
+                Profesionales y colaboradores alrededor del mundo que fortalecen nuestra misión
+            </p>
+        </div>
+
+        {% if international_members %}
+        <div class="team-grid">
+            {% for member in international_members %}
+            <div class="team-card" onclick="openMemberModal({{ member.pk }})">
+                <div class="card-header-bg card-header-intl">
+                    <div class="header-pattern"></div>
+                    <div class="header-glow"></div>
+                </div>
+
+                <div class="member-photo-container">
+                    <div class="photo-border photo-border-intl"></div>
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.full_name }}" class="member-photo">
+                    {% else %}
+                    <div class="photo-placeholder">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    {% endif %}
+                    {% if member.linkedin_url %}
+                    <a href="{{ member.linkedin_url }}" target="_blank" class="linkedin-badge" onclick="event.stopPropagation()">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="member-content">
+                    <h4 class="member-name">{{ member.full_name }}</h4>
+                    <span class="member-position member-position-intl">{{ member.association_position }}</span>
+                    <p class="member-profession">{{ member.profession }}</p>
+
+                    <div class="card-action">
+                        <span>Ver perfil completo</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </div>
+
+                <div class="card-bottom-accent card-bottom-intl"></div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon empty-icon-intl">
+                <i class="bi bi-globe2"></i>
+            </div>
+            <h4>Próximamente</h4>
+            <p>Conocerás a nuestros asociados internacionales muy pronto</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
 <!-- CTA Section -->
 <section class="about-cta">
     <div class="container">
@@ -332,6 +395,17 @@
 <script type="application/json" id="membersData">
 [
 {% for member in members %}
+{
+    "id": {{ member.pk }},
+    "name": "{{ member.full_name }}",
+    "position": "{{ member.association_position }}",
+    "profession": "{{ member.profession }}",
+    "trajectory": "{{ member.professional_trajectory|escapejs }}",
+    "photo": "{% if member.photo %}{{ member.photo.url }}{% endif %}",
+    "linkedin": "{{ member.linkedin_url }}"
+}{% if not forloop.last or international_members %},{% endif %}
+{% endfor %}
+{% for member in international_members %}
 {
     "id": {{ member.pk }},
     "name": "{{ member.full_name }}",
@@ -1242,6 +1316,49 @@
 
 .modal-linkedin-btn.hidden {
     display: none;
+}
+
+/* ===== INTERNATIONAL SECTION ===== */
+.international-section {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, #ffffff 0%, #f0f4f8 100%);
+}
+
+.section-tag-intl {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(14, 165, 233, 0.1);
+    color: #0284c7;
+    padding: 0.5rem 1.25rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.card-header-intl {
+    background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%) !important;
+}
+
+.photo-border-intl {
+    background: linear-gradient(135deg, #0ea5e9, var(--asnc-gold)) !important;
+}
+
+.member-position-intl {
+    background: linear-gradient(135deg, #0ea5e9, #38bdf8) !important;
+    color: white !important;
+}
+
+.card-bottom-intl {
+    background: linear-gradient(90deg, #0ea5e9, var(--asnc-gold)) !important;
+}
+
+.empty-icon-intl {
+    background: linear-gradient(135deg, #0369a1, #0ea5e9) !important;
 }
 
 /* ===== CTA SECTION ===== */
