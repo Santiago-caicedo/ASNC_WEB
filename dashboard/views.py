@@ -12,12 +12,17 @@ from email.utils import formataddr
 from admissions.models import MembershipApplication
 from website.models import FeaturedMember, NewsArticle
 from carnets.models import MemberCard
-from .forms import FeaturedMemberForm, NewsArticleForm, EmailComposeForm
+from users.models import User
+from .forms import FeaturedMemberForm, NewsArticleForm, EmailComposeForm, UserRoleForm
 from .models import SentEmail
 
 
+# ============================================
+# Access Control Mixins
+# ============================================
+
 class StaffRequiredMixin(UserPassesTestMixin):
-    """Mixin to restrict views to staff/superuser only."""
+    """Mixin to restrict views to any staff user (admins + news editors)."""
     login_url = '/acceso/'
 
     def test_func(self):
@@ -25,49 +30,78 @@ class StaffRequiredMixin(UserPassesTestMixin):
 
     def handle_no_permission(self):
         if self.request.user.is_authenticated:
-            # If logged in but not staff, redirect to member portal
             return redirect('/mi-portal/')
         return super().handle_no_permission()
 
 
-# 1. Login Personalizado
+class AdminRequiredMixin(UserPassesTestMixin):
+    """Mixin to restrict views to full administrators only."""
+    login_url = '/acceso/'
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_superuser or (user.is_staff and user.is_admin)
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            if self.request.user.is_staff:
+                # Staff but not admin (e.g. news editor) → dashboard home
+                messages.warning(self.request, 'No tienes permisos para acceder a esa sección.')
+                return redirect('/portal/')
+            return redirect('/mi-portal/')
+        return super().handle_no_permission()
+
+
+# ============================================
+# Authentication
+# ============================================
+
 class CustomLoginView(LoginView):
     template_name = 'dashboard/login.html'
     redirect_authenticated_user = True
 
     def get_success_url(self):
         user = self.request.user
-        # If user is staff/superuser, redirect to admin dashboard
         if user.is_staff or user.is_superuser:
             return '/portal/'
-        # Regular users go to member portal
         return '/mi-portal/'
 
 
-# 2. Home del Dashboard (Resumen)
+# ============================================
+# Dashboard Home
+# ============================================
+
 class DashboardHomeView(StaffRequiredMixin, LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Traemos contadores para las tarjetas de resumen
+        user = self.request.user
+
+        # News editors get limited KPIs
+        if user.is_news_editor and not user.is_superuser:
+            context['news_count'] = NewsArticle.objects.count()
+            context['published_count'] = NewsArticle.objects.filter(is_published=True).count()
+            return context
+
+        # Full admin KPIs
         context['pending_count'] = MembershipApplication.objects.filter(status='PENDING').count()
         context['review_count'] = MembershipApplication.objects.filter(status='REVIEW').count()
         context['members_count'] = FeaturedMember.objects.filter(is_active=True).count()
-        # Card counters
         context['active_cards'] = MemberCard.objects.filter(status=MemberCard.Status.ACTIVE).count()
         context['pending_photo_cards'] = MemberCard.objects.filter(status=MemberCard.Status.PENDING_PHOTO).count()
-        # Directory counters
         context['total_associates'] = MemberCard.objects.count()
         context['founders_count'] = MemberCard.objects.filter(category=MemberCard.Category.FOUNDER).count()
+        context['news_count'] = NewsArticle.objects.count()
+        context['published_count'] = NewsArticle.objects.filter(is_published=True).count()
         return context
 
 
 # ============================================
-# CRUD para Asociados Destacados
+# CRUD para Asociados Destacados (Admin only)
 # ============================================
 
-class FeaturedMemberListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
+class FeaturedMemberListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
     """Lista de asociados destacados"""
     model = FeaturedMember
     template_name = 'dashboard/featured_members/list.html'
@@ -75,7 +109,7 @@ class FeaturedMemberListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
     ordering = ['display_order', 'full_name']
 
 
-class FeaturedMemberCreateView(StaffRequiredMixin, LoginRequiredMixin, CreateView):
+class FeaturedMemberCreateView(AdminRequiredMixin, LoginRequiredMixin, CreateView):
     """Crear nuevo asociado destacado"""
     model = FeaturedMember
     form_class = FeaturedMemberForm
@@ -93,7 +127,7 @@ class FeaturedMemberCreateView(StaffRequiredMixin, LoginRequiredMixin, CreateVie
         return context
 
 
-class FeaturedMemberUpdateView(StaffRequiredMixin, LoginRequiredMixin, UpdateView):
+class FeaturedMemberUpdateView(AdminRequiredMixin, LoginRequiredMixin, UpdateView):
     """Editar asociado destacado"""
     model = FeaturedMember
     form_class = FeaturedMemberForm
@@ -111,7 +145,7 @@ class FeaturedMemberUpdateView(StaffRequiredMixin, LoginRequiredMixin, UpdateVie
         return context
 
 
-class FeaturedMemberDeleteView(StaffRequiredMixin, LoginRequiredMixin, DeleteView):
+class FeaturedMemberDeleteView(AdminRequiredMixin, LoginRequiredMixin, DeleteView):
     """Eliminar asociado destacado"""
     model = FeaturedMember
     template_name = 'dashboard/featured_members/confirm_delete.html'
@@ -123,7 +157,7 @@ class FeaturedMemberDeleteView(StaffRequiredMixin, LoginRequiredMixin, DeleteVie
 
 
 # ============================================
-# CRUD para Noticias
+# CRUD para Noticias (Staff - includes news editors)
 # ============================================
 
 class NewsListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
@@ -184,10 +218,10 @@ class NewsDeleteView(StaffRequiredMixin, LoginRequiredMixin, DeleteView):
 
 
 # ============================================
-# Módulo de Correos / Mailing
+# Módulo de Correos / Mailing (Admin only)
 # ============================================
 
-class EmailComposeView(StaffRequiredMixin, LoginRequiredMixin, FormView):
+class EmailComposeView(AdminRequiredMixin, LoginRequiredMixin, FormView):
     """Vista para componer y enviar correos"""
     template_name = 'dashboard/emails/compose.html'
     form_class = EmailComposeForm
@@ -198,32 +232,25 @@ class EmailComposeView(StaffRequiredMixin, LoginRequiredMixin, FormView):
         subject = form.cleaned_data['subject']
         message_content = form.cleaned_data['message']
 
-        # Contexto para la plantilla
         context = {
             'subject': subject,
             'message': message_content,
         }
 
-        # Renderizar plantilla HTML
         html_content = render_to_string('emails/base_email.html', context)
-
-        # Versión texto plano
         text_content = f"{subject}\n\n{message_content}\n\n--\nAsociación Nuclear Colombiana\ninfo@asncol.com"
 
         success = True
         error_msg = ''
 
         try:
-            # Configurar remitente con nombre
             from_email = formataddr(('Asociación Nuclear Colombiana', settings.DEFAULT_FROM_EMAIL))
-
-            # Enviar correo (BCC para privacidad de destinatarios)
             email = EmailMultiAlternatives(
                 subject=subject,
                 body=text_content,
                 from_email=from_email,
-                to=[settings.DEFAULT_FROM_EMAIL],  # A nosotros mismos
-                bcc=recipients  # Destinatarios en BCC
+                to=[settings.DEFAULT_FROM_EMAIL],
+                bcc=recipients
             )
             email.attach_alternative(html_content, "text/html")
             email.send(fail_silently=False)
@@ -232,7 +259,6 @@ class EmailComposeView(StaffRequiredMixin, LoginRequiredMixin, FormView):
             success = False
             error_msg = str(e)
 
-        # Guardar en historial
         SentEmail.objects.create(
             subject=subject,
             message=message_content,
@@ -251,7 +277,7 @@ class EmailComposeView(StaffRequiredMixin, LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class EmailHistoryView(StaffRequiredMixin, LoginRequiredMixin, ListView):
+class EmailHistoryView(AdminRequiredMixin, LoginRequiredMixin, ListView):
     """Lista de correos enviados"""
     model = SentEmail
     template_name = 'dashboard/emails/history.html'
@@ -260,7 +286,7 @@ class EmailHistoryView(StaffRequiredMixin, LoginRequiredMixin, ListView):
     paginate_by = 20
 
 
-class EmailDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
+class EmailDetailView(AdminRequiredMixin, LoginRequiredMixin, DetailView):
     """Detalle de un correo enviado"""
     model = SentEmail
     template_name = 'dashboard/emails/detail.html'
@@ -268,10 +294,104 @@ class EmailDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
 
 
 # ============================================
-# Directorio Oficial de Asociados
+# Gestión de Usuarios (Admin only)
 # ============================================
 
-class DirectoryListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
+class UserListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
+    """Lista de todos los usuarios del sistema."""
+    model = User
+    template_name = 'dashboard/users/list.html'
+    context_object_name = 'users_list'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = User.objects.all().order_by('-date_joined')
+
+        # Filter by role
+        role = self.request.GET.get('role')
+        if role:
+            queryset = queryset.filter(role=role)
+
+        # Filter by status
+        status = self.request.GET.get('status')
+        if status == 'active':
+            queryset = queryset.filter(is_active=True)
+        elif status == 'inactive':
+            queryset = queryset.filter(is_active=False)
+
+        # Search
+        search = self.request.GET.get('q')
+        if search:
+            from django.db.models import Q
+            queryset = queryset.filter(
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search)
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['role_choices'] = User.Role.choices
+        context['current_role'] = self.request.GET.get('role', '')
+        context['current_status'] = self.request.GET.get('status', '')
+        context['search_query'] = self.request.GET.get('q', '')
+        context['total_users'] = User.objects.count()
+        context['staff_count'] = User.objects.filter(is_staff=True).count()
+        context['editors_count'] = User.objects.filter(role=User.Role.NEWS_EDITOR).count()
+        return context
+
+
+class UserDetailView(AdminRequiredMixin, LoginRequiredMixin, DetailView):
+    """Detalle de un usuario."""
+    model = User
+    template_name = 'dashboard/users/detail.html'
+    context_object_name = 'user_detail'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_obj = self.object
+        # Check if user has a member card
+        try:
+            context['member_card'] = user_obj.member_card
+        except Exception:
+            context['member_card'] = None
+        return context
+
+
+class UserRoleUpdateView(AdminRequiredMixin, LoginRequiredMixin, UpdateView):
+    """Editar rol de un usuario."""
+    model = User
+    form_class = UserRoleForm
+    template_name = 'dashboard/users/role_form.html'
+    context_object_name = 'user_detail'
+
+    def get_success_url(self):
+        return reverse_lazy('user_detail', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        user_obj = form.save(commit=False)
+
+        # If role is NEWS_EDITOR or ADMIN, ensure is_staff is True
+        if user_obj.role in (User.Role.NEWS_EDITOR, User.Role.ADMIN):
+            user_obj.is_staff = True
+
+        user_obj.save()
+        messages.success(self.request, f'Rol de {user_obj.get_full_name() or user_obj.email} actualizado exitosamente.')
+        return redirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Editar Rol - {self.object.get_full_name() or self.object.email}'
+        return context
+
+
+# ============================================
+# Directorio Oficial de Asociados (Admin only)
+# ============================================
+
+class DirectoryListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
     """Lista del directorio oficial de asociados vinculados."""
     model = MemberCard
     template_name = 'dashboard/directory/list.html'
@@ -283,17 +403,14 @@ class DirectoryListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
             'user', 'application', 'issued_by'
         ).order_by('-created_at')
 
-        # Filter by category
         category = self.request.GET.get('category')
         if category:
             queryset = queryset.filter(category=category)
 
-        # Filter by status
         status = self.request.GET.get('status')
         if status:
             queryset = queryset.filter(status=status)
 
-        # Search
         search = self.request.GET.get('q')
         if search:
             from django.db.models import Q
@@ -315,7 +432,6 @@ class DirectoryListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
         context['current_status'] = self.request.GET.get('status', '')
         context['search_query'] = self.request.GET.get('q', '')
 
-        # Stats
         context['total_members'] = MemberCard.objects.count()
         context['active_members'] = MemberCard.objects.filter(status=MemberCard.Status.ACTIVE).count()
         context['founders_count'] = MemberCard.objects.filter(category=MemberCard.Category.FOUNDER).count()
@@ -323,7 +439,7 @@ class DirectoryListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
         return context
 
 
-class DirectoryDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
+class DirectoryDetailView(AdminRequiredMixin, LoginRequiredMixin, DetailView):
     """Expediente detallado de un asociado."""
     model = MemberCard
     template_name = 'dashboard/directory/detail.html'
@@ -336,6 +452,5 @@ class DirectoryDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get verification history
         context['verifications'] = self.object.verifications.all()[:10]
         return context

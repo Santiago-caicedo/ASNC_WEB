@@ -25,24 +25,28 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
-class StaffRequiredMixin(UserPassesTestMixin):
-    """Mixin to restrict views to staff/superuser only."""
+class AdminRequiredMixin(UserPassesTestMixin):
+    """Mixin to restrict views to full administrators only."""
     login_url = '/acceso/'
 
     def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
+        user = self.request.user
+        return user.is_superuser or (user.is_staff and user.is_admin)
 
     def handle_no_permission(self):
         if self.request.user.is_authenticated:
+            if self.request.user.is_staff:
+                messages.warning(self.request, 'No tienes permisos para acceder a esa sección.')
+                return redirect('/portal/')
             return redirect('/mi-portal/')
         return super().handle_no_permission()
 
 
-def staff_required(view_func):
-    """Decorator to restrict function views to staff/superuser only."""
-    def check_staff(user):
-        return user.is_staff or user.is_superuser
-    return user_passes_test(check_staff, login_url='/acceso/')(view_func)
+def admin_required(view_func):
+    """Decorator to restrict function views to admin users only."""
+    def check_admin(user):
+        return user.is_superuser or (user.is_staff and user.is_admin)
+    return user_passes_test(check_admin, login_url='/acceso/')(view_func)
 
 
 def send_application_email(application):
@@ -336,7 +340,7 @@ class ApplicationSuccessView(TemplateView):
     template_name = 'admissions/application_success.html'
 
 
-class ApplicationListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
+class ApplicationListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
     model = MembershipApplication
     template_name = 'dashboard/application_list.html'
     context_object_name = 'applications'
@@ -361,7 +365,7 @@ class ApplicationListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
         return context
 
 
-class ApplicationDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
+class ApplicationDetailView(AdminRequiredMixin, LoginRequiredMixin, DetailView):
     model = MembershipApplication
     template_name = 'dashboard/application_detail.html'
     context_object_name = 'app'
@@ -380,7 +384,7 @@ class ApplicationDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
 
 
 @login_required
-@staff_required
+@admin_required
 def change_application_status(request, pk, status):
     """
     Handle application status changes (approve/reject).
@@ -455,7 +459,7 @@ def change_application_status(request, pk, status):
 
 
 @login_required
-@staff_required
+@admin_required
 def resend_password_email(request, pk):
     """Resend the password setup email to a user."""
     application = get_object_or_404(MembershipApplication, pk=pk)

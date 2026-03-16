@@ -12,6 +12,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = (
         'email',
         'full_name',
+        'role_badge',
         'is_staff_badge',
         'password_status',
         'has_card_badge',
@@ -19,7 +20,7 @@ class UserAdmin(BaseUserAdmin):
         'date_joined',
     )
 
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'date_joined')
+    list_filter = ('role', 'is_staff', 'is_superuser', 'is_active', 'date_joined')
 
     search_fields = ('email', 'first_name', 'last_name', 'username')
 
@@ -29,7 +30,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Información Personal', {'fields': ('first_name', 'last_name', 'username')}),
         ('Permisos', {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+            'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
             'classes': ('collapse',),
         }),
         ('Fechas', {
@@ -49,6 +50,19 @@ class UserAdmin(BaseUserAdmin):
         return obj.get_full_name() or '-'
     full_name.short_description = 'Nombre Completo'
     full_name.admin_order_field = 'first_name'
+
+    def role_badge(self, obj):
+        colors = {
+            'ADMIN': ('#213a5c', 'white'),
+            'NEWS_EDITOR': ('#f4c343', '#1B2A41'),
+            'MEMBER': ('#6c757d', 'white'),
+        }
+        bg, fg = colors.get(obj.role, ('#6c757d', 'white'))
+        return mark_safe(
+            f'<span style="background-color: {bg}; color: {fg}; padding: 3px 8px; border-radius: 10px; font-size: 11px;">'
+            f'{obj.get_role_display()}</span>'
+        )
+    role_badge.short_description = 'Rol'
 
     def is_staff_badge(self, obj):
         if obj.is_superuser:

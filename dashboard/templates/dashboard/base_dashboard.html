@@ -348,6 +348,7 @@
                 <i class="bi bi-grid-1x2"></i> Dashboard
             </a>
 
+            {% if user.is_admin %}
             <div class="menu-label">Gestion de Asociados</div>
 
             <a href="{% url 'application_list' %}" class="nav-link {% if 'solicitudes' in request.path %}active{% endif %}">
@@ -364,17 +365,21 @@
             <a href="{% url 'directory_list' %}" class="nav-link {% if 'directorio' in request.path %}active{% endif %}">
                 <i class="bi bi-people"></i> Directorio Oficial
             </a>
+            {% endif %}
 
             <div class="menu-label">Contenido Web</div>
 
+            {% if user.is_admin %}
             <a href="{% url 'featured_member_list' %}" class="nav-link {% if 'asociados-destacados' in request.path %}active{% endif %}">
                 <i class="bi bi-star"></i> Asociados Destacados
             </a>
+            {% endif %}
 
             <a href="{% url 'news_list' %}" class="nav-link {% if 'noticias' in request.path %}active{% endif %}">
                 <i class="bi bi-newspaper"></i> Noticias
             </a>
 
+            {% if user.is_admin %}
             <div class="menu-label">Comunicaciones</div>
 
             <a href="{% url 'email_history' %}" class="nav-link {% if 'correos' in request.path %}active{% endif %}">
@@ -382,12 +387,21 @@
             </a>
 
             <div class="menu-label">Administracion</div>
+
+            <a href="{% url 'user_list' %}" class="nav-link {% if 'usuarios' in request.path %}active{% endif %}">
+                <i class="bi bi-person-gear"></i> Usuarios
+                {% if sidebar_users %}
+                <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.6em;">{{ sidebar_users.count }}</span>
+                {% endif %}
+            </a>
+
              <a href="#" class="nav-link disabled">
                 <i class="bi bi-credit-card"></i> Pagos y Cartera
             </a>
              <a href="#" class="nav-link disabled">
                 <i class="bi bi-gear"></i> Configuracion
             </a>
+            {% endif %}
         </nav>
 
         <div class="sidebar-footer">
@@ -397,7 +411,7 @@
                 </div>
                 <div class="flex-grow-1 overflow-hidden" style="line-height: 1.2;">
                     <small class="d-block fw-bold text-dark text-truncate">{{ user.first_name }}</small>
-                    <small class="text-muted" style="font-size: 0.7rem;">Admin</small>
+                    <small class="text-muted" style="font-size: 0.7rem;">{{ user.get_role_display }}</small>
                 </div>
                 <form action="{% url 'logout' %}" method="post" class="ms-2">
                     {% csrf_token %}

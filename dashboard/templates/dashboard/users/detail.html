@@ -1,0 +1,197 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-2">
+    <h1 class="page-title mb-0">Detalle de Usuario</h1>
+    <a href="{% url 'user_list' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Volver
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Main Info -->
+    <div class="col-lg-8">
+        <div class="kpi-card">
+            <!-- Header -->
+            <div class="d-flex align-items-center mb-4 pb-3" style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 60px; height: 60px; font-size: 1.2rem; font-weight: bold; color: white;
+                     {% if user_detail.is_superuser %}background-color: #dc3545;{% elif user_detail.role == 'ADMIN' %}background-color: var(--asnc-blue);{% elif user_detail.role == 'NEWS_EDITOR' %}background-color: var(--asnc-gold); color: var(--asnc-navy);{% else %}background-color: #6c757d;{% endif %}">
+                    {{ user_detail.first_name|first|default:"?" }}{{ user_detail.last_name|first }}
+                </div>
+                <div>
+                    <h4 class="mb-0">{{ user_detail.get_full_name|default:"Sin nombre" }}</h4>
+                    <span class="text-muted">{{ user_detail.email }}</span>
+                </div>
+            </div>
+
+            <!-- User Details -->
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Rol</small>
+                    <div class="fw-medium mt-1">
+                        {% if user_detail.is_superuser %}
+                            <span class="badge bg-danger">Superadmin</span>
+                        {% elif user_detail.role == 'ADMIN' %}
+                            <span class="badge" style="background-color: var(--asnc-blue);">Administrador</span>
+                        {% elif user_detail.role == 'NEWS_EDITOR' %}
+                            <span class="badge" style="background-color: var(--asnc-gold); color: var(--asnc-navy);">Editor de Noticias</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Asociado</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Estado</small>
+                    <div class="mt-1">
+                        {% if user_detail.is_active %}
+                            <span class="badge bg-success">Activo</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactivo</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Telefono</small>
+                    <div class="fw-medium mt-1">{{ user_detail.phone|default:"No registrado" }}</div>
+                </div>
+                <div class="col-sm-6">
+                    <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Profesion</small>
+                    <div class="fw-medium mt-1">{{ user_detail.profession|default:"No registrada" }}</div>
+                </div>
+                <div class="col-sm-6">
+                    <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Cargo Actual</small>
+                    <div class="fw-medium mt-1">{{ user_detail.current_job|default:"No registrado" }}</div>
+                </div>
+                <div class="col-sm-6">
+                    <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Institucion</small>
+                    <div class="fw-medium mt-1">{{ user_detail.institution|default:"No registrada" }}</div>
+                </div>
+                {% if user_detail.linkedin_url %}
+                <div class="col-12">
+                    <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">LinkedIn</small>
+                    <div class="mt-1">
+                        <a href="{{ user_detail.linkedin_url }}" target="_blank" class="text-primary">
+                            <i class="bi bi-linkedin me-1"></i>{{ user_detail.linkedin_url|truncatechars:50 }}
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Dates -->
+            <div class="mt-4 pt-3" style="border-top: 1px solid rgba(0,0,0,0.05);">
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Registro</small>
+                        <div class="small mt-1">{{ user_detail.date_joined|date:"d M Y, H:i" }}</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Ultimo Acceso</small>
+                        <div class="small mt-1">
+                            {% if user_detail.last_login %}
+                                {{ user_detail.last_login|date:"d M Y, H:i" }}
+                            {% else %}
+                                <span class="text-muted">Nunca</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Contrasena</small>
+                        <div class="small mt-1">
+                            {% if user_detail.has_usable_password %}
+                                <span class="text-success"><i class="bi bi-check-circle me-1"></i>Configurada</span>
+                            {% else %}
+                                <span class="text-warning"><i class="bi bi-clock me-1"></i>Pendiente</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="col-lg-4">
+        <!-- Role Management -->
+        <div class="kpi-card mb-4">
+            <h6 class="fw-bold mb-3"><i class="bi bi-person-gear me-2"></i>Gestion de Rol</h6>
+            {% if user_detail.is_superuser %}
+                <div class="alert alert-secondary small mb-0">
+                    <i class="bi bi-shield-lock me-1"></i>
+                    Este usuario es Superadmin. Su rol no puede ser modificado desde aqui.
+                </div>
+            {% else %}
+                <p class="text-muted small">Asigna un rol para controlar el acceso del usuario al portal.</p>
+                <a href="{% url 'user_role_update' user_detail.pk %}" class="btn btn-primary btn-sm w-100">
+                    <i class="bi bi-pencil me-1"></i> Cambiar Rol
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Member Card Info -->
+        {% if member_card %}
+        <div class="kpi-card mb-4">
+            <h6 class="fw-bold mb-3"><i class="bi bi-person-badge me-2"></i>Carne Digital</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small">Numero</span>
+                <code class="text-primary">{{ member_card.card_number }}</code>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small">Estado</span>
+                {% if member_card.status == 'ACTIVE' %}
+                    <span class="badge bg-success">Activo</span>
+                {% elif member_card.status == 'PENDING_PHOTO' %}
+                    <span class="badge bg-warning text-dark">Pend. Foto</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ member_card.get_status_display }}</span>
+                {% endif %}
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Vence</span>
+                <small>{{ member_card.expiry_date|date:"d M Y" }}</small>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Permissions Summary -->
+        <div class="kpi-card">
+            <h6 class="fw-bold mb-3"><i class="bi bi-key me-2"></i>Permisos</h6>
+            <div class="small">
+                <div class="d-flex align-items-center mb-2">
+                    {% if user_detail.is_staff %}
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle text-muted me-2"></i>
+                    {% endif %}
+                    <span>Acceso al portal</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    {% if user_detail.is_admin %}
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle text-muted me-2"></i>
+                    {% endif %}
+                    <span>Administracion completa</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    {% if user_detail.is_news_editor or user_detail.is_admin %}
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle text-muted me-2"></i>
+                    {% endif %}
+                    <span>Gestion de noticias</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    {% if user_detail.is_superuser %}
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle text-muted me-2"></i>
+                    {% endif %}
+                    <span>Superadmin</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

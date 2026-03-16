@@ -19,24 +19,28 @@ logger = logging.getLogger(__name__)
 PHOTO_TOKEN_EXPIRY_HOURS = 72  # 3 days
 
 
-class StaffRequiredMixin(UserPassesTestMixin):
-    """Mixin to restrict views to staff/superuser only."""
+class AdminRequiredMixin(UserPassesTestMixin):
+    """Mixin to restrict views to full administrators only."""
     login_url = '/acceso/'
 
     def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
+        user = self.request.user
+        return user.is_superuser or (user.is_staff and user.is_admin)
 
     def handle_no_permission(self):
         if self.request.user.is_authenticated:
+            if self.request.user.is_staff:
+                messages.warning(self.request, 'No tienes permisos para acceder a esa sección.')
+                return redirect('/portal/')
             return redirect('/mi-portal/')
         return super().handle_no_permission()
 
 
-def staff_required(view_func):
-    """Decorator to restrict function views to staff/superuser only."""
-    def check_staff(user):
-        return user.is_staff or user.is_superuser
-    return user_passes_test(check_staff, login_url='/acceso/')(view_func)
+def admin_required(view_func):
+    """Decorator to restrict function views to admin users only."""
+    def check_admin(user):
+        return user.is_superuser or (user.is_staff and user.is_admin)
+    return user_passes_test(check_admin, login_url='/acceso/')(view_func)
 from .forms import PhotoUploadForm, GenerateCardForm, CardSuspendForm, CardRenewForm
 from .utils import (
     generate_card_pdf,
@@ -222,7 +226,7 @@ class MyCardDownloadView(LoginRequiredMixin, View):
 # Dashboard Views (Admin - Login required)
 # ============================================
 
-class CardListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
+class CardListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
     """List all member cards in dashboard."""
     model = MemberCard
     template_name = 'carnets/dashboard/list.html'
@@ -258,7 +262,7 @@ class CardListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
         return context
 
 
-class CardDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
+class CardDetailView(AdminRequiredMixin, LoginRequiredMixin, DetailView):
     """Detail view of a member card in dashboard."""
     model = MemberCard
     template_name = 'carnets/dashboard/detail.html'
@@ -273,7 +277,7 @@ class CardDetailView(StaffRequiredMixin, LoginRequiredMixin, DetailView):
         return context
 
 
-class GenerateCardView(StaffRequiredMixin, LoginRequiredMixin, FormView):
+class GenerateCardView(AdminRequiredMixin, LoginRequiredMixin, FormView):
     """View to initiate card generation from an approved application."""
     template_name = 'carnets/dashboard/generar_carne.html'
     form_class = GenerateCardForm
@@ -363,7 +367,7 @@ class GenerateCardView(StaffRequiredMixin, LoginRequiredMixin, FormView):
         return redirect('carnets:card_detail', pk=card.pk)
 
 
-class CardSuspendView(StaffRequiredMixin, LoginRequiredMixin, FormView):
+class CardSuspendView(AdminRequiredMixin, LoginRequiredMixin, FormView):
     """View to suspend a member card."""
     template_name = 'carnets/dashboard/suspender.html'
     form_class = CardSuspendForm
@@ -387,7 +391,7 @@ class CardSuspendView(StaffRequiredMixin, LoginRequiredMixin, FormView):
 
 
 @login_required
-@staff_required
+@admin_required
 def reactivate_card(request, pk):
     """Reactivate a suspended card."""
     card = get_object_or_404(MemberCard, pk=pk)
@@ -409,7 +413,7 @@ def reactivate_card(request, pk):
     return redirect('carnets:card_detail', pk=pk)
 
 
-class CardRenewView(StaffRequiredMixin, LoginRequiredMixin, FormView):
+class CardRenewView(AdminRequiredMixin, LoginRequiredMixin, FormView):
     """View to renew a member card."""
     template_name = 'carnets/dashboard/renovar.html'
     form_class = CardRenewForm
@@ -443,7 +447,7 @@ class CardRenewView(StaffRequiredMixin, LoginRequiredMixin, FormView):
         return redirect('carnets:card_detail', pk=self.card.pk)
 
 
-class CardStatsView(StaffRequiredMixin, LoginRequiredMixin, TemplateView):
+class CardStatsView(AdminRequiredMixin, LoginRequiredMixin, TemplateView):
     """Dashboard statistics for member cards."""
     template_name = 'carnets/dashboard/estadisticas.html'
 
@@ -481,7 +485,7 @@ class CardStatsView(StaffRequiredMixin, LoginRequiredMixin, TemplateView):
 
 
 @login_required
-@staff_required
+@admin_required
 def resend_photo_request(request, pk):
     """Resend photo request email to associate."""
     card = get_object_or_404(MemberCard, pk=pk)

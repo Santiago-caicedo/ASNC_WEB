@@ -11,6 +11,7 @@ from .views import (
     NewsListView, NewsCreateView, NewsUpdateView, NewsDeleteView,
     EmailComposeView, EmailHistoryView, EmailDetailView,
     DirectoryListView, DirectoryDetailView,
+    UserListView, UserDetailView, UserRoleUpdateView,
 )
 from admissions.views import ApplicationDetailView, ApplicationListView, change_application_status, resend_password_email
 
@@ -62,4 +63,9 @@ urlpatterns = [
     # Directorio Oficial de Asociados
     path('directorio/', DirectoryListView.as_view(), name='directory_list'),
     path('directorio/<int:pk>/', DirectoryDetailView.as_view(), name='directory_detail'),
+
+    # Gestión de Usuarios
+    path('usuarios/', UserListView.as_view(), name='user_list'),
+    path('usuarios/<int:pk>/', UserDetailView.as_view(), name='user_detail'),
+    path('usuarios/<int:pk>/rol/', UserRoleUpdateView.as_view(), name='user_role_update'),
 ]

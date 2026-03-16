@@ -104,6 +104,26 @@ class NewsArticleForm(forms.ModelForm):
         )
 
 
+class UserRoleForm(forms.ModelForm):
+    """Formulario para asignar rol a un usuario del sistema."""
+    class Meta:
+        model = User
+        fields = ['role', 'is_staff', 'is_active']
+        widgets = {
+            'role': forms.Select(attrs={'class': 'form-select'}),
+            'is_staff': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'role': 'Rol en el sistema',
+            'is_staff': 'Acceso al portal administrativo',
+            'is_active': 'Usuario activo',
+        }
+        help_texts = {
+            'is_staff': 'Necesario para que el usuario pueda iniciar sesión en el portal.',
+        }
+
+
 class EmailComposeForm(forms.Form):
     """Formulario para componer y enviar correos masivos"""
 
