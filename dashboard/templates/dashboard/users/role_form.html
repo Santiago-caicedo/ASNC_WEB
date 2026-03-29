@@ -34,11 +34,23 @@
                     {{ form.role }}
                     <div class="form-text mt-2">
                         <div class="small">
-                            <div class="mb-1"><strong>Asociado:</strong> Solo acceso al portal de miembros.</div>
-                            <div class="mb-1"><strong>Editor de Noticias:</strong> Acceso al panel para crear y editar noticias unicamente.</div>
+                            <div class="mb-1"><strong>Asociado:</strong> Acceso al portal de miembros.</div>
                             <div><strong>Administrador:</strong> Acceso completo al panel directivo.</div>
                         </div>
                     </div>
+                </div>
+
+                <!-- News Editor Permission -->
+                <div class="mb-3">
+                    <div class="form-check">
+                        {{ form.can_edit_news }}
+                        <label class="form-check-label" for="{{ form.can_edit_news.id_for_label }}">
+                            <i class="bi bi-newspaper me-1"></i> {{ form.can_edit_news.label }}
+                        </label>
+                    </div>
+                    {% if form.can_edit_news.help_text %}
+                        <div class="form-text">{{ form.can_edit_news.help_text }}</div>
+                    {% endif %}
                 </div>
 
                 <!-- Staff Checkbox -->

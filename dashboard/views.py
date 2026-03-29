@@ -22,7 +22,7 @@ from .models import SentEmail
 # ============================================
 
 class StaffRequiredMixin(UserPassesTestMixin):
-    """Mixin to restrict views to any staff user (admins + news editors)."""
+    """Mixin to restrict views to any staff user (admins only)."""
     login_url = '/acceso/'
 
     def test_func(self):
@@ -45,9 +45,22 @@ class AdminRequiredMixin(UserPassesTestMixin):
     def handle_no_permission(self):
         if self.request.user.is_authenticated:
             if self.request.user.is_staff:
-                # Staff but not admin (e.g. news editor) → dashboard home
                 messages.warning(self.request, 'No tienes permisos para acceder a esa sección.')
                 return redirect('/portal/')
+            return redirect('/mi-portal/')
+        return super().handle_no_permission()
+
+
+class NewsEditorRequiredMixin(UserPassesTestMixin):
+    """Mixin to restrict views to users who can edit news or are admins."""
+    login_url = '/acceso/'
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and (user.can_edit_news or user.is_admin)
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
             return redirect('/mi-portal/')
         return super().handle_no_permission()
 
@@ -62,7 +75,7 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         user = self.request.user
-        if user.is_staff or user.is_superuser:
+        if user.is_admin:
             return '/portal/'
         return '/mi-portal/'
 
@@ -71,18 +84,11 @@ class CustomLoginView(LoginView):
 # Dashboard Home
 # ============================================
 
-class DashboardHomeView(StaffRequiredMixin, LoginRequiredMixin, TemplateView):
+class DashboardHomeView(AdminRequiredMixin, LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-
-        # News editors get limited KPIs
-        if user.is_news_editor and not user.is_superuser:
-            context['news_count'] = NewsArticle.objects.count()
-            context['published_count'] = NewsArticle.objects.filter(is_published=True).count()
-            return context
 
         # Full admin KPIs
         context['pending_count'] = MembershipApplication.objects.filter(status='PENDING').count()
@@ -160,7 +166,7 @@ class FeaturedMemberDeleteView(AdminRequiredMixin, LoginRequiredMixin, DeleteVie
 # CRUD para Noticias (Staff - includes news editors)
 # ============================================
 
-class NewsListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
+class NewsListView(NewsEditorRequiredMixin, LoginRequiredMixin, ListView):
     """Lista de noticias"""
     model = NewsArticle
     template_name = 'dashboard/news/list.html'
@@ -169,7 +175,7 @@ class NewsListView(StaffRequiredMixin, LoginRequiredMixin, ListView):
     paginate_by = 20
 
 
-class NewsCreateView(StaffRequiredMixin, LoginRequiredMixin, CreateView):
+class NewsCreateView(NewsEditorRequiredMixin, LoginRequiredMixin, CreateView):
     """Crear nueva noticia"""
     model = NewsArticle
     form_class = NewsArticleForm
@@ -188,7 +194,7 @@ class NewsCreateView(StaffRequiredMixin, LoginRequiredMixin, CreateView):
         return context
 
 
-class NewsUpdateView(StaffRequiredMixin, LoginRequiredMixin, UpdateView):
+class NewsUpdateView(NewsEditorRequiredMixin, LoginRequiredMixin, UpdateView):
     """Editar noticia"""
     model = NewsArticle
     form_class = NewsArticleForm
@@ -206,7 +212,7 @@ class NewsUpdateView(StaffRequiredMixin, LoginRequiredMixin, UpdateView):
         return context
 
 
-class NewsDeleteView(StaffRequiredMixin, LoginRequiredMixin, DeleteView):
+class NewsDeleteView(NewsEditorRequiredMixin, LoginRequiredMixin, DeleteView):
     """Eliminar noticia"""
     model = NewsArticle
     template_name = 'dashboard/news/confirm_delete.html'
@@ -339,7 +345,7 @@ class UserListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
         context['search_query'] = self.request.GET.get('q', '')
         context['total_users'] = User.objects.count()
         context['staff_count'] = User.objects.filter(is_staff=True).count()
-        context['editors_count'] = User.objects.filter(role=User.Role.NEWS_EDITOR).count()
+        context['editors_count'] = User.objects.filter(can_edit_news=True).count()
         return context
 
 
@@ -373,8 +379,8 @@ class UserRoleUpdateView(AdminRequiredMixin, LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         user_obj = form.save(commit=False)
 
-        # If role is NEWS_EDITOR or ADMIN, ensure is_staff is True
-        if user_obj.role in (User.Role.NEWS_EDITOR, User.Role.ADMIN):
+        # If role is ADMIN, ensure is_staff is True
+        if user_obj.role == User.Role.ADMIN:
             user_obj.is_staff = True
 
         user_obj.save()

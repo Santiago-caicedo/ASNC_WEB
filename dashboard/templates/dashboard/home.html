@@ -5,11 +5,7 @@
 <div class="top-bar-area">
     <div>
         <h1 class="page-title">Bienvenido, {{ user.first_name }}</h1>
-        {% if user.is_news_editor and not user.is_superuser and not user.is_admin %}
-            <p class="text-muted mb-0">Panel de gestion de noticias.</p>
-        {% else %}
-            <p class="text-muted mb-0">Resumen de actividad de la Asociacion.</p>
-        {% endif %}
+        <p class="text-muted mb-0">Resumen de actividad de la Asociacion.</p>
     </div>
     <div class="d-none d-md-block">
         <span class="bg-white px-3 py-2 rounded-pill shadow-sm text-muted small fw-bold border">
@@ -18,42 +14,6 @@
     </div>
 </div>
 
-{% if user.is_news_editor and not user.is_superuser and not user.is_admin %}
-<!-- ========== NEWS EDITOR DASHBOARD ========== -->
-<div class="row g-3 g-md-4 mb-4 mb-md-5">
-    <div class="col-6">
-        <div class="kpi-card">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <h6 class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Total Noticias</h6>
-                    <h2 class="display-5 fw-bold mt-2 mb-0" style="color: var(--asnc-blue);">{{ news_count }}</h2>
-                    <a href="{% url 'news_list' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 mt-3">Ver Todas</a>
-                </div>
-                <div class="icon-shape bg-primary bg-opacity-10 text-primary p-3 rounded-4">
-                    <i class="bi bi-newspaper fs-3"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="kpi-card">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <h6 class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Publicadas</h6>
-                    <h2 class="display-5 fw-bold mt-2 mb-0 text-success">{{ published_count }}</h2>
-                    <a href="{% url 'news_create' %}" class="btn btn-sm btn-success rounded-pill px-3 mt-3">
-                        <i class="bi bi-plus-lg me-1"></i> Nueva
-                    </a>
-                </div>
-                <div class="icon-shape bg-success bg-opacity-10 text-success p-3 rounded-4">
-                    <i class="bi bi-check-circle fs-3"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{% else %}
 <!-- ========== FULL ADMIN DASHBOARD ========== -->
 <div class="row g-3 g-md-4 mb-4 mb-md-5">
 
@@ -211,6 +171,5 @@
         </div>
     </div>
 </div>
-{% endif %}
 
 {% endblock %}

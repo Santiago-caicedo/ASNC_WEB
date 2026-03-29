@@ -342,11 +342,13 @@
         </div>
 
         <nav class="sidebar-menu">
+            {% if user.is_admin %}
             <div class="menu-label">Principal</div>
 
             <a href="{% url 'dashboard_home' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard_home' %}active{% endif %}">
                 <i class="bi bi-grid-1x2"></i> Dashboard
             </a>
+            {% endif %}
 
             {% if user.is_admin %}
             <div class="menu-label">Gestion de Asociados</div>
@@ -375,9 +377,11 @@
             </a>
             {% endif %}
 
+            {% if user.can_edit_news or user.is_admin %}
             <a href="{% url 'news_list' %}" class="nav-link {% if 'noticias' in request.path %}active{% endif %}">
                 <i class="bi bi-newspaper"></i> Noticias
             </a>
+            {% endif %}
 
             {% if user.is_admin %}
             <div class="menu-label">Comunicaciones</div>
@@ -400,6 +404,14 @@
             </a>
              <a href="#" class="nav-link disabled">
                 <i class="bi bi-gear"></i> Configuracion
+            </a>
+            {% endif %}
+
+            {% if not user.is_admin and user.can_edit_news %}
+            <div class="menu-label">Mi Cuenta</div>
+
+            <a href="{% url 'members:dashboard' %}" class="nav-link">
+                <i class="bi bi-arrow-left-circle"></i> Volver a Mi Portal
             </a>
             {% endif %}
         </nav>

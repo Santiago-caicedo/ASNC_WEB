@@ -6,7 +6,6 @@ class User(AbstractUser):
 
     class Role(models.TextChoices):
         MEMBER = 'MEMBER', 'Asociado'
-        NEWS_EDITOR = 'NEWS_EDITOR', 'Editor de Noticias'
         ADMIN = 'ADMIN', 'Administrador'
 
     email = models.EmailField('dirección de correo electrónico', unique=True)
@@ -17,6 +16,12 @@ class User(AbstractUser):
         choices=Role.choices,
         default=Role.MEMBER,
         db_index=True,
+    )
+
+    can_edit_news = models.BooleanField(
+        'Puede gestionar noticias',
+        default=False,
+        help_text='Permite al usuario crear, editar y eliminar noticias desde el portal.',
     )
 
     # Datos de contacto
@@ -43,8 +48,8 @@ class User(AbstractUser):
 
     @property
     def is_news_editor(self):
-        """Check if user is a news editor."""
-        return self.role == self.Role.NEWS_EDITOR
+        """Check if user can manage news articles."""
+        return self.can_edit_news
 
     @property
     def profile_completion(self):
