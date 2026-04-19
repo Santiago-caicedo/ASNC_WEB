@@ -169,7 +169,8 @@
                         <circle cx="55" cy="55" r="48" fill="none"
                                 stroke="url(#progressGradient)"
                                 stroke-width="10"
-                                stroke-dasharray="{{ user.profile_completion|floatformat:0 }}% 302"
+                                pathLength="100"
+                                stroke-dasharray="{{ user.profile_completion }} 100"
                                 stroke-linecap="round"
                                 transform="rotate(-90 55 55)"
                                 style="transition: stroke-dasharray 0.5s ease;"/>

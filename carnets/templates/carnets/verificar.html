@@ -76,7 +76,7 @@
                     <!-- Verification Count -->
                     <p class="text-muted small mb-0">
                         <i class="bi bi-qr-code-scan me-1"></i>
-                        Este carné ha sido verificado {{ verification_count }} vez{% if verification_count != 1 %}es{% endif %}
+                        Este carné ha sido verificado {{ verification_count }} {% if verification_count == 1 %}vez{% else %}veces{% endif %}
                     </p>
                 </div>
 
