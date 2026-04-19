@@ -1,3 +1,6 @@
+import base64
+from io import BytesIO
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
@@ -9,8 +12,17 @@ from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
 from carnets.models import MemberCard
-from carnets.utils import generate_card_pdf
+from carnets.utils import generate_card_pdf, generate_qr_code, get_verification_url
 from .forms import ProfileEditForm
+
+
+def build_qr_data_uri(card):
+    """Render a MemberCard's verification QR as a base64 PNG data URI."""
+    qr_img = generate_qr_code(get_verification_url(card), size=200)
+    buffer = BytesIO()
+    qr_img.save(buffer, format='PNG')
+    encoded = base64.b64encode(buffer.getvalue()).decode('ascii')
+    return f'data:image/png;base64,{encoded}'
 
 
 def get_membership_duration(user):
@@ -93,7 +105,10 @@ class MemberCardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            context['card'] = MemberCard.objects.get(user=self.request.user)
+            card = MemberCard.objects.get(user=self.request.user)
+            context['card'] = card
+            if card.status == MemberCard.Status.ACTIVE:
+                context['qr_data_uri'] = build_qr_data_uri(card)
         except MemberCard.DoesNotExist:
             context['card'] = None
         return context

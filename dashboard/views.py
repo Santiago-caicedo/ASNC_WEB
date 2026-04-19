@@ -462,4 +462,6 @@ class DirectoryDetailView(AdminRequiredMixin, LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['verifications'] = self.object.verifications.all()[:10]
+        from members.views import build_qr_data_uri
+        context['qr_data_uri'] = build_qr_data_uri(self.object)
         return context

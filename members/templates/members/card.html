@@ -53,7 +53,7 @@
                                 <div class="fw-bold" style="font-size: 0.85rem;">{{ card.expiry_date|date:"d/m/Y" }}</div>
                             </div>
                             <div class="card-qr">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data={{ request.scheme }}://{{ request.get_host }}{% url 'carnets:verificar' card.uuid %}" alt="QR">
+                                <img src="{{ qr_data_uri }}" alt="QR">
                             </div>
                         </div>
                     </div>
