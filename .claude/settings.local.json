@@ -42,7 +42,8 @@
       "Bash(curl -L -o /mnt/c/Users/ASUS/documents/asnc_platform/static/images/cta_nuclear_bg.jpg \"https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=1920&q=80\" 2>&1 | tail -3)",
       "Bash(find:*)",
       "Bash(git:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pip install *)"
     ]
   }
 }

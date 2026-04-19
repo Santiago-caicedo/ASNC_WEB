@@ -1,0 +1,32 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<h1 class="page-title mb-4">Eliminar convocatoria</h1>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4 p-md-5 text-center">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                     style="width: 90px; height: 90px; background-color: rgba(220, 53, 69, 0.1);">
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                </div>
+
+                <h4 class="fw-bold mb-3">¿Eliminar "{{ object.title }}"?</h4>
+                <p class="text-muted mb-4">
+                    Se borrarán <strong>todos los campos</strong> y <strong>{{ object.submissions_count }} inscripciones</strong> asociadas.
+                    Esta acción no se puede deshacer.
+                </p>
+
+                <form method="post" class="d-flex gap-2 justify-content-center flex-wrap">
+                    {% csrf_token %}
+                    <a href="{% url 'convocatorias_admin:detail' object.pk %}" class="btn btn-light rounded-pill px-4">Cancelar</a>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">
+                        <i class="bi bi-trash me-2"></i>Sí, eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

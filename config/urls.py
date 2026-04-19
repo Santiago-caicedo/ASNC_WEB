@@ -36,6 +36,12 @@ urlpatterns = [
 
     # Members Portal (for regular associates)
     path('', include('members.urls')),
+
+    # Convocatorias (public)
+    path('convocatorias/', include('convocatorias.urls')),
+
+    # Convocatorias admin (protected, under /portal/)
+    path('portal/convocatorias/', include('convocatorias.admin_urls')),
 ]
 
 # Configuración para servir archivos media en modo DEBUG

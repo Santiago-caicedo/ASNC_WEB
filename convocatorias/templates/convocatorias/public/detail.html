@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ convocatoria.title }}{% endblock %}
+{% block meta_description %}{{ convocatoria.description|truncatechars:160 }}{% endblock %}
+
+{% block og_title %}{{ convocatoria.title }} | ASNC{% endblock %}
+{% block og_description %}{{ convocatoria.description|truncatechars:160 }}{% endblock %}
+{% if convocatoria.cover_image %}{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ convocatoria.cover_image.url }}{% endblock %}{% endif %}
+
+{% block content %}
+<div class="convocatoria-page">
+    {% if convocatoria.cover_image %}
+    <div class="cover-image-wrap">
+        <img src="{{ convocatoria.cover_image.url }}" alt="{{ convocatoria.title }}" class="cover-image">
+        <div class="cover-gradient"></div>
+    </div>
+    {% endif %}
+
+    <section class="py-4 py-md-5">
+        <div class="container" style="max-width: 720px;">
+            <!-- Back link -->
+            <a href="{% url 'convocatorias:list' %}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-3">
+                <i class="bi bi-arrow-left me-2"></i>Todas las convocatorias
+            </a>
+
+            <!-- Title card -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+                    {% if convocatoria.is_open %}
+                    <span class="badge bg-success-subtle text-success rounded-pill mb-3">
+                        <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>Inscripciones abiertas
+                    </span>
+                    {% elif convocatoria.is_active %}
+                    <span class="badge bg-warning-subtle text-warning rounded-pill mb-3">
+                        <i class="bi bi-clock me-1"></i>Próximamente
+                    </span>
+                    {% else %}
+                    <span class="badge bg-secondary-subtle text-secondary rounded-pill mb-3">
+                        <i class="bi bi-slash-circle me-1"></i>Cerrada
+                    </span>
+                    {% endif %}
+
+                    <h1 class="fw-bold mb-3" style="font-size: clamp(1.6rem, 5vw, 2.4rem); color: #1B2A41;">
+                        {{ convocatoria.title }}
+                    </h1>
+
+                    <div class="text-muted mb-2" style="white-space: pre-wrap; font-size: 1.05rem; line-height: 1.6;">{{ convocatoria.description }}</div>
+
+                    {% if convocatoria.opens_at or convocatoria.closes_at %}
+                    <div class="d-flex flex-wrap gap-3 mt-4 pt-3 border-top">
+                        {% if convocatoria.opens_at %}
+                        <div>
+                            <small class="text-muted d-block">Apertura</small>
+                            <span class="fw-medium"><i class="bi bi-calendar-check me-1 text-success"></i>{{ convocatoria.opens_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        {% endif %}
+                        {% if convocatoria.closes_at %}
+                        <div>
+                            <small class="text-muted d-block">Cierre</small>
+                            <span class="fw-medium"><i class="bi bi-calendar-x me-1 text-danger"></i>{{ convocatoria.closes_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Form -->
+            {% if form %}
+                {% if form.fields %}
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="form-header text-white p-4">
+                        <h4 class="fw-bold mb-1"><i class="bi bi-pencil-square me-2"></i>Formulario de inscripción</h4>
+                        <p class="mb-0 opacity-75 small">Completa los siguientes datos. Los campos con * son obligatorios.</p>
+                    </div>
+                    <div class="card-body p-4 p-md-5">
+                        <form method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                            {% endif %}
+
+                            {% for cfield, bound in form.iter_rendered_fields %}
+                            <div class="mb-4">
+                                {% if cfield.field_type != 'CHECKBOX' %}
+                                <label for="{{ bound.id_for_label }}" class="form-label fw-semibold">
+                                    {{ cfield.label }}
+                                    {% if cfield.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {% endif %}
+
+                                {% if cfield.field_type == 'CHECKBOX' %}
+                                <div class="form-check form-check-lg">
+                                    {{ bound }}
+                                    <label class="form-check-label fw-semibold" for="{{ bound.id_for_label }}">
+                                        {{ cfield.label }}
+                                        {% if cfield.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                </div>
+                                {% else %}
+                                {{ bound }}
+                                {% endif %}
+
+                                {% if cfield.help_text %}
+                                <div class="form-text">{{ cfield.help_text }}</div>
+                                {% endif %}
+
+                                {% if bound.errors %}
+                                <div class="invalid-feedback d-block mt-1">
+                                    <i class="bi bi-exclamation-circle me-1"></i>{{ bound.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill w-100 py-3 mt-2" style="background-color: #f4c343; border-color: #f4c343; color: #1B2A41; font-weight: 600;">
+                                <i class="bi bi-send me-2"></i>Enviar inscripción
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-warning rounded-4">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Esta convocatoria aún no tiene un formulario configurado.
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="alert alert-info rounded-4 text-center">
+                <i class="bi bi-info-circle me-2"></i>Las inscripciones no están disponibles en este momento.
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<style>
+.convocatoria-page .cover-image-wrap {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+    background: #1B2A41;
+}
+.convocatoria-page .cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.convocatoria-page .cover-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(27,42,65,0) 40%, rgba(27,42,65,0.7) 100%);
+}
+.convocatoria-page .form-header {
+    background: linear-gradient(135deg, #1B2A41 0%, #213a5c 100%);
+}
+.convocatoria-page .form-control-lg,
+.convocatoria-page .form-select-lg {
+    font-size: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.convocatoria-page .form-control-lg:focus,
+.convocatoria-page .form-select-lg:focus {
+    border-color: #f4c343;
+    box-shadow: 0 0 0 0.2rem rgba(244, 195, 67, 0.25);
+}
+.convocatoria-page textarea.form-control-lg {
+    min-height: 110px;
+}
+.convocatoria-page .form-check-lg .form-check-input {
+    width: 1.4em;
+    height: 1.4em;
+    margin-top: 0.15em;
+    margin-right: 0.5rem;
+}
+.convocatoria-page .form-check-lg .form-check-label {
+    padding-left: 0.3rem;
+}
+.convocatoria-page input[type="file"].form-control-lg {
+    padding: 0.5rem 0.75rem;
+}
+.convocatoria-page .form-label {
+    color: #1B2A41;
+    margin-bottom: 0.5rem;
+}
+.convocatoria-page .form-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+@media (max-width: 576px) {
+    .convocatoria-page .cover-image-wrap {
+        height: 180px;
+    }
+    .convocatoria-page .form-control-lg,
+    .convocatoria-page .form-select-lg {
+        font-size: 16px; /* prevents zoom on iOS */
+    }
+}
+</style>
+{% endblock %}

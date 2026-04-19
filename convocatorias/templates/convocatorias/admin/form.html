@@ -1,0 +1,88 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4 gap-2 flex-wrap">
+    <a href="{% if object %}{% url 'convocatorias_admin:detail' object.pk %}{% else %}{% url 'convocatorias_admin:list' %}{% endif %}"
+       class="btn btn-light rounded-circle" title="Volver">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="page-title mb-0">
+        {% if object %}Editar convocatoria{% else %}Nueva convocatoria{% endif %}
+    </h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
+                        {{ form.title }}
+                        {% if form.title.errors %}<div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">Descripción <span class="text-danger">*</span></label>
+                        {{ form.description }}
+                        <div class="form-text">{{ form.description.help_text }}</div>
+                        {% if form.description.errors %}<div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.cover_image.id_for_label }}" class="form-label fw-semibold">Imagen de portada</label>
+                        {% if object.cover_image %}
+                        <div class="mb-2">
+                            <img src="{{ object.cover_image.url }}" alt="Portada actual" class="img-fluid rounded" style="max-height: 180px;">
+                        </div>
+                        {% endif %}
+                        {{ form.cover_image }}
+                        <div class="form-text">{{ form.cover_image.help_text }}</div>
+                        {% if form.cover_image.errors %}<div class="invalid-feedback d-block">{{ form.cover_image.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.opens_at.id_for_label }}" class="form-label fw-semibold">Apertura</label>
+                            {{ form.opens_at }}
+                            <div class="form-text">Opcional. Dejar vacío para abrir de inmediato.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.closes_at.id_for_label }}" class="form-label fw-semibold">Cierre</label>
+                            {{ form.closes_at }}
+                            <div class="form-text">Opcional. Dejar vacío para sin fecha límite.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.success_message.id_for_label }}" class="form-label fw-semibold">Mensaje de confirmación</label>
+                        {{ form.success_message }}
+                        <div class="form-text">{{ form.success_message.help_text }}</div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            Convocatoria activa (visible públicamente)
+                        </label>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">
+                            <i class="bi bi-check2 me-2"></i>{% if object %}Guardar cambios{% else %}Crear y agregar campos{% endif %}
+                        </button>
+                        <a href="{% if object %}{% url 'convocatorias_admin:detail' object.pk %}{% else %}{% url 'convocatorias_admin:list' %}{% endif %}"
+                           class="btn btn-light rounded-pill px-4">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

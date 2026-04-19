@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'website',
     'carnets',
     'members',
+    'convocatorias',
 ]
 
 MIDDLEWARE = [

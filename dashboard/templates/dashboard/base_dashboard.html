@@ -384,6 +384,12 @@
             {% endif %}
 
             {% if user.is_admin %}
+            <a href="{% url 'convocatorias_admin:list' %}" class="nav-link {% if 'convocatorias' in request.path %}active{% endif %}">
+                <i class="bi bi-megaphone"></i> Convocatorias
+            </a>
+            {% endif %}
+
+            {% if user.is_admin %}
             <div class="menu-label">Comunicaciones</div>
 
             <a href="{% url 'email_history' %}" class="nav-link {% if 'correos' in request.path %}active{% endif %}">
