@@ -56,10 +56,10 @@ class MemberLoginView(LoginView):
 
     def get_success_url(self):
         user = self.request.user
-        # If user is staff/superuser, redirect to admin dashboard
-        if user.is_staff or user.is_superuser:
+        if user.is_admin:
             return '/portal/'
-        # Regular users go to member portal
+        if user.is_staff and user.can_edit_news:
+            return '/portal/noticias/'
         return '/mi-portal/'
 
 
@@ -69,10 +69,8 @@ class MemberDashboardView(LoginRequiredMixin, TemplateView):
     login_url = '/acceso/'
 
     def dispatch(self, request, *args, **kwargs):
-        # If user is staff/superuser, redirect to admin dashboard
-        if request.user.is_authenticated:
-            if request.user.is_staff or request.user.is_superuser:
-                return redirect('/portal/')
+        if request.user.is_authenticated and request.user.is_admin:
+            return redirect('/portal/')
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

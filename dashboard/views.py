@@ -43,10 +43,11 @@ class AdminRequiredMixin(UserPassesTestMixin):
         return user.is_superuser or (user.is_staff and user.is_admin)
 
     def handle_no_permission(self):
-        if self.request.user.is_authenticated:
-            if self.request.user.is_staff:
+        user = self.request.user
+        if user.is_authenticated:
+            if user.is_staff and user.can_edit_news:
                 messages.warning(self.request, 'No tienes permisos para acceder a esa sección.')
-                return redirect('/portal/')
+                return redirect('news_list')
             return redirect('/mi-portal/')
         return super().handle_no_permission()
 
@@ -77,6 +78,8 @@ class CustomLoginView(LoginView):
         user = self.request.user
         if user.is_admin:
             return '/portal/'
+        if user.is_staff and user.can_edit_news:
+            return '/portal/noticias/'
         return '/mi-portal/'
 
 
