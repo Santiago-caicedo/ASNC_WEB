@@ -23,7 +23,7 @@
             <div class="col-md-6 col-lg-4">
                 <a href="{% url 'convocatorias:detail' c.slug %}" class="text-decoration-none">
                     <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden" style="transition: transform 0.2s;">
-                        {% if c.cover_image %}
+                        {% if c.cover_image and c.cover_image.name %}
                         <img src="{{ c.cover_image.url }}" alt="{{ c.title }}"
                              style="height: 180px; object-fit: cover; width: 100%;">
                         {% else %}

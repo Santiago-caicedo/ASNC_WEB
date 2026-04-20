@@ -19,7 +19,7 @@
     <div class="col-lg-8">
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-4">
-                {% if convocatoria.cover_image %}
+                {% if convocatoria.cover_image and convocatoria.cover_image.name %}
                 <img src="{{ convocatoria.cover_image.url }}" alt="{{ convocatoria.title }}"
                      class="img-fluid rounded mb-3" style="max-height: 240px; width: 100%; object-fit: cover;">
                 {% endif %}

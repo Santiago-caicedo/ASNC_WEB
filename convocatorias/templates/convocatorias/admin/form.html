@@ -37,7 +37,7 @@
 
                     <div class="mb-3">
                         <label for="{{ form.cover_image.id_for_label }}" class="form-label fw-semibold">Imagen de portada</label>
-                        {% if object.cover_image %}
+                        {% if object.cover_image and object.cover_image.name %}
                         <div class="mb-2">
                             <img src="{{ object.cover_image.url }}" alt="Portada actual" class="img-fluid rounded" style="max-height: 180px;">
                         </div>

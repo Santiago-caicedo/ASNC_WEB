@@ -6,11 +6,11 @@
 
 {% block og_title %}{{ convocatoria.title }} | ASNC{% endblock %}
 {% block og_description %}{{ convocatoria.description|truncatechars:160 }}{% endblock %}
-{% if convocatoria.cover_image %}{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ convocatoria.cover_image.url }}{% endblock %}{% endif %}
+{% if convocatoria.cover_image and convocatoria.cover_image.name %}{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ convocatoria.cover_image.url }}{% endblock %}{% endif %}
 
 {% block content %}
 <div class="convocatoria-page">
-    {% if convocatoria.cover_image %}
+    {% if convocatoria.cover_image and convocatoria.cover_image.name %}
     <div class="cover-image-wrap">
         <img src="{{ convocatoria.cover_image.url }}" alt="{{ convocatoria.title }}" class="cover-image">
         <div class="cover-gradient"></div>
