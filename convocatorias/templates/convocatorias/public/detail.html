@@ -6,7 +6,7 @@
 
 {% block og_title %}{{ convocatoria.title }} | ASNC{% endblock %}
 {% block og_description %}{{ convocatoria.description|truncatechars:160 }}{% endblock %}
-{% if convocatoria.cover_image and convocatoria.cover_image.name %}{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ convocatoria.cover_image.url }}{% endblock %}{% endif %}
+{% block og_image %}{% if convocatoria.cover_image and convocatoria.cover_image.name %}{{ request.scheme }}://{{ request.get_host }}{{ convocatoria.cover_image.url }}{% else %}https://www.asncol.com{% static 'images/og-image.png' %}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="convocatoria-page">
