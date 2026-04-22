@@ -211,6 +211,24 @@
                     <p>Gestión de recursos y sostenibilidad económica</p>
                     <div class="committee-decoration"></div>
                 </div>
+
+                <div class="org-committee-card committee-educacion">
+                    <div class="committee-icon">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <h4>Comité de Educación</h4>
+                    <p>Formación, capacitación y desarrollo académico en ciencia nuclear</p>
+                    <div class="committee-decoration"></div>
+                </div>
+
+                <div class="org-committee-card committee-industria">
+                    <div class="committee-icon">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h4>Comité de Industria y Transporte</h4>
+                    <p>Aplicaciones industriales y transporte seguro de material nuclear</p>
+                    <div class="committee-decoration"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -766,7 +784,7 @@
 /* Committees */
 .org-committees {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     max-width: 1100px;
     margin: 0 auto;
@@ -817,6 +835,14 @@
     background: linear-gradient(135deg, #10b981, #34d399);
 }
 
+.committee-educacion .committee-icon {
+    background: linear-gradient(135deg, #14b8a6, #2dd4bf);
+}
+
+.committee-industria .committee-icon {
+    background: linear-gradient(135deg, #e11d48, #fb7185);
+}
+
 .org-committee-card h4 {
     font-size: 1.1rem;
     font-weight: 700;
@@ -855,6 +881,14 @@
 
 .committee-financiero .committee-decoration {
     background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.committee-educacion .committee-decoration {
+    background: linear-gradient(90deg, #14b8a6, #2dd4bf);
+}
+
+.committee-industria .committee-decoration {
+    background: linear-gradient(90deg, #e11d48, #fb7185);
 }
 
 .org-committee-card:hover .committee-decoration {
