@@ -42,10 +42,12 @@ class MembershipApplication(models.Model):
 
     # Estado del trámite
     status = models.CharField(
-        max_length=20, 
-        choices=Status.choices, 
+        max_length=20,
+        choices=Status.choices,
         default=Status.PENDING
     )
+    # Gestión interna del comité
+    contactado = models.BooleanField(_('Contactado'), default=False)
     admin_notes = models.TextField(_('Notas Internas del Comité'), blank=True)
     
     # Auditoría

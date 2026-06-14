@@ -460,6 +460,21 @@ def change_application_status(request, pk, status):
 
 @login_required
 @admin_required
+def update_application_admin(request, pk):
+    """Update internal committee fields: 'contactado' flag and notes."""
+    application = get_object_or_404(MembershipApplication, pk=pk)
+
+    if request.method == 'POST':
+        application.contactado = request.POST.get('contactado') == 'true'
+        application.admin_notes = request.POST.get('admin_notes', '').strip()
+        application.save()
+        messages.success(request, 'Información interna actualizada correctamente.')
+
+    return redirect('application_detail', pk=pk)
+
+
+@login_required
+@admin_required
 def resend_password_email(request, pk):
     """Resend the password setup email to a user."""
     application = get_object_or_404(MembershipApplication, pk=pk)

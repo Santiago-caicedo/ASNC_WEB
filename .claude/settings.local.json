@@ -43,7 +43,9 @@
       "Bash(find:*)",
       "Bash(git:*)",
       "Bash(ls:*)",
-      "Bash(pip install *)"
+      "Bash(pip install *)",
+      "Bash(gh auth *)",
+      "Bash(./venv/Scripts/python.exe manage.py migrate admissions)"
     ]
   }
 }

@@ -34,6 +34,7 @@
                         <th class="ps-3 ps-md-4 py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Candidato</th>
                         <th class="py-3 text-uppercase text-muted fw-bold small d-none d-lg-table-cell" style="letter-spacing: 1px;">Perfil Profesional</th>
                         <th class="py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Estado</th>
+                        <th class="py-3 text-uppercase text-muted fw-bold small d-none d-md-table-cell" style="letter-spacing: 1px;">Contactado</th>
                         <th class="py-3 text-uppercase text-muted fw-bold small d-none d-md-table-cell" style="letter-spacing: 1px;">Fecha</th>
                         <th class="pe-3 pe-md-4 py-3 text-end text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Acciones</th>
                     </tr>
@@ -105,6 +106,18 @@
                             {% endif %}
                         </td>
 
+                        <td class="d-none d-md-table-cell">
+                            {% if app.contactado %}
+                                <span class="badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2 border border-success border-opacity-10">
+                                    <i class="bi bi-telephone-check me-1"></i> Sí
+                                </span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary px-3 py-2 border border-secondary border-opacity-10">
+                                    <i class="bi bi-telephone-x me-1"></i> No
+                                </span>
+                            {% endif %}
+                        </td>
+
                         <td class="text-muted small d-none d-md-table-cell">
                             {{ app.created_at|date:"d M, Y" }} <br>
                             <span class="text-muted opacity-50">{{ app.created_at|time:"H:i" }}</span>
@@ -140,7 +153,7 @@
                     
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center py-5">
+                        <td colspan="6" class="text-center py-5">
                             <div class="py-4">
                                 <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-muted">
                                     <i class="bi bi-inbox fs-1"></i>

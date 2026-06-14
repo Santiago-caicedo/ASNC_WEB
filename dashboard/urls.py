@@ -13,7 +13,7 @@ from .views import (
     DirectoryListView, DirectoryDetailView,
     UserListView, UserDetailView, UserRoleUpdateView,
 )
-from admissions.views import ApplicationDetailView, ApplicationListView, change_application_status, resend_password_email
+from admissions.views import ApplicationDetailView, ApplicationListView, change_application_status, resend_password_email, update_application_admin
 
 urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
@@ -41,6 +41,7 @@ urlpatterns = [
     path('solicitudes/', ApplicationListView.as_view(), name='application_list'),
     path('solicitudes/<int:pk>/', ApplicationDetailView.as_view(), name='application_detail'),
     path('solicitudes/<int:pk>/cambiar-estado/<str:status>/', change_application_status, name='change_status'),
+    path('solicitudes/<int:pk>/actualizar-gestion/', update_application_admin, name='update_application_admin'),
     path('solicitudes/<int:pk>/reenviar-correo-contrasena/', resend_password_email, name='resend_password_email'),
 
     # CRUD Asociados Destacados
