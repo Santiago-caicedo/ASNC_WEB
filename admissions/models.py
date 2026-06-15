@@ -10,6 +10,17 @@ class MembershipApplication(models.Model):
         REJECTED = 'REJECTED', _('Rechazado')
         COMPLETED = 'COMPLETED', _('Vinculado (Usuario Creado)')
 
+    class Sector(models.TextChoices):
+        MINING = 'MINING', _('Sector Minero')
+        OIL_GAS = 'OIL_GAS', _('Oil and Gas')
+        ENERGY = 'ENERGY', _('Sector Energético')
+        INDUSTRY = 'INDUSTRY', _('Industria')
+        AGRO = 'AGRO', _('Agroindustria / Alimentos')
+        HEALTH = 'HEALTH', _('Sector Salud')
+        ACADEMIA = 'ACADEMIA', _('Academia')
+        REGULATORY = 'REGULATORY', _('Sector Regulatorio')
+        OTHER = 'OTHER', _('Otros')
+
     # Identificación única de la solicitud (para URLs seguras más adelante)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     
@@ -21,6 +32,16 @@ class MembershipApplication(models.Model):
 
     # Perfil Profesional
     profession = models.CharField(_('Profesión / Título'), max_length=100)
+    sector = models.CharField(
+        _('Sector'),
+        max_length=20,
+        choices=Sector.choices,
+        blank=True,
+        help_text=_(
+            'Industria incluye manufactura, ensayos no destructivos, control de '
+            'procesos y otras aplicaciones industriales.'
+        ),
+    )
     current_job = models.CharField(_('Cargo Actual'), max_length=100, blank=True)
     institution = models.CharField(_('Empresa / Institución'), max_length=100, blank=True)
     linkedin_url = models.URLField(_('LinkedIn / Perfil Profesional'), blank=True)

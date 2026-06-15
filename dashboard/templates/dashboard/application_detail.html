@@ -99,6 +99,10 @@
                             <label class="small text-muted d-block">Institución / Empresa</label>
                             <span class="fw-medium text-dark">{% if app.institution %}{{ app.institution }}{% else %}No especificado{% endif %}</span>
                         </div>
+                        <div class="mb-3">
+                            <label class="small text-muted d-block">Sector</label>
+                            <span class="fw-medium text-dark">{% if app.sector %}{{ app.get_sector_display }}{% else %}No especificado{% endif %}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -130,6 +134,16 @@
                                 <option value="false" {% if not app.contactado %}selected{% endif %}>No contactado</option>
                                 <option value="true" {% if app.contactado %}selected{% endif %}>Contactado</option>
                             </select>
+                        </div>
+                        <div class="col-md-7">
+                            <label class="small text-muted d-block mb-1" for="sectorSelect">Sector</label>
+                            <select class="form-select" id="sectorSelect" name="sector">
+                                <option value="" {% if not app.sector %}selected{% endif %}>Sin especificar</option>
+                                {% for value, label in app.Sector.choices %}
+                                <option value="{{ value }}" {% if app.sector == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text small">Industria: manufactura, ensayos no destructivos, control de procesos, etc.</div>
                         </div>
                     </div>
 

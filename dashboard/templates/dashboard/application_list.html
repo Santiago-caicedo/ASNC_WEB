@@ -33,6 +33,7 @@
                     <tr>
                         <th class="ps-3 ps-md-4 py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Candidato</th>
                         <th class="py-3 text-uppercase text-muted fw-bold small d-none d-lg-table-cell" style="letter-spacing: 1px;">Perfil Profesional</th>
+                        <th class="py-3 text-uppercase text-muted fw-bold small d-none d-lg-table-cell" style="letter-spacing: 1px;">Sector</th>
                         <th class="py-3 text-uppercase text-muted fw-bold small" style="letter-spacing: 1px;">Estado</th>
                         <th class="py-3 text-uppercase text-muted fw-bold small d-none d-md-table-cell" style="letter-spacing: 1px;">Contactado</th>
                         <th class="py-3 text-uppercase text-muted fw-bold small d-none d-md-table-cell" style="letter-spacing: 1px;">Fecha</th>
@@ -61,6 +62,16 @@
                             <div class="small text-muted">
                                 {% if app.current_job %}{{ app.current_job }}{% else %}Consultor Independiente{% endif %}
                             </div>
+                        </td>
+
+                        <td class="d-none d-lg-table-cell">
+                            {% if app.sector %}
+                                <span class="badge rounded-pill bg-info bg-opacity-10 text-info px-3 py-2 border border-info border-opacity-10">
+                                    {{ app.get_sector_display }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted small">—</span>
+                            {% endif %}
                         </td>
 
                         <td>
@@ -153,7 +164,7 @@
                     
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-5">
+                        <td colspan="7" class="text-center py-5">
                             <div class="py-4">
                                 <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-muted">
                                     <i class="bi bi-inbox fs-1"></i>
@@ -170,23 +181,47 @@
         
         {% if applications %}
         <div class="card-footer bg-white border-top border-light py-3 px-3 px-md-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-            <small class="text-muted">{{ applications.count }} registros</small>
-            <nav aria-label="Page navigation">
+            <small class="text-muted">
+                {{ paginator.count }} registro{{ paginator.count|pluralize }}
+                {% if is_paginated %} · Página {{ page_obj.number }} de {{ paginator.num_pages }}{% endif %}
+            </small>
+            {% if is_paginated %}
+            <nav aria-label="Paginación de solicitudes">
                 <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link border-0 bg-light text-dark rounded-start-3 ms-1" href="?page={{ page_obj.previous_page_number }}"><span class="d-none d-sm-inline">Anterior</span><span class="d-sm-none">&laquo;</span></a>
+                    </li>
+                    {% else %}
                     <li class="page-item disabled">
                         <a class="page-link border-0 bg-light text-muted rounded-start-3 ms-1" href="#"><span class="d-none d-sm-inline">Anterior</span><span class="d-sm-none">&laquo;</span></a>
                     </li>
-                    <li class="page-item active">
-                        <a class="page-link bg-asnc-blue border-0 rounded-3 mx-1 shadow-sm" href="#">1</a>
-                    </li>
+                    {% endif %}
+
+                    {% for num in paginator.page_range %}
+                        {% if num == page_obj.number %}
+                        <li class="page-item active">
+                            <a class="page-link bg-asnc-blue border-0 rounded-3 mx-1 shadow-sm" href="#">{{ num }}</a>
+                        </li>
+                        {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                        <li class="page-item">
+                            <a class="page-link border-0 bg-light text-dark rounded-3 mx-1" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link border-0 bg-light text-dark rounded-3 mx-1" href="#">2</a>
+                        <a class="page-link border-0 bg-light text-dark rounded-end-3 me-1" href="?page={{ page_obj.next_page_number }}"><span class="d-none d-sm-inline">Siguiente</span><span class="d-sm-none">&raquo;</span></a>
                     </li>
-                    <li class="page-item">
-                        <a class="page-link border-0 bg-light text-dark rounded-end-3 me-1" href="#"><span class="d-none d-sm-inline">Siguiente</span><span class="d-sm-none">&raquo;</span></a>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link border-0 bg-light text-muted rounded-end-3 me-1" href="#"><span class="d-none d-sm-inline">Siguiente</span><span class="d-sm-none">&raquo;</span></a>
                     </li>
+                    {% endif %}
                 </ul>
             </nav>
+            {% endif %}
         </div>
         {% endif %}
     </div>

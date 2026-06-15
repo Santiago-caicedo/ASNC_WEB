@@ -345,6 +345,7 @@ class ApplicationListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
     template_name = 'dashboard/application_list.html'
     context_object_name = 'applications'
     ordering = ['-created_at']
+    paginate_by = 15
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -467,6 +468,11 @@ def update_application_admin(request, pk):
     if request.method == 'POST':
         application.contactado = request.POST.get('contactado') == 'true'
         application.admin_notes = request.POST.get('admin_notes', '').strip()
+
+        sector = request.POST.get('sector', '')
+        valid_sectors = {choice[0] for choice in MembershipApplication.Sector.choices}
+        application.sector = sector if sector in valid_sectors else ''
+
         application.save()
         messages.success(request, 'Información interna actualizada correctamente.')
 
