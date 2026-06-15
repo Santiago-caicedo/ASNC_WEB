@@ -88,27 +88,13 @@
                             </div>
 
                             <!-- Profesión -->
-                            <div class="col-sm-6">
+                            <div class="col-12">
                                 <label class="form-label">
                                     <i class="bi bi-briefcase me-2"></i>Profesión <span class="text-danger">*</span>
                                 </label>
                                 {{ form.profession }}
                                 {% if form.profession.errors %}
                                     <div class="invalid-feedback d-block">{{ form.profession.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-
-                            <!-- Sector -->
-                            <div class="col-sm-6">
-                                <label class="form-label">
-                                    <i class="bi bi-diagram-3 me-2"></i>Sector <span class="text-danger">*</span>
-                                </label>
-                                {{ form.sector }}
-                                <div class="form-text small text-muted mt-1">
-                                    ¿No ves tu sector? Selecciona «Otros». En la ASNC damos la bienvenida a todos los perfiles: todas las profesiones y disciplinas aportan al desarrollo nuclear del país.
-                                </div>
-                                {% if form.sector.errors %}
-                                    <div class="invalid-feedback d-block">{{ form.sector.errors.0 }}</div>
                                 {% endif %}
                             </div>
 
@@ -255,21 +241,6 @@
     }
 
     .application-form .form-control:focus {
-        border-color: var(--asnc-blue);
-        box-shadow: 0 0 0 4px rgba(33, 58, 92, 0.1);
-        background-color: white;
-    }
-
-    .application-form .form-select {
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 0.875rem 1rem;
-        font-size: 1rem;
-        transition: all 0.2s ease;
-        background-color: #f8fafc;
-    }
-
-    .application-form .form-select:focus {
         border-color: var(--asnc-blue);
         box-shadow: 0 0 0 4px rgba(33, 58, 92, 0.1);
         background-color: white;

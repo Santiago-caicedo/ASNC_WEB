@@ -46,12 +46,9 @@ class MembershipApplicationForm(forms.ModelForm):
     class Meta:
         model = MembershipApplication
         fields = [
-            'first_name', 'last_name', 'email', 'phone', 'profession', 'sector', 'contribution_statement'
+            'first_name', 'last_name', 'email', 'phone', 'profession', 'contribution_statement'
         ]
         widgets = {
-            'sector': forms.Select(attrs={
-                'class': 'form-select form-select-lg'
-            }),
             'first_name': forms.TextInput(attrs={
                 'placeholder': 'Ej: María',
                 'class': 'form-control form-control-lg'
@@ -81,14 +78,6 @@ class MembershipApplicationForm(forms.ModelForm):
         labels = {
             'contribution_statement': '¿Cómo puedes aportar a la ASNC?'
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Sector es obligatorio en el formulario público, con opción placeholder.
-        self.fields['sector'].required = True
-        self.fields['sector'].choices = (
-            [('', 'Selecciona tu sector')] + list(MembershipApplication.Sector.choices)
-        )
 
     def clean_website(self):
         """Honeypot: if filled, it's a bot."""
