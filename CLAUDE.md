@@ -16,6 +16,19 @@ This is the **ASNC Platform** (Asociación Nuclear Colombiana) - a Django 6.0 we
 
 **Developed by:** Vadom Data Consulting (https://vadomdata.com/)
 
+## Branches & Scope (IMPORTANT)
+
+The repository has **two branches**:
+
+| Branch | Contents |
+|--------|----------|
+| `main` | Production platform. Everything documented here lives in `main` **except** the Virtual Classroom. |
+| `aula-virtual` | **Work-in-progress LMS** ("Aula Virtual" / `capacitaciones` app). Branched from `main`; will be merged later. |
+
+**Why the split:** the `capacitaciones` LMS (courses, classes, quizzes, certificates, virtual classroom) was moved off `main` so day-to-day platform work continues without it. **Do NOT add capacitaciones code to `main`** — work on the `aula-virtual` branch for anything LMS-related. The `capacitaciones/` folder may still exist physically on `main` but only as ignored `.pyc` files; it is not in `INSTALLED_APPS` on `main`.
+
+Known issues already identified on `aula-virtual` (to fix before merging): AJAX attendance breaks in production because `CSRF_COOKIE_HTTPONLY=True` and the JS reads the cookie; async attendance only auto-tracks for S3 video files (not YouTube/Vimeo); open-ended quiz questions have no manual grading UI; certificate issuance does not enforce minimum attendance/grade.
+
 ## Tech Stack
 
 - **Framework**: Django 6.0
@@ -27,6 +40,7 @@ This is the **ASNC Platform** (Asociación Nuclear Colombiana) - a Django 6.0 we
 - **Config**: python-decouple for environment variables
 - **Images**: Pillow (for ImageField support)
 - **PDF Generation**: ReportLab
+- **Excel Export**: XlsxWriter (styled `.xlsx` exports of applications)
 - **QR Codes**: qrcode (with PIL support)
 - **Date Utilities**: python-dateutil (relativedelta for membership duration)
 - **SEO**: django.contrib.sitemaps
@@ -63,10 +77,16 @@ asnc_platform/
 │       ├── directory/           # Official member directory
 │       └── emails/              # Email compose, history, detail templates
 ├── website/                     # Public-facing pages
-│   ├── templates/website/       # Home, About, Events, PowerPoint template
-│   ├── models.py                # FeaturedMember model
-│   ├── views.py                 # HomeView, AboutView, EventsView
+│   ├── templates/website/       # Home, About (comités), Events, News, PowerPoint
+│   ├── models.py                # FeaturedMember, NewsArticle models
+│   ├── views.py                 # HomeView, AboutView, EventsView, News views
 │   └── sitemaps.py              # SEO sitemaps
+├── convocatorias/               # Public calls with dynamic form builder
+│   ├── models.py                # Convocatoria, ConvocatoriaField, Submission, SubmissionFile
+│   ├── views.py                 # Public (list/detail/submit) + admin CRUD/export
+│   ├── urls.py / admin_urls.py  # Public routes + /portal/convocatorias/ routes
+│   └── templates/convocatorias/ # public/ and admin/ templates
+# capacitaciones/                # LMS — lives on the `aula-virtual` branch, NOT main
 ├── templates/                   # Base templates
 │   ├── base.html                # Main layout with SEO meta tags
 │   ├── robots.txt               # SEO robots file
@@ -83,18 +103,22 @@ asnc_platform/
 
 | App | Purpose |
 |-----|---------|
-| `users` | Custom User model extending AbstractUser, email-based auth |
-| `admissions` | MembershipApplication model, form submission, email notifications, user creation on approval |
+| `users` | Custom User model extending AbstractUser, email-based auth, role system (`role`, `can_edit_news`) |
+| `admissions` | MembershipApplication model, public form, email notifications, user creation on approval, internal management (contactado/sector/notes), CSV+Excel export |
 | `carnets` | Digital member cards with QR verification, PDF generation, photo upload system |
 | `members` | Member portal for associates: dashboard, card view/download, profile view/edit, password change, membership duration |
-| `dashboard` | Protected admin views, KPIs, application management, directory, featured members CRUD, email mailing |
-| `website` | Public pages: homepage, about, events, PowerPoint template |
+| `dashboard` | Protected admin views, KPIs, application management, directory, featured members CRUD, **news CRUD**, **user/role management**, email mailing |
+| `website` | Public pages: homepage, about (with comités), events, **news (blog)**, PowerPoint template |
+| `convocatorias` | Public calls (convocatorias) with a dynamic form builder, submissions, file uploads and CSV export |
+| `capacitaciones` | **LMS / Aula Virtual — on the `aula-virtual` branch only, NOT in `main`** |
 
 ## Key Models
 
 ### User (`users/models.py`)
 - Extends `AbstractUser`
 - `email` is the primary authentication field (unique)
+- `role`: CharField (choices MEMBER | ADMIN, default MEMBER, db_index) — high-level role
+- `can_edit_news`: BooleanField - grants access to news CRUD without full admin
 - `phone`: CharField - Contact phone number
 - `profession`: CharField - Professional title
 - `current_job`: CharField - Current position
@@ -103,7 +127,22 @@ asnc_platform/
 - `bio`: TextField - Professional biography
 - Standard Django auth fields
 - OneToOne relation to `MemberCard` (via `member_card` related_name)
+- `is_admin` property: `is_superuser or role == ADMIN`
+- `is_news_editor` property: `can_edit_news`
 - `profile_completion` property: Calculates profile completion percentage (0-100%)
+
+**Role system & access (5 effective user types):**
+| Type | Determined by | Lands on |
+|------|---------------|----------|
+| Superadmin | `is_superuser` | `/admin/` + everything |
+| Admin | `role='ADMIN'` (+staff) | `/portal/` |
+| News editor | `can_edit_news=True` | `/portal/noticias/` |
+| Associate (member) | `role='MEMBER'` | `/mi-portal/` |
+| Course participant | has `participante_capacitacion` (LMS branch) | `/capacitaciones/aula/` |
+
+> Note: `NEWS_EDITOR` was a former `role` value, deprecated in favor of the independent `can_edit_news` flag (migration `users/0004`).
+
+**Access mixins (`dashboard/views.py`):** `StaffRequiredMixin` (any staff), `AdminRequiredMixin` (full admin; also defined in `admissions/views.py`), `NewsEditorRequiredMixin` (news editors or admins).
 
 **Profile Completion Calculation:**
 ```python
@@ -130,10 +169,21 @@ def profile_completion(self):
 - `contribution_statement`: TextField for applicant's motivation
 - `cv_file`: FileField for CV uploads (to `applications/cvs/`)
 - `status`: PENDING | REVIEW | APPROVED | REJECTED | COMPLETED
-- `admin_notes`: Internal committee notes
+- `contactado`: BooleanField - committee contact flag (set in admin, not public)
+- `sector`: CharField with fixed choices (set by the committee in the admin **after the contact call** — NOT shown on the public form)
+- `admin_notes`: Internal committee notes (editable from the application detail)
 - `created_at`, `updated_at`: Timestamps
 - Ordering: `-created_at` (newest first)
 - **Meta:** `verbose_name = 'Solicitud de Ingreso'`
+
+**Sector Choices (fixed, admin-only):** NUCLEAR (Sector Nuclear), MINING (Sector Minero), OIL_GAS (Oil and Gas), ENERGY (Sector Energético), AGRO (Agroindustria / Alimentos), HEALTH (Sector Salud), ACADEMIA (Academia), REGULATORY (Sector Regulatorio), OTHER (Otros).
+
+**Public form (`MembershipApplicationForm`)** collects only: first_name, last_name, email, phone, profession, contribution_statement (+ anti-bot honeypot/timestamp). `contactado`, `sector` and `admin_notes` are managed by the committee in the admin detail.
+
+**Internal management & export:**
+- The application list (`/portal/solicitudes/`) is **paginated (15/page)** and shows Sector + Contactado columns.
+- The application detail has a "Gestión Interna del Comité" form (selector contactado, selector sector, notes textarea) saved via `update_application_admin`.
+- Export of all applications to **CSV** (BOM UTF-8) and **Excel `.xlsx`** (XlsxWriter; colored header + status/contactado/sector cells, frozen header, autofilter) from the "Exportar" dropdown.
 
 **Status Choices (Spanish labels):**
 | Code | Label |
@@ -206,6 +256,23 @@ Log of card verification scans (QR code scans).
 - `created_at`, `updated_at`: Timestamps
 - Ordering: `['display_order', 'full_name']`
 - **Meta:** `verbose_name = 'Asociado Destacado'`
+- Note: the About page also renders a fixed set of **Comités** (visual only, no DB model).
+
+### NewsArticle (`website/models.py`)
+News/blog article shown publicly and managed by admins/news editors.
+- `category`: CharField (ASSOCIATION = 'De la Asociación' | NUCLEAR = 'Temática Nuclear')
+- `title`, `slug` (unique, auto-generated), `cover_image` (to `news/`)
+- `excerpt`: TextField (max 300), `content`: TextField (HTML supported)
+- `author`: ForeignKey → User (related_name `news_articles`)
+- `is_published`: BooleanField, `published_at`: DateTimeField (auto-set on publish)
+- `created_at`, `updated_at`: Timestamps
+
+### Convocatoria models (`convocatorias/models.py`)
+Public calls with a dynamic form builder.
+- **Convocatoria**: uuid, title, slug, description, cover_image, is_active, `opens_at`/`closes_at`, `success_message`, created_by. Property `is_open` (active + within date window); `submissions_count`.
+- **ConvocatoriaField**: dynamic form field — `field_type` (TEXT, TEXTAREA, EMAIL, PHONE, NUMBER, DATE, SELECT, CHECKBOX, FILE), `label`, `required`, `help_text`, `placeholder`, `options`, `order`.
+- **ConvocatoriaSubmission**: uuid, `data` (JSONField), `submitted_at`, `ip_address`.
+- **ConvocatoriaSubmissionFile**: file attachments for FILE-type fields.
 
 ### SentEmail (`dashboard/models.py`)
 - `subject`: CharField (255)
@@ -223,12 +290,20 @@ Log of card verification scans (QR code scans).
 
 ```
 # Public Website
-/                              → Homepage (HomeView)
-/quienes-somos/                → About page with team (AboutView)
+/                              → Homepage (HomeView) - shows latest news
+/quienes-somos/                → About page with team + comités (AboutView)
 /eventos/                      → Events page - under construction (EventsView)
+/noticias/                     → Public news list (NewsListView)
+/noticias/<slug>/              → Public news detail (NewsDetailView)
 /recursos/plantilla-presentacion/ → PowerPoint template page
-/solicitud/                    → Membership application form
+/politica-de-privacidad/       → Privacy policy
+/solicitud/                    → Membership application form (no sector field)
 /gracias/                      → Application success page
+
+# Convocatorias (Public)
+/convocatorias/                → Public list of active calls
+/convocatorias/<slug>/         → Detail + dynamic submission form
+/convocatorias/<slug>/gracias/ → Submission success
 
 # Public Card Verification
 /verificar/<uuid>/             → Public card verification page (CardVerificationView)
@@ -253,9 +328,12 @@ Log of card verification scans (QR code scans).
 
 # Admin Dashboard (Protected - staff/superuser only)
 /portal/                       → Dashboard home with KPIs
-/portal/solicitudes/           → Application list
+/portal/solicitudes/           → Application list (paginated 15/page)
+/portal/solicitudes/exportar/csv/   → Export all applications to CSV
+/portal/solicitudes/exportar/excel/ → Export all applications to styled .xlsx
 /portal/solicitudes/<id>/      → Application detail
 /portal/solicitudes/<id>/cambiar-estado/<status>/  → Change status
+/portal/solicitudes/<id>/actualizar-gestion/ → Save contactado/sector/notes (update_application_admin)
 /portal/solicitudes/<id>/reenviar-correo-contrasena/ → Resend password setup email
 
 # Directory (Protected)
@@ -281,6 +359,25 @@ Log of card verification scans (QR code scans).
 /portal/carnes/<id>/reenviar-solicitud/ → Resend photo request email
 /portal/carnes/estadisticas/   → Card statistics
 /portal/solicitudes/<id>/generar-carne/ → Generate card from application
+
+# News CRUD (Protected - news editors or admins)
+/portal/noticias/              → News list
+/portal/noticias/nueva/        → Create news
+/portal/noticias/<id>/editar/  → Edit news
+/portal/noticias/<id>/eliminar/ → Delete news
+
+# User & Role Management (Protected - admins)
+/portal/usuarios/              → User list
+/portal/usuarios/<id>/         → User detail
+/portal/usuarios/<id>/rol/     → Update user role
+
+# Convocatorias (Protected - admins, under /portal/convocatorias/)
+/portal/convocatorias/                        → List
+/portal/convocatorias/nueva/                  → Create
+/portal/convocatorias/<id>/ , /editar/ , /eliminar/  → Detail / edit / delete
+/portal/convocatorias/<id>/campos/            → Manage dynamic fields
+/portal/convocatorias/<id>/inscripciones/     → Submissions list
+/portal/convocatorias/<id>/inscripciones/exportar/ → Export submissions CSV
 
 # Email Module (Protected)
 /portal/correos/               → Email history list
@@ -554,17 +651,23 @@ python manage.py showmigrations
 | Pillow | 11.1.0 | Image processing |
 | qrcode | 8.2 | QR code generation |
 | reportlab | 4.4.9 | PDF generation |
+| XlsxWriter | 3.2.9 | Styled Excel (.xlsx) export of applications |
 
 ## Migration History
 
 ### users
 - `0001_initial.py` - Creates User model with email as unique USERNAME_FIELD
 - `0002_add_profile_fields.py` - Adds phone, profession, current_job, institution, linkedin_url, bio
+- `0003_add_user_role.py` - Adds `role` field
+- `0004_add_can_edit_news.py` - Adds `can_edit_news`; deprecates NEWS_EDITOR role value
 
 ### admissions
 - `0001_initial.py` (2025-12-20) - Creates MembershipApplication model
 - `0002_add_contribution_statement.py` (2026-01-16) - Adds contribution_statement field
 - `0003_alter_membershipapplication_phone.py` (2026-01-24) - Makes phone optional
+- `0004_membershipapplication_contactado.py` - Adds `contactado` flag
+- `0005_membershipapplication_sector.py` - Adds `sector` field
+- `0006`–`0009_alter_membershipapplication_sector.py` - Iterations of the fixed `sector` choices (final list incl. NUCLEAR)
 
 ### carnets
 - `0001_initial.py` (2026-01-25) - Creates MemberCard and CardVerification models
@@ -572,25 +675,36 @@ python manage.py showmigrations
 
 ### website
 - `0001_initial.py` (2026-01-17) - Creates FeaturedMember model
+- Adds `NewsArticle` model (news/blog) in a later migration
 
 ### dashboard
 - `0001_initial.py` (2026-01-25) - Creates SentEmail model
 
+### convocatorias
+- `0001_initial.py` - Creates Convocatoria, ConvocatoriaField, Submission, SubmissionFile
+
+> Migrations for `capacitaciones` live only on the `aula-virtual` branch.
+
 ## Views Summary
 
 ### Website App
-- `HomeView` (TemplateView) - Public homepage
-- `AboutView` (ListView) - About page with FeaturedMembers
+- `HomeView` (TemplateView) - Public homepage (latest news)
+- `AboutView` (ListView) - About page with FeaturedMembers + comités
 - `EventsView` (TemplateView) - Events page (under construction)
+- `PrivacyPolicyView` (TemplateView) - Privacy policy
 - `PowerPointTemplateView` (TemplateView) - ASNC presentation template
+- `NewsListView` / `NewsDetailView` - Public news (blog)
 
 ### Admissions App
-- `ApplicationCreateView` (CreateView) - Membership form
+- `ApplicationCreateView` (CreateView) - Membership form (no sector field)
 - `ApplicationSuccessView` (TemplateView) - Confirmation
-- `ApplicationListView` (StaffRequiredMixin, ListView) - With password status indicators
-- `ApplicationDetailView` (StaffRequiredMixin, DetailView) - With user account status section
+- `ApplicationListView` (AdminRequiredMixin, ListView) - Paginated, password status indicators, Sector + Contactado columns
+- `ApplicationDetailView` (AdminRequiredMixin, DetailView) - User account status + internal management form
 - `change_application_status()` - Status change with user creation on COMPLETED
+- `update_application_admin()` - Save contactado / sector / admin notes
+- `export_applications_csv()` / `export_applications_excel()` - Export all applications (CSV / styled .xlsx)
 - `resend_password_email()` - Resend password setup email to users who haven't configured it
+- Note: `AdminRequiredMixin` and `admin_required` decorator are defined here (admin-only access).
 
 ### Carnets App
 - `CardVerificationView` (TemplateView) - Public QR verification page
@@ -636,6 +750,15 @@ python manage.py showmigrations
 - `EmailComposeView` (FormView) - Compose and send emails
 - `EmailHistoryView` (ListView) - Email history
 - `EmailDetailView` (DetailView) - Email detail
+- `NewsListView` / `NewsCreateView` / `NewsUpdateView` / `NewsDeleteView` (NewsEditorRequiredMixin) - News CRUD
+- `UserListView` / `UserDetailView` / `UserRoleUpdateView` (AdminRequiredMixin) - User & role management
+
+### Convocatorias App
+- Public: `PublicConvocatoriaListView`, `PublicConvocatoriaDetailView` (renders dynamic form + saves submission), `PublicConvocatoriaSuccessView`
+- Admin (`AdminRequiredMixin`): Convocatoria CRUD, `ConvocatoriaFieldsView` (manage dynamic fields), submissions list/detail, `ConvocatoriaSubmissionExportView` (CSV)
+
+### Capacitaciones App (on `aula-virtual` branch only)
+- Public certificate verification, virtual classroom (dashboard, programa/clase detail, quizzes, certificates), admin CRUD for programs/modules/classes/participants/enrollments/quizzes/attendance/certificates. See the branch for details.
 
 ## Template Files
 
@@ -730,10 +853,13 @@ PRINCIPAL
 GESTIÓN DE ASOCIADOS
 ├── Solicitudes (application_list)
 ├── Carnés Digitales (carnets:card_list)
-└── Directorio Oficial (directory_list)
+├── Directorio Oficial (directory_list)
+├── Convocatorias (convocatorias_admin:list)
+└── Usuarios (user_list)
 
 CONTENIDO WEB
-└── Asociados Destacados (featured_member_list)
+├── Asociados Destacados (featured_member_list)
+└── Noticias (news_list)
 
 COMUNICACIONES
 └── Correos (email_history)
@@ -742,6 +868,8 @@ ADMINISTRACIÓN
 ├── Pagos y Cartera (placeholder)
 └── Configuración (placeholder)
 ```
+
+> On the `aula-virtual` branch the sidebar also shows "Capacitaciones" and "Aula Virtual" links (not present on `main`).
 
 ## Custom Template Tags
 
@@ -945,25 +1073,28 @@ The platform includes developer credit for Vadom Data Consulting in the followin
 
 ## Deployment Checklist
 
-When deploying new changes:
+When deploying new changes (production lives at `/opt/asnc_web`):
 
 ```bash
-# 1. Install new dependencies
+# 1. Pull the latest code
+cd /opt/asnc_web && git pull
+
+# 2. Activate venv and install dependencies (DON'T skip this — missing deps cause
+#    ModuleNotFoundError at runtime, e.g. xlsxwriter for the Excel export)
+source venv/bin/activate
 pip install -r requirements.txt
 
-# 2. Run migrations
-python manage.py makemigrations
+# 3. Apply migrations (commit migrations from dev — never run makemigrations in prod)
 python manage.py migrate
 
-# 3. Collect static files
+# 4. Collect static files
 python manage.py collectstatic --noinput
-
-# 4. Update .env with SITE_URL
-SITE_URL=https://www.asncol.com
 
 # 5. Restart server
 sudo systemctl restart gunicorn  # or your server process
 ```
+
+> Migrations are generated in development (`makemigrations`), committed to git, and only **applied** (`migrate`) in production.
 
 ## Future Enhancements (TODO)
 
