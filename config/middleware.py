@@ -13,12 +13,12 @@ class SecurityHeadersMiddleware:
         # Content-Security-Policy
         csp_directives = [
             "default-src 'self'",
-            # Scripts: self + CDN (Bootstrap, anime.js) + Google Analytics
-            "script-src 'self' cdn.jsdelivr.net www.googletagmanager.com www.google-analytics.com 'unsafe-inline'",
-            # Styles: self + CDN (Bootstrap, Google Fonts) + inline (Bootstrap requires it)
-            "style-src 'self' cdn.jsdelivr.net fonts.googleapis.com 'unsafe-inline'",
-            # Fonts: Google Fonts + CDN (Bootstrap Icons)
-            "font-src 'self' fonts.gstatic.com cdn.jsdelivr.net",
+            # Scripts: self + S3 static (Django admin JS) + CDN (Bootstrap, anime.js) + Google Analytics
+            "script-src 'self' vadomdata.s3.amazonaws.com cdn.jsdelivr.net www.googletagmanager.com www.google-analytics.com 'unsafe-inline'",
+            # Styles: self + S3 static (Django admin CSS) + CDN (Bootstrap, Google Fonts) + inline (Bootstrap requires it)
+            "style-src 'self' vadomdata.s3.amazonaws.com cdn.jsdelivr.net fonts.googleapis.com 'unsafe-inline'",
+            # Fonts: self + S3 static + Google Fonts + CDN (Bootstrap Icons)
+            "font-src 'self' vadomdata.s3.amazonaws.com fonts.gstatic.com cdn.jsdelivr.net",
             # Images: self + data URIs (for inline images) + S3 bucket + Google Analytics
             "img-src 'self' data: vadomdata.s3.amazonaws.com www.google-analytics.com",
             # Connections: self + Google Analytics
