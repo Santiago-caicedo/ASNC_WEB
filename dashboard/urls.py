@@ -13,7 +13,11 @@ from .views import (
     DirectoryListView, DirectoryDetailView,
     UserListView, UserDetailView, UserRoleUpdateView,
 )
-from admissions.views import ApplicationDetailView, ApplicationListView, change_application_status, resend_password_email, update_application_admin
+from admissions.views import (
+    ApplicationDetailView, ApplicationListView, change_application_status,
+    resend_password_email, update_application_admin,
+    export_applications_csv, export_applications_excel,
+)
 
 urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
@@ -39,6 +43,8 @@ urlpatterns = [
 
     # Ruta para ver las solicitudes dentro del dashboard
     path('solicitudes/', ApplicationListView.as_view(), name='application_list'),
+    path('solicitudes/exportar/csv/', export_applications_csv, name='export_applications_csv'),
+    path('solicitudes/exportar/excel/', export_applications_excel, name='export_applications_excel'),
     path('solicitudes/<int:pk>/', ApplicationDetailView.as_view(), name='application_detail'),
     path('solicitudes/<int:pk>/cambiar-estado/<str:status>/', change_application_status, name='change_status'),
     path('solicitudes/<int:pk>/actualizar-gestion/', update_application_admin, name='update_application_admin'),

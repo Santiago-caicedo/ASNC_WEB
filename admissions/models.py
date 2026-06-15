@@ -11,10 +11,10 @@ class MembershipApplication(models.Model):
         COMPLETED = 'COMPLETED', _('Vinculado (Usuario Creado)')
 
     class Sector(models.TextChoices):
+        NUCLEAR = 'NUCLEAR', _('Sector Nuclear')
         MINING = 'MINING', _('Sector Minero')
         OIL_GAS = 'OIL_GAS', _('Oil and Gas')
         ENERGY = 'ENERGY', _('Sector Energético')
-        INDUSTRY = 'INDUSTRY', _('Industria')
         AGRO = 'AGRO', _('Agroindustria / Alimentos')
         HEALTH = 'HEALTH', _('Sector Salud')
         ACADEMIA = 'ACADEMIA', _('Academia')
@@ -37,10 +37,6 @@ class MembershipApplication(models.Model):
         max_length=20,
         choices=Sector.choices,
         blank=True,
-        help_text=_(
-            'Industria incluye manufactura, ensayos no destructivos, control de '
-            'procesos y otras aplicaciones industriales.'
-        ),
     )
     current_job = models.CharField(_('Cargo Actual'), max_length=100, blank=True)
     institution = models.CharField(_('Empresa / Institución'), max_length=100, blank=True)

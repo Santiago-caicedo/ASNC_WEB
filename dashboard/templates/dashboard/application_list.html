@@ -19,9 +19,24 @@
         <button class="btn btn-white shadow-sm border px-3" title="Filtrar">
             <i class="bi bi-funnel"></i>
         </button>
-        <button class="btn btn-dark shadow-sm px-3 d-none d-sm-inline-block">
-            <i class="bi bi-download me-2"></i> Exportar
-        </button>
+        <div class="dropdown d-none d-sm-inline-block">
+            <button class="btn btn-dark shadow-sm px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-download me-2"></i> Exportar
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3">
+                <li><h6 class="dropdown-header text-uppercase small fw-bold">Descargar solicitudes</h6></li>
+                <li>
+                    <a class="dropdown-item py-2" href="{% url 'export_applications_excel' %}">
+                        <i class="bi bi-file-earmark-excel text-success me-2"></i> Excel (.xlsx)
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2" href="{% url 'export_applications_csv' %}">
+                        <i class="bi bi-filetype-csv text-secondary me-2"></i> CSV
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 

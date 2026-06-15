@@ -1,4 +1,8 @@
+import csv
+import io
 import logging
+from django.http import HttpResponse
+from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
@@ -457,6 +461,134 @@ def change_application_status(request, pk, status):
             messages.error(request, 'Error al rechazar la solicitud. Por favor intente de nuevo.')
 
     return redirect('application_detail', pk=pk)
+
+
+# ============================================================================
+# Exportación de solicitudes (CSV / Excel)
+# ============================================================================
+
+EXPORT_HEADERS = [
+    'Nombres', 'Apellidos', 'Correo', 'Teléfono', 'Profesión',
+    'Cargo actual', 'Institución', 'LinkedIn', 'Sector', 'Estado',
+    'Contactado', 'Notas internas', 'Aporte a la ASNC', 'Fecha de registro',
+]
+
+# Índices de columnas con formato especial (0-based)
+_COL_SECTOR = 8
+_COL_STATUS = 9
+_COL_CONTACTADO = 10
+
+
+def _get_applications_for_export():
+    return MembershipApplication.objects.all().order_by('-created_at')
+
+
+def _application_row_values(app):
+    """Fila de valores en el mismo orden que EXPORT_HEADERS."""
+    return [
+        app.first_name,
+        app.last_name,
+        app.email,
+        app.phone,
+        app.profession,
+        app.current_job,
+        app.institution,
+        app.linkedin_url,
+        app.get_sector_display() if app.sector else '',
+        app.get_status_display(),
+        'Sí' if app.contactado else 'No',
+        app.admin_notes,
+        app.contribution_statement,
+        timezone.localtime(app.created_at).strftime('%d/%m/%Y %H:%M'),
+    ]
+
+
+@login_required
+@admin_required
+def export_applications_csv(request):
+    """Exporta todas las solicitudes a CSV (compatible con Excel, BOM UTF-8)."""
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="solicitudes_asnc.csv"'
+    response.write('﻿')  # BOM para que Excel reconozca acentos
+
+    writer = csv.writer(response)
+    writer.writerow(EXPORT_HEADERS)
+    for app in _get_applications_for_export():
+        writer.writerow(_application_row_values(app))
+    return response
+
+
+@login_required
+@admin_required
+def export_applications_excel(request):
+    """Exporta todas las solicitudes a un .xlsx con encabezados y estados a color."""
+    import xlsxwriter
+
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+    ws = workbook.add_worksheet('Solicitudes')
+
+    # --- Formatos ---
+    header_fmt = workbook.add_format({
+        'bold': True, 'font_color': '#FFFFFF', 'bg_color': '#1B2A41',
+        'border': 1, 'border_color': '#0F1A2B',
+        'align': 'center', 'valign': 'vcenter', 'text_wrap': True,
+    })
+    base = {'border': 1, 'border_color': '#E2E8F0', 'valign': 'top', 'text_wrap': True}
+    cell_fmt = workbook.add_format(base)
+
+    def colored(bg, fg):
+        f = dict(base)
+        f.update({'bg_color': bg, 'font_color': fg, 'align': 'center', 'bold': True})
+        return workbook.add_format(f)
+
+    status_fmts = {
+        MembershipApplication.Status.PENDING: colored('#FFF3CD', '#856404'),
+        MembershipApplication.Status.UNDER_REVIEW: colored('#CFE2FF', '#084298'),
+        MembershipApplication.Status.APPROVED: colored('#D1E7DD', '#0F5132'),
+        MembershipApplication.Status.REJECTED: colored('#F8D7DA', '#842029'),
+        MembershipApplication.Status.COMPLETED: colored('#E2E3E5', '#41464B'),
+    }
+    sector_fmt = colored('#CFF4FC', '#055160')
+    contactado_si = colored('#D1E7DD', '#0F5132')
+    contactado_no = colored('#F1F3F5', '#6C757D')
+
+    # --- Anchos de columna ---
+    widths = [16, 16, 28, 16, 22, 22, 22, 28, 22, 18, 12, 32, 45, 18]
+    for i, w in enumerate(widths):
+        ws.set_column(i, i, w)
+
+    # --- Encabezado ---
+    ws.set_row(0, 28)
+    ws.write_row(0, 0, EXPORT_HEADERS, header_fmt)
+    ws.freeze_panes(1, 0)
+    ws.autofilter(0, 0, 0, len(EXPORT_HEADERS) - 1)
+
+    # --- Datos ---
+    row_idx = 1
+    for app in _get_applications_for_export():
+        values = _application_row_values(app)
+        for col, value in enumerate(values):
+            if col == _COL_STATUS:
+                fmt = status_fmts.get(app.status, cell_fmt)
+            elif col == _COL_CONTACTADO:
+                fmt = contactado_si if app.contactado else contactado_no
+            elif col == _COL_SECTOR and app.sector:
+                fmt = sector_fmt
+            else:
+                fmt = cell_fmt
+            ws.write(row_idx, col, value, fmt)
+        row_idx += 1
+
+    workbook.close()
+    output.seek(0)
+
+    response = HttpResponse(
+        output.read(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="solicitudes_asnc.xlsx"'
+    return response
 
 
 @login_required
