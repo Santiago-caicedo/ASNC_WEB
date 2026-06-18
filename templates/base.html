@@ -1,6 +1,6 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ LANGUAGE_CODE|slice:':2' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -242,6 +242,17 @@
         }
         .footer-link:hover { color: var(--asnc-gold); padding-left: 5px; }
         .text-gold { color: var(--asnc-gold) !important; }
+
+        /* --- Selector de idioma (banderas) --- */
+        .lang-switch { display: flex; align-items: center; gap: 4px; margin: 0 0 0 14px; }
+        .lang-btn {
+            background: none; border: 0; padding: 2px; line-height: 0;
+            cursor: pointer; opacity: 0.5; border-radius: 3px;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .lang-btn:hover { opacity: 1; transform: translateY(-1px); }
+        .lang-btn.lang-active { opacity: 1; outline: 2px solid var(--asnc-gold); }
+        .lang-btn svg { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(255,255,255,0.3); }
     </style>
 </head>
 <body>
@@ -255,11 +266,25 @@
                 </div>
                 
                 <div class="ms-auto d-flex align-items-center">
-                    <span class="d-none d-md-inline me-2 opacity-75 small">Síguenos:</span>
+                    <span class="d-none d-md-inline me-2 opacity-75 small">{% trans "Síguenos:" %}</span>
                     <a href="https://www.instagram.com/asncol_oficial" target="_blank" class="social-icon" title="Instagram"><i class="bi bi-instagram"></i></a>
                     <a href="https://www.linkedin.com/company/asociaci%C3%B3n-nuclear-colombiana/" target="_blank" class="social-icon" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
                     <a href="https://www.facebook.com/share/1BhF3tqKT7/" target="_blank" class="social-icon" title="Facebook"><i class="bi bi-facebook"></i></a>
                     <a href="https://x.com/asncol_oficial" target="_blank" class="social-icon" title="X (Twitter)"><i class="bi bi-twitter-x"></i></a>
+
+                    <!-- Selector de idioma ES / EN -->
+                    <form action="{% url 'set_language' %}" method="post" class="lang-switch">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <button type="submit" name="language" value="es" title="Español"
+                                class="lang-btn {% if LANGUAGE_CODE|slice:':2' == 'es' %}lang-active{% endif %}">
+                            <svg width="22" height="15" viewBox="0 0 3 2"><rect width="3" height="2" fill="#AA151B"/><rect width="3" height="1" y=".5" fill="#F1BF00"/></svg>
+                        </button>
+                        <button type="submit" name="language" value="en" title="English"
+                                class="lang-btn {% if LANGUAGE_CODE|slice:':2' == 'en' %}lang-active{% endif %}">
+                            <svg width="22" height="15" viewBox="0 0 60 30"><clipPath id="ukc"><path d="M0 0v30h60V0z"/></clipPath><g clip-path="url(#ukc)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></g></svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -272,7 +297,7 @@
 
                 <a href="https://las-ans.org.br/" target="_blank" class="d-none d-xl-flex align-items-center ms-3 me-auto ps-3 border-start text-decoration-none" style="border-color: rgba(0,0,0,0.1) !important;">
                     <img src="{% static 'images/las-anc.png' %}" alt="ANS Latin American Section" style="height: 50px; width: auto;">
-                    <span class="ms-2 small fw-semibold" style="color: var(--asnc-navy); font-size: 0.7rem; line-height: 1.2;">Miembro Institucional<br>LAS-American Nuclear Society</span>
+                    <span class="ms-2 small fw-semibold" style="color: var(--asnc-navy); font-size: 0.7rem; line-height: 1.2;">{% trans "Miembro Institucional" %}<br>LAS-American Nuclear Society</span>
                 </a>
 
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -282,28 +307,28 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Inicio</a>
+                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">{% trans "Inicio" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">Quiénes Somos</a>
+                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">{% trans "Quiénes Somos" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="{% url 'events' %}">Eventos</a>
+                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="{% url 'events' %}">{% trans "Eventos" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if 'noticias' in request.path %}active{% endif %}" href="{% url 'public_news_list' %}">Noticias</a>
+                            <a class="nav-link px-3 {% if 'noticias' in request.path %}active{% endif %}" href="{% url 'public_news_list' %}">{% trans "Noticias" %}</a>
                         </li>
 
                         <li class="nav-item d-none d-lg-block mx-2 border-end border-2" style="height: 20px; opacity: 0.2;"></li>
 
                         <li class="nav-item ms-lg-2">
                             <a href="{% url 'login' %}" class="btn btn-link text-decoration-none fw-bold" style="color: var(--asnc-blue); font-size: 0.95rem;">
-                                <i class="bi bi-person-circle me-1"></i> Acceso Asociados
+                                <i class="bi bi-person-circle me-1"></i> {% trans "Acceso Asociados" %}
                             </a>
                         </li>
                         <li class="nav-item ms-2 mt-2 mt-lg-0">
                             <a href="{% url 'application_create' %}" class="btn btn-asnc-primary rounded-pill px-4 py-2">
-                                ¡Únete a la ASNC!
+                                {% trans "¡Únete a la ASNC!" %}
                             </a>
                         </li>
                     </ul>
@@ -323,7 +348,7 @@
                 <div class="col-lg-4 col-md-6">
                     <img src="{% static 'images/asnc_logo_full.png' %}" alt="Logo ASNC" style="height: 50px; width: auto; filter: brightness(0) invert(1); margin-bottom: 0.75rem;">
                     <p class="small text-white-50">
-                        Promoviendo el desarrollo pacífico, seguro y sostenible de la ciencia y tecnología nuclear en Colombia.
+                        {% trans "Promoviendo el desarrollo pacífico, seguro y sostenible de la ciencia y tecnología nuclear en Colombia." %}
                     </p>
                     <div class="d-flex gap-3 mt-3">
                         <a href="https://www.linkedin.com/company/asociaci%C3%B3n-nuclear-colombiana/" target="_blank" class="text-white fs-5" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
@@ -333,22 +358,22 @@
                     </div>
                     <a href="https://las-ans.org.br/" target="_blank" class="d-flex align-items-center gap-2 mt-4 text-decoration-none">
                         <img src="{% static 'images/las-anc.png' %}" alt="ANS Latin American Section" style="height: 40px; width: auto;">
-                        <span class="small text-white-50" style="font-size: 0.75rem; line-height: 1.2;">Miembro Institucional<br>LAS-American Nuclear Society</span>
+                        <span class="small text-white-50" style="font-size: 0.75rem; line-height: 1.2;">{% trans "Miembro Institucional" %}<br>LAS-American Nuclear Society</span>
                     </a>
                 </div>
                 <div class="col-lg-2 col-md-6">
-                    <h6 class="fw-bold text-gold mb-3">Navegación</h6>
-                    <a href="{% url 'home' %}" class="footer-link">Inicio</a>
-                    <a href="{% url 'about' %}" class="footer-link">Sobre Nosotros</a>
-                    <a href="{% url 'application_create' %}" class="footer-link">Afiliarse</a>
+                    <h6 class="fw-bold text-gold mb-3">{% trans "Navegación" %}</h6>
+                    <a href="{% url 'home' %}" class="footer-link">{% trans "Inicio" %}</a>
+                    <a href="{% url 'about' %}" class="footer-link">{% trans "Sobre Nosotros" %}</a>
+                    <a href="{% url 'application_create' %}" class="footer-link">{% trans "Afiliarse" %}</a>
                 </div>
                 <div class="col-lg-2 col-md-6">
-                    <h6 class="fw-bold text-gold mb-3">Legal</h6>
-                    <a href="#" class="footer-link">Estatutos</a>
-                    <a href="{% url 'privacy_policy' %}" class="footer-link">Política de Datos</a>
+                    <h6 class="fw-bold text-gold mb-3">{% trans "Legal" %}</h6>
+                    <a href="#" class="footer-link">{% trans "Estatutos" %}</a>
+                    <a href="{% url 'privacy_policy' %}" class="footer-link">{% trans "Política de Datos" %}</a>
                 </div>
                 <div class="col-lg-4 col-md-6">
-                    <h6 class="fw-bold text-gold mb-3">Contacto</h6>
+                    <h6 class="fw-bold text-gold mb-3">{% trans "Contacto" %}</h6>
                     <ul class="list-unstyled small text-white-50">
                         <li class="mb-2"><i class="bi bi-geo-alt me-2"></i> Bucaramanga, Santander, Colombia</li>
                         <li class="mb-2"><i class="bi bi-envelope me-2"></i> info@asncol.com</li>
@@ -357,10 +382,10 @@
             </div>
             <hr class="my-4 border-secondary opacity-25">
             <div class="text-center small text-white-50">
-                &copy; {% now "Y" %} Asociación Nuclear Colombiana. Todos los derechos reservados.
+                &copy; {% now "Y" %} Asociación Nuclear Colombiana. {% trans "Todos los derechos reservados." %}
             </div>
             <div class="text-center small text-white-50 mt-3 d-flex align-items-center justify-content-center gap-2">
-                <span>Desarrollado por</span>
+                <span>{% trans "Desarrollado por" %}</span>
                 <a href="https://vadomdata.com/" target="_blank" title="Vadom Data Consulting">
                     <img src="{% static 'images/vadom/vadom_logo_white.png' %}" alt="Vadom Data Consulting" style="height: 20px; width: auto;">
                 </a>

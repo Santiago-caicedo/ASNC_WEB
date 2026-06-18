@@ -1,0 +1,67 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ASNC 1.0\n"
+"Report-Msgid-Bugs-To: info@asncol.com\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Síguenos:"
+msgstr "Follow us:"
+
+msgid "Miembro Institucional"
+msgstr "Institutional Member"
+
+msgid "Inicio"
+msgstr "Home"
+
+msgid "Quiénes Somos"
+msgstr "About Us"
+
+msgid "Eventos"
+msgstr "Events"
+
+msgid "Noticias"
+msgstr "News"
+
+msgid "Acceso Asociados"
+msgstr "Member Login"
+
+msgid "¡Únete a la ASNC!"
+msgstr "Join the ASNC!"
+
+msgid ""
+"Promoviendo el desarrollo pacífico, seguro y sostenible de la ciencia y "
+"tecnología nuclear en Colombia."
+msgstr ""
+"Promoting the peaceful, safe and sustainable development of nuclear science "
+"and technology in Colombia."
+
+msgid "Navegación"
+msgstr "Navigation"
+
+msgid "Sobre Nosotros"
+msgstr "About Us"
+
+msgid "Afiliarse"
+msgstr "Join"
+
+msgid "Legal"
+msgstr "Legal"
+
+msgid "Estatutos"
+msgstr "Bylaws"
+
+msgid "Política de Datos"
+msgstr "Data Policy"
+
+msgid "Contacto"
+msgstr "Contact"
+
+msgid "Todos los derechos reservados."
+msgstr "All rights reserved."
+
+msgid "Desarrollado por"
+msgstr "Developed by"
