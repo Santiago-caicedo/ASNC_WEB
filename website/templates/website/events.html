@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Eventos{% endblock %}
+{% block title %}{% trans "Eventos" %}{% endblock %}
 
 {% block content %}
 
@@ -14,11 +15,11 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <span class="hero-tag">Próximamente</span>
-                <h1 class="hero-title">Eventos ASNC</h1>
+                <span class="hero-tag">{% trans "Próximamente" %}</span>
+                <h1 class="hero-title">{% trans "Eventos ASNC" %}</h1>
                 <p class="hero-description">
-                    Conferencias, talleres, webinars y encuentros para la comunidad
-                    nuclear colombiana. Un espacio de aprendizaje y networking.
+                    {% blocktrans %}Conferencias, talleres, webinars y encuentros para la comunidad
+                    nuclear colombiana. Un espacio de aprendizaje y networking.{% endblocktrans %}
                 </p>
             </div>
         </div>
@@ -41,13 +42,13 @@
             <div class="construction-content">
                 <div class="construction-badge">
                     <i class="bi bi-gear-fill"></i>
-                    <span>En Construcción</span>
+                    <span>{% trans "En Construcción" %}</span>
                 </div>
-                <h2>Estamos preparando algo increíble</h2>
+                <h2>{% trans "Estamos preparando algo increíble" %}</h2>
                 <p>
-                    Nuestro calendario de eventos está en desarrollo. Muy pronto podrás
+                    {% blocktrans %}Nuestro calendario de eventos está en desarrollo. Muy pronto podrás
                     explorar conferencias, talleres y encuentros exclusivos para la
-                    comunidad nuclear colombiana.
+                    comunidad nuclear colombiana.{% endblocktrans %}
                 </p>
 
                 <div class="coming-features">
@@ -56,8 +57,8 @@
                             <i class="bi bi-calendar-event"></i>
                         </div>
                         <div class="feature-text">
-                            <h4>Calendario Interactivo</h4>
-                            <p>Explora y filtra eventos por fecha y categoría</p>
+                            <h4>{% trans "Calendario Interactivo" %}</h4>
+                            <p>{% trans "Explora y filtra eventos por fecha y categoría" %}</p>
                         </div>
                     </div>
                     <div class="feature-item">
@@ -65,8 +66,8 @@
                             <i class="bi bi-ticket-perforated"></i>
                         </div>
                         <div class="feature-text">
-                            <h4>Inscripción Online</h4>
-                            <p>Regístrate fácilmente a los eventos</p>
+                            <h4>{% trans "Inscripción Online" %}</h4>
+                            <p>{% trans "Regístrate fácilmente a los eventos" %}</p>
                         </div>
                     </div>
                     <div class="feature-item">
@@ -74,8 +75,8 @@
                             <i class="bi bi-bell"></i>
                         </div>
                         <div class="feature-text">
-                            <h4>Notificaciones</h4>
-                            <p>Recibe alertas de nuevos eventos</p>
+                            <h4>{% trans "Notificaciones" %}</h4>
+                            <p>{% trans "Recibe alertas de nuevos eventos" %}</p>
                         </div>
                     </div>
                 </div>
@@ -88,10 +89,10 @@
 <section class="events-preview">
     <div class="container">
         <div class="section-header text-center">
-            <span class="section-tag">Lo que viene</span>
-            <h2 class="section-title">Tipos de Eventos</h2>
+            <span class="section-tag">{% trans "Lo que viene" %}</span>
+            <h2 class="section-title">{% trans "Tipos de Eventos" %}</h2>
             <p class="section-subtitle">
-                Diversas actividades para todos los interesados en el sector nuclear
+                {% trans "Diversas actividades para todos los interesados en el sector nuclear" %}
             </p>
         </div>
 
@@ -101,9 +102,9 @@
                 <div class="event-type-icon">
                     <i class="bi bi-mic-fill"></i>
                 </div>
-                <h3>Conferencias</h3>
-                <p>Ponencias de expertos nacionales e internacionales sobre avances en tecnología nuclear</p>
-                <span class="event-tag">Presencial & Virtual</span>
+                <h3>{% trans "Conferencias" %}</h3>
+                <p>{% trans "Ponencias de expertos nacionales e internacionales sobre avances en tecnología nuclear" %}</p>
+                <span class="event-tag">{% trans "Presencial & Virtual" %}</span>
             </div>
 
             <div class="event-type-card">
@@ -111,9 +112,9 @@
                 <div class="event-type-icon icon-gold">
                     <i class="bi bi-laptop"></i>
                 </div>
-                <h3>Webinars</h3>
-                <p>Sesiones en línea sobre temas específicos con interacción en tiempo real</p>
-                <span class="event-tag">100% Online</span>
+                <h3>{% trans "Webinars" %}</h3>
+                <p>{% trans "Sesiones en línea sobre temas específicos con interacción en tiempo real" %}</p>
+                <span class="event-tag">{% trans "100% Online" %}</span>
             </div>
 
             <div class="event-type-card">
@@ -121,9 +122,9 @@
                 <div class="event-type-icon icon-purple">
                     <i class="bi bi-tools"></i>
                 </div>
-                <h3>Talleres</h3>
-                <p>Formación práctica y especializada para profesionales del sector</p>
-                <span class="event-tag">Hands-on</span>
+                <h3>{% trans "Talleres" %}</h3>
+                <p>{% trans "Formación práctica y especializada para profesionales del sector" %}</p>
+                <span class="event-tag">{% trans "Hands-on" %}</span>
             </div>
 
             <div class="event-type-card">
@@ -131,9 +132,9 @@
                 <div class="event-type-icon icon-green">
                     <i class="bi bi-people-fill"></i>
                 </div>
-                <h3>Networking</h3>
-                <p>Encuentros para conectar con profesionales y expandir tu red de contactos</p>
-                <span class="event-tag">Comunidad</span>
+                <h3>{% trans "Networking" %}</h3>
+                <p>{% trans "Encuentros para conectar con profesionales y expandir tu red de contactos" %}</p>
+                <span class="event-tag">{% trans "Comunidad" %}</span>
             </div>
         </div>
     </div>
@@ -147,11 +148,11 @@
                 <i class="bi bi-envelope-paper-fill"></i>
             </div>
             <div class="cta-content">
-                <h3>¿Quieres ser el primero en enterarte?</h3>
-                <p>Únete a la ASNC y recibe notificaciones de todos nuestros eventos</p>
+                <h3>{% trans "¿Quieres ser el primero en enterarte?" %}</h3>
+                <p>{% trans "Únete a la ASNC y recibe notificaciones de todos nuestros eventos" %}</p>
             </div>
             <a href="{% url 'application_create' %}" class="cta-button">
-                <span>Unirme a la ASNC</span>
+                <span>{% trans "Unirme a la ASNC" %}</span>
                 <i class="bi bi-arrow-right"></i>
             </a>
         </div>

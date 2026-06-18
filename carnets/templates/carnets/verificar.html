@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Verificación de Carné{% endblock %}
+{% block title %}{% trans "Verificación de Carné" %}{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -14,12 +15,12 @@
                 <div class="mb-4">
                     <i class="bi bi-x-circle text-danger" style="font-size: 5rem;"></i>
                 </div>
-                <h2 class="fw-bold text-danger mb-3">Carné No Encontrado</h2>
+                <h2 class="fw-bold text-danger mb-3">{% trans "Carné No Encontrado" %}</h2>
                 <p class="text-muted mb-4">
-                    El enlace de verificación es inválido o el carné no existe en nuestro sistema.
+                    {% trans "El enlace de verificación es inválido o el carné no existe en nuestro sistema." %}
                 </p>
                 <a href="{% url 'home' %}" class="btn btn-outline-primary rounded-pill px-4">
-                    <i class="bi bi-house me-2"></i> Volver al Inicio
+                    <i class="bi bi-house me-2"></i> {% trans "Volver al Inicio" %}
                 </a>
             </div>
 
@@ -28,7 +29,7 @@
             <div class="card border-0 shadow rounded-4 overflow-hidden">
                 <div class="bg-success text-white text-center p-4">
                     <i class="bi bi-patch-check-fill display-3 mb-2"></i>
-                    <h3 class="fw-bold mb-0">Carné Verificado</h3>
+                    <h3 class="fw-bold mb-0">{% trans "Carné Verificado" %}</h3>
                 </div>
 
                 <div class="card-body p-4 text-center">
@@ -50,11 +51,11 @@
                     <!-- Category Badge -->
                     {% if card.category == 'FOUNDER' %}
                     <span class="badge bg-warning text-dark rounded-pill px-3 py-2 mb-3">
-                        <i class="bi bi-star-fill me-1"></i> Miembro Fundador
+                        <i class="bi bi-star-fill me-1"></i> {% trans "Miembro Fundador" %}
                     </span>
                     {% else %}
                     <span class="badge bg-info text-white rounded-pill px-3 py-2 mb-3">
-                        <i class="bi bi-person-check me-1"></i> Asociado ASNC
+                        <i class="bi bi-person-check me-1"></i> {% trans "Asociado ASNC" %}
                     </span>
                     {% endif %}
 
@@ -64,11 +65,11 @@
                     <!-- Validity Info -->
                     <div class="row text-center bg-light rounded-3 p-3 mb-4">
                         <div class="col-6 border-end">
-                            <small class="text-muted d-block">Emisión</small>
+                            <small class="text-muted d-block">{% trans "Emisión" %}</small>
                             <span class="fw-bold">{{ card.issue_date|date:"d/m/Y" }}</span>
                         </div>
                         <div class="col-6">
-                            <small class="text-muted d-block">Válido hasta</small>
+                            <small class="text-muted d-block">{% trans "Válido hasta" %}</small>
                             <span class="fw-bold text-success">{{ card.expiry_date|date:"d/m/Y" }}</span>
                         </div>
                     </div>
@@ -76,14 +77,14 @@
                     <!-- Verification Count -->
                     <p class="text-muted small mb-0">
                         <i class="bi bi-qr-code-scan me-1"></i>
-                        Este carné ha sido verificado {{ verification_count }} {% if verification_count == 1 %}vez{% else %}veces{% endif %}
+                        {% blocktrans count counter=verification_count %}Este carné ha sido verificado {{ counter }} vez{% plural %}Este carné ha sido verificado {{ counter }} veces{% endblocktrans %}
                     </p>
                 </div>
 
                 <div class="card-footer bg-white border-top py-3 text-center">
                     <img src="{% static 'images/asnc_logo_full.png' %}" alt="ASNC" style="height: 35px;">
                     <div class="mt-2 d-flex justify-content-center align-items-center gap-1">
-                        <small class="text-muted" style="font-size: 10px;">Desarrollado por</small>
+                        <small class="text-muted" style="font-size: 10px;">{% trans "Desarrollado por" %}</small>
                         <a href="https://vadomdata.com/" target="_blank">
                             <img src="{% static 'images/vadom/vadom_logo.png' %}" alt="Vadom" style="height: 12px;">
                         </a>
@@ -96,7 +97,7 @@
             <div class="card border-0 shadow rounded-4 overflow-hidden">
                 <div class="bg-danger text-white text-center p-4">
                     <i class="bi bi-exclamation-triangle-fill display-3 mb-2"></i>
-                    <h3 class="fw-bold mb-0">Carné No Válido</h3>
+                    <h3 class="fw-bold mb-0">{% trans "Carné No Válido" %}</h3>
                 </div>
 
                 <div class="card-body p-4 text-center">
@@ -122,33 +123,33 @@
                     <div class="mb-4">
                         {% if card.status == 'EXPIRED' %}
                         <span class="badge bg-secondary rounded-pill px-4 py-2">
-                            <i class="bi bi-calendar-x me-1"></i> Carné Expirado
+                            <i class="bi bi-calendar-x me-1"></i> {% trans "Carné Expirado" %}
                         </span>
-                        <p class="text-muted small mt-2">Este carné venció el {{ card.expiry_date|date:"d/m/Y" }}</p>
+                        <p class="text-muted small mt-2">{% blocktrans with fecha=card.expiry_date|date:"d/m/Y" %}Este carné venció el {{ fecha }}{% endblocktrans %}</p>
                         {% elif card.status == 'SUSPENDED' %}
                         <span class="badge bg-danger rounded-pill px-4 py-2">
-                            <i class="bi bi-pause-circle me-1"></i> Carné Suspendido
+                            <i class="bi bi-pause-circle me-1"></i> {% trans "Carné Suspendido" %}
                         </span>
                         {% elif card.status == 'CANCELLED' %}
                         <span class="badge bg-dark rounded-pill px-4 py-2">
-                            <i class="bi bi-x-circle me-1"></i> Carné Cancelado
+                            <i class="bi bi-x-circle me-1"></i> {% trans "Carné Cancelado" %}
                         </span>
                         {% elif card.status == 'PENDING_PHOTO' %}
                         <span class="badge bg-warning text-dark rounded-pill px-4 py-2">
-                            <i class="bi bi-camera me-1"></i> Pendiente de Activación
+                            <i class="bi bi-camera me-1"></i> {% trans "Pendiente de Activación" %}
                         </span>
                         {% endif %}
                     </div>
 
                     <p class="text-muted small">
-                        Si cree que esto es un error, contacte a <a href="mailto:info@asncol.com">info@asncol.com</a>
+                        {% trans "Si cree que esto es un error, contacte a" %} <a href="mailto:info@asncol.com">info@asncol.com</a>
                     </p>
                 </div>
 
                 <div class="card-footer bg-white border-top py-3 text-center">
                     <img src="{% static 'images/asnc_logo_full.png' %}" alt="ASNC" style="height: 35px;">
                     <div class="mt-2 d-flex justify-content-center align-items-center gap-1">
-                        <small class="text-muted" style="font-size: 10px;">Desarrollado por</small>
+                        <small class="text-muted" style="font-size: 10px;">{% trans "Desarrollado por" %}</small>
                         <a href="https://vadomdata.com/" target="_blank">
                             <img src="{% static 'images/vadom/vadom_logo.png' %}" alt="Vadom" style="height: 12px;">
                         </a>

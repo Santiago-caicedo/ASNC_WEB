@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Inscripción enviada{% endblock %}
-{% block meta_description %}Tu inscripción a {{ convocatoria.title }} ha sido recibida correctamente.{% endblock %}
+{% block title %}{% trans "Inscripción enviada" %}{% endblock %}
+{% block meta_description %}{% blocktrans %}Tu inscripción a {{ convocatoria.title }} ha sido recibida correctamente.{% endblocktrans %}{% endblock %}
 
 {% block content %}
 <section class="py-5" style="min-height: 70vh; display: flex; align-items: center; background: linear-gradient(135deg, #F5F7FA 0%, #ffffff 100%);">
@@ -15,8 +16,8 @@
                              style="width: 90px; height: 90px; background: rgba(244, 195, 67, 0.2);">
                             <i class="bi bi-check-lg text-white" style="font-size: 3rem;"></i>
                         </div>
-                        <h2 class="text-white fw-bold mb-1">¡Gracias!</h2>
-                        <p class="text-white opacity-75 mb-0">Tu inscripción ha sido recibida</p>
+                        <h2 class="text-white fw-bold mb-1">{% trans "¡Gracias!" %}</h2>
+                        <p class="text-white opacity-75 mb-0">{% trans "Tu inscripción ha sido recibida" %}</p>
                     </div>
 
                     <div class="card-body p-4 p-md-5 text-center">
@@ -25,10 +26,10 @@
 
                         <div class="d-flex flex-wrap gap-2 justify-content-center">
                             <a href="{% url 'convocatorias:list' %}" class="btn btn-outline-secondary rounded-pill px-4">
-                                <i class="bi bi-grid me-2"></i>Ver más convocatorias
+                                <i class="bi bi-grid me-2"></i>{% trans "Ver más convocatorias" %}
                             </a>
                             <a href="{% url 'home' %}" class="btn rounded-pill px-4" style="background-color: #f4c343; border-color: #f4c343; color: #1B2A41; font-weight: 600;">
-                                <i class="bi bi-house me-2"></i>Volver al inicio
+                                <i class="bi bi-house me-2"></i>{% trans "Volver al inicio" %}
                             </a>
                         </div>
                     </div>

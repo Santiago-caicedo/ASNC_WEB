@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Quiénes Somos{% endblock %}
+{% block title %}{% trans "Quiénes Somos" %}{% endblock %}
 
-{% block meta_description %}Conoce al equipo directivo de la Asociación Nuclear Colombiana (ASNC). Profesionales comprometidos con la divulgación y desarrollo de la ciencia nuclear en Colombia.{% endblock %}
+{% block meta_description %}{% trans "Conoce al equipo directivo de la Asociación Nuclear Colombiana (ASNC). Profesionales comprometidos con la divulgación y desarrollo de la ciencia nuclear en Colombia." %}{% endblock %}
 
 {% block extra_structured_data %}
 {% if members %}
@@ -71,12 +72,10 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <span class="hero-tag">Nuestra Asociación</span>
-                <h1 class="hero-title">Quiénes Somos</h1>
+                <span class="hero-tag">{% trans "Nuestra Asociación" %}</span>
+                <h1 class="hero-title">{% trans "Quiénes Somos" %}</h1>
                 <p class="hero-description">
-                    La Asociación Nuclear Colombiana (ASNC) reúne a los profesionales,
-                    investigadores y entusiastas del sector nuclear en Colombia, promoviendo
-                    el desarrollo pacífico y sostenible de la ciencia y tecnología nuclear.
+                    {% trans "La Asociación Nuclear Colombiana (ASNC) reúne a los profesionales, investigadores y entusiastas del sector nuclear en Colombia, promoviendo el desarrollo pacífico y sostenible de la ciencia y tecnología nuclear." %}
                 </p>
             </div>
         </div>
@@ -95,9 +94,9 @@
                         <div class="mission-icon">
                             <i class="bi bi-people-fill"></i>
                         </div>
-                        <span class="mission-label">Misión</span>
+                        <span class="mission-label">{% trans "Misión" %}</span>
                     </div>
-                    <p>Albergar y agrupar al gremio nuclear de Colombia, articulando a profesionales, investigadores, estudiantes y empresas del sector en una comunidad sólida que impulse el desarrollo pacífico y sostenible de la ciencia y tecnología nuclear en el país.</p>
+                    <p>{% trans "Albergar y agrupar al gremio nuclear de Colombia, articulando a profesionales, investigadores, estudiantes y empresas del sector en una comunidad sólida que impulse el desarrollo pacífico y sostenible de la ciencia y tecnología nuclear en el país." %}</p>
                 </div>
             </div>
 
@@ -108,9 +107,9 @@
                         <div class="mission-icon icon-gold">
                             <i class="bi bi-diagram-3-fill"></i>
                         </div>
-                        <span class="mission-label">Visión 2030</span>
+                        <span class="mission-label">{% trans "Visión 2030" %}</span>
                     </div>
-                    <p>Ser el principal punto de encuentro y representación del gremio nuclear colombiano, reconocida como la organización que consolida, conecta y proyecta a la comunidad nuclear del país hacia la región y el mundo.</p>
+                    <p>{% trans "Ser el principal punto de encuentro y representación del gremio nuclear colombiano, reconocida como la organización que consolida, conecta y proyecta a la comunidad nuclear del país hacia la región y el mundo." %}</p>
                 </div>
             </div>
 
@@ -121,13 +120,13 @@
                         <div class="mission-icon icon-gradient">
                             <i class="bi bi-stars"></i>
                         </div>
-                        <span class="mission-label">Valores</span>
+                        <span class="mission-label">{% trans "Valores" %}</span>
                     </div>
                     <div class="values-list">
-                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> Rigor científico</span>
-                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> Transparencia</span>
-                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> Educación</span>
-                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> Colaboración</span>
+                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> {% trans "Rigor científico" %}</span>
+                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> {% trans "Transparencia" %}</span>
+                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> {% trans "Educación" %}</span>
+                        <span class="value-chip"><i class="bi bi-check-circle-fill"></i> {% trans "Colaboración" %}</span>
                     </div>
                 </div>
             </div>
@@ -142,10 +141,10 @@
     </div>
     <div class="container position-relative">
         <div class="section-header text-center">
-            <span class="section-tag-dark">Nuestra Organización</span>
-            <h2 class="section-title-light">Estructura de la ASNC</h2>
+            <span class="section-tag-dark">{% trans "Nuestra Organización" %}</span>
+            <h2 class="section-title-light">{% trans "Estructura de la ASNC" %}</h2>
             <p class="section-subtitle-light">
-                Una organización sólida construida para cumplir nuestra misión
+                {% trans "Una organización sólida construida para cumplir nuestra misión" %}
             </p>
         </div>
 
@@ -157,9 +156,9 @@
                         <i class="bi bi-building"></i>
                     </div>
                     <div class="org-main-content">
-                        <span class="org-main-badge">Máximo Órgano</span>
-                        <h3>Junta Directiva</h3>
-                        <p>Gobierno y dirección estratégica de la asociación</p>
+                        <span class="org-main-badge">{% trans "Máximo Órgano" %}</span>
+                        <h3>{% trans "Junta Directiva" %}</h3>
+                        <p>{% trans "Gobierno y dirección estratégica de la asociación" %}</p>
                     </div>
                     <div class="org-main-glow"></div>
                 </div>
@@ -180,8 +179,8 @@
                     <div class="committee-icon">
                         <i class="bi bi-megaphone-fill"></i>
                     </div>
-                    <h4>Comité de Divulgación</h4>
-                    <p>Comunicación, contenido educativo y presencia en redes sociales</p>
+                    <h4>{% trans "Comité de Divulgación" %}</h4>
+                    <p>{% trans "Comunicación, contenido educativo y presencia en redes sociales" %}</p>
                     <div class="committee-decoration"></div>
                 </div>
 
@@ -189,8 +188,8 @@
                     <div class="committee-icon">
                         <i class="bi bi-cpu-fill"></i>
                     </div>
-                    <h4>Comité Científico</h4>
-                    <p>Validación científica, investigación y asesoría especializada</p>
+                    <h4>{% trans "Comité Científico" %}</h4>
+                    <p>{% trans "Validación científica, investigación y asesoría especializada" %}</p>
                     <div class="committee-decoration"></div>
                 </div>
 
@@ -198,8 +197,8 @@
                     <div class="committee-icon">
                         <i class="bi bi-bank2"></i>
                     </div>
-                    <h4>Comité de Regulación y Gobierno</h4>
-                    <p>Asuntos regulatorios, políticas públicas y relaciones institucionales</p>
+                    <h4>{% trans "Comité de Regulación y Gobierno" %}</h4>
+                    <p>{% trans "Asuntos regulatorios, políticas públicas y relaciones institucionales" %}</p>
                     <div class="committee-decoration"></div>
                 </div>
 
@@ -207,8 +206,8 @@
                     <div class="committee-icon">
                         <i class="bi bi-graph-up-arrow"></i>
                     </div>
-                    <h4>Comité Financiero</h4>
-                    <p>Gestión de recursos y sostenibilidad económica</p>
+                    <h4>{% trans "Comité Financiero" %}</h4>
+                    <p>{% trans "Gestión de recursos y sostenibilidad económica" %}</p>
                     <div class="committee-decoration"></div>
                 </div>
 
@@ -216,8 +215,8 @@
                     <div class="committee-icon">
                         <i class="bi bi-mortarboard-fill"></i>
                     </div>
-                    <h4>Comité de Educación</h4>
-                    <p>Formación, capacitación y desarrollo académico en ciencia nuclear</p>
+                    <h4>{% trans "Comité de Educación" %}</h4>
+                    <p>{% trans "Formación, capacitación y desarrollo académico en ciencia nuclear" %}</p>
                     <div class="committee-decoration"></div>
                 </div>
 
@@ -225,8 +224,8 @@
                     <div class="committee-icon">
                         <i class="bi bi-truck"></i>
                     </div>
-                    <h4>Comité de Industria y Transporte</h4>
-                    <p>Aplicaciones industriales y transporte seguro de material nuclear</p>
+                    <h4>{% trans "Comité de Industria y Transporte" %}</h4>
+                    <p>{% trans "Aplicaciones industriales y transporte seguro de material nuclear" %}</p>
                     <div class="committee-decoration"></div>
                 </div>
             </div>
@@ -238,10 +237,10 @@
 <section class="team-section">
     <div class="container">
         <div class="section-header text-center">
-            <span class="section-tag">Conócenos</span>
-            <h2 class="section-title">Nuestro Equipo Líder</h2>
+            <span class="section-tag">{% trans "Conócenos" %}</span>
+            <h2 class="section-title">{% trans "Nuestro Equipo Líder" %}</h2>
             <p class="section-subtitle">
-                Conoce a los profesionales que lideran nuestra asociación
+                {% trans "Conoce a los profesionales que lideran nuestra asociación" %}
             </p>
         </div>
 
@@ -279,7 +278,7 @@
                     <p class="member-profession">{{ member.profession }}</p>
 
                     <div class="card-action">
-                        <span>Ver perfil completo</span>
+                        <span>{% trans "Ver perfil completo" %}</span>
                         <i class="bi bi-arrow-right"></i>
                     </div>
                 </div>
@@ -306,11 +305,11 @@
                         </div>
                     </div>
                     <div class="modal-content-section">
-                        <h5 class="trajectory-title"><i class="bi bi-briefcase-fill me-2"></i>Trayectoria Profesional</h5>
+                        <h5 class="trajectory-title"><i class="bi bi-briefcase-fill me-2"></i>{% trans "Trayectoria Profesional" %}</h5>
                         <div class="modal-trajectory" id="modalTrajectory"></div>
                         <a href="#" class="modal-linkedin-btn" id="modalLinkedIn" target="_blank">
                             <i class="bi bi-linkedin"></i>
-                            <span>Ver perfil en LinkedIn</span>
+                            <span>{% trans "Ver perfil en LinkedIn" %}</span>
                             <i class="bi bi-box-arrow-up-right"></i>
                         </a>
                     </div>
@@ -323,8 +322,8 @@
             <div class="empty-icon">
                 <i class="bi bi-people"></i>
             </div>
-            <h4>Próximamente</h4>
-            <p>Conocerás a nuestro increíble equipo muy pronto</p>
+            <h4>{% trans "Próximamente" %}</h4>
+            <p>{% trans "Conocerás a nuestro increíble equipo muy pronto" %}</p>
         </div>
         {% endif %}
     </div>
@@ -334,10 +333,10 @@
 <section class="international-section">
     <div class="container">
         <div class="section-header text-center">
-            <span class="section-tag-intl"><i class="bi bi-globe2 me-1"></i> Red Global</span>
-            <h2 class="section-title">Asociados Internacionales</h2>
+            <span class="section-tag-intl"><i class="bi bi-globe2 me-1"></i> {% trans "Red Global" %}</span>
+            <h2 class="section-title">{% trans "Asociados Internacionales" %}</h2>
             <p class="section-subtitle">
-                Profesionales y colaboradores alrededor del mundo que fortalecen nuestra misión
+                {% trans "Profesionales y colaboradores alrededor del mundo que fortalecen nuestra misión" %}
             </p>
         </div>
 
@@ -372,7 +371,7 @@
                     <p class="member-profession">{{ member.profession }}</p>
 
                     <div class="card-action">
-                        <span>Ver perfil completo</span>
+                        <span>{% trans "Ver perfil completo" %}</span>
                         <i class="bi bi-arrow-right"></i>
                     </div>
                 </div>
@@ -386,8 +385,8 @@
             <div class="empty-icon empty-icon-intl">
                 <i class="bi bi-globe2"></i>
             </div>
-            <h4>Próximamente</h4>
-            <p>Conocerás a nuestros asociados internacionales muy pronto</p>
+            <h4>{% trans "Próximamente" %}</h4>
+            <p>{% trans "Conocerás a nuestros asociados internacionales muy pronto" %}</p>
         </div>
         {% endif %}
     </div>
@@ -398,11 +397,11 @@
     <div class="container">
         <div class="cta-card">
             <div class="cta-content">
-                <h3>¿Quieres ser parte de la ASNC?</h3>
-                <p>Únete a la comunidad científica nuclear más importante de Colombia</p>
+                <h3>{% trans "¿Quieres ser parte de la ASNC?" %}</h3>
+                <p>{% trans "Únete a la comunidad científica nuclear más importante de Colombia" %}</p>
             </div>
             <a href="{% url 'application_create' %}" class="cta-button">
-                <span>Solicitar Ingreso</span>
+                <span>{% trans "Solicitar Ingreso" %}</span>
                 <i class="bi bi-arrow-right"></i>
             </a>
         </div>

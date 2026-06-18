@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Inicio - Asociación Nuclear Colombiana{% endblock %}
+{% block title %}{% trans "Inicio" %} - Asociación Nuclear Colombiana{% endblock %}
 
 {% block content %}
 
@@ -23,23 +24,22 @@
                     </div>
 
                     <h1 class="hero-title" data-animate="fadeInUp" data-delay="100">
-                        El Futuro de Colombia
-                        <span class="text-highlight">es Nuclear</span>
+                        {% trans "El Futuro de Colombia" %}
+                        <span class="text-highlight">{% trans "es Nuclear" %}</span>
                     </h1>
 
                     <p class="hero-description" data-animate="fadeInUp" data-delay="200">
-                        Somos una comunidad científica que impulsa el desarrollo de la energía nuclear
-                        como pilar fundamental de la transición energética justa en Colombia.
+                        {% trans "Somos una comunidad científica que impulsa el desarrollo de la energía nuclear como pilar fundamental de la transición energética justa en Colombia." %}
                     </p>
 
                     <div class="hero-actions" data-animate="fadeInUp" data-delay="300">
                         <a href="{% url 'application_create' %}" class="btn-primary-xl">
-                            <span>Únete a la ASNC</span>
+                            <span>{% trans "Únete a la ASNC" %}</span>
                             <i class="bi bi-arrow-right"></i>
                         </a>
                         <a href="#fission" class="btn-secondary-xl">
                             <i class="bi bi-play-circle"></i>
-                            <span>Descubre más</span>
+                            <span>{% trans "Descubre más" %}</span>
                         </a>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                 <div class="hero-news-panel">
                     <div class="hero-news-header">
                         <i class="bi bi-flag-fill"></i>
-                        <span>Noticias de la Asociación</span>
+                        <span>{% trans "Noticias de la Asociación" %}</span>
                     </div>
                     <div class="hero-news-list">
                         {% if news_association %}
@@ -67,12 +67,12 @@
                         {% else %}
                             <div class="hero-news-empty">
                                 <i class="bi bi-newspaper"></i>
-                                <p>Próximamente publicaremos novedades.</p>
+                                <p>{% trans "Próximamente publicaremos novedades." %}</p>
                             </div>
                         {% endif %}
                     </div>
                     <a href="{% url 'public_news_list' %}" class="hero-news-footer">
-                        Ver todas las noticias <i class="bi bi-arrow-right"></i>
+                        {% trans "Ver todas las noticias" %} <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -81,7 +81,7 @@
 
     <!-- Scroll Indicator -->
     <div class="scroll-indicator">
-        <span>Scroll</span>
+        <span>{% trans "Scroll" %}</span>
         <div class="scroll-line"></div>
     </div>
 </section>
@@ -90,10 +90,10 @@
 <section class="news-home-section" id="noticias">
     <div class="container">
         <div class="section-header text-center" data-animate="fadeInUp">
-            <span class="section-tag">Actualidad Nuclear</span>
-            <h2 class="section-title-lg">Noticias del Sector</h2>
+            <span class="section-tag">{% trans "Actualidad Nuclear" %}</span>
+            <h2 class="section-title-lg">{% trans "Noticias del Sector" %}</h2>
             <p class="section-subtitle">
-                Lo más relevante del mundo nuclear: avances, investigaciones y tendencias.
+                {% trans "Lo más relevante del mundo nuclear: avances, investigaciones y tendencias." %}
             </p>
         </div>
 
@@ -106,7 +106,7 @@
                         <div class="news-card">
                             <div class="news-card-img">
                                 <img src="{{ article.cover_image.url }}" alt="{{ article.title }}">
-                                <span class="news-card-badge badge-nuclear">Nuclear</span>
+                                <span class="news-card-badge badge-nuclear">{% trans "Nuclear" %}</span>
                             </div>
                             <div class="news-card-body">
                                 <span class="news-card-date">
@@ -124,7 +124,7 @@
             {% else %}
             <div class="news-empty">
                 <i class="bi bi-atom"></i>
-                <p>Próximamente publicaremos noticias del sector nuclear.</p>
+                <p>{% trans "Próximamente publicaremos noticias del sector nuclear." %}</p>
             </div>
             {% endif %}
         </div>
@@ -132,7 +132,7 @@
         <!-- Ver todas -->
         <div class="text-center mt-4" data-animate="fadeInUp" data-delay="200">
             <a href="{% url 'public_news_list' %}" class="btn-news-all">
-                <span>Ver todas las noticias</span>
+                <span>{% trans "Ver todas las noticias" %}</span>
                 <i class="bi bi-arrow-right"></i>
             </a>
         </div>
@@ -145,44 +145,42 @@
         <div class="row align-items-center">
             <div class="col-lg-6 order-lg-2">
                 <div class="fission-content">
-                    <span class="section-tag">El Poder del Átomo</span>
+                    <span class="section-tag">{% trans "El Poder del Átomo" %}</span>
                     <h2 class="section-title">
-                        Fisión Nuclear:<br>
-                        <span class="text-gold">Energía del Futuro</span>
+                        {% trans "Fisión Nuclear:" %}<br>
+                        <span class="text-gold">{% trans "Energía del Futuro" %}</span>
                     </h2>
                     <p class="section-description">
-                        La fisión nuclear ocurre cuando un neutrón impacta un núcleo de uranio-235,
-                        dividiéndolo en dos fragmentos y liberando una cantidad inmensa de energía,
-                        junto con más neutrones que continúan la reacción en cadena.
+                        {% trans "La fisión nuclear ocurre cuando un neutrón impacta un núcleo de uranio-235, dividiéndolo en dos fragmentos y liberando una cantidad inmensa de energía, junto con más neutrones que continúan la reacción en cadena." %}
                     </p>
 
                     <div class="fission-steps">
                         <div class="step-item" data-step="1">
                             <div class="step-number">1</div>
                             <div class="step-text">
-                                <h4>Impacto del Neutrón</h4>
-                                <p>Un neutrón colisiona con el núcleo de U-235</p>
+                                <h4>{% trans "Impacto del Neutrón" %}</h4>
+                                <p>{% trans "Un neutrón colisiona con el núcleo de U-235" %}</p>
                             </div>
                         </div>
                         <div class="step-item" data-step="2">
                             <div class="step-number">2</div>
                             <div class="step-text">
-                                <h4>División del Núcleo</h4>
-                                <p>El átomo se vuelve inestable y se divide</p>
+                                <h4>{% trans "División del Núcleo" %}</h4>
+                                <p>{% trans "El átomo se vuelve inestable y se divide" %}</p>
                             </div>
                         </div>
                         <div class="step-item" data-step="3">
                             <div class="step-number">3</div>
                             <div class="step-text">
-                                <h4>Liberación de Energía</h4>
-                                <p>Se libera energía térmica y más neutrones</p>
+                                <h4>{% trans "Liberación de Energía" %}</h4>
+                                <p>{% trans "Se libera energía térmica y más neutrones" %}</p>
                             </div>
                         </div>
                         <div class="step-item" data-step="4">
                             <div class="step-number">4</div>
                             <div class="step-text">
-                                <h4>Reacción en Cadena</h4>
-                                <p>Los neutrones continúan el proceso</p>
+                                <h4>{% trans "Reacción en Cadena" %}</h4>
+                                <p>{% trans "Los neutrones continúan el proceso" %}</p>
                             </div>
                         </div>
                     </div>
@@ -313,7 +311,7 @@
                         <!-- Chain Reaction Indicator -->
                         <g class="chain-indicator" id="chainIndicator" opacity="0">
                             <text x="250" y="480" text-anchor="middle" fill="#f4c343" font-size="14" font-weight="bold">
-                                REACCIÓN EN CADENA INICIADA
+                                {% trans "REACCIÓN EN CADENA INICIADA" %}
                             </text>
                         </g>
 
@@ -326,7 +324,7 @@
 
                     <!-- Energy Counter -->
                     <div class="energy-counter" id="energyCounter">
-                        <div class="counter-label">Energía Liberada</div>
+                        <div class="counter-label">{% trans "Energía Liberada" %}</div>
                         <div class="counter-value"><span id="energyValue">0</span> MeV</div>
                     </div>
                 </div>
@@ -339,11 +337,10 @@
 <section class="applications-section">
     <div class="container">
         <div class="section-header text-center" data-animate="fadeInUp">
-            <span class="section-tag">Aplicaciones</span>
-            <h2 class="section-title-lg">La Tecnología Nuclear Transforma Vidas</h2>
+            <span class="section-tag">{% trans "Aplicaciones" %}</span>
+            <h2 class="section-title-lg">{% trans "La Tecnología Nuclear Transforma Vidas" %}</h2>
             <p class="section-subtitle">
-                Más allá de la generación eléctrica, la energía nuclear tiene aplicaciones
-                fundamentales en medicina, agricultura e industria.
+                {% trans "Más allá de la generación eléctrica, la energía nuclear tiene aplicaciones fundamentales en medicina, agricultura e industria." %}
             </p>
         </div>
 
@@ -351,18 +348,18 @@
             <!-- Medicine -->
             <div class="application-card" data-animate="fadeInUp" data-delay="100">
                 <div class="app-image-wrapper">
-                    <img src="{% static 'images/hero_medicine.jpg' %}" alt="Medicina Nuclear">
+                    <img src="{% static 'images/hero_medicine.jpg' %}" alt="{% trans 'Medicina Nuclear' %}">
                     <div class="app-overlay">
                         <i class="bi bi-heart-pulse"></i>
                     </div>
                 </div>
                 <div class="app-content">
-                    <h3>Medicina Nuclear</h3>
-                    <p>Diagnóstico por imágenes, tratamiento del cáncer con radioterapia, y esterilización de equipos médicos.</p>
+                    <h3>{% trans "Medicina Nuclear" %}</h3>
+                    <p>{% trans "Diagnóstico por imágenes, tratamiento del cáncer con radioterapia, y esterilización de equipos médicos." %}</p>
                     <ul class="app-features">
-                        <li><i class="bi bi-check2"></i> PET y SPECT scan</li>
-                        <li><i class="bi bi-check2"></i> Radioterapia oncológica</li>
-                        <li><i class="bi bi-check2"></i> Radioisótopos terapéuticos</li>
+                        <li><i class="bi bi-check2"></i> {% trans "PET y SPECT scan" %}</li>
+                        <li><i class="bi bi-check2"></i> {% trans "Radioterapia oncológica" %}</li>
+                        <li><i class="bi bi-check2"></i> {% trans "Radioisótopos terapéuticos" %}</li>
                     </ul>
                 </div>
             </div>
@@ -370,18 +367,18 @@
             <!-- Agriculture -->
             <div class="application-card" data-animate="fadeInUp" data-delay="200">
                 <div class="app-image-wrapper">
-                    <img src="{% static 'images/hero_agriculture.jpg' %}" alt="Agricultura Nuclear">
+                    <img src="{% static 'images/hero_agriculture.jpg' %}" alt="{% trans 'Agricultura Nuclear' %}">
                     <div class="app-overlay">
                         <i class="bi bi-flower1"></i>
                     </div>
                 </div>
                 <div class="app-content">
-                    <h3>Agricultura</h3>
-                    <p>Mejora genética de cultivos, control de plagas y conservación de alimentos mediante radiación.</p>
+                    <h3>{% trans "Agricultura" %}</h3>
+                    <p>{% trans "Mejora genética de cultivos, control de plagas y conservación de alimentos mediante radiación." %}</p>
                     <ul class="app-features">
-                        <li><i class="bi bi-check2"></i> Mutaciones benéficas</li>
-                        <li><i class="bi bi-check2"></i> Esterilización de insectos</li>
-                        <li><i class="bi bi-check2"></i> Irradiación de alimentos</li>
+                        <li><i class="bi bi-check2"></i> {% trans "Mutaciones benéficas" %}</li>
+                        <li><i class="bi bi-check2"></i> {% trans "Esterilización de insectos" %}</li>
+                        <li><i class="bi bi-check2"></i> {% trans "Irradiación de alimentos" %}</li>
                     </ul>
                 </div>
             </div>
@@ -389,18 +386,18 @@
             <!-- Energy -->
             <div class="application-card" data-animate="fadeInUp" data-delay="300">
                 <div class="app-image-wrapper">
-                    <img src="{% static 'images/hero_energy.jpg' %}" alt="Energía Nuclear">
+                    <img src="{% static 'images/hero_energy.jpg' %}" alt="{% trans 'Energía Nuclear' %}">
                     <div class="app-overlay">
                         <i class="bi bi-lightning-charge"></i>
                     </div>
                 </div>
                 <div class="app-content">
-                    <h3>Energía Limpia</h3>
-                    <p>Generación eléctrica continua, cero emisiones de CO2 y alta densidad energética.</p>
+                    <h3>{% trans "Energía Limpia" %}</h3>
+                    <p>{% trans "Generación eléctrica continua, cero emisiones de CO2 y alta densidad energética." %}</p>
                     <ul class="app-features">
-                        <li><i class="bi bi-check2"></i> 24/7 sin intermitencia</li>
-                        <li><i class="bi bi-check2"></i> Huella de carbono mínima</li>
-                        <li><i class="bi bi-check2"></i> Máxima eficiencia</li>
+                        <li><i class="bi bi-check2"></i> {% trans "24/7 sin intermitencia" %}</li>
+                        <li><i class="bi bi-check2"></i> {% trans "Huella de carbono mínima" %}</li>
+                        <li><i class="bi bi-check2"></i> {% trans "Máxima eficiencia" %}</li>
                     </ul>
                 </div>
             </div>
@@ -438,21 +435,21 @@
 
                     <!-- Main superhero image -->
                     <div class="epic-hero-image">
-                        <img src="{% static 'images/supernuc.png' %}" alt="SuperNuc - Guardián de la Energía Nuclear">
+                        <img src="{% static 'images/supernuc.png' %}" alt="{% trans 'SuperNuc - Guardián de la Energía Nuclear' %}">
                     </div>
 
                     <!-- Floating power indicators -->
                     <div class="power-indicator power-1">
                         <i class="bi bi-lightning-charge-fill"></i>
-                        <span>Energía Limpia</span>
+                        <span>{% trans "Energía Limpia" %}</span>
                     </div>
                     <div class="power-indicator power-2">
                         <i class="bi bi-shield-check"></i>
-                        <span>Ciencia Real</span>
+                        <span>{% trans "Ciencia Real" %}</span>
                     </div>
                     <div class="power-indicator power-3">
                         <i class="bi bi-globe-americas"></i>
-                        <span>Alcance Global</span>
+                        <span>{% trans "Alcance Global" %}</span>
                     </div>
                 </div>
             </div>
@@ -463,7 +460,7 @@
                     <!-- Official Badge -->
                     <div class="epic-badge">
                         <i class="bi bi-patch-check-fill"></i>
-                        <span>Plataforma Oficial de Divulgación ASNC</span>
+                        <span>{% trans "Plataforma Oficial de Divulgación ASNC" %}</span>
                     </div>
 
                     <!-- Logo -->
@@ -473,49 +470,47 @@
 
                     <!-- Main headline -->
                     <h2 class="epic-title">
-                        Donde la <span class="text-gradient">Ciencia</span><br>
-                        Vence a los <span class="text-gold">Mitos</span>
+                        {% trans "Donde la" %} <span class="text-gradient">{% trans "Ciencia" %}</span><br>
+                        {% trans "Vence a los" %} <span class="text-gold">{% trans "Mitos" %}</span>
                     </h2>
 
                     <!-- Description -->
                     <p class="epic-description">
-                        La voz oficial de la Asociación Nuclear Colombiana en el mundo digital.
-                        Educamos, informamos y derribamos mitos sobre la energía nuclear con
-                        contenido verificado por expertos.
+                        {% trans "La voz oficial de la Asociación Nuclear Colombiana en el mundo digital. Educamos, informamos y derribamos mitos sobre la energía nuclear con contenido verificado por expertos." %}
                     </p>
 
                     <!-- What we do -->
                     <div class="epic-stats">
                         <div class="epic-stat">
                             <div class="stat-icon"><i class="bi bi-mic-fill"></i></div>
-                            <div class="stat-label">Podcast</div>
+                            <div class="stat-label">{% trans "Podcast" %}</div>
                         </div>
                         <div class="epic-stat">
                             <div class="stat-icon"><i class="bi bi-mortarboard-fill"></i></div>
-                            <div class="stat-label">Cursos</div>
+                            <div class="stat-label">{% trans "Cursos" %}</div>
                         </div>
                         <div class="epic-stat">
                             <div class="stat-icon"><i class="bi bi-newspaper"></i></div>
-                            <div class="stat-label">Artículos</div>
+                            <div class="stat-label">{% trans "Artículos" %}</div>
                         </div>
                         <div class="epic-stat">
                             <div class="stat-icon"><i class="bi bi-play-btn-fill"></i></div>
-                            <div class="stat-label">Videos</div>
+                            <div class="stat-label">{% trans "Videos" %}</div>
                         </div>
                     </div>
 
                     <!-- CTA Button -->
                     <div class="epic-actions">
                         <a href="https://nuclenergy.com" target="_blank" class="btn-epic-primary">
-                            <span>Explorar Nuclenergy</span>
+                            <span>{% trans "Explorar Nuclenergy" %}</span>
                             <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
 
                     <!-- Trust indicators -->
                     <div class="epic-trust">
-                        <span><i class="bi bi-check-circle-fill"></i> Contenido verificado</span>
-                        <span><i class="bi bi-check-circle-fill"></i> Respaldado por la ASNC</span>
+                        <span><i class="bi bi-check-circle-fill"></i> {% trans "Contenido verificado" %}</span>
+                        <span><i class="bi bi-check-circle-fill"></i> {% trans "Respaldado por la ASNC" %}</span>
                     </div>
                 </div>
             </div>
@@ -529,15 +524,13 @@
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
                 <div class="data-content" data-animate="fadeInLeft">
-                    <span class="section-tag tag-glow">Herramienta Digital</span>
+                    <span class="section-tag tag-glow">{% trans "Herramienta Digital" %}</span>
                     <h2 class="section-title">
-                        Atlas Mundial de<br>
-                        <span class="text-gold">Reactores Nucleares</span>
+                        {% trans "Atlas Mundial de" %}<br>
+                        <span class="text-gold">{% trans "Reactores Nucleares" %}</span>
                     </h2>
                     <p class="section-description">
-                        Descubre NuclenergyData, nuestra plataforma interactiva que te permite explorar
-                        el estado de la energía nuclear a nivel global. Visualiza la ubicación de cada reactor,
-                        compara estadísticas entre países y accede a información actualizada del sector.
+                        {% trans "Descubre NuclenergyData, nuestra plataforma interactiva que te permite explorar el estado de la energía nuclear a nivel global. Visualiza la ubicación de cada reactor, compara estadísticas entre países y accede a información actualizada del sector." %}
                     </p>
 
                     <div class="data-features">
@@ -546,8 +539,8 @@
                                 <i class="bi bi-globe-americas"></i>
                             </div>
                             <div>
-                                <h4>Atlas Mundial</h4>
-                                <p>Visualiza reactores por país en un mapa interactivo</p>
+                                <h4>{% trans "Atlas Mundial" %}</h4>
+                                <p>{% trans "Visualiza reactores por país en un mapa interactivo" %}</p>
                             </div>
                         </div>
                         <div class="data-feature">
@@ -555,8 +548,8 @@
                                 <i class="bi bi-bar-chart-line"></i>
                             </div>
                             <div>
-                                <h4>Comparador</h4>
-                                <p>Compara estadísticas entre diferentes naciones</p>
+                                <h4>{% trans "Comparador" %}</h4>
+                                <p>{% trans "Compara estadísticas entre diferentes naciones" %}</p>
                             </div>
                         </div>
                         <div class="data-feature">
@@ -564,14 +557,14 @@
                                 <i class="bi bi-activity"></i>
                             </div>
                             <div>
-                                <h4>Datos Actualizados</h4>
-                                <p>Información actualizada de reactores operativos</p>
+                                <h4>{% trans "Datos Actualizados" %}</h4>
+                                <p>{% trans "Información actualizada de reactores operativos" %}</p>
                             </div>
                         </div>
                     </div>
 
                     <a href="https://www.nuclenergydata.com/" target="_blank" class="btn-primary-xl btn-glow d-none d-lg-inline-flex">
-                        <span>Explorar NuclenergyData</span>
+                        <span>{% trans "Explorar NuclenergyData" %}</span>
                         <i class="bi bi-box-arrow-up-right"></i>
                     </a>
                 </div>
@@ -705,17 +698,17 @@
                             <div class="data-panels">
                                 <div class="data-panel" id="panel1">
                                     <div class="panel-value"><span class="panel-number">440</span></div>
-                                    <div class="panel-label">Reactores Activos</div>
+                                    <div class="panel-label">{% trans "Reactores Activos" %}</div>
                                     <div class="panel-bar"><div class="bar-fill" style="width: 85%"></div></div>
                                 </div>
                                 <div class="data-panel" id="panel2">
                                     <div class="panel-value"><span class="panel-number">32</span></div>
-                                    <div class="panel-label">Países con Nuclear</div>
+                                    <div class="panel-label">{% trans "Países con Nuclear" %}</div>
                                     <div class="panel-bar"><div class="bar-fill" style="width: 60%"></div></div>
                                 </div>
                                 <div class="data-panel" id="panel3">
                                     <div class="panel-value"><span class="panel-number">58</span></div>
-                                    <div class="panel-label">En Construcción</div>
+                                    <div class="panel-label">{% trans "En Construcción" %}</div>
                                     <div class="panel-bar"><div class="bar-fill" style="width: 40%"></div></div>
                                 </div>
                             </div>
@@ -733,7 +726,7 @@
                 <!-- Mobile CTA Button -->
                 <div class="text-center mt-4 d-lg-none">
                     <a href="https://www.nuclenergydata.com/" target="_blank" class="btn-primary-xl btn-glow">
-                        <span>Explorar NuclenergyData</span>
+                        <span>{% trans "Explorar NuclenergyData" %}</span>
                         <i class="bi bi-box-arrow-up-right"></i>
                     </a>
                 </div>
@@ -746,11 +739,10 @@
 <section class="benefits-section">
     <div class="container">
         <div class="section-header text-center" data-animate="fadeInUp">
-            <span class="section-tag">Membresía ASNC</span>
-            <h2 class="section-title-lg">¿Por qué ser parte de la ASNC?</h2>
+            <span class="section-tag">{% trans "Membresía ASNC" %}</span>
+            <h2 class="section-title-lg">{% trans "¿Por qué ser parte de la ASNC?" %}</h2>
             <p class="section-subtitle">
-                Más que una asociación, somos un ecosistema de crecimiento profesional
-                diseñado para potenciar tu carrera en el sector nuclear.
+                {% trans "Más que una asociación, somos un ecosistema de crecimiento profesional diseñado para potenciar tu carrera en el sector nuclear." %}
             </p>
         </div>
 
@@ -759,41 +751,41 @@
                 <div class="benefit-icon">
                     <i class="bi bi-people-fill"></i>
                 </div>
-                <h3>Comunidad Científica Colombiana</h3>
-                <p>Únete a la red de profesionales, investigadores y estudiantes del sector nuclear más grande de Colombia. Conecta con expertos y construye relaciones valiosas.</p>
-                <div class="benefit-tag">Lo más solicitado</div>
+                <h3>{% trans "Comunidad Científica Colombiana" %}</h3>
+                <p>{% trans "Únete a la red de profesionales, investigadores y estudiantes del sector nuclear más grande de Colombia. Conecta con expertos y construye relaciones valiosas." %}</p>
+                <div class="benefit-tag">{% trans "Lo más solicitado" %}</div>
             </div>
 
             <div class="benefit-card" data-animate="fadeInUp" data-delay="200">
                 <div class="benefit-icon icon-gold">
                     <i class="bi bi-calendar-event"></i>
                 </div>
-                <h3>Eventos Exclusivos</h3>
-                <p>Acceso preferencial a congresos, seminarios, conferencias y encuentros del sector nuclear.</p>
+                <h3>{% trans "Eventos Exclusivos" %}</h3>
+                <p>{% trans "Acceso preferencial a congresos, seminarios, conferencias y encuentros del sector nuclear." %}</p>
             </div>
 
             <div class="benefit-card" data-animate="fadeInUp" data-delay="300">
                 <div class="benefit-icon icon-green">
                     <i class="bi bi-folder-fill"></i>
                 </div>
-                <h3>Material Exclusivo</h3>
-                <p>Acceso a contenido especializado, estudios, publicaciones y recursos educativos del sector.</p>
+                <h3>{% trans "Material Exclusivo" %}</h3>
+                <p>{% trans "Acceso a contenido especializado, estudios, publicaciones y recursos educativos del sector." %}</p>
             </div>
 
             <div class="benefit-card" data-animate="fadeInUp" data-delay="400">
                 <div class="benefit-icon icon-blue">
                     <i class="bi bi-mortarboard-fill"></i>
                 </div>
-                <h3>Formación y Capacitación</h3>
-                <p>Cursos, talleres y oportunidades de formación con instituciones nacionales e internacionales.</p>
+                <h3>{% trans "Formación y Capacitación" %}</h3>
+                <p>{% trans "Cursos, talleres y oportunidades de formación con instituciones nacionales e internacionales." %}</p>
             </div>
 
             <div class="benefit-card" data-animate="fadeInUp" data-delay="500">
                 <div class="benefit-icon icon-purple">
                     <i class="bi bi-building"></i>
                 </div>
-                <h3>Conexión con la Industria</h3>
-                <p>Vínculos directos con empresas, instituciones y organizaciones a nivel nacional e internacional.</p>
+                <h3>{% trans "Conexión con la Industria" %}</h3>
+                <p>{% trans "Vínculos directos con empresas, instituciones y organizaciones a nivel nacional e internacional." %}</p>
             </div>
         </div>
     </div>
@@ -805,7 +797,7 @@
         <div class="disclaimer-card" data-animate="fadeInUp">
             <div class="disclaimer-header">
                 <i class="bi bi-shield-check"></i>
-                <h3>Nuestros Principios</h3>
+                <h3>{% trans "Nuestros Principios" %}</h3>
             </div>
             <div class="disclaimer-content">
                 <div class="row g-4">
@@ -814,8 +806,8 @@
                             <div class="disclaimer-icon">
                                 <i class="bi bi-people"></i>
                             </div>
-                            <h5>Respeto e Integridad</h5>
-                            <p>La ASNC promulga y defiende el respeto entre las personas, manteniendo su integridad y dignidad sin afectar al prójimo.</p>
+                            <h5>{% trans "Respeto e Integridad" %}</h5>
+                            <p>{% trans "La ASNC promulga y defiende el respeto entre las personas, manteniendo su integridad y dignidad sin afectar al prójimo." %}</p>
                         </div>
                     </div>
                     <div class="col-lg-4">
@@ -823,8 +815,8 @@
                             <div class="disclaimer-icon">
                                 <i class="bi bi-patch-check"></i>
                             </div>
-                            <h5>Colaboración dentro de la Ley</h5>
-                            <p>Somos una entidad que acepta la colaboración y apoyo de terceros en todas sus consideraciones, siempre y cuando estén dentro del marco de la ley y las normas vigentes.</p>
+                            <h5>{% trans "Colaboración dentro de la Ley" %}</h5>
+                            <p>{% trans "Somos una entidad que acepta la colaboración y apoyo de terceros en todas sus consideraciones, siempre y cuando estén dentro del marco de la ley y las normas vigentes." %}</p>
                         </div>
                     </div>
                     <div class="col-lg-4">
@@ -832,8 +824,8 @@
                             <div class="disclaimer-icon">
                                 <i class="bi bi-globe-americas"></i>
                             </div>
-                            <h5>Inclusión y Apertura</h5>
-                            <p>Somos una entidad abierta a todos los ciudadanos, profesionales y no profesionales, que quieran y consideren ser parte de los objetivos de la asociación.</p>
+                            <h5>{% trans "Inclusión y Apertura" %}</h5>
+                            <p>{% trans "Somos una entidad abierta a todos los ciudadanos, profesionales y no profesionales, que quieran y consideren ser parte de los objetivos de la asociación." %}</p>
                         </div>
                     </div>
                 </div>
@@ -851,24 +843,22 @@
                 <div class="sponsors-banner-content">
                     <span class="sponsors-badge">
                         <i class="bi bi-megaphone"></i>
-                        Espacio Publicitario
+                        {% trans "Espacio Publicitario" %}
                     </span>
                     <h2 class="sponsors-title">
-                        Impulse su marca junto al
-                        <span class="text-gold">futuro nuclear de Colombia</span>
+                        {% trans "Impulse su marca junto al" %}
+                        <span class="text-gold">{% trans "futuro nuclear de Colombia" %}</span>
                     </h2>
                     <p class="sponsors-description">
-                        Asocie su empresa con la comunidad científica y profesional más importante del sector nuclear en Colombia.
-                        Ofrecemos espacios de visibilidad en nuestra plataforma, eventos y comunicaciones para organizaciones
-                        que comparten nuestra visión de progreso.
+                        {% trans "Asocie su empresa con la comunidad científica y profesional más importante del sector nuclear en Colombia. Ofrecemos espacios de visibilidad en nuestra plataforma, eventos y comunicaciones para organizaciones que comparten nuestra visión de progreso." %}
                     </p>
                     <ul class="sponsors-perks">
-                        <li><i class="bi bi-check-circle-fill"></i> Logo visible en nuestra plataforma web</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Mención en eventos y actividades de la ASNC</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Presencia en nuestro boletín semanal</li>
+                        <li><i class="bi bi-check-circle-fill"></i> {% trans "Logo visible en nuestra plataforma web" %}</li>
+                        <li><i class="bi bi-check-circle-fill"></i> {% trans "Mención en eventos y actividades de la ASNC" %}</li>
+                        <li><i class="bi bi-check-circle-fill"></i> {% trans "Presencia en nuestro boletín semanal" %}</li>
                     </ul>
                     <a href="mailto:info@asncol.com?subject=Publicidad%20en%20ASNC" class="btn-sponsors">
-                        <span>Contáctenos</span>
+                        <span>{% trans "Contáctenos" %}</span>
                         <i class="bi bi-envelope"></i>
                     </a>
                 </div>
@@ -896,32 +886,31 @@
 
             <!-- Left: Context -->
             <div class="col-lg-5" data-animate="fadeInUp">
-                <span class="section-tag">Anualidad ASNC</span>
+                <span class="section-tag">{% trans "Anualidad ASNC" %}</span>
                 <h2 class="section-title">
-                    Haz parte del futuro<br>
-                    <span class="text-gold">nuclear de Colombia</span>
+                    {% trans "Haz parte del futuro" %}<br>
+                    <span class="text-gold">{% trans "nuclear de Colombia" %}</span>
                 </h2>
                 <p class="section-description">
-                    Como entidad sin ánimo de lucro, cada peso que aportan nuestros asociados
-                    se destina directamente a fortalecer la asociación y la comunidad nuclear del país.
+                    {% trans "Como entidad sin ánimo de lucro, cada peso que aportan nuestros asociados se destina directamente a fortalecer la asociación y la comunidad nuclear del país." %}
                 </p>
 
                 <div class="dues-destinos">
                     <div class="destino-item" data-animate="fadeInUp" data-delay="100">
                         <div class="destino-dot" style="background: var(--gold);"></div>
-                        <span>Organización de eventos, congresos y seminarios</span>
+                        <span>{% trans "Organización de eventos, congresos y seminarios" %}</span>
                     </div>
                     <div class="destino-item" data-animate="fadeInUp" data-delay="150">
                         <div class="destino-dot" style="background: #3b82f6;"></div>
-                        <span>Producción de contenido educativo y divulgación</span>
+                        <span>{% trans "Producción de contenido educativo y divulgación" %}</span>
                     </div>
                     <div class="destino-item" data-animate="fadeInUp" data-delay="200">
                         <div class="destino-dot" style="background: #10b981;"></div>
-                        <span>Representación ante organizaciones internacionales</span>
+                        <span>{% trans "Representación ante organizaciones internacionales" %}</span>
                     </div>
                     <div class="destino-item" data-animate="fadeInUp" data-delay="250">
                         <div class="destino-dot" style="background: #8b5cf6;"></div>
-                        <span>Plataformas digitales y herramientas para asociados</span>
+                        <span>{% trans "Plataformas digitales y herramientas para asociados" %}</span>
                     </div>
                 </div>
             </div>
@@ -935,17 +924,17 @@
                         <div class="dues-card-header">
                             <div class="dues-card-icon"><i class="bi bi-briefcase-fill"></i></div>
                             <div>
-                                <h3>Profesional</h3>
-                                <p>Profesionales, investigadores y docentes</p>
+                                <h3>{% trans "Profesional" %}</h3>
+                                <p>{% trans "Profesionales, investigadores y docentes" %}</p>
                             </div>
                         </div>
                         <div class="dues-card-price">
                             <span class="dues-amount">$90.000</span>
-                            <span class="dues-period">COP / año</span>
+                            <span class="dues-period">{% trans "COP / año" %}</span>
                         </div>
                         <div class="dues-card-includes">
-                            <span>Incluye:</span>
-                            Carné digital, eventos exclusivos, material especializado, comités técnicos y representación institucional.
+                            <span>{% trans "Incluye:" %}</span>
+                            {% trans "Carné digital, eventos exclusivos, material especializado, comités técnicos y representación institucional." %}
                         </div>
                     </div>
 
@@ -954,22 +943,22 @@
                         <div class="dues-card-header">
                             <div class="dues-card-icon icon-student"><i class="bi bi-mortarboard-fill"></i></div>
                             <div>
-                                <h3>Estudiante</h3>
-                                <p>Pregrado y posgrado en áreas afines</p>
+                                <h3>{% trans "Estudiante" %}</h3>
+                                <p>{% trans "Pregrado y posgrado en áreas afines" %}</p>
                             </div>
                         </div>
                         <div class="dues-card-price">
                             <span class="dues-amount">$35.000</span>
-                            <span class="dues-period">COP / año</span>
+                            <span class="dues-period">{% trans "COP / año" %}</span>
                         </div>
                         <div class="dues-card-includes">
-                            <span>Incluye:</span>
-                            Carné digital, acceso a eventos, material educativo y red de contactos profesionales.
+                            <span>{% trans "Incluye:" %}</span>
+                            {% trans "Carné digital, acceso a eventos, material educativo y red de contactos profesionales." %}
                         </div>
                     </div>
 
                     <a href="{% url 'application_create' %}" class="dues-cta" data-animate="fadeInUp" data-delay="300">
-                        <span>Solicitar Ingreso a la ASNC</span>
+                        <span>{% trans "Solicitar Ingreso a la ASNC" %}</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
@@ -986,21 +975,20 @@
     <div class="container position-relative z-1">
         <div class="cta-content text-center" data-animate="fadeInUp">
             <h2 class="cta-title">
-                Únete a Nuestra Comunidad Científica<br>
-                <span class="text-gold">una de las más importantes del país</span>
+                {% trans "Únete a Nuestra Comunidad Científica" %}<br>
+                <span class="text-gold">{% trans "una de las más importantes del país" %}</span>
             </h2>
             <p class="cta-description">
-                Profesionales, estudiantes y empresas unidos por el desarrollo
-                nuclear pacífico y sostenible de Colombia.
+                {% trans "Profesionales, estudiantes y empresas unidos por el desarrollo nuclear pacífico y sostenible de Colombia." %}
             </p>
             <div class="cta-actions">
                 <a href="{% url 'application_create' %}" class="btn-cta-primary">
-                    <span>Ayúdanos a ser mejores</span>
+                    <span>{% trans "Ayúdanos a ser mejores" %}</span>
                     <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
             <p class="cta-note">
-                <i class="bi bi-clock"></i> Proceso de revisión: 5-7 días hábiles
+                <i class="bi bi-clock"></i> {% trans "Proceso de revisión: 5-7 días hábiles" %}
             </p>
         </div>
     </div>
@@ -1013,21 +1001,21 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="newsletter-content">
-                        <span class="section-tag">Boletín Semanal</span>
-                        <h3>No te pierdas ningún avance</h3>
-                        <p>Recibe noticias, invitaciones a eventos y artículos destacados de Nuclenergy directamente en tu correo.</p>
+                        <span class="section-tag">{% trans "Boletín Semanal" %}</span>
+                        <h3>{% trans "No te pierdas ningún avance" %}</h3>
+                        <p>{% trans "Recibe noticias, invitaciones a eventos y artículos destacados de Nuclenergy directamente en tu correo." %}</p>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <form class="newsletter-form">
                         <div class="input-group">
-                            <input type="email" placeholder="Tu correo electrónico" required>
+                            <input type="email" placeholder="{% trans 'Tu correo electrónico' %}" required>
                             <button type="submit">
-                                <span>Suscribirme</span>
+                                <span>{% trans "Suscribirme" %}</span>
                                 <i class="bi bi-send"></i>
                             </button>
                         </div>
-                        <small><i class="bi bi-shield-check"></i> Respetamos tu privacidad. Cero spam.</small>
+                        <small><i class="bi bi-shield-check"></i> {% trans "Respetamos tu privacidad. Cero spam." %}</small>
                     </form>
                 </div>
             </div>

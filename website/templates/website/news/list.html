@@ -1,18 +1,19 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Noticias{% endblock %}
+{% block title %}{% trans "Noticias" %}{% endblock %}
 
-{% block meta_description %}Noticias y novedades de la Asociación Nuclear Colombiana (ASNC). Mantente informado sobre el sector nuclear en Colombia.{% endblock %}
+{% block meta_description %}{% trans "Noticias y novedades de la Asociación Nuclear Colombiana (ASNC). Mantente informado sobre el sector nuclear en Colombia." %}{% endblock %}
 
 {% block content %}
 
 <section class="news-hero">
     <div class="container">
         <div class="news-hero-content text-center">
-            <span class="news-tag">Blog ASNC</span>
-            <h1>Noticias y Novedades</h1>
-            <p>Lo último del sector nuclear colombiano y la comunidad ASNC</p>
+            <span class="news-tag">{% trans "Blog ASNC" %}</span>
+            <h1>{% trans "Noticias y Novedades" %}</h1>
+            <p>{% trans "Lo último del sector nuclear colombiano y la comunidad ASNC" %}</p>
         </div>
     </div>
 </section>
@@ -42,7 +43,7 @@
                             <h3>{{ article.title }}</h3>
                             <p>{{ article.excerpt }}</p>
                             <span class="news-card-read">
-                                Leer más <i class="bi bi-arrow-right"></i>
+                                {% trans "Leer más" %} <i class="bi bi-arrow-right"></i>
                             </span>
                         </div>
                     </div>
@@ -82,8 +83,8 @@
         {% else %}
         <div class="text-center py-5">
             <i class="bi bi-newspaper" style="font-size: 4rem; color: var(--asnc-gold);"></i>
-            <h3 class="mt-3 fw-bold" style="color: var(--asnc-navy);">Próximamente</h3>
-            <p class="text-muted">Estamos preparando contenido para ti. ¡Vuelve pronto!</p>
+            <h3 class="mt-3 fw-bold" style="color: var(--asnc-navy);">{% trans "Próximamente" %}</h3>
+            <p class="text-muted">{% trans "Estamos preparando contenido para ti. ¡Vuelve pronto!" %}</p>
         </div>
         {% endif %}
     </div>

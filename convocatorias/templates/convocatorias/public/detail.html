@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}{{ convocatoria.title }}{% endblock %}
 {% block meta_description %}{{ convocatoria.description|truncatechars:160 }}{% endblock %}
@@ -21,7 +22,7 @@
         <div class="container" style="max-width: 720px;">
             <!-- Back link -->
             <a href="{% url 'convocatorias:list' %}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-3">
-                <i class="bi bi-arrow-left me-2"></i>Todas las convocatorias
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Todas las convocatorias" %}
             </a>
 
             <!-- Title card -->
@@ -29,15 +30,15 @@
                 <div class="card-body p-4 p-md-5">
                     {% if convocatoria.is_open %}
                     <span class="badge bg-success-subtle text-success rounded-pill mb-3">
-                        <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>Inscripciones abiertas
+                        <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>{% trans "Inscripciones abiertas" %}
                     </span>
                     {% elif convocatoria.is_active %}
                     <span class="badge bg-warning-subtle text-warning rounded-pill mb-3">
-                        <i class="bi bi-clock me-1"></i>Próximamente
+                        <i class="bi bi-clock me-1"></i>{% trans "Próximamente" %}
                     </span>
                     {% else %}
                     <span class="badge bg-secondary-subtle text-secondary rounded-pill mb-3">
-                        <i class="bi bi-slash-circle me-1"></i>Cerrada
+                        <i class="bi bi-slash-circle me-1"></i>{% trans "Cerrada" %}
                     </span>
                     {% endif %}
 
@@ -51,13 +52,13 @@
                     <div class="d-flex flex-wrap gap-3 mt-4 pt-3 border-top">
                         {% if convocatoria.opens_at %}
                         <div>
-                            <small class="text-muted d-block">Apertura</small>
+                            <small class="text-muted d-block">{% trans "Apertura" %}</small>
                             <span class="fw-medium"><i class="bi bi-calendar-check me-1 text-success"></i>{{ convocatoria.opens_at|date:"d/m/Y H:i" }}</span>
                         </div>
                         {% endif %}
                         {% if convocatoria.closes_at %}
                         <div>
-                            <small class="text-muted d-block">Cierre</small>
+                            <small class="text-muted d-block">{% trans "Cierre" %}</small>
                             <span class="fw-medium"><i class="bi bi-calendar-x me-1 text-danger"></i>{{ convocatoria.closes_at|date:"d/m/Y H:i" }}</span>
                         </div>
                         {% endif %}
@@ -71,8 +72,8 @@
                 {% if form.fields %}
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                     <div class="form-header text-white p-4">
-                        <h4 class="fw-bold mb-1"><i class="bi bi-pencil-square me-2"></i>Formulario de inscripción</h4>
-                        <p class="mb-0 opacity-75 small">Completa los siguientes datos. Los campos con * son obligatorios.</p>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-pencil-square me-2"></i>{% trans "Formulario de inscripción" %}</h4>
+                        <p class="mb-0 opacity-75 small">{% trans "Completa los siguientes datos. Los campos con * son obligatorios." %}</p>
                     </div>
                     <div class="card-body p-4 p-md-5">
                         <form method="post" enctype="multipart/form-data" novalidate>
@@ -115,19 +116,19 @@
                             {% endfor %}
 
                             <button type="submit" class="btn btn-primary btn-lg rounded-pill w-100 py-3 mt-2" style="background-color: #f4c343; border-color: #f4c343; color: #1B2A41; font-weight: 600;">
-                                <i class="bi bi-send me-2"></i>Enviar inscripción
+                                <i class="bi bi-send me-2"></i>{% trans "Enviar inscripción" %}
                             </button>
                         </form>
                     </div>
                 </div>
                 {% else %}
                 <div class="alert alert-warning rounded-4">
-                    <i class="bi bi-exclamation-triangle me-2"></i>Esta convocatoria aún no tiene un formulario configurado.
+                    <i class="bi bi-exclamation-triangle me-2"></i>{% trans "Esta convocatoria aún no tiene un formulario configurado." %}
                 </div>
                 {% endif %}
             {% else %}
             <div class="alert alert-info rounded-4 text-center">
-                <i class="bi bi-info-circle me-2"></i>Las inscripciones no están disponibles en este momento.
+                <i class="bi bi-info-circle me-2"></i>{% trans "Las inscripciones no están disponibles en este momento." %}
             </div>
             {% endif %}
         </div>

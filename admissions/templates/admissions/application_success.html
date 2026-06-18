@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Solicitud Recibida - ASNC{% endblock %}
+{% block title %}{% trans "Solicitud Recibida - ASNC" %}{% endblock %}
 
 {% block content %}
 
@@ -20,43 +21,43 @@
                     </div>
 
                     <!-- Message -->
-                    <h1 class="success-title">¡Solicitud Recibida!</h1>
+                    <h1 class="success-title">{% trans "¡Solicitud Recibida!" %}</h1>
 
                     <p class="success-message">
-                        Gracias por tu interés en formar parte de la
+                        {% trans "Gracias por tu interés en formar parte de la" %}
                         <strong>Asociación Nuclear Colombiana</strong>.
                     </p>
 
                     <div class="success-details">
                         <div class="detail-item">
                             <i class="bi bi-envelope-check"></i>
-                            <span>Te enviaremos un correo de confirmación</span>
+                            <span>{% trans "Te enviaremos un correo de confirmación" %}</span>
                         </div>
                         <div class="detail-item">
                             <i class="bi bi-people"></i>
-                            <span>Nuestro Comité revisará tu perfil</span>
+                            <span>{% trans "Nuestro Comité revisará tu perfil" %}</span>
                         </div>
                         <div class="detail-item">
                             <i class="bi bi-clock-history"></i>
-                            <span>Recibirás respuesta en los próximos días</span>
+                            <span>{% trans "Recibirás respuesta en los próximos días" %}</span>
                         </div>
                     </div>
 
                     <div class="success-quote">
                         <i class="bi bi-quote"></i>
-                        <p>La ciencia nuclear al servicio del desarrollo sostenible de Colombia.</p>
+                        <p>{% trans "La ciencia nuclear al servicio del desarrollo sostenible de Colombia." %}</p>
                     </div>
 
                     <!-- Actions -->
                     <div class="success-actions">
                         <a href="{% url 'home' %}" class="btn btn-primary-asnc">
-                            <i class="bi bi-house me-2"></i>Volver al inicio
+                            <i class="bi bi-house me-2"></i>{% trans "Volver al inicio" %}
                         </a>
                     </div>
 
                     <!-- Social -->
                     <div class="success-social">
-                        <p>Síguenos en redes sociales</p>
+                        <p>{% trans "Síguenos en redes sociales" %}</p>
                         <div class="social-icons">
                             <a href="https://linkedin.com" target="_blank" class="social-link">
                                 <i class="bi bi-linkedin"></i>

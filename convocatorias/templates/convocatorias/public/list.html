@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Convocatorias{% endblock %}
-{% block meta_description %}Convocatorias abiertas de la Asociación Nuclear Colombiana. Inscríbete a programas, eventos y oportunidades para la comunidad nuclear.{% endblock %}
+{% block title %}{% trans "Convocatorias" %}{% endblock %}
+{% block meta_description %}{% trans "Convocatorias abiertas de la Asociación Nuclear Colombiana. Inscríbete a programas, eventos y oportunidades para la comunidad nuclear." %}{% endblock %}
 
 {% block content %}
 <section class="py-5" style="background: linear-gradient(135deg, #1B2A41 0%, #213a5c 100%); min-height: 40vh;">
     <div class="container">
         <div class="text-center text-white py-4">
             <i class="bi bi-megaphone" style="font-size: 3rem; color: #f4c343;"></i>
-            <h1 class="fw-bold mt-3 mb-2" style="font-size: clamp(1.8rem, 5vw, 2.8rem);">Convocatorias</h1>
-            <p class="opacity-75 mb-0" style="font-size: 1.05rem;">Participa en las iniciativas abiertas de la ASNC</p>
+            <h1 class="fw-bold mt-3 mb-2" style="font-size: clamp(1.8rem, 5vw, 2.8rem);">{% trans "Convocatorias" %}</h1>
+            <p class="opacity-75 mb-0" style="font-size: 1.05rem;">{% trans "Participa en las iniciativas abiertas de la ASNC" %}</p>
         </div>
     </div>
 </section>
@@ -34,7 +35,7 @@
                         <div class="card-body p-4">
                             {% if c.is_open %}
                             <span class="badge bg-success-subtle text-success rounded-pill mb-2">
-                                <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>Abierta
+                                <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>{% trans "Abierta" %}
                             </span>
                             {% endif %}
                             <h5 class="fw-bold text-dark mb-2">{{ c.title }}</h5>
@@ -44,7 +45,7 @@
                             {% if c.closes_at %}
                             <small class="text-muted">
                                 <i class="bi bi-calendar-event me-1"></i>
-                                Cierra: {{ c.closes_at|date:"d M Y" }}
+                                {% trans "Cierra:" %} {{ c.closes_at|date:"d M Y" }}
                             </small>
                             {% endif %}
                         </div>
@@ -56,8 +57,8 @@
         {% else %}
         <div class="text-center py-5">
             <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
-            <h4 class="text-muted mt-3">No hay convocatorias activas</h4>
-            <p class="text-muted">Vuelve pronto para ver nuevas oportunidades.</p>
+            <h4 class="text-muted mt-3">{% trans "No hay convocatorias activas" %}</h4>
+            <p class="text-muted">{% trans "Vuelve pronto para ver nuevas oportunidades." %}</p>
         </div>
         {% endif %}
     </div>

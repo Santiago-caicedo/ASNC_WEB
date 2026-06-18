@@ -7,6 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Síguenos:"
 msgstr "Follow us:"
@@ -65,3 +66,2117 @@ msgstr "All rights reserved."
 
 msgid "Desarrollado por"
 msgstr "Developed by"
+
+msgid "El Futuro de Colombia"
+msgstr "The Future of Colombia"
+
+msgid "es Nuclear"
+msgstr "is Nuclear"
+
+msgid ""
+"Somos una comunidad científica que impulsa el desarrollo de la energía "
+"nuclear como pilar fundamental de la transición energética justa en "
+"Colombia."
+msgstr ""
+"We are a scientific community driving the development of nuclear energy as a"
+" fundamental pillar of a just energy transition in Colombia."
+
+msgid "Únete a la ASNC"
+msgstr "Join the ASNC"
+
+msgid "Descubre más"
+msgstr "Discover more"
+
+msgid "Noticias de la Asociación"
+msgstr "Association News"
+
+msgid "Próximamente publicaremos novedades."
+msgstr "We will publish updates soon."
+
+msgid "Ver todas las noticias"
+msgstr "View all news"
+
+msgid "Scroll"
+msgstr "Scroll"
+
+msgid "Actualidad Nuclear"
+msgstr "Nuclear News"
+
+msgid "Noticias del Sector"
+msgstr "Industry News"
+
+msgid ""
+"Lo más relevante del mundo nuclear: avances, investigaciones y tendencias."
+msgstr ""
+"The most relevant from the nuclear world: advances, research and trends."
+
+msgid "Nuclear"
+msgstr "Nuclear"
+
+msgid "Próximamente publicaremos noticias del sector nuclear."
+msgstr "We will publish nuclear industry news soon."
+
+msgid "El Poder del Átomo"
+msgstr "The Power of the Atom"
+
+msgid "Fisión Nuclear:"
+msgstr "Nuclear Fission:"
+
+msgid "Energía del Futuro"
+msgstr "Energy of the Future"
+
+msgid ""
+"La fisión nuclear ocurre cuando un neutrón impacta un núcleo de uranio-235, "
+"dividiéndolo en dos fragmentos y liberando una cantidad inmensa de energía, "
+"junto con más neutrones que continúan la reacción en cadena."
+msgstr ""
+"Nuclear fission occurs when a neutron strikes a uranium-235 nucleus, "
+"splitting it into two fragments and releasing an immense amount of energy, "
+"along with more neutrons that sustain the chain reaction."
+
+msgid "Impacto del Neutrón"
+msgstr "Neutron Impact"
+
+msgid "Un neutrón colisiona con el núcleo de U-235"
+msgstr "A neutron collides with the U-235 nucleus"
+
+msgid "División del Núcleo"
+msgstr "Nucleus Splitting"
+
+msgid "El átomo se vuelve inestable y se divide"
+msgstr "The atom becomes unstable and splits"
+
+msgid "Liberación de Energía"
+msgstr "Energy Release"
+
+msgid "Se libera energía térmica y más neutrones"
+msgstr "Thermal energy and more neutrons are released"
+
+msgid "Reacción en Cadena"
+msgstr "Chain Reaction"
+
+msgid "Los neutrones continúan el proceso"
+msgstr "The neutrons continue the process"
+
+msgid "REACCIÓN EN CADENA INICIADA"
+msgstr "CHAIN REACTION INITIATED"
+
+msgid "Energía Liberada"
+msgstr "Energy Released"
+
+msgid "Aplicaciones"
+msgstr "Applications"
+
+msgid "La Tecnología Nuclear Transforma Vidas"
+msgstr "Nuclear Technology Transforms Lives"
+
+msgid ""
+"Más allá de la generación eléctrica, la energía nuclear tiene aplicaciones "
+"fundamentales en medicina, agricultura e industria."
+msgstr ""
+"Beyond electricity generation, nuclear energy has essential applications in "
+"medicine, agriculture and industry."
+
+msgid "Medicina Nuclear"
+msgstr "Nuclear Medicine"
+
+msgid ""
+"Diagnóstico por imágenes, tratamiento del cáncer con radioterapia, y "
+"esterilización de equipos médicos."
+msgstr ""
+"Diagnostic imaging, cancer treatment with radiotherapy, and sterilization of"
+" medical equipment."
+
+msgid "PET y SPECT scan"
+msgstr "PET and SPECT scan"
+
+msgid "Radioterapia oncológica"
+msgstr "Oncological radiotherapy"
+
+msgid "Radioisótopos terapéuticos"
+msgstr "Therapeutic radioisotopes"
+
+msgid "Agricultura Nuclear"
+msgstr "Nuclear Agriculture"
+
+msgid "Agricultura"
+msgstr "Agriculture"
+
+msgid ""
+"Mejora genética de cultivos, control de plagas y conservación de alimentos "
+"mediante radiación."
+msgstr ""
+"Genetic crop improvement, pest control and food preservation through "
+"radiation."
+
+msgid "Mutaciones benéficas"
+msgstr "Beneficial mutations"
+
+msgid "Esterilización de insectos"
+msgstr "Insect sterilization"
+
+msgid "Irradiación de alimentos"
+msgstr "Food irradiation"
+
+msgid "Energía Nuclear"
+msgstr "Nuclear Energy"
+
+msgid "Energía Limpia"
+msgstr "Clean Energy"
+
+msgid ""
+"Generación eléctrica continua, cero emisiones de CO2 y alta densidad "
+"energética."
+msgstr ""
+"Continuous electricity generation, zero CO2 emissions and high energy "
+"density."
+
+msgid "24/7 sin intermitencia"
+msgstr "24/7 with no intermittency"
+
+msgid "Huella de carbono mínima"
+msgstr "Minimal carbon footprint"
+
+msgid "Máxima eficiencia"
+msgstr "Maximum efficiency"
+
+msgid "SuperNuc - Guardián de la Energía Nuclear"
+msgstr "SuperNuc - Guardian of Nuclear Energy"
+
+msgid "Ciencia Real"
+msgstr "Real Science"
+
+msgid "Alcance Global"
+msgstr "Global Reach"
+
+msgid "Plataforma Oficial de Divulgación ASNC"
+msgstr "Official ASNC Outreach Platform"
+
+msgid "Donde la"
+msgstr "Where"
+
+msgid "Ciencia"
+msgstr "Science"
+
+msgid "Vence a los"
+msgstr "Defeats"
+
+msgid "Mitos"
+msgstr "Myths"
+
+msgid ""
+"La voz oficial de la Asociación Nuclear Colombiana en el mundo digital. "
+"Educamos, informamos y derribamos mitos sobre la energía nuclear con "
+"contenido verificado por expertos."
+msgstr ""
+"The official voice of the Colombian Nuclear Association in the digital "
+"world. We educate, inform and debunk myths about nuclear energy with expert-"
+"verified content."
+
+msgid "Podcast"
+msgstr "Podcast"
+
+msgid "Cursos"
+msgstr "Courses"
+
+msgid "Artículos"
+msgstr "Articles"
+
+msgid "Videos"
+msgstr "Videos"
+
+msgid "Explorar Nuclenergy"
+msgstr "Explore Nuclenergy"
+
+msgid "Contenido verificado"
+msgstr "Verified content"
+
+msgid "Respaldado por la ASNC"
+msgstr "Backed by the ASNC"
+
+msgid "Herramienta Digital"
+msgstr "Digital Tool"
+
+msgid "Atlas Mundial de"
+msgstr "World Atlas of"
+
+msgid "Reactores Nucleares"
+msgstr "Nuclear Reactors"
+
+msgid ""
+"Descubre NuclenergyData, nuestra plataforma interactiva que te permite "
+"explorar el estado de la energía nuclear a nivel global. Visualiza la "
+"ubicación de cada reactor, compara estadísticas entre países y accede a "
+"información actualizada del sector."
+msgstr ""
+"Discover NuclenergyData, our interactive platform that lets you explore the "
+"state of nuclear energy worldwide. View the location of each reactor, "
+"compare statistics across countries and access up-to-date industry "
+"information."
+
+msgid "Atlas Mundial"
+msgstr "World Atlas"
+
+msgid "Visualiza reactores por país en un mapa interactivo"
+msgstr "View reactors by country on an interactive map"
+
+msgid "Comparador"
+msgstr "Comparator"
+
+msgid "Compara estadísticas entre diferentes naciones"
+msgstr "Compare statistics across different nations"
+
+msgid "Datos Actualizados"
+msgstr "Up-to-Date Data"
+
+msgid "Información actualizada de reactores operativos"
+msgstr "Up-to-date information on operating reactors"
+
+msgid "Explorar NuclenergyData"
+msgstr "Explore NuclenergyData"
+
+msgid "Reactores Activos"
+msgstr "Active Reactors"
+
+msgid "Países con Nuclear"
+msgstr "Countries with Nuclear Power"
+
+msgid "En Construcción"
+msgstr "Under Construction"
+
+msgid "Membresía ASNC"
+msgstr "ASNC Membership"
+
+msgid "¿Por qué ser parte de la ASNC?"
+msgstr "Why be part of the ASNC?"
+
+msgid ""
+"Más que una asociación, somos un ecosistema de crecimiento profesional "
+"diseñado para potenciar tu carrera en el sector nuclear."
+msgstr ""
+"More than an association, we are a professional growth ecosystem designed to"
+" boost your career in the nuclear sector."
+
+msgid "Comunidad Científica Colombiana"
+msgstr "Colombian Scientific Community"
+
+msgid ""
+"Únete a la red de profesionales, investigadores y estudiantes del sector "
+"nuclear más grande de Colombia. Conecta con expertos y construye relaciones "
+"valiosas."
+msgstr ""
+"Join the largest network of nuclear sector professionals, researchers and "
+"students in Colombia. Connect with experts and build valuable relationships."
+
+msgid "Lo más solicitado"
+msgstr "Most requested"
+
+msgid "Eventos Exclusivos"
+msgstr "Exclusive Events"
+
+msgid ""
+"Acceso preferencial a congresos, seminarios, conferencias y encuentros del "
+"sector nuclear."
+msgstr ""
+"Preferential access to congresses, seminars, conferences and gatherings of "
+"the nuclear sector."
+
+msgid "Material Exclusivo"
+msgstr "Exclusive Material"
+
+msgid ""
+"Acceso a contenido especializado, estudios, publicaciones y recursos "
+"educativos del sector."
+msgstr ""
+"Access to specialized content, studies, publications and educational "
+"resources of the sector."
+
+msgid "Formación y Capacitación"
+msgstr "Training and Education"
+
+msgid ""
+"Cursos, talleres y oportunidades de formación con instituciones nacionales e"
+" internacionales."
+msgstr ""
+"Courses, workshops and training opportunities with national and "
+"international institutions."
+
+msgid "Conexión con la Industria"
+msgstr "Industry Connection"
+
+msgid ""
+"Vínculos directos con empresas, instituciones y organizaciones a nivel "
+"nacional e internacional."
+msgstr ""
+"Direct links with companies, institutions and organizations at the national "
+"and international level."
+
+msgid "Nuestros Principios"
+msgstr "Our Principles"
+
+msgid "Respeto e Integridad"
+msgstr "Respect and Integrity"
+
+msgid ""
+"La ASNC promulga y defiende el respeto entre las personas, manteniendo su "
+"integridad y dignidad sin afectar al prójimo."
+msgstr ""
+"The ASNC promotes and defends respect among people, preserving their "
+"integrity and dignity without harming others."
+
+msgid "Colaboración dentro de la Ley"
+msgstr "Collaboration within the Law"
+
+msgid ""
+"Somos una entidad que acepta la colaboración y apoyo de terceros en todas "
+"sus consideraciones, siempre y cuando estén dentro del marco de la ley y las"
+" normas vigentes."
+msgstr ""
+"We are an entity that accepts the collaboration and support of third parties"
+" in all respects, provided they are within the framework of the law and "
+"current regulations."
+
+msgid "Inclusión y Apertura"
+msgstr "Inclusion and Openness"
+
+msgid ""
+"Somos una entidad abierta a todos los ciudadanos, profesionales y no "
+"profesionales, que quieran y consideren ser parte de los objetivos de la "
+"asociación."
+msgstr ""
+"We are an entity open to all citizens, professionals and non-professionals, "
+"who wish and consider becoming part of the association's objectives."
+
+msgid "Espacio Publicitario"
+msgstr "Advertising Space"
+
+msgid "Impulse su marca junto al"
+msgstr "Boost your brand alongside the"
+
+msgid "futuro nuclear de Colombia"
+msgstr "nuclear future of Colombia"
+
+msgid ""
+"Asocie su empresa con la comunidad científica y profesional más importante "
+"del sector nuclear en Colombia. Ofrecemos espacios de visibilidad en nuestra"
+" plataforma, eventos y comunicaciones para organizaciones que comparten "
+"nuestra visión de progreso."
+msgstr ""
+"Associate your company with the most important scientific and professional "
+"community in Colombia's nuclear sector. We offer visibility spaces on our "
+"platform, events and communications for organizations that share our vision "
+"of progress."
+
+msgid "Logo visible en nuestra plataforma web"
+msgstr "Logo displayed on our web platform"
+
+msgid "Mención en eventos y actividades de la ASNC"
+msgstr "Mention at ASNC events and activities"
+
+msgid "Presencia en nuestro boletín semanal"
+msgstr "Presence in our weekly newsletter"
+
+msgid "Contáctenos"
+msgstr "Contact us"
+
+msgid "Anualidad ASNC"
+msgstr "ASNC Annual Membership"
+
+msgid "Haz parte del futuro"
+msgstr "Be part of the future"
+
+msgid "nuclear de Colombia"
+msgstr "nuclear future of Colombia"
+
+msgid ""
+"Como entidad sin ánimo de lucro, cada peso que aportan nuestros asociados se"
+" destina directamente a fortalecer la asociación y la comunidad nuclear del "
+"país."
+msgstr ""
+"As a non-profit entity, every peso contributed by our members goes directly "
+"toward strengthening the association and the country's nuclear community."
+
+msgid "Organización de eventos, congresos y seminarios"
+msgstr "Organization of events, congresses and seminars"
+
+msgid "Producción de contenido educativo y divulgación"
+msgstr "Production of educational and outreach content"
+
+msgid "Representación ante organizaciones internacionales"
+msgstr "Representation before international organizations"
+
+msgid "Plataformas digitales y herramientas para asociados"
+msgstr "Digital platforms and tools for members"
+
+msgid "Profesional"
+msgstr "Professional"
+
+msgid "Profesionales, investigadores y docentes"
+msgstr "Professionals, researchers and educators"
+
+msgid "COP / año"
+msgstr "COP / year"
+
+msgid "Incluye:"
+msgstr "Includes:"
+
+msgid ""
+"Carné digital, eventos exclusivos, material especializado, comités técnicos "
+"y representación institucional."
+msgstr ""
+"Digital card, exclusive events, specialized material, technical committees "
+"and institutional representation."
+
+msgid "Estudiante"
+msgstr "Student"
+
+msgid "Pregrado y posgrado en áreas afines"
+msgstr "Undergraduate and graduate students in related fields"
+
+msgid ""
+"Carné digital, acceso a eventos, material educativo y red de contactos "
+"profesionales."
+msgstr ""
+"Digital card, access to events, educational material and a network of "
+"professional contacts."
+
+msgid "Solicitar Ingreso a la ASNC"
+msgstr "Apply to Join the ASNC"
+
+msgid "Únete a Nuestra Comunidad Científica"
+msgstr "Join Our Scientific Community"
+
+msgid "una de las más importantes del país"
+msgstr "one of the most important in the country"
+
+msgid ""
+"Profesionales, estudiantes y empresas unidos por el desarrollo nuclear "
+"pacífico y sostenible de Colombia."
+msgstr ""
+"Professionals, students and companies united for the peaceful and "
+"sustainable nuclear development of Colombia."
+
+msgid "Ayúdanos a ser mejores"
+msgstr "Help us be better"
+
+msgid "Proceso de revisión: 5-7 días hábiles"
+msgstr "Review process: 5-7 business days"
+
+msgid "Boletín Semanal"
+msgstr "Weekly Newsletter"
+
+msgid "No te pierdas ningún avance"
+msgstr "Don't miss any update"
+
+msgid ""
+"Recibe noticias, invitaciones a eventos y artículos destacados de Nuclenergy"
+" directamente en tu correo."
+msgstr ""
+"Receive news, event invitations and featured articles from Nuclenergy "
+"directly in your inbox."
+
+msgid "Tu correo electrónico"
+msgstr "Your email address"
+
+msgid "Suscribirme"
+msgstr "Subscribe"
+
+msgid "Respetamos tu privacidad. Cero spam."
+msgstr "We respect your privacy. Zero spam."
+
+msgid ""
+"Conoce al equipo directivo de la Asociación Nuclear Colombiana (ASNC). "
+"Profesionales comprometidos con la divulgación y desarrollo de la ciencia "
+"nuclear en Colombia."
+msgstr ""
+"Meet the leadership team of the Colombian Nuclear Association (ASNC). "
+"Professionals committed to the outreach and development of nuclear science "
+"in Colombia."
+
+msgid "Nuestra Asociación"
+msgstr "Our Association"
+
+msgid ""
+"La Asociación Nuclear Colombiana (ASNC) reúne a los profesionales, "
+"investigadores y entusiastas del sector nuclear en Colombia, promoviendo el "
+"desarrollo pacífico y sostenible de la ciencia y tecnología nuclear."
+msgstr ""
+"The Colombian Nuclear Association (ASNC) brings together the professionals, "
+"researchers, and enthusiasts of the nuclear sector in Colombia, promoting "
+"the peaceful and sustainable development of nuclear science and technology."
+
+msgid "Misión"
+msgstr "Mission"
+
+msgid ""
+"Albergar y agrupar al gremio nuclear de Colombia, articulando a "
+"profesionales, investigadores, estudiantes y empresas del sector en una "
+"comunidad sólida que impulse el desarrollo pacífico y sostenible de la "
+"ciencia y tecnología nuclear en el país."
+msgstr ""
+"To host and unite Colombia's nuclear community, connecting professionals, "
+"researchers, students, and companies in the sector within a strong community"
+" that drives the peaceful and sustainable development of nuclear science and"
+" technology in the country."
+
+msgid "Visión 2030"
+msgstr "Vision 2030"
+
+msgid ""
+"Ser el principal punto de encuentro y representación del gremio nuclear "
+"colombiano, reconocida como la organización que consolida, conecta y "
+"proyecta a la comunidad nuclear del país hacia la región y el mundo."
+msgstr ""
+"To be the leading meeting point and representative of the Colombian nuclear "
+"community, recognized as the organization that consolidates, connects, and "
+"projects the country's nuclear community toward the region and the world."
+
+msgid "Valores"
+msgstr "Values"
+
+msgid "Rigor científico"
+msgstr "Scientific rigor"
+
+msgid "Transparencia"
+msgstr "Transparency"
+
+msgid "Educación"
+msgstr "Education"
+
+msgid "Colaboración"
+msgstr "Collaboration"
+
+msgid "Nuestra Organización"
+msgstr "Our Organization"
+
+msgid "Estructura de la ASNC"
+msgstr "ASNC Structure"
+
+msgid "Una organización sólida construida para cumplir nuestra misión"
+msgstr "A strong organization built to fulfill our mission"
+
+msgid "Máximo Órgano"
+msgstr "Highest Body"
+
+msgid "Junta Directiva"
+msgstr "Board of Directors"
+
+msgid "Gobierno y dirección estratégica de la asociación"
+msgstr "Governance and strategic direction of the association"
+
+msgid "Comité de Divulgación"
+msgstr "Outreach Committee"
+
+msgid "Comunicación, contenido educativo y presencia en redes sociales"
+msgstr "Communication, educational content, and social media presence"
+
+msgid "Comité Científico"
+msgstr "Scientific Committee"
+
+msgid "Validación científica, investigación y asesoría especializada"
+msgstr "Scientific validation, research, and specialized advisory"
+
+msgid "Comité de Regulación y Gobierno"
+msgstr "Regulation and Governance Committee"
+
+msgid "Asuntos regulatorios, políticas públicas y relaciones institucionales"
+msgstr "Regulatory affairs, public policy, and institutional relations"
+
+msgid "Comité Financiero"
+msgstr "Finance Committee"
+
+msgid "Gestión de recursos y sostenibilidad económica"
+msgstr "Resource management and economic sustainability"
+
+msgid "Comité de Educación"
+msgstr "Education Committee"
+
+msgid "Formación, capacitación y desarrollo académico en ciencia nuclear"
+msgstr "Training, education, and academic development in nuclear science"
+
+msgid "Comité de Industria y Transporte"
+msgstr "Industry and Transport Committee"
+
+msgid "Aplicaciones industriales y transporte seguro de material nuclear"
+msgstr "Industrial applications and safe transport of nuclear material"
+
+msgid "Conócenos"
+msgstr "Get to Know Us"
+
+msgid "Nuestro Equipo Líder"
+msgstr "Our Leadership Team"
+
+msgid "Conoce a los profesionales que lideran nuestra asociación"
+msgstr "Meet the professionals who lead our association"
+
+msgid "Ver perfil completo"
+msgstr "View full profile"
+
+msgid "Trayectoria Profesional"
+msgstr "Professional Background"
+
+msgid "Ver perfil en LinkedIn"
+msgstr "View profile on LinkedIn"
+
+msgid "Próximamente"
+msgstr "Coming Soon"
+
+msgid "Conocerás a nuestro increíble equipo muy pronto"
+msgstr "You'll meet our amazing team very soon"
+
+msgid "Red Global"
+msgstr "Global Network"
+
+msgid "Asociados Internacionales"
+msgstr "International Members"
+
+msgid ""
+"Profesionales y colaboradores alrededor del mundo que fortalecen nuestra "
+"misión"
+msgstr ""
+"Professionals and collaborators around the world who strengthen our mission"
+
+msgid "Conocerás a nuestros asociados internacionales muy pronto"
+msgstr "You'll meet our international members very soon"
+
+msgid "¿Quieres ser parte de la ASNC?"
+msgstr "Do you want to be part of ASNC?"
+
+msgid "Únete a la comunidad científica nuclear más importante de Colombia"
+msgstr "Join the most important nuclear scientific community in Colombia"
+
+msgid "Solicitar Ingreso"
+msgstr "Apply for Membership"
+
+msgid "Eventos ASNC"
+msgstr "ASNC Events"
+
+msgid ""
+"Conferencias, talleres, webinars y encuentros para la comunidad\n"
+"                    nuclear colombiana. Un espacio de aprendizaje y networking."
+msgstr ""
+"Conferences, workshops, webinars and gatherings for the Colombian nuclear "
+"community. A space for learning and networking."
+
+msgid "Estamos preparando algo increíble"
+msgstr "We are preparing something amazing"
+
+msgid ""
+"Nuestro calendario de eventos está en desarrollo. Muy pronto podrás\n"
+"                    explorar conferencias, talleres y encuentros exclusivos para la\n"
+"                    comunidad nuclear colombiana."
+msgstr ""
+"Our events calendar is under development. Very soon you will be able to "
+"explore conferences, workshops and exclusive gatherings for the Colombian "
+"nuclear community."
+
+msgid "Calendario Interactivo"
+msgstr "Interactive Calendar"
+
+msgid "Explora y filtra eventos por fecha y categoría"
+msgstr "Browse and filter events by date and category"
+
+msgid "Inscripción Online"
+msgstr "Online Registration"
+
+msgid "Regístrate fácilmente a los eventos"
+msgstr "Easily register for events"
+
+msgid "Notificaciones"
+msgstr "Notifications"
+
+msgid "Recibe alertas de nuevos eventos"
+msgstr "Receive alerts about new events"
+
+msgid "Lo que viene"
+msgstr "What's Coming"
+
+msgid "Tipos de Eventos"
+msgstr "Event Types"
+
+msgid "Diversas actividades para todos los interesados en el sector nuclear"
+msgstr "Diverse activities for everyone interested in the nuclear sector"
+
+msgid "Conferencias"
+msgstr "Conferences"
+
+msgid ""
+"Ponencias de expertos nacionales e internacionales sobre avances en "
+"tecnología nuclear"
+msgstr ""
+"Presentations by national and international experts on advances in nuclear "
+"technology"
+
+msgid "Presencial & Virtual"
+msgstr "In-Person & Virtual"
+
+msgid "Webinars"
+msgstr "Webinars"
+
+msgid ""
+"Sesiones en línea sobre temas específicos con interacción en tiempo real"
+msgstr "Online sessions on specific topics with real-time interaction"
+
+msgid "Talleres"
+msgstr "Workshops"
+
+msgid "Formación práctica y especializada para profesionales del sector"
+msgstr "Practical and specialized training for sector professionals"
+
+msgid "Hands-on"
+msgstr "Hands-on"
+
+msgid "Networking"
+msgstr "Networking"
+
+msgid ""
+"Encuentros para conectar con profesionales y expandir tu red de contactos"
+msgstr "Gatherings to connect with professionals and expand your network"
+
+msgid "Comunidad"
+msgstr "Community"
+
+msgid "¿Quieres ser el primero en enterarte?"
+msgstr "Want to be the first to know?"
+
+msgid "Únete a la ASNC y recibe notificaciones de todos nuestros eventos"
+msgstr "Join the ASNC and receive notifications about all our events"
+
+msgid "Unirme a la ASNC"
+msgstr "Join the ASNC"
+
+msgid "Política de Privacidad y Tratamiento de Datos"
+msgstr "Privacy and Data Processing Policy"
+
+msgid ""
+"Política de privacidad y tratamiento de datos personales de la Asociación "
+"Nuclear Colombiana (ASNC). Conoce cómo protegemos tu información."
+msgstr ""
+"Privacy and personal data processing policy of the Colombian Nuclear "
+"Association (ASNC). Learn how we protect your information."
+
+msgid "Documento Legal"
+msgstr "Legal Document"
+
+msgid "Política de Privacidad y Tratamiento de Datos Personales"
+msgstr "Personal Data Privacy and Processing Policy"
+
+msgid "Última actualización: Marzo 2026"
+msgstr "Last updated: March 2026"
+
+msgid "Bucaramanga, Santander, Colombia"
+msgstr "Bucaramanga, Santander, Colombia"
+
+msgid "Contenido"
+msgstr "Contents"
+
+msgid "Identificación del Responsable"
+msgstr "Identification of the Data Controller"
+
+msgid "Marco Legal Aplicable"
+msgstr "Applicable Legal Framework"
+
+msgid "Definiciones"
+msgstr "Definitions"
+
+msgid "Principios Rectores"
+msgstr "Guiding Principles"
+
+msgid "Datos Personales Recolectados"
+msgstr "Personal Data Collected"
+
+msgid "Finalidad del Tratamiento"
+msgstr "Purpose of Processing"
+
+msgid "Autorización del Titular"
+msgstr "Data Subject's Authorization"
+
+msgid "Derechos de los Titulares"
+msgstr "Rights of Data Subjects"
+
+msgid "Procedimiento para Ejercer Derechos"
+msgstr "Procedure to Exercise Rights"
+
+msgid "Medidas de Seguridad"
+msgstr "Security Measures"
+
+msgid "Transferencia y Transmisión de Datos"
+msgstr "Data Transfer and Transmission"
+
+msgid "Cookies y Tecnologías de Rastreo"
+msgstr "Cookies and Tracking Technologies"
+
+msgid "Conservación de los Datos"
+msgstr "Data Retention"
+
+msgid "Tratamiento de Datos de Menores"
+msgstr "Processing of Minors' Data"
+
+msgid "Modificaciones a la Política"
+msgstr "Amendments to the Policy"
+
+msgid "Canal de Atención y Contacto"
+msgstr "Support and Contact Channel"
+
+msgid "1. Identificación del Responsable del Tratamiento"
+msgstr "1. Identification of the Data Controller"
+
+msgid "Razón social:"
+msgstr "Legal name:"
+
+msgid "NIT:"
+msgstr "Tax ID (NIT):"
+
+msgid "Naturaleza jurídica:"
+msgstr "Legal nature:"
+
+msgid "Entidad sin ánimo de lucro"
+msgstr "Non-profit entity"
+
+msgid "Domicilio:"
+msgstr "Address:"
+
+msgid "Correo electrónico:"
+msgstr "Email:"
+
+msgid "Sitio web:"
+msgstr "Website:"
+
+msgid ""
+"La Asociación Nuclear Colombiana (en adelante \"ASNC\" o \"la Asociación\"), en su calidad de Responsable del\n"
+"                        Tratamiento de datos personales, manifiesta su compromiso con la protección de la privacidad y los datos\n"
+"                        personales de sus asociados, aspirantes, colaboradores, aliados y demás personas naturales con quienes\n"
+"                        mantiene o ha mantenido alguna relación. La presente política establece los lineamientos bajo los cuales\n"
+"                        la ASNC recolecta, almacena, usa, circula, suprime y, en general, trata datos personales."
+msgstr ""
+"The Colombian Nuclear Association (hereinafter \"ASNC\" or \"the "
+"Association\"), in its capacity as Data Controller of personal data, "
+"expresses its commitment to protecting the privacy and personal data of its "
+"members, applicants, collaborators, partners and other natural persons with "
+"whom it maintains or has maintained any relationship. This policy "
+"establishes the guidelines under which the ASNC collects, stores, uses, "
+"circulates, deletes and, in general, processes personal data."
+
+msgid "2. Marco Legal Aplicable"
+msgstr "2. Applicable Legal Framework"
+
+msgid ""
+"La presente política se rige por la normatividad colombiana vigente en "
+"materia de protección de datos personales, en particular:"
+msgstr ""
+"This policy is governed by the Colombian regulations in force regarding the "
+"protection of personal data, in particular:"
+
+msgid "Constitución Política de Colombia, Artículo 15:"
+msgstr "Political Constitution of Colombia, Article 15:"
+
+msgid "Derecho fundamental a la intimidad, al buen nombre y al habeas data."
+msgstr "Fundamental right to privacy, good name and habeas data."
+
+msgid "Ley Estatutaria 1581 de 2012:"
+msgstr "Statutory Law 1581 of 2012:"
+
+msgid ""
+"Régimen General de Protección de Datos Personales, por la cual se dictan disposiciones generales\n"
+"                            para la protección de datos personales."
+msgstr ""
+"General Personal Data Protection Regime, which sets out general provisions "
+"for the protection of personal data."
+
+msgid "Decreto 1377 de 2013 (compilado en el Decreto 1074 de 2015):"
+msgstr "Decree 1377 of 2013 (compiled in Decree 1074 of 2015):"
+
+msgid ""
+"Reglamenta parcialmente la Ley 1581 de 2012 en aspectos relacionados con la autorización del titular,\n"
+"                            las políticas de tratamiento, el ejercicio de derechos y las transferencias de datos."
+msgstr ""
+"Partially regulates Law 1581 of 2012 in aspects related to the data "
+"subject's authorization, processing policies, the exercise of rights and "
+"data transfers."
+
+msgid "Decreto 1074 de 2015, Libro 2, Parte 2, Título 4:"
+msgstr "Decree 1074 of 2015, Book 2, Part 2, Title 4:"
+
+msgid ""
+"Decreto Único Reglamentario del Sector Comercio, Industria y Turismo en "
+"materia de datos personales."
+msgstr ""
+"Single Regulatory Decree of the Commerce, Industry and Tourism Sector "
+"regarding personal data."
+
+msgid "Sentencia C-748 de 2011 de la Corte Constitucional:"
+msgstr "Ruling C-748 of 2011 of the Constitutional Court:"
+
+msgid "Control de constitucionalidad de la Ley 1581 de 2012."
+msgstr "Constitutional review of Law 1581 of 2012."
+
+msgid "3. Definiciones"
+msgstr "3. Definitions"
+
+msgid ""
+"Para efectos de la presente política, se adoptan las siguientes definiciones"
+" conforme a la Ley 1581 de 2012 y sus decretos reglamentarios:"
+msgstr ""
+"For the purposes of this policy, the following definitions are adopted in "
+"accordance with Law 1581 of 2012 and its implementing decrees:"
+
+msgid "Autorización"
+msgstr "Authorization"
+
+msgid ""
+"Consentimiento previo, expreso e informado del Titular para llevar a cabo el"
+" Tratamiento de datos personales."
+msgstr ""
+"The data subject's prior, express and informed consent to carry out the "
+"Processing of personal data."
+
+msgid "Base de Datos"
+msgstr "Database"
+
+msgid "Conjunto organizado de datos personales que sea objeto de Tratamiento."
+msgstr "An organized set of personal data that is subject to Processing."
+
+msgid "Dato Personal"
+msgstr "Personal Data"
+
+msgid ""
+"Cualquier información vinculada o que pueda asociarse a una o varias "
+"personas naturales determinadas o determinables."
+msgstr ""
+"Any information linked to or that may be associated with one or several "
+"specific or identifiable natural persons."
+
+msgid "Dato Sensible"
+msgstr "Sensitive Data"
+
+msgid ""
+"Dato que afecta la intimidad del Titular o cuyo uso indebido puede generar "
+"discriminación, tales como aquellos que revelen el origen racial o étnico, "
+"orientación política, convicciones religiosas o filosóficas, pertenencia a "
+"sindicatos, organizaciones sociales, datos relativos a la salud, vida sexual"
+" y datos biométricos."
+msgstr ""
+"Data that affects the data subject's privacy or whose improper use may lead "
+"to discrimination, such as data revealing racial or ethnic origin, political"
+" orientation, religious or philosophical beliefs, membership in trade unions"
+" or social organizations, data relating to health, sex life and biometric "
+"data."
+
+msgid "Encargado del Tratamiento"
+msgstr "Data Processor"
+
+msgid ""
+"Persona natural o jurídica, pública o privada, que por sí misma o en asocio "
+"con otros, realice el Tratamiento de datos personales por cuenta del "
+"Responsable del Tratamiento."
+msgstr ""
+"A natural or legal person, public or private, who, by themselves or in "
+"association with others, carries out the Processing of personal data on "
+"behalf of the Data Controller."
+
+msgid "Responsable del Tratamiento"
+msgstr "Data Controller"
+
+msgid ""
+"Persona natural o jurídica, pública o privada, que por sí misma o en asocio "
+"con otros, decida sobre la base de datos y/o el Tratamiento de los datos."
+msgstr ""
+"A natural or legal person, public or private, who, by themselves or in "
+"association with others, decides on the database and/or the Processing of "
+"the data."
+
+msgid "Titular"
+msgstr "Data Subject"
+
+msgid "Persona natural cuyos datos personales sean objeto de Tratamiento."
+msgstr "A natural person whose personal data is subject to Processing."
+
+msgid "Tratamiento"
+msgstr "Processing"
+
+msgid ""
+"Cualquier operación o conjunto de operaciones sobre datos personales, tales "
+"como la recolección, almacenamiento, uso, circulación o supresión."
+msgstr ""
+"Any operation or set of operations on personal data, such as collection, "
+"storage, use, circulation or deletion."
+
+msgid "Transferencia"
+msgstr "Transfer"
+
+msgid ""
+"La transferencia de datos tiene lugar cuando el Responsable y/o Encargado "
+"del Tratamiento de datos personales envía la información o los datos "
+"personales a un receptor, que a su vez es Responsable del Tratamiento, y se "
+"encuentra dentro o fuera del país."
+msgstr ""
+"A data transfer takes place when the Data Controller and/or Data Processor "
+"of personal data sends the information or personal data to a recipient, who "
+"is in turn a Data Controller, and who is located inside or outside the "
+"country."
+
+msgid "Transmisión"
+msgstr "Transmission"
+
+msgid ""
+"Tratamiento de datos personales que implica la comunicación de los mismos "
+"dentro o fuera del territorio colombiano, cuando tenga por objeto la "
+"realización de un Tratamiento por el Encargado por cuenta del Responsable."
+msgstr ""
+"Processing of personal data involving its communication inside or outside "
+"Colombian territory, when the purpose is the carrying out of Processing by "
+"the Data Processor on behalf of the Data Controller."
+
+msgid "4. Principios Rectores del Tratamiento"
+msgstr "4. Guiding Principles of Processing"
+
+msgid ""
+"La ASNC aplicará los siguientes principios en el tratamiento de datos "
+"personales, de conformidad con el artículo 4 de la Ley 1581 de 2012:"
+msgstr ""
+"The ASNC will apply the following principles in the processing of personal "
+"data, in accordance with Article 4 of Law 1581 of 2012:"
+
+msgid "Legalidad"
+msgstr "Legality"
+
+msgid ""
+"El tratamiento es una actividad reglada que se sujeta a la Constitución, la "
+"ley y las demás disposiciones que la desarrollen."
+msgstr ""
+"Processing is a regulated activity subject to the Constitution, the law and "
+"the other provisions that develop it."
+
+msgid "Finalidad"
+msgstr "Purpose"
+
+msgid ""
+"El tratamiento obedece a una finalidad legítima, la cual será informada al "
+"Titular de manera previa."
+msgstr ""
+"Processing serves a legitimate purpose, which will be communicated to the "
+"data subject in advance."
+
+msgid "Libertad"
+msgstr "Freedom"
+
+msgid ""
+"El tratamiento solo puede ejercerse con el consentimiento previo, expreso e "
+"informado del Titular."
+msgstr ""
+"Processing may only be carried out with the prior, express and informed "
+"consent of the data subject."
+
+msgid "Veracidad"
+msgstr "Accuracy"
+
+msgid ""
+"La información sujeta a tratamiento debe ser veraz, completa, exacta, "
+"actualizada y comprobable."
+msgstr ""
+"Information subject to processing must be truthful, complete, accurate, up-"
+"to-date and verifiable."
+
+msgid ""
+"Se garantiza el derecho del Titular a obtener información acerca de la "
+"existencia de datos que le conciernan."
+msgstr ""
+"The data subject's right to obtain information about the existence of data "
+"concerning them is guaranteed."
+
+msgid "Seguridad"
+msgstr "Security"
+
+msgid ""
+"La información se manejará con las medidas técnicas, humanas y "
+"administrativas necesarias para otorgar seguridad."
+msgstr ""
+"Information will be handled with the technical, human and administrative "
+"measures necessary to ensure security."
+
+msgid "Confidencialidad"
+msgstr "Confidentiality"
+
+msgid ""
+"Todas las personas que intervengan en el tratamiento están obligadas a "
+"garantizar la reserva de la información."
+msgstr ""
+"All persons involved in the processing are obliged to ensure the "
+"confidentiality of the information."
+
+msgid "Acceso y circulación restringida"
+msgstr "Restricted access and circulation"
+
+msgid ""
+"El tratamiento se sujeta a los límites derivados de la naturaleza de los "
+"datos y de la autorización del Titular."
+msgstr ""
+"Processing is subject to the limits arising from the nature of the data and "
+"the data subject's authorization."
+
+msgid "5. Datos Personales Recolectados"
+msgstr "5. Personal Data Collected"
+
+msgid ""
+"En el desarrollo de su objeto social y actividades misionales, la ASNC podrá"
+" recolectar las siguientes categorías de datos personales:"
+msgstr ""
+"In the course of its corporate purpose and mission-related activities, the "
+"ASNC may collect the following categories of personal data:"
+
+msgid "5.1. Datos de identificación y contacto"
+msgstr "5.1. Identification and contact data"
+
+msgid "Nombres y apellidos completos"
+msgstr "Full first and last names"
+
+msgid "Correo electrónico personal e institucional"
+msgstr "Personal and institutional email address"
+
+msgid "Número de teléfono o celular"
+msgstr "Telephone or mobile number"
+
+msgid "Ciudad y país de residencia"
+msgstr "City and country of residence"
+
+msgid "5.2. Datos profesionales y académicos"
+msgstr "5.2. Professional and academic data"
+
+msgid "Profesión y título académico"
+msgstr "Profession and academic degree"
+
+msgid "Cargo o posición actual"
+msgstr "Current role or position"
+
+msgid "Institución o empresa donde labora"
+msgstr "Institution or company where employed"
+
+msgid "Perfil profesional en LinkedIn"
+msgstr "LinkedIn professional profile"
+
+msgid "Hoja de vida o currículum vitae"
+msgstr "Resume or curriculum vitae"
+
+msgid "Biografía profesional"
+msgstr "Professional biography"
+
+msgid "5.3. Datos de la membresía"
+msgstr "5.3. Membership data"
+
+msgid "Número de carné de asociado"
+msgstr "Member card number"
+
+msgid "Categoría de membresía (Fundador, Asociado, Estudiante, Profesional)"
+msgstr "Membership category (Founder, Associate, Student, Professional)"
+
+msgid "Fecha de ingreso y vigencia"
+msgstr "Date of joining and validity"
+
+msgid "Estado de la membresía"
+msgstr "Membership status"
+
+msgid "Fotografía del asociado (para el carné digital)"
+msgstr "Member's photograph (for the digital card)"
+
+msgid "5.4. Datos de navegación y uso de la plataforma"
+msgstr "5.4. Browsing and platform usage data"
+
+msgid "Dirección IP"
+msgstr "IP address"
+
+msgid "Tipo de navegador y dispositivo"
+msgstr "Browser and device type"
+
+msgid "Páginas visitadas y tiempo de permanencia"
+msgstr "Pages visited and time spent"
+
+msgid "Datos recopilados mediante cookies y Google Analytics"
+msgstr "Data collected through cookies and Google Analytics"
+
+msgid "Datos sensibles:"
+msgstr "Sensitive data:"
+
+msgid ""
+"La ASNC no recolecta datos sensibles de manera deliberada.\n"
+"                            En caso de que, por la naturaleza de alguna actividad, fuese necesario tratar datos de esta categoría,\n"
+"                            se solicitará autorización expresa y específica al Titular conforme al artículo 6 de la Ley 1581 de 2012,\n"
+"                            informando el carácter facultativo de la respuesta."
+msgstr ""
+"The ASNC does not deliberately collect sensitive data. Should it be "
+"necessary, due to the nature of an activity, to process data in this "
+"category, express and specific authorization will be requested from the data"
+" subject in accordance with Article 6 of Law 1581 of 2012, informing them "
+"that the response is optional."
+
+msgid "6. Finalidad del Tratamiento"
+msgstr "6. Purpose of Processing"
+
+msgid ""
+"Los datos personales recolectados por la ASNC serán utilizados para las "
+"siguientes finalidades:"
+msgstr ""
+"The personal data collected by the ASNC will be used for the following "
+"purposes:"
+
+msgid "6.1. Finalidades relacionadas con la membresía"
+msgstr "6.1. Membership-related purposes"
+
+msgid "Gestionar y tramitar las solicitudes de ingreso a la Asociación."
+msgstr "Manage and process applications to join the Association."
+
+msgid "Verificar la identidad y los requisitos de los aspirantes a asociados."
+msgstr "Verify the identity and requirements of membership applicants."
+
+msgid "Emitir y administrar los carnés digitales de asociado."
+msgstr "Issue and manage digital member cards."
+
+msgid "Mantener actualizado el directorio oficial de asociados."
+msgstr "Keep the official member directory up to date."
+
+msgid "Gestionar el cobro y registro de la anualidad de membresía."
+msgstr "Manage the collection and recording of the annual membership fee."
+
+msgid ""
+"Clasificar a los asociados según su categoría (Profesional, Estudiante, "
+"Fundador)."
+msgstr ""
+"Classify members according to their category (Professional, Student, "
+"Founder)."
+
+msgid "6.2. Finalidades de comunicación"
+msgstr "6.2. Communication purposes"
+
+msgid ""
+"Enviar comunicaciones institucionales, boletines informativos y noticias del"
+" sector nuclear."
+msgstr ""
+"Send institutional communications, newsletters and news from the nuclear "
+"sector."
+
+msgid ""
+"Informar sobre eventos, congresos, seminarios y actividades de la "
+"Asociación."
+msgstr ""
+"Provide information about events, conferences, seminars and activities of "
+"the Association."
+
+msgid ""
+"Notificar cambios en los estatutos, políticas o condiciones de la membresía."
+msgstr "Notify changes to the bylaws, policies or membership conditions."
+
+msgid ""
+"Remitir correos electrónicos relacionados con el estado de la cuenta del "
+"asociado."
+msgstr "Send emails related to the status of the member's account."
+
+msgid "6.3. Finalidades institucionales"
+msgstr "6.3. Institutional purposes"
+
+msgid ""
+"Cumplir con el objeto social de la Asociación como entidad sin ánimo de "
+"lucro."
+msgstr ""
+"Fulfill the corporate purpose of the Association as a non-profit entity."
+
+msgid "Elaborar estadísticas internas con fines de mejora continua."
+msgstr "Compile internal statistics for continuous improvement purposes."
+
+msgid ""
+"Representar a los asociados ante organizaciones nacionales e "
+"internacionales."
+msgstr "Represent members before national and international organizations."
+
+msgid ""
+"Gestionar alianzas con instituciones académicas, científicas y gremiales."
+msgstr "Manage alliances with academic, scientific and trade institutions."
+
+msgid ""
+"Cumplir obligaciones legales y regulatorias ante las autoridades "
+"colombianas."
+msgstr ""
+"Comply with legal and regulatory obligations before the Colombian "
+"authorities."
+
+msgid "6.4. Finalidades de la plataforma digital"
+msgstr "6.4. Digital platform purposes"
+
+msgid "Administrar el acceso al portal de asociados (mi-portal)."
+msgstr "Manage access to the members' portal (mi-portal)."
+
+msgid "Generar y verificar carnés digitales mediante códigos QR."
+msgstr "Generate and verify digital cards using QR codes."
+
+msgid "Permitir la actualización del perfil profesional del asociado."
+msgstr "Allow members to update their professional profile."
+
+msgid "Mejorar la experiencia de navegación y funcionalidad del sitio web."
+msgstr "Improve the browsing experience and functionality of the website."
+
+msgid ""
+"Analizar el tráfico web mediante herramientas de analítica (Google "
+"Analytics)."
+msgstr "Analyze web traffic using analytics tools (Google Analytics)."
+
+msgid "7. Autorización del Titular"
+msgstr "7. Data Subject's Authorization"
+
+msgid ""
+"De conformidad con los artículos 9 y 10 de la Ley 1581 de 2012, la ASNC obtendrá la autorización previa, expresa e informada\n"
+"                        del Titular para el tratamiento de sus datos personales. Esta autorización podrá otorgarse a través de los siguientes mecanismos:"
+msgstr ""
+"In accordance with Articles 9 and 10 of Law 1581 of 2012, the ASNC will "
+"obtain the data subject's prior, express and informed authorization for the "
+"processing of their personal data. This authorization may be granted through"
+" the following mechanisms:"
+
+msgid "Formulario de solicitud de ingreso:"
+msgstr "Membership application form:"
+
+msgid ""
+"Al diligenciar el formulario de vinculación a través del sitio web "
+"www.asncol.com, el aspirante autoriza expresamente el tratamiento de los "
+"datos allí consignados."
+msgstr ""
+"By completing the membership form through the website www.asncol.com, the "
+"applicant expressly authorizes the processing of the data provided therein."
+
+msgid "Aceptación electrónica:"
+msgstr "Electronic acceptance:"
+
+msgid ""
+"Mediante la aceptación de los términos y condiciones y la política de "
+"privacidad en los formularios digitales."
+msgstr ""
+"By accepting the terms and conditions and the privacy policy in the digital "
+"forms."
+
+msgid "Comunicación escrita o electrónica:"
+msgstr "Written or electronic communication:"
+
+msgid ""
+"A través de correo electrónico u otro medio verificable dirigido a "
+"info@asncol.com."
+msgstr ""
+"Through email or another verifiable means addressed to info@asncol.com."
+
+msgid ""
+"La autorización podrá ser revocada en cualquier momento por el Titular, salvo que exista un deber legal o contractual\n"
+"                        que imponga al Titular la obligación de permanecer en la base de datos. La revocación se solicitará mediante los\n"
+"                        canales indicados en la sección 9 de la presente política."
+msgstr ""
+"The authorization may be revoked at any time by the data subject, unless "
+"there is a legal or contractual duty requiring the data subject to remain in"
+" the database. Revocation must be requested through the channels indicated "
+"in Section 9 of this policy."
+
+msgid "Excepción legal:"
+msgstr "Legal exception:"
+
+msgid ""
+"Conforme al artículo 10 de la Ley 1581 de 2012, no será necesaria la autorización\n"
+"                            cuando se trate de información requerida por una entidad pública o administrativa en ejercicio de sus funciones legales,\n"
+"                            datos de naturaleza pública, casos de urgencia médica o sanitaria, o tratamiento autorizado por la ley para fines\n"
+"                            históricos, estadísticos o científicos."
+msgstr ""
+"In accordance with Article 10 of Law 1581 of 2012, authorization will not be"
+" required for information requested by a public or administrative entity in "
+"the exercise of its legal functions, data of a public nature, medical or "
+"health emergencies, or processing authorized by law for historical, "
+"statistical or scientific purposes."
+
+msgid "8. Derechos de los Titulares"
+msgstr "8. Rights of Data Subjects"
+
+msgid ""
+"De conformidad con el artículo 8 de la Ley 1581 de 2012, los Titulares de "
+"los datos personales tendrán los siguientes derechos:"
+msgstr ""
+"In accordance with Article 8 of Law 1581 of 2012, data subjects shall have "
+"the following rights:"
+
+msgid "Conocer"
+msgstr "Know"
+
+msgid ""
+"Conocer, actualizar y rectificar sus datos personales frente a la ASNC. Este"
+" derecho podrá ejercerse, entre otros, frente a datos parciales, inexactos, "
+"incompletos, fraccionados, que induzcan a error, o aquellos cuyo tratamiento"
+" esté expresamente prohibido o no haya sido autorizado."
+msgstr ""
+"Know, update and rectify their personal data held by the ASNC. This right "
+"may be exercised, among others, in respect of partial, inaccurate, "
+"incomplete or fragmented data, data that is misleading, or data whose "
+"processing is expressly prohibited or has not been authorized."
+
+msgid "Solicitar prueba"
+msgstr "Request proof"
+
+msgid ""
+"Solicitar prueba de la autorización otorgada a la ASNC, salvo cuando "
+"expresamente se exceptúe como requisito para el tratamiento conforme a la "
+"ley."
+msgstr ""
+"Request proof of the authorization granted to the ASNC, except when it is "
+"expressly exempted as a requirement for processing under the law."
+
+msgid "Ser informado"
+msgstr "Be informed"
+
+msgid ""
+"Ser informado por la ASNC, previa solicitud, respecto del uso que se le ha "
+"dado a sus datos personales."
+msgstr ""
+"Be informed by the ASNC, upon request, of how their personal data has been "
+"used."
+
+msgid "Presentar quejas"
+msgstr "File complaints"
+
+msgid ""
+"Presentar ante la Superintendencia de Industria y Comercio (SIC) quejas por "
+"infracciones a lo dispuesto en la Ley 1581 de 2012 y demás normas que la "
+"modifiquen, adicionen o complementen."
+msgstr ""
+"File complaints with the Superintendence of Industry and Commerce (SIC) for "
+"violations of the provisions of Law 1581 of 2012 and other regulations that "
+"amend, add to or supplement it."
+
+msgid "Revocar y suprimir"
+msgstr "Revoke and delete"
+
+msgid ""
+"Revocar la autorización y/o solicitar la supresión del dato cuando en el "
+"tratamiento no se respeten los principios, derechos y garantías "
+"constitucionales y legales."
+msgstr ""
+"Revoke the authorization and/or request the deletion of the data when the "
+"processing does not respect the constitutional and legal principles, rights "
+"and guarantees."
+
+msgid "Acceso gratuito"
+msgstr "Free access"
+
+msgid ""
+"Acceder en forma gratuita a sus datos personales que hayan sido objeto de "
+"tratamiento."
+msgstr ""
+"Access free of charge their personal data that has been subject to "
+"processing."
+
+msgid "9. Procedimiento para Ejercer los Derechos"
+msgstr "9. Procedure to Exercise Rights"
+
+msgid ""
+"El Titular o sus causahabientes podrán ejercer sus derechos mediante comunicación escrita dirigida a la ASNC\n"
+"                        a través de los siguientes canales:"
+msgstr ""
+"The data subject or their successors may exercise their rights by means of a"
+" written communication addressed to the ASNC through the following channels:"
+
+msgid "Asunto sugerido:"
+msgstr "Suggested subject line:"
+
+msgid "\"Solicitud de Habeas Data - [Tipo de solicitud]\""
+msgstr "\"Habeas Data Request - [Type of request]\""
+
+msgid "La solicitud deberá contener como mínimo:"
+msgstr "The request must contain at least:"
+
+msgid "Nombre completo y documento de identificación del Titular."
+msgstr "Full name and identification document of the data subject."
+
+msgid ""
+"Descripción clara y precisa de los datos respecto de los cuales se busca "
+"ejercer algún derecho."
+msgstr ""
+"A clear and precise description of the data in respect of which a right is "
+"sought to be exercised."
+
+msgid "Descripción de los hechos que dan lugar a la solicitud."
+msgstr "A description of the facts giving rise to the request."
+
+msgid ""
+"Dirección de correspondencia (física o electrónica) y datos de contacto."
+msgstr "Mailing address (physical or electronic) and contact details."
+
+msgid "Documentos que soporten la solicitud, cuando aplique."
+msgstr "Documents supporting the request, where applicable."
+
+msgid "Plazos de respuesta"
+msgstr "Response times"
+
+msgid "De conformidad con la Ley 1581 de 2012:"
+msgstr "In accordance with Law 1581 of 2012:"
+
+msgid "Consultas (Art. 14):"
+msgstr "Inquiries (Art. 14):"
+
+msgid ""
+"Serán atendidas en un término máximo de diez (10) días hábiles contados a "
+"partir de la fecha de recibo de la solicitud. Cuando no fuere posible "
+"atenderla dentro de dicho término, se informará al interesado antes del "
+"vencimiento de los diez (10) días, expresando los motivos de la demora y "
+"señalando la fecha en que se atenderá, la cual en ningún caso podrá superar "
+"los cinco (5) días hábiles siguientes al vencimiento del primer término."
+msgstr ""
+"Will be addressed within a maximum period of ten (10) business days from the"
+" date the request is received. When it is not possible to address it within "
+"that period, the interested party will be informed before the expiration of "
+"the ten (10) days, stating the reasons for the delay and indicating the date"
+" on which it will be addressed, which in no case may exceed five (5) "
+"business days following the expiration of the first period."
+
+msgid "Reclamos (Art. 15):"
+msgstr "Claims (Art. 15):"
+
+msgid ""
+"Serán atendidos en un término máximo de quince (15) días hábiles contados a "
+"partir del día siguiente a la fecha de recibo. Cuando no fuere posible "
+"atenderlo dentro de dicho término, se informará al interesado los motivos de"
+" la demora y la fecha en que se atenderá su reclamo, la cual en ningún caso "
+"podrá superar los ocho (8) días hábiles siguientes al vencimiento del primer"
+" término."
+msgstr ""
+"Will be addressed within a maximum period of fifteen (15) business days from"
+" the day following the date of receipt. When it is not possible to address "
+"it within that period, the interested party will be informed of the reasons "
+"for the delay and the date on which their claim will be addressed, which in "
+"no case may exceed eight (8) business days following the expiration of the "
+"first period."
+
+msgid "10. Medidas de Seguridad"
+msgstr "10. Security Measures"
+
+msgid ""
+"La ASNC adopta las medidas técnicas, humanas y administrativas necesarias para garantizar la seguridad\n"
+"                        de los datos personales, evitando su adulteración, pérdida, consulta, uso o acceso no autorizado o fraudulento,\n"
+"                        de conformidad con el artículo 17, literal (d) de la Ley 1581 de 2012."
+msgstr ""
+"The ASNC adopts the technical, human and administrative measures necessary "
+"to guarantee the security of personal data, preventing its alteration, loss,"
+" unauthorized or fraudulent consultation, use or access, in accordance with "
+"Article 17, paragraph (d) of Law 1581 of 2012."
+
+msgid "Entre las medidas implementadas se encuentran:"
+msgstr "The measures implemented include:"
+
+msgid "Protección técnica:"
+msgstr "Technical protection:"
+
+msgid ""
+"Uso de protocolos de comunicación cifrados (HTTPS/SSL), almacenamiento "
+"seguro en infraestructura en la nube (Amazon Web Services - AWS), protección"
+" CSRF en todos los formularios y tokens de acceso con expiración temporal."
+msgstr ""
+"Use of encrypted communication protocols (HTTPS/SSL), secure storage in "
+"cloud infrastructure (Amazon Web Services - AWS), CSRF protection on all "
+"forms and access tokens with time-based expiration."
+
+msgid "Control de acceso:"
+msgstr "Access control:"
+
+msgid ""
+"Autenticación basada en correo electrónico, gestión de permisos por roles "
+"(administrador, staff, asociado), y protección contra eliminación accidental"
+" de registros críticos."
+msgstr ""
+"Email-based authentication, role-based permission management (administrator,"
+" staff, member), and protection against accidental deletion of critical "
+"records."
+
+msgid "Integridad de datos:"
+msgstr "Data integrity:"
+
+msgid ""
+"Uso de transacciones atómicas en operaciones críticas y protección contra "
+"condiciones de carrera en la base de datos."
+msgstr ""
+"Use of atomic transactions in critical operations and protection against "
+"race conditions in the database."
+
+msgid "Medidas administrativas:"
+msgstr "Administrative measures:"
+
+msgid ""
+"Acceso restringido a las bases de datos únicamente al personal autorizado de"
+" la Junta Directiva y designados por esta."
+msgstr ""
+"Access to the databases restricted solely to personnel authorized by, and "
+"designated by, the Board of Directors."
+
+msgid "11. Transferencia y Transmisión de Datos"
+msgstr "11. Data Transfer and Transmission"
+
+msgid ""
+"La ASNC podrá realizar transferencia o transmisión de datos personales en los siguientes casos,\n"
+"                        garantizando siempre el cumplimiento de los principios y obligaciones establecidos en la Ley 1581 de 2012:"
+msgstr ""
+"The ASNC may carry out the transfer or transmission of personal data in the "
+"following cases, always ensuring compliance with the principles and "
+"obligations established in Law 1581 of 2012:"
+
+msgid "Proveedores de servicios tecnológicos:"
+msgstr "Technology service providers:"
+
+msgid ""
+"Los datos podrán ser almacenados en servidores de Amazon Web Services (AWS) "
+"ubicados fuera del territorio colombiano, bajo contratos que garantizan "
+"niveles adecuados de protección conforme a los estándares internacionales y "
+"la legislación colombiana."
+msgstr ""
+"Data may be stored on Amazon Web Services (AWS) servers located outside "
+"Colombian territory, under contracts that guarantee adequate levels of "
+"protection in accordance with international standards and Colombian "
+"legislation."
+
+msgid "Organizaciones aliadas:"
+msgstr "Partner organizations:"
+
+msgid ""
+"Cuando sea necesario para el cumplimiento de convenios interinstitucionales "
+"con organizaciones científicas y académicas, nacionales o internacionales, "
+"previa autorización del Titular."
+msgstr ""
+"When necessary to fulfill inter-institutional agreements with scientific and"
+" academic organizations, whether national or international, subject to the "
+"prior authorization of the data subject."
+
+msgid "Autoridades competentes:"
+msgstr "Competent authorities:"
+
+msgid ""
+"Cuando sea requerido por autoridades judiciales o administrativas en "
+"ejercicio de sus funciones legales."
+msgstr ""
+"When required by judicial or administrative authorities in the exercise of "
+"their legal functions."
+
+msgid ""
+"En ningún caso la ASNC venderá, alquilará o comercializará los datos personales de sus asociados o\n"
+"                        de cualquier persona natural a terceros con fines comerciales."
+msgstr ""
+"Under no circumstances will the ASNC sell, rent or trade the personal data "
+"of its members or of any natural person to third parties for commercial "
+"purposes."
+
+msgid "12. Cookies y Tecnologías de Rastreo"
+msgstr "12. Cookies and Tracking Technologies"
+
+msgid "El sitio web www.asncol.com utiliza las siguientes tecnologías:"
+msgstr "The website www.asncol.com uses the following technologies:"
+
+msgid "12.1. Cookies esenciales"
+msgstr "12.1. Essential cookies"
+
+msgid ""
+"Necesarias para el funcionamiento básico del sitio web, incluyendo la gestión de sesiones de usuario,\n"
+"                        protección CSRF y preferencias de navegación. Estas cookies no requieren consentimiento adicional ya que\n"
+"                        son estrictamente necesarias para la prestación del servicio."
+msgstr ""
+"Necessary for the basic functioning of the website, including user session "
+"management, CSRF protection and browsing preferences. These cookies do not "
+"require additional consent as they are strictly necessary for the provision "
+"of the service."
+
+msgid "12.2. Google Analytics"
+msgstr "12.2. Google Analytics"
+
+msgid ""
+"El sitio utiliza Google Analytics 4 (identificador: G-1H2FNJ5PB8) para analizar el tráfico web y\n"
+"                        mejorar la experiencia del usuario. Esta herramienta recopila información anonimizada sobre las\n"
+"                        páginas visitadas, el tiempo de permanencia, el tipo de dispositivo y la ubicación geográfica general.\n"
+"                        Los datos recopilados son tratados conforme a la"
+msgstr ""
+"The site uses Google Analytics 4 (identifier: G-1H2FNJ5PB8) to analyze web "
+"traffic and improve the user experience. This tool collects anonymized "
+"information about the pages visited, time spent, device type and general "
+"geographic location. The data collected is processed in accordance with the"
+
+msgid "Política de Privacidad de Google"
+msgstr "Google Privacy Policy"
+
+msgid ""
+"El usuario puede deshabilitar las cookies de Google Analytics instalando el"
+msgstr "Users can disable Google Analytics cookies by installing the"
+
+msgid "complemento de inhabilitación"
+msgstr "opt-out add-on"
+
+msgid ""
+"proporcionado por Google, o configurando las preferencias de su navegador."
+msgstr "provided by Google, or by configuring their browser preferences."
+
+msgid "13. Conservación de los Datos"
+msgstr "13. Data Retention"
+
+msgid ""
+"Los datos personales serán conservados por el tiempo necesario para cumplir con las finalidades\n"
+"                        descritas en la presente política, y de acuerdo con los siguientes criterios:"
+msgstr ""
+"Personal data will be retained for the time necessary to fulfill the "
+"purposes described in this policy, and in accordance with the following "
+"criteria:"
+
+msgid "Asociados activos:"
+msgstr "Active members:"
+
+msgid ""
+"Mientras subsista la relación de membresía con la Asociación y no se "
+"solicite la supresión."
+msgstr ""
+"As long as the membership relationship with the Association subsists and "
+"deletion is not requested."
+
+msgid "Solicitudes de ingreso:"
+msgstr "Membership applications:"
+
+msgid ""
+"Los datos de las solicitudes no aprobadas serán conservados por un periodo "
+"de un (1) año contado a partir de la decisión, con fines estadísticos y de "
+"trazabilidad."
+msgstr ""
+"The data of applications that are not approved will be retained for a period"
+" of one (1) year from the decision, for statistical and traceability "
+"purposes."
+
+msgid "Ex-asociados:"
+msgstr "Former members:"
+
+msgid ""
+"Los datos básicos de identificación podrán ser conservados con fines "
+"históricos y de registro institucional, conforme a los estatutos de la "
+"Asociación."
+msgstr ""
+"Basic identification data may be retained for historical and institutional "
+"record-keeping purposes, in accordance with the Association's bylaws."
+
+msgid "Obligaciones legales:"
+msgstr "Legal obligations:"
+
+msgid ""
+"Cuando exista una obligación legal o regulatoria que exija la conservación "
+"de los datos por un periodo determinado, estos serán mantenidos por el "
+"tiempo requerido por la norma aplicable."
+msgstr ""
+"When there is a legal or regulatory obligation requiring the retention of "
+"data for a specific period, it will be kept for the time required by the "
+"applicable regulation."
+
+msgid ""
+"Cumplida la finalidad del tratamiento y agotados los términos legales de conservación, la ASNC\n"
+"                        procederá a la supresión de los datos personales de sus archivos y bases de datos, adoptando las\n"
+"                        medidas necesarias para su eliminación segura."
+msgstr ""
+"Once the purpose of the processing has been fulfilled and the legal "
+"retention periods have expired, the ASNC will proceed to delete the personal"
+" data from its files and databases, adopting the measures necessary for its "
+"secure deletion."
+
+msgid "14. Tratamiento de Datos de Menores de Edad"
+msgstr "14. Processing of Minors' Data"
+
+msgid ""
+"De conformidad con el artículo 7 de la Ley 1581 de 2012 y la jurisprudencia de la Corte Constitucional,\n"
+"                        la ASNC no recolecta ni trata de manera deliberada datos personales de niños, niñas y adolescentes."
+msgstr ""
+"In accordance with Article 7 of Law 1581 of 2012 and the case law of the "
+"Constitutional Court, the ASNC does not deliberately collect or process the "
+"personal data of children and adolescents."
+
+msgid ""
+"El formulario de solicitud de ingreso y los servicios de la plataforma digital están diseñados para\n"
+"                        ser utilizados exclusivamente por personas mayores de edad. En caso de que la ASNC identifique que\n"
+"                        se han recolectado datos de un menor de edad sin la autorización correspondiente de su representante\n"
+"                        legal, procederá a la supresión inmediata de dicha información."
+msgstr ""
+"The membership application form and the digital platform services are "
+"designed to be used exclusively by persons of legal age. Should the ASNC "
+"identify that a minor's data has been collected without the corresponding "
+"authorization of their legal representative, it will proceed to immediately "
+"delete such information."
+
+msgid "15. Modificaciones a la Política"
+msgstr "15. Amendments to the Policy"
+
+msgid ""
+"La ASNC se reserva el derecho de modificar la presente Política de Privacidad y Tratamiento de Datos\n"
+"                        Personales en cualquier momento, conforme a la normatividad vigente. Cualquier cambio sustancial será\n"
+"                        comunicado a los Titulares a través de los siguientes medios:"
+msgstr ""
+"The ASNC reserves the right to amend this Personal Data Privacy and "
+"Processing Policy at any time, in accordance with the regulations in force. "
+"Any substantial change will be communicated to data subjects through the "
+"following means:"
+
+msgid "Publicación de la versión actualizada en el sitio web www.asncol.com."
+msgstr "Publication of the updated version on the website www.asncol.com."
+
+msgid ""
+"Comunicación por correo electrónico a los asociados activos, cuando la "
+"modificación afecte directamente el tratamiento de sus datos."
+msgstr ""
+"Email communication to active members when the change directly affects the "
+"processing of their data."
+
+msgid ""
+"La fecha de la última actualización se indicará siempre en el encabezado del documento.\n"
+"                        El uso continuado de los servicios de la ASNC con posterioridad a la publicación de las\n"
+"                        modificaciones constituirá aceptación de las mismas."
+msgstr ""
+"The date of the last update will always be indicated in the header of the "
+"document. Continued use of the ASNC's services after the publication of the "
+"amendments will constitute acceptance of them."
+
+msgid "16. Canal de Atención y Contacto"
+msgstr "16. Support and Contact Channel"
+
+msgid ""
+"Para cualquier consulta, reclamo o solicitud relacionada con el tratamiento de datos personales,\n"
+"                        los Titulares podrán comunicarse con la ASNC a través de los siguientes canales:"
+msgstr ""
+"For any inquiry, claim or request related to the processing of personal "
+"data, data subjects may contact the ASNC through the following channels:"
+
+msgid "Responsable:"
+msgstr "Data Controller:"
+
+msgid "Autoridad de control:"
+msgstr "Supervisory authority:"
+
+msgid "Superintendencia de Industria y Comercio (SIC) - www.sic.gov.co"
+msgstr "Superintendence of Industry and Commerce (SIC) - www.sic.gov.co"
+
+msgid ""
+"La presente Política de Privacidad y Tratamiento de Datos Personales fue aprobada por la\n"
+"                        Junta Directiva de la Asociación Nuclear Colombiana y entra en vigencia a partir de su\n"
+"                        publicación en el sitio web www.asncol.com."
+msgstr ""
+"This Personal Data Privacy and Processing Policy was approved by the Board "
+"of Directors of the Colombian Nuclear Association and takes effect upon its "
+"publication on the website www.asncol.com."
+
+msgid ""
+"Noticias y novedades de la Asociación Nuclear Colombiana (ASNC). Mantente "
+"informado sobre el sector nuclear en Colombia."
+msgstr ""
+"News and updates from the Colombian Nuclear Association (ASNC). Stay "
+"informed about the nuclear sector in Colombia."
+
+msgid "Blog ASNC"
+msgstr "ASNC Blog"
+
+msgid "Noticias y Novedades"
+msgstr "News and Updates"
+
+msgid "Lo último del sector nuclear colombiano y la comunidad ASNC"
+msgstr "The latest from the Colombian nuclear sector and the ASNC community"
+
+msgid "Leer más"
+msgstr "Read more"
+
+msgid "Estamos preparando contenido para ti. ¡Vuelve pronto!"
+msgstr "We are preparing content for you. Come back soon!"
+
+msgid "Todas las noticias"
+msgstr "All news"
+
+msgid "Compartir:"
+msgstr "Share:"
+
+msgid "Más noticias"
+msgstr "More news"
+
+msgid "Forma parte de la comunidad nuclear más importante de Colombia"
+msgstr "Be part of Colombia's most important nuclear community"
+
+msgid "Nombres"
+msgstr "First Name"
+
+msgid "Apellidos"
+msgstr "Last Name"
+
+msgid "Correo electrónico"
+msgstr "Email"
+
+msgid "Teléfono"
+msgstr "Phone"
+
+msgid "Profesión"
+msgstr "Profession"
+
+msgid "¿Cómo puedes aportar a la ASNC?"
+msgstr "How can you contribute to the ASNC?"
+
+msgid "Acepto la"
+msgstr "I accept the"
+
+msgid "política de privacidad"
+msgstr "privacy policy"
+
+msgid "y el tratamiento de mis datos"
+msgstr "and the processing of my data"
+
+msgid "Enviar solicitud"
+msgstr "Submit application"
+
+msgid "¿Ya eres miembro?"
+msgstr "Already a member?"
+
+msgid "Inicia sesión"
+msgstr "Log in"
+
+msgid "Solicitud Recibida - ASNC"
+msgstr "Application Received - ASNC"
+
+msgid "¡Solicitud Recibida!"
+msgstr "Application Received!"
+
+msgid "Gracias por tu interés en formar parte de la"
+msgstr "Thank you for your interest in becoming part of the"
+
+msgid "Te enviaremos un correo de confirmación"
+msgstr "We will send you a confirmation email"
+
+msgid "Nuestro Comité revisará tu perfil"
+msgstr "Our Committee will review your profile"
+
+msgid "Recibirás respuesta en los próximos días"
+msgstr "You will receive a response in the coming days"
+
+msgid "La ciencia nuclear al servicio del desarrollo sostenible de Colombia."
+msgstr "Nuclear science at the service of Colombia's sustainable development."
+
+msgid "Volver al inicio"
+msgstr "Back to home"
+
+msgid "Síguenos en redes sociales"
+msgstr "Follow us on social media"
+
+msgid "Convocatorias"
+msgstr "Calls for Applications"
+
+msgid ""
+"Convocatorias abiertas de la Asociación Nuclear Colombiana. Inscríbete a "
+"programas, eventos y oportunidades para la comunidad nuclear."
+msgstr ""
+"Open calls for applications from the Colombian Nuclear Association. Register"
+" for programs, events, and opportunities for the nuclear community."
+
+msgid "Participa en las iniciativas abiertas de la ASNC"
+msgstr "Take part in ASNC's open initiatives"
+
+msgid "Abierta"
+msgstr "Open"
+
+msgid "Cierra:"
+msgstr "Closes:"
+
+msgid "No hay convocatorias activas"
+msgstr "There are no active calls for applications"
+
+msgid "Vuelve pronto para ver nuevas oportunidades."
+msgstr "Check back soon to see new opportunities."
+
+msgid "Todas las convocatorias"
+msgstr "All calls for applications"
+
+msgid "Inscripciones abiertas"
+msgstr "Registration open"
+
+msgid "Cerrada"
+msgstr "Closed"
+
+msgid "Apertura"
+msgstr "Opening"
+
+msgid "Cierre"
+msgstr "Closing"
+
+msgid "Formulario de inscripción"
+msgstr "Registration form"
+
+msgid "Completa los siguientes datos. Los campos con * son obligatorios."
+msgstr ""
+"Complete the following information. Fields marked with * are required."
+
+msgid "Enviar inscripción"
+msgstr "Submit registration"
+
+msgid "Esta convocatoria aún no tiene un formulario configurado."
+msgstr "This call for applications does not yet have a form configured."
+
+msgid "Las inscripciones no están disponibles en este momento."
+msgstr "Registration is not available at this time."
+
+msgid "Inscripción enviada"
+msgstr "Registration submitted"
+
+msgid ""
+"Tu inscripción a %(convocatoria.title)s ha sido recibida correctamente."
+msgstr ""
+"Your registration for %(convocatoria.title)s has been received successfully."
+
+msgid "¡Gracias!"
+msgstr "Thank you!"
+
+msgid "Tu inscripción ha sido recibida"
+msgstr "Your registration has been received"
+
+msgid "Ver más convocatorias"
+msgstr "View more calls for applications"
+
+msgid "Verificación de Carné"
+msgstr "Card Verification"
+
+msgid "Carné No Encontrado"
+msgstr "Card Not Found"
+
+msgid ""
+"El enlace de verificación es inválido o el carné no existe en nuestro "
+"sistema."
+msgstr ""
+"The verification link is invalid or the card does not exist in our system."
+
+msgid "Volver al Inicio"
+msgstr "Back to Home"
+
+msgid "Carné Verificado"
+msgstr "Card Verified"
+
+msgid "Miembro Fundador"
+msgstr "Founding Member"
+
+msgid "Asociado ASNC"
+msgstr "ASNC Associate"
+
+msgid "Emisión"
+msgstr "Issued"
+
+msgid "Válido hasta"
+msgstr "Valid until"
+
+msgid "Carné No Válido"
+msgstr "Invalid Card"
+
+msgid "Carné Expirado"
+msgstr "Card Expired"
+
+msgid "Este carné venció el %(fecha)s"
+msgstr "This card expired on %(fecha)s"
+
+msgid "Carné Suspendido"
+msgstr "Card Suspended"
+
+msgid "Carné Cancelado"
+msgstr "Card Cancelled"
+
+msgid "Pendiente de Activación"
+msgstr "Pending Activation"
+
+msgid "Si cree que esto es un error, contacte a"
+msgstr "If you believe this is an error, please contact"
+
+msgid "Este carné ha sido verificado %(counter)s vez"
+msgid_plural "Este carné ha sido verificado %(counter)s veces"
+msgstr[0] "This card has been verified %(counter)s time"
+msgstr[1] "This card has been verified %(counter)s times"
