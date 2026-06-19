@@ -62,6 +62,18 @@
                             {% endif %}
                         </div>
 
+                        <!-- Cargo en la asociación (inglés) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-translate me-2 text-secondary"></i>Cargo en la ASNC (inglés)
+                            </label>
+                            {{ form.association_position_en }}
+                            <div class="form-text">Opcional. Si se deja vacío, se muestra el español.</div>
+                            {% if form.association_position_en.errors %}
+                            <div class="text-danger small mt-1">{{ form.association_position_en.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
                         <!-- Profesión -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">
@@ -73,6 +85,18 @@
                             {% endif %}
                         </div>
 
+                        <!-- Profesión (inglés) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-translate me-2 text-secondary"></i>Profesión (inglés)
+                            </label>
+                            {{ form.profession_en }}
+                            <div class="form-text">Opcional. Si se deja vacío, se muestra el español.</div>
+                            {% if form.profession_en.errors %}
+                            <div class="text-danger small mt-1">{{ form.profession_en.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
                         <!-- Trayectoria profesional -->
                         <div class="col-12">
                             <label class="form-label fw-semibold">
@@ -81,6 +105,18 @@
                             {{ form.professional_trajectory }}
                             {% if form.professional_trajectory.errors %}
                             <div class="text-danger small mt-1">{{ form.professional_trajectory.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Trayectoria profesional (inglés) -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-translate me-2 text-secondary"></i>Trayectoria Profesional (inglés)
+                            </label>
+                            {{ form.professional_trajectory_en }}
+                            <div class="form-text">Opcional. Si se deja vacío, se muestra el español.</div>
+                            {% if form.professional_trajectory_en.errors %}
+                            <div class="text-danger small mt-1">{{ form.professional_trajectory_en.errors.0 }}</div>
                             {% endif %}
                         </div>
 

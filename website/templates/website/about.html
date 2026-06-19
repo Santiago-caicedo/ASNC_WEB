@@ -23,8 +23,8 @@
             {
                 "@type": "Person",
                 "name": "{{ member.full_name }}",
-                "jobTitle": "{{ member.association_position }}",
-                "description": "{{ member.profession }}",
+                "jobTitle": "{{ member.display_position }}",
+                "description": "{{ member.display_profession }}",
                 {% if member.photo %}"image": "{{ member.photo.url }}",{% endif %}
                 {% if member.linkedin_url %}"sameAs": "{{ member.linkedin_url }}",{% endif %}
                 "worksFor": {
@@ -48,8 +48,8 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "{{ member.full_name }}",
-    "jobTitle": "{{ member.association_position }} - Asociación Nuclear Colombiana",
-    "description": "{{ member.profession }}. Miembro de la Junta Directiva de la Asociación Nuclear Colombiana (ASNC).",
+    "jobTitle": "{{ member.display_position }} - Asociación Nuclear Colombiana",
+    "description": "{{ member.display_profession }}. Miembro de la Junta Directiva de la Asociación Nuclear Colombiana (ASNC).",
     {% if member.photo %}"image": "{{ member.photo.url }}",{% endif %}
     {% if member.linkedin_url %}"sameAs": ["{{ member.linkedin_url }}"],{% endif %}
     "affiliation": {
@@ -258,7 +258,7 @@
                 <div class="member-photo-container">
                     <div class="photo-border"></div>
                     {% if member.photo %}
-                    <img src="{{ member.photo.url }}" alt="{{ member.full_name }} - {{ member.association_position }} de la Asociación Nuclear Colombiana ASNC" class="member-photo">
+                    <img src="{{ member.photo.url }}" alt="{{ member.full_name }} - {{ member.display_position }} de la Asociación Nuclear Colombiana ASNC" class="member-photo">
                     {% else %}
                     <div class="photo-placeholder">
                         <i class="bi bi-person-fill"></i>
@@ -274,8 +274,8 @@
                 <!-- Info del miembro -->
                 <div class="member-content">
                     <h4 class="member-name">{{ member.full_name }}</h4>
-                    <span class="member-position">{{ member.association_position }}</span>
-                    <p class="member-profession">{{ member.profession }}</p>
+                    <span class="member-position">{{ member.display_position }}</span>
+                    <p class="member-profession">{{ member.display_profession }}</p>
 
                     <div class="card-action">
                         <span>{% trans "Ver perfil completo" %}</span>
@@ -367,8 +367,8 @@
 
                 <div class="member-content">
                     <h4 class="member-name">{{ member.full_name }}</h4>
-                    <span class="member-position member-position-intl">{{ member.association_position }}</span>
-                    <p class="member-profession">{{ member.profession }}</p>
+                    <span class="member-position member-position-intl">{{ member.display_position }}</span>
+                    <p class="member-profession">{{ member.display_profession }}</p>
 
                     <div class="card-action">
                         <span>{% trans "Ver perfil completo" %}</span>
@@ -415,9 +415,9 @@
 {
     "id": {{ member.pk }},
     "name": "{{ member.full_name }}",
-    "position": "{{ member.association_position }}",
-    "profession": "{{ member.profession }}",
-    "trajectory": "{{ member.professional_trajectory|escapejs }}",
+    "position": "{{ member.display_position }}",
+    "profession": "{{ member.display_profession }}",
+    "trajectory": "{{ member.display_trajectory|escapejs }}",
     "photo": "{% if member.photo %}{{ member.photo.url }}{% endif %}",
     "linkedin": "{{ member.linkedin_url }}"
 }{% if not forloop.last or international_members %},{% endif %}
@@ -426,9 +426,9 @@
 {
     "id": {{ member.pk }},
     "name": "{{ member.full_name }}",
-    "position": "{{ member.association_position }}",
-    "profession": "{{ member.profession }}",
-    "trajectory": "{{ member.professional_trajectory|escapejs }}",
+    "position": "{{ member.display_position }}",
+    "profession": "{{ member.display_profession }}",
+    "trajectory": "{{ member.display_trajectory|escapejs }}",
     "photo": "{% if member.photo %}{{ member.photo.url }}{% endif %}",
     "linkedin": "{{ member.linkedin_url }}"
 }{% if not forloop.last %},{% endif %}

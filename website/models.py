@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, get_language
 from django.utils.text import slugify
 
 
@@ -16,6 +16,11 @@ class FeaturedMember(models.Model):
         max_length=150,
         help_text=_('Ej: Presidente, Vicepresidente, Director Científico')
     )
+    association_position_en = models.CharField(
+        _('Cargo en la Asociación (inglés)'),
+        max_length=150, blank=True,
+        help_text=_('Versión en inglés. Si se deja vacío, se muestra el español.')
+    )
 
     # Professional info
     profession = models.CharField(
@@ -23,9 +28,19 @@ class FeaturedMember(models.Model):
         max_length=150,
         help_text=_('Ej: Ingeniero Nuclear, Físico Médico')
     )
+    profession_en = models.CharField(
+        _('Profesión (inglés)'),
+        max_length=150, blank=True,
+        help_text=_('Versión en inglés. Si se deja vacío, se muestra el español.')
+    )
     professional_trajectory = models.TextField(
         _('Trayectoria Profesional'),
         help_text=_('Descripción de la experiencia y logros profesionales')
+    )
+    professional_trajectory_en = models.TextField(
+        _('Trayectoria Profesional (inglés)'),
+        blank=True,
+        help_text=_('Versión en inglés. Si se deja vacío, se muestra el español.')
     )
 
     # Social
@@ -57,6 +72,25 @@ class FeaturedMember(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - {self.association_position}"
+
+    def _localized(self, es_value, en_value):
+        """Devuelve la versión EN si el idioma activo es inglés y existe; si no, ES."""
+        lang = get_language() or ''
+        if lang.startswith('en') and en_value:
+            return en_value
+        return es_value
+
+    @property
+    def display_position(self):
+        return self._localized(self.association_position, self.association_position_en)
+
+    @property
+    def display_profession(self):
+        return self._localized(self.profession, self.profession_en)
+
+    @property
+    def display_trajectory(self):
+        return self._localized(self.professional_trajectory, self.professional_trajectory_en)
 
 
 class NewsArticle(models.Model):

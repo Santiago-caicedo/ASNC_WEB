@@ -32,6 +32,10 @@ class FeaturedMemberAdmin(admin.ModelAdmin):
         ('Información en la Asociación', {
             'fields': ('association_position', 'profession', 'professional_trajectory')
         }),
+        ('Versión en inglés (opcional)', {
+            'fields': ('association_position_en', 'profession_en', 'professional_trajectory_en'),
+            'description': 'Si se deja vacío, el sitio en inglés mostrará el texto en español.',
+        }),
         ('Visualización', {
             'fields': ('is_active', 'display_order')
         }),

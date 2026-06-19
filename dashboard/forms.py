@@ -11,8 +11,9 @@ class FeaturedMemberForm(forms.ModelForm):
     class Meta:
         model = FeaturedMember
         fields = [
-            'full_name', 'photo', 'association_position',
-            'profession', 'professional_trajectory', 'linkedin_url',
+            'full_name', 'photo', 'association_position', 'association_position_en',
+            'profession', 'profession_en', 'professional_trajectory',
+            'professional_trajectory_en', 'linkedin_url',
             'is_international', 'is_active', 'display_order'
         ]
         widgets = {
@@ -27,14 +28,27 @@ class FeaturedMemberForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Ej: Presidente, Director Científico'
             }),
+            'association_position_en': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'E.g.: President, Scientific Director'
+            }),
             'profession': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ej: Ingeniero Nuclear, Físico Médico'
+            }),
+            'profession_en': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'E.g.: Nuclear Engineer, Medical Physicist'
             }),
             'professional_trajectory': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 5,
                 'placeholder': 'Describa la trayectoria profesional, logros y experiencia relevante...'
+            }),
+            'professional_trajectory_en': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Professional background, achievements and relevant experience (English)...'
             }),
             'linkedin_url': forms.URLInput(attrs={
                 'class': 'form-control',
