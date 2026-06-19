@@ -45,7 +45,19 @@
       "Bash(ls:*)",
       "Bash(pip install *)",
       "Bash(gh auth *)",
-      "Bash(./venv/Scripts/python.exe manage.py migrate admissions)"
+      "Bash(./venv/Scripts/python.exe manage.py migrate admissions)",
+      "Bash(./venv/Scripts/python.exe manage.py check)",
+      "Bash(cd *)",
+      "Bash(./venv/Scripts/python.exe manage.py makemigrations admissions)",
+      "Bash(sudo apt-get install -y gettext)",
+      "Bash(./venv/Scripts/python.exe -c \"import polib; print\\('polib', polib.__version__\\)\")",
+      "Bash(./venv/Scripts/python.exe -m pip install polib)",
+      "Bash(./venv/Scripts/python.exe -c \"import polib; print\\('polib OK', polib.__version__\\)\")",
+      "Bash(msgfmt --version)",
+      "Bash(echo \"gettext OK: $\\(msgfmt --version)",
+      "Bash(./venv/Scripts/python.exe -c ' *)",
+      "Bash(./venv/Scripts/python.exe scripts/build_translations.py)",
+      "Bash(./venv/Scripts/python.exe manage.py shell -c ' *)"
     ]
   }
 }
