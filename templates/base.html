@@ -243,16 +243,29 @@
         .footer-link:hover { color: var(--asnc-gold); padding-left: 5px; }
         .text-gold { color: var(--asnc-gold) !important; }
 
-        /* --- Selector de idioma (banderas) --- */
-        .lang-switch { display: flex; align-items: center; gap: 4px; margin: 0 0 0 14px; }
-        .lang-btn {
-            background: none; border: 0; padding: 2px; line-height: 0;
-            cursor: pointer; opacity: 0.5; border-radius: 3px;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+        /* --- Selector de idioma (menú desplegable) --- */
+        .lang-dropdown { margin-left: 14px; }
+        .lang-toggle {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; border-radius: 20px; padding: 3px 10px;
+            font-size: 0.8rem; display: inline-flex; align-items: center;
+            gap: 6px; cursor: pointer; transition: background 0.2s ease;
         }
-        .lang-btn:hover { opacity: 1; transform: translateY(-1px); }
-        .lang-btn.lang-active { opacity: 1; outline: 2px solid var(--asnc-gold); }
-        .lang-btn svg { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(255,255,255,0.3); }
+        .lang-toggle:hover { background: rgba(255,255,255,0.18); }
+        .lang-toggle .lang-caret { font-size: 0.6rem; opacity: 0.7; }
+        .lang-menu {
+            min-width: 175px; padding: 6px; border: 0; border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        }
+        .lang-item {
+            display: flex; align-items: center; gap: 10px; border-radius: 8px;
+            font-size: 0.9rem; padding: 7px 10px; color: var(--asnc-navy);
+            width: 100%; background: none; border: 0; text-align: left;
+        }
+        .lang-item:hover { background: var(--asnc-bg); }
+        .lang-item.active { background: var(--asnc-blue); color: #fff; font-weight: 600; }
+        .lang-item svg { border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.12); flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -272,18 +285,41 @@
                     <a href="https://www.facebook.com/share/1BhF3tqKT7/" target="_blank" class="social-icon" title="Facebook"><i class="bi bi-facebook"></i></a>
                     <a href="https://x.com/asncol_oficial" target="_blank" class="social-icon" title="X (Twitter)"><i class="bi bi-twitter-x"></i></a>
 
-                    <!-- Selector de idioma ES / EN -->
-                    <form action="{% url 'set_language' %}" method="post" class="lang-switch">
+                    <!-- Selector de idioma (ES / EN / FR / PT) -->
+                    <form action="{% url 'set_language' %}" method="post" class="lang-dropdown dropdown">
                         {% csrf_token %}
                         <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                        <button type="submit" name="language" value="es" title="Español"
-                                class="lang-btn {% if LANGUAGE_CODE|slice:':2' == 'es' %}lang-active{% endif %}">
-                            <svg width="22" height="15" viewBox="0 0 3 2"><rect width="3" height="2" fill="#AA151B"/><rect width="3" height="1" y=".5" fill="#F1BF00"/></svg>
+                        <button class="lang-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Idioma / Language">
+                            <i class="bi bi-globe2"></i>
+                            <span class="lang-code">{{ LANGUAGE_CODE|slice:':2'|upper }}</span>
+                            <i class="bi bi-chevron-down lang-caret"></i>
                         </button>
-                        <button type="submit" name="language" value="en" title="English"
-                                class="lang-btn {% if LANGUAGE_CODE|slice:':2' == 'en' %}lang-active{% endif %}">
-                            <svg width="22" height="15" viewBox="0 0 60 30"><clipPath id="ukc"><path d="M0 0v30h60V0z"/></clipPath><g clip-path="url(#ukc)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></g></svg>
-                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end lang-menu">
+                            <li>
+                                <button type="submit" name="language" value="es" class="dropdown-item lang-item {% if LANGUAGE_CODE|slice:':2' == 'es' %}active{% endif %}">
+                                    <svg width="22" height="15" viewBox="0 0 3 2"><rect width="3" height="2" fill="#AA151B"/><rect width="3" height="1" y=".5" fill="#F1BF00"/></svg>
+                                    Español
+                                </button>
+                            </li>
+                            <li>
+                                <button type="submit" name="language" value="en" class="dropdown-item lang-item {% if LANGUAGE_CODE|slice:':2' == 'en' %}active{% endif %}">
+                                    <svg width="22" height="15" viewBox="0 0 60 30"><clipPath id="ukc"><path d="M0 0v30h60V0z"/></clipPath><g clip-path="url(#ukc)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></g></svg>
+                                    English
+                                </button>
+                            </li>
+                            <li>
+                                <button type="submit" name="language" value="fr" class="dropdown-item lang-item {% if LANGUAGE_CODE|slice:':2' == 'fr' %}active{% endif %}">
+                                    <svg width="22" height="15" viewBox="0 0 3 2"><rect width="3" height="2" fill="#fff"/><rect width="1" height="2" fill="#002395"/><rect width="1" height="2" x="2" fill="#ED2939"/></svg>
+                                    Français
+                                </button>
+                            </li>
+                            <li>
+                                <button type="submit" name="language" value="pt" class="dropdown-item lang-item {% if LANGUAGE_CODE|slice:':2' == 'pt' %}active{% endif %}">
+                                    <svg width="22" height="15" viewBox="0 0 20 14"><rect width="20" height="14" fill="#009b3a"/><polygon points="10,1.5 18.5,7 10,12.5 1.5,7" fill="#fedf00"/><circle cx="10" cy="7" r="3" fill="#002776"/></svg>
+                                    Português
+                                </button>
+                            </li>
+                        </ul>
                     </form>
                 </div>
             </div>

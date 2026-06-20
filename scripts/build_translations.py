@@ -25,6 +25,7 @@ import polib
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # carpeta scripts/
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 import django  # noqa: E402
@@ -732,9 +733,27 @@ def _extract(src):
     return singles, plurals
 
 
-def build():
-    norm_map = {_norm(k): v for k, v in TRANSLATIONS.items()}
+def _collect_msgids():
+    """Extrae los msgid únicos (singulares y plurales) de todas las plantillas."""
+    singles, plurals, seen = [], [], set()
+    for rel in TEMPLATE_FILES:
+        with open(os.path.join(BASE_DIR, rel), encoding='utf-8') as fh:
+            s, p = _extract(fh.read())
+        for m in s:
+            if m not in seen:
+                seen.add(m)
+                singles.append(m)
+        for pr in p:
+            key = ('PL', pr[0], pr[1])
+            if key not in seen:
+                seen.add(key)
+                plurals.append(pr)
+    return singles, plurals
 
+
+def _build_lang(lang, translations, singles, plurals):
+    """Compila locale/<lang>/LC_MESSAGES/django.{po,mo}. Devuelve (n, faltantes)."""
+    norm_map = {_norm(k): v for k, v in translations.items()}
     po = polib.POFile()
     po.metadata = {
         'Project-Id-Version': 'ASNC 1.0',
@@ -742,52 +761,58 @@ def build():
         'MIME-Version': '1.0',
         'Content-Type': 'text/plain; charset=utf-8',
         'Content-Transfer-Encoding': '8bit',
-        'Language': 'en',
+        'Language': lang,
         'Plural-Forms': 'nplurals=2; plural=(n != 1);',
     }
-
-    seen = set()
     missing = []
-    for rel in TEMPLATE_FILES:
-        path = os.path.join(BASE_DIR, rel)
-        with open(path, encoding='utf-8') as fh:
-            src = fh.read()
-        singles, plurals = _extract(src)
+    for msgid in singles:
+        val = norm_map.get(_norm(msgid))
+        if val is None:
+            missing.append(msgid)
+            continue
+        po.append(polib.POEntry(msgid=msgid, msgstr=val))
+    for sing, plur in plurals:
+        v_s = norm_map.get(_norm(sing))
+        v_p = norm_map.get(_norm(plur))
+        if v_s is None or v_p is None:
+            missing.append(sing)
+            continue
+        po.append(polib.POEntry(msgid=sing, msgid_plural=plur,
+                                msgstr_plural={0: v_s, 1: v_p}))
 
-        for msgid in singles:
-            if msgid in seen:
-                continue
-            seen.add(msgid)
-            en = norm_map.get(_norm(msgid))
-            if en is None:
-                missing.append((rel, msgid))
-                continue
-            po.append(polib.POEntry(msgid=msgid, msgstr=en))
-
-        for sing, plur in plurals:
-            key = ('PL', sing, plur)
-            if key in seen:
-                continue
-            seen.add(key)
-            en_s = norm_map.get(_norm(sing))
-            en_p = norm_map.get(_norm(plur))
-            if en_s is None or en_p is None:
-                missing.append((rel, sing))
-                continue
-            po.append(polib.POEntry(msgid=sing, msgid_plural=plur,
-                                    msgstr_plural={0: en_s, 1: en_p}))
-
-    out_dir = os.path.join(BASE_DIR, 'locale', 'en', 'LC_MESSAGES')
+    out_dir = os.path.join(BASE_DIR, 'locale', lang, 'LC_MESSAGES')
     os.makedirs(out_dir, exist_ok=True)
     po.save(os.path.join(out_dir, 'django.po'))
     po.save_as_mofile(os.path.join(out_dir, 'django.mo'))
+    return len(po), missing
 
-    print(f'OK: {len(po)} entradas traducidas -> {out_dir}')
-    if missing:
-        print(f'\nSIN TRADUCCIÓN ({len(missing)}) — revisar:')
-        for rel, msgid in missing:
-            preview = msgid[:80].replace('\n', ' ')
-            print(f'  [{rel}] {preview!r}')
+
+def build():
+    # Idioma -> diccionario de traducciones. Español es el idioma fuente (msgid).
+    langs = {'en': TRANSLATIONS}
+    try:
+        from translations_fr import TRANSLATIONS_FR
+        langs['fr'] = TRANSLATIONS_FR
+    except ImportError:
+        print('AVISO: scripts/translations_fr.py no encontrado, se omite francés.')
+    try:
+        from translations_pt import TRANSLATIONS_PT
+        langs['pt'] = TRANSLATIONS_PT
+    except ImportError:
+        print('AVISO: scripts/translations_pt.py no encontrado, se omite portugués.')
+
+    singles, plurals = _collect_msgids()
+    total = len(singles) + len(plurals)
+    print(f'msgid extraídos de las plantillas: {total}\n')
+
+    for lang, translations in langs.items():
+        n, missing = _build_lang(lang, translations, singles, plurals)
+        line = f'  {lang}: {n} entradas compiladas'
+        if missing:
+            line += f'  | SIN TRADUCIR: {len(missing)}'
+        print(line)
+        for m in missing[:15]:
+            print(f'       - {m[:70]!r}')
 
 
 if __name__ == '__main__':

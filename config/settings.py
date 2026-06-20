@@ -142,10 +142,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Idioma por defecto: Español de Colombia
 LANGUAGE_CODE = 'es-co'
 
-# Idiomas disponibles para el sitio público (toggle ES/EN)
+# Idiomas disponibles para el sitio público (selector ES/EN/FR/PT)
 LANGUAGES = [
     ('es', 'Español'),
     ('en', 'English'),
+    ('fr', 'Français'),
+    ('pt', 'Português'),
 ]
 
 # Carpeta donde viven los catálogos de traducción (.po/.mo)
