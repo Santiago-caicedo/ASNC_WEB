@@ -253,6 +253,7 @@
             gap: 6px; cursor: pointer; transition: background 0.2s ease;
         }
         .lang-toggle:hover { background: rgba(255,255,255,0.18); }
+        .lang-toggle svg { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(255,255,255,0.25); }
         .lang-toggle .lang-caret { font-size: 0.6rem; opacity: 0.7; }
         .lang-menu {
             min-width: 175px; padding: 6px; border: 0; border-radius: 12px;
@@ -290,8 +291,18 @@
                         {% csrf_token %}
                         <input name="next" type="hidden" value="{{ request.get_full_path }}">
                         <button class="lang-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Idioma / Language">
-                            <i class="bi bi-globe2"></i>
-                            <span class="lang-code">{{ LANGUAGE_CODE|slice:':2'|upper }}</span>
+                            {% with curlang=LANGUAGE_CODE|slice:':2' %}
+                            {% if curlang == 'en' %}
+                                <svg width="22" height="15" viewBox="0 0 60 30"><clipPath id="ukct"><path d="M0 0v30h60V0z"/></clipPath><g clip-path="url(#ukct)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></g></svg>
+                            {% elif curlang == 'fr' %}
+                                <svg width="22" height="15" viewBox="0 0 3 2"><rect width="3" height="2" fill="#fff"/><rect width="1" height="2" fill="#002395"/><rect width="1" height="2" x="2" fill="#ED2939"/></svg>
+                            {% elif curlang == 'pt' %}
+                                <svg width="22" height="15" viewBox="0 0 20 14"><rect width="20" height="14" fill="#009b3a"/><polygon points="10,1.5 18.5,7 10,12.5 1.5,7" fill="#fedf00"/><circle cx="10" cy="7" r="3" fill="#002776"/></svg>
+                            {% else %}
+                                <svg width="22" height="15" viewBox="0 0 3 2"><rect width="3" height="2" fill="#AA151B"/><rect width="3" height="1" y=".5" fill="#F1BF00"/></svg>
+                            {% endif %}
+                            <span class="lang-code">{{ curlang|upper }}</span>
+                            {% endwith %}
                             <i class="bi bi-chevron-down lang-caret"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end lang-menu">
