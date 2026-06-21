@@ -172,8 +172,9 @@
         .nav-link {
             font-weight: 500;
             color: var(--asnc-navy);
-            margin: 0 5px;
+            margin: 0 2px;
             position: relative;
+            white-space: nowrap;
         }
 
         .nav-link:hover {
@@ -336,13 +337,13 @@
             </div>
         </div>
 
-        <nav class="navbar navbar-expand-lg navbar-asnc">
+        <nav class="navbar navbar-expand-xl navbar-asnc">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img src="{% static 'images/asnc_logo_full.png' %}" alt="Logo ASNC" class="navbar-brand-logo">
                 </a>
 
-                <a href="https://las-ans.org.br/" target="_blank" class="d-none d-xl-flex align-items-center ms-3 me-auto ps-3 border-start text-decoration-none" style="border-color: rgba(0,0,0,0.1) !important;">
+                <a href="https://las-ans.org.br/" target="_blank" class="d-none d-xxl-flex align-items-center ms-3 me-auto ps-3 border-start text-decoration-none" style="border-color: rgba(0,0,0,0.1) !important;">
                     <img src="{% static 'images/las-anc.png' %}" alt="ANS Latin American Section" style="height: 50px; width: auto;">
                     <span class="ms-2 small fw-semibold" style="color: var(--asnc-navy); font-size: 0.7rem; line-height: 1.2;">{% trans "Miembro Institucional" %}<br>LAS-American Nuclear Society</span>
                 </a>
@@ -354,22 +355,22 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">{% trans "Inicio" %}</a>
+                            <a class="nav-link px-2 {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">{% trans "Inicio" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">{% trans "Quiénes Somos" %}</a>
+                            <a class="nav-link px-2 {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">{% trans "Quiénes Somos" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="{% url 'events' %}">{% trans "Eventos" %}</a>
+                            <a class="nav-link px-2 {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="{% url 'events' %}">{% trans "Eventos" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if 'noticias' in request.path %}active{% endif %}" href="{% url 'public_news_list' %}">{% trans "Noticias" %}</a>
+                            <a class="nav-link px-2 {% if 'noticias' in request.path %}active{% endif %}" href="{% url 'public_news_list' %}">{% trans "Noticias" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 {% if 'contacto' in request.path %}active{% endif %}" href="{% url 'contact' %}">{% trans "Contacto" %}</a>
+                            <a class="nav-link px-2 {% if 'contacto' in request.path %}active{% endif %}" href="{% url 'contact' %}">{% trans "Contacto" %}</a>
                         </li>
 
-                        <li class="nav-item d-none d-lg-block mx-2 border-end border-2" style="height: 20px; opacity: 0.2;"></li>
+                        <li class="nav-item d-none d-xl-block mx-1 border-end border-2" style="height: 20px; opacity: 0.2;"></li>
 
                         <li class="nav-item ms-lg-2">
                             <a href="{% url 'login' %}" class="btn btn-link text-decoration-none fw-bold" style="color: var(--asnc-blue); font-size: 0.95rem;">
