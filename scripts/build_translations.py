@@ -41,12 +41,23 @@ TEMPLATE_FILES = [
     'website/templates/website/privacy_policy.html',
     'website/templates/website/news/list.html',
     'website/templates/website/news/detail.html',
+    'website/templates/website/contact.html',
     'admissions/templates/admissions/application_form.html',
     'admissions/templates/admissions/application_success.html',
     'convocatorias/templates/convocatorias/public/list.html',
     'convocatorias/templates/convocatorias/public/detail.html',
     'convocatorias/templates/convocatorias/public/success.html',
     'carnets/templates/carnets/verificar.html',
+]
+
+# Cadenas usadas en código Python (forms.py / views.py vía _()) que NO están en
+# plantillas; se incluyen en todos los catálogos para que también se traduzcan.
+PYTHON_STRINGS = [
+    "Tu nombre",
+    "Asunto",
+    "Escribe tu mensaje aquí...",
+    "Has enviado demasiados mensajes. Por favor intenta más tarde.",
+    "Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!",
 ]
 
 # ---------------------------------------------------------------------------
@@ -712,6 +723,87 @@ TRANSLATIONS.update({
     "¿Cómo puedes aportar a la ASNC? *": "How can you contribute to the ASNC? *",
 })
 
+# --- contact.html + forms/views de contacto ---
+TRANSLATIONS.update({
+    "Contacto": "Contact",
+    "Ponte en contacto con la Asociación Nuclear Colombiana (ASNC). Escríbenos tus dudas, propuestas o solicitudes.":
+        "Get in touch with the Colombian Nuclear Association (ASNC). Write to us with your questions, proposals or requests.",
+    "Contáctanos": "Contact Us",
+    "¿Tienes preguntas, propuestas o quieres saber más sobre la ASNC? Estamos para ayudarte.":
+        "Do you have questions, proposals or want to know more about the ASNC? We're here to help.",
+    "Información de contacto": "Contact information",
+    "Ubicación": "Location",
+    "Respuesta": "Response",
+    "Te responderemos lo antes posible.": "We'll get back to you as soon as possible.",
+    "Mapa de Bucaramanga": "Map of Bucaramanga",
+    "Ver en Google Maps": "View on Google Maps",
+    "Envíanos un mensaje": "Send us a message",
+    "Nombre": "Name",
+    "Asunto": "Subject",
+    "Mensaje": "Message",
+    "Enviar mensaje": "Send message",
+    "Tu nombre": "Your name",
+    "Escribe tu mensaje aquí...": "Write your message here...",
+    "Has enviado demasiados mensajes. Por favor intenta más tarde.":
+        "You have sent too many messages. Please try again later.",
+    "Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!":
+        "Your message has been sent successfully. Thank you for writing to us!",
+})
+
+# Traducciones de la página de contacto en FR y PT (se fusionan con los
+# catálogos generados por los agentes para esas cadenas nuevas).
+CONTACT_FR = {
+    "Contacto": "Contact",
+    "Ponte en contacto con la Asociación Nuclear Colombiana (ASNC). Escríbenos tus dudas, propuestas o solicitudes.":
+        "Entrez en contact avec la Asociación Nuclear Colombiana (ASNC). Écrivez-nous vos questions, propositions ou demandes.",
+    "Contáctanos": "Contactez-nous",
+    "¿Tienes preguntas, propuestas o quieres saber más sobre la ASNC? Estamos para ayudarte.":
+        "Vous avez des questions, des propositions ou souhaitez en savoir plus sur l'ASNC ? Nous sommes là pour vous aider.",
+    "Información de contacto": "Coordonnées",
+    "Ubicación": "Localisation",
+    "Respuesta": "Réponse",
+    "Te responderemos lo antes posible.": "Nous vous répondrons dans les plus brefs délais.",
+    "Mapa de Bucaramanga": "Carte de Bucaramanga",
+    "Ver en Google Maps": "Voir sur Google Maps",
+    "Envíanos un mensaje": "Envoyez-nous un message",
+    "Nombre": "Nom",
+    "Asunto": "Objet",
+    "Mensaje": "Message",
+    "Enviar mensaje": "Envoyer le message",
+    "Tu nombre": "Votre nom",
+    "Escribe tu mensaje aquí...": "Écrivez votre message ici...",
+    "Has enviado demasiados mensajes. Por favor intenta más tarde.":
+        "Vous avez envoyé trop de messages. Veuillez réessayer plus tard.",
+    "Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!":
+        "Votre message a bien été envoyé. Merci de nous avoir écrit !",
+}
+
+CONTACT_PT = {
+    "Contacto": "Contato",
+    "Ponte en contacto con la Asociación Nuclear Colombiana (ASNC). Escríbenos tus dudas, propuestas o solicitudes.":
+        "Entre em contato com a Asociación Nuclear Colombiana (ASNC). Escreva-nos suas dúvidas, propostas ou solicitações.",
+    "Contáctanos": "Fale Conosco",
+    "¿Tienes preguntas, propuestas o quieres saber más sobre la ASNC? Estamos para ayudarte.":
+        "Tem perguntas, propostas ou quer saber mais sobre a ASNC? Estamos aqui para ajudar.",
+    "Información de contacto": "Informações de contato",
+    "Ubicación": "Localização",
+    "Respuesta": "Resposta",
+    "Te responderemos lo antes posible.": "Responderemos o mais breve possível.",
+    "Mapa de Bucaramanga": "Mapa de Bucaramanga",
+    "Ver en Google Maps": "Ver no Google Maps",
+    "Envíanos un mensaje": "Envie-nos uma mensagem",
+    "Nombre": "Nome",
+    "Asunto": "Assunto",
+    "Mensaje": "Mensagem",
+    "Enviar mensaje": "Enviar mensagem",
+    "Tu nombre": "Seu nome",
+    "Escribe tu mensaje aquí...": "Escreva sua mensagem aqui...",
+    "Has enviado demasiados mensajes. Por favor intenta más tarde.":
+        "Você enviou muitas mensagens. Por favor, tente novamente mais tarde.",
+    "Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!":
+        "Sua mensagem foi enviada com sucesso. Obrigado por nos escrever!",
+}
+
 
 # ---------------------------------------------------------------------------
 # Extracción de msgid reales + compilación
@@ -792,16 +884,26 @@ def build():
     langs = {'en': TRANSLATIONS}
     try:
         from translations_fr import TRANSLATIONS_FR
-        langs['fr'] = TRANSLATIONS_FR
+        fr = dict(TRANSLATIONS_FR)
+        fr.update(CONTACT_FR)
+        langs['fr'] = fr
     except ImportError:
         print('AVISO: scripts/translations_fr.py no encontrado, se omite francés.')
     try:
         from translations_pt import TRANSLATIONS_PT
-        langs['pt'] = TRANSLATIONS_PT
+        pt = dict(TRANSLATIONS_PT)
+        pt.update(CONTACT_PT)
+        langs['pt'] = pt
     except ImportError:
         print('AVISO: scripts/translations_pt.py no encontrado, se omite portugués.')
 
     singles, plurals = _collect_msgids()
+    # Añade las cadenas usadas en Python (placeholders/mensajes) que no salen de plantillas
+    existing = set(singles)
+    for s in PYTHON_STRINGS:
+        if s not in existing:
+            singles.append(s)
+            existing.add(s)
     total = len(singles) + len(plurals)
     print(f'msgid extraídos de las plantillas: {total}\n')
 

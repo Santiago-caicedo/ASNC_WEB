@@ -23,6 +23,8 @@ class SecurityHeadersMiddleware:
             "img-src 'self' data: vadomdata.s3.amazonaws.com www.google-analytics.com",
             # Connections: self + Google Analytics
             "connect-src 'self' www.google-analytics.com www.googletagmanager.com",
+            # Frames: self + mapa de OpenStreetMap (página de contacto)
+            "frame-src 'self' https://www.openstreetmap.org",
             # Block all object/embed (Flash, Java applets, etc.)
             "object-src 'none'",
             # Only allow forms to submit to self

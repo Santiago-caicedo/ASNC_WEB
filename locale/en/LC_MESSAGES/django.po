@@ -27,6 +27,9 @@ msgstr "Events"
 msgid "Noticias"
 msgstr "News"
 
+msgid "Contacto"
+msgstr "Contact"
+
 msgid "Acceso Asociados"
 msgstr "Member Login"
 
@@ -58,8 +61,8 @@ msgstr "Bylaws"
 msgid "Política de Datos"
 msgstr "Data Policy"
 
-msgid "Contacto"
-msgstr "Contact"
+msgid "Envíanos un mensaje"
+msgstr "Send us a message"
 
 msgid "Todos los derechos reservados."
 msgstr "All rights reserved."
@@ -1986,6 +1989,59 @@ msgstr "Share:"
 msgid "Más noticias"
 msgstr "More news"
 
+msgid ""
+"Ponte en contacto con la Asociación Nuclear Colombiana (ASNC). Escríbenos "
+"tus dudas, propuestas o solicitudes."
+msgstr ""
+"Get in touch with the Colombian Nuclear Association (ASNC). Write to us with"
+" your questions, proposals or requests."
+
+msgid "Contáctanos"
+msgstr "Contact Us"
+
+msgid ""
+"¿Tienes preguntas, propuestas o quieres saber más sobre la ASNC? Estamos "
+"para ayudarte."
+msgstr ""
+"Do you have questions, proposals or want to know more about the ASNC? We're "
+"here to help."
+
+msgid "Información de contacto"
+msgstr "Contact information"
+
+msgid "Correo electrónico"
+msgstr "Email"
+
+msgid "Ubicación"
+msgstr "Location"
+
+msgid "Respuesta"
+msgstr "Response"
+
+msgid "Te responderemos lo antes posible."
+msgstr "We'll get back to you as soon as possible."
+
+msgid "Síguenos en redes sociales"
+msgstr "Follow us on social media"
+
+msgid "Mapa de Bucaramanga"
+msgstr "Map of Bucaramanga"
+
+msgid "Ver en Google Maps"
+msgstr "View on Google Maps"
+
+msgid "Nombre"
+msgstr "Name"
+
+msgid "Asunto"
+msgstr "Subject"
+
+msgid "Mensaje"
+msgstr "Message"
+
+msgid "Enviar mensaje"
+msgstr "Send message"
+
 msgid "Forma parte de la comunidad nuclear más importante de Colombia"
 msgstr "Be part of Colombia's most important nuclear community"
 
@@ -1994,9 +2050,6 @@ msgstr "First Name"
 
 msgid "Apellidos"
 msgstr "Last Name"
-
-msgid "Correo electrónico"
-msgstr "Email"
 
 msgid "Teléfono"
 msgstr "Phone"
@@ -2048,9 +2101,6 @@ msgstr "Nuclear science at the service of Colombia's sustainable development."
 
 msgid "Volver al inicio"
 msgstr "Back to home"
-
-msgid "Síguenos en redes sociales"
-msgstr "Follow us on social media"
 
 msgid "Convocatorias"
 msgstr "Calls for Applications"
@@ -2175,6 +2225,18 @@ msgstr "Pending Activation"
 
 msgid "Si cree que esto es un error, contacte a"
 msgstr "If you believe this is an error, please contact"
+
+msgid "Tu nombre"
+msgstr "Your name"
+
+msgid "Escribe tu mensaje aquí..."
+msgstr "Write your message here..."
+
+msgid "Has enviado demasiados mensajes. Por favor intenta más tarde."
+msgstr "You have sent too many messages. Please try again later."
+
+msgid "Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!"
+msgstr "Your message has been sent successfully. Thank you for writing to us!"
 
 msgid "Este carné ha sido verificado %(counter)s vez"
 msgid_plural "Este carné ha sido verificado %(counter)s veces"

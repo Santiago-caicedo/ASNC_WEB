@@ -365,6 +365,9 @@
                         <li class="nav-item">
                             <a class="nav-link px-3 {% if 'noticias' in request.path %}active{% endif %}" href="{% url 'public_news_list' %}">{% trans "Noticias" %}</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 {% if 'contacto' in request.path %}active{% endif %}" href="{% url 'contact' %}">{% trans "Contacto" %}</a>
+                        </li>
 
                         <li class="nav-item d-none d-lg-block mx-2 border-end border-2" style="height: 20px; opacity: 0.2;"></li>
 
@@ -425,6 +428,7 @@
                         <li class="mb-2"><i class="bi bi-geo-alt me-2"></i> Bucaramanga, Santander, Colombia</li>
                         <li class="mb-2"><i class="bi bi-envelope me-2"></i> info@asncol.com</li>
                     </ul>
+                    <a href="{% url 'contact' %}" class="footer-link"><i class="bi bi-chat-dots me-2"></i>{% trans "Envíanos un mensaje" %}</a>
                 </div>
             </div>
             <hr class="my-4 border-secondary opacity-25">

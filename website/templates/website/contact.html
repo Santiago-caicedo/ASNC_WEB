@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Contacto" %}{% endblock %}
+{% block meta_description %}{% trans "Ponte en contacto con la Asociación Nuclear Colombiana (ASNC). Escríbenos tus dudas, propuestas o solicitudes." %}{% endblock %}
+
+{% block content %}
+<section class="contact-hero">
+    <div class="container text-center">
+        <span class="contact-eyebrow">{% trans "Contacto" %}</span>
+        <h1 class="contact-title">{% trans "Contáctanos" %}</h1>
+        <p class="contact-subtitle">
+            {% trans "¿Tienes preguntas, propuestas o quieres saber más sobre la ASNC? Estamos para ayudarte." %}
+        </p>
+    </div>
+</section>
+
+<section class="contact-body">
+    <div class="container">
+        <div class="row g-4 g-lg-5">
+
+            <!-- Información de contacto + mapa -->
+            <div class="col-lg-5">
+                <div class="contact-info-card">
+                    <h2 class="contact-h2">{% trans "Información de contacto" %}</h2>
+
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                        <div>
+                            <span class="contact-label">{% trans "Correo electrónico" %}</span>
+                            <a href="mailto:info@asncol.com" class="contact-value">info@asncol.com</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                        <div>
+                            <span class="contact-label">{% trans "Ubicación" %}</span>
+                            <span class="contact-value">Bucaramanga, Santander, Colombia</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="bi bi-clock-fill"></i></div>
+                        <div>
+                            <span class="contact-label">{% trans "Respuesta" %}</span>
+                            <span class="contact-value">{% trans "Te responderemos lo antes posible." %}</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-socials">
+                        <span class="contact-label mb-2 d-block">{% trans "Síguenos en redes sociales" %}</span>
+                        <div class="d-flex gap-2">
+                            <a href="https://www.instagram.com/asncol_oficial" target="_blank" class="contact-social" title="Instagram"><i class="bi bi-instagram"></i></a>
+                            <a href="https://www.linkedin.com/company/asociaci%C3%B3n-nuclear-colombiana/" target="_blank" class="contact-social" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                            <a href="https://www.facebook.com/share/1BhF3tqKT7/" target="_blank" class="contact-social" title="Facebook"><i class="bi bi-facebook"></i></a>
+                            <a href="https://x.com/asncol_oficial" target="_blank" class="contact-social" title="X (Twitter)"><i class="bi bi-twitter-x"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="contact-map">
+                        <iframe
+                            src="https://www.openstreetmap.org/export/embed.html?bbox=-73.16%2C7.10%2C-73.09%2C7.15&amp;layer=mapnik&amp;marker=7.1193%2C-73.1227"
+                            title="{% trans 'Mapa de Bucaramanga' %}" loading="lazy"></iframe>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Bucaramanga,Santander,Colombia"
+                           target="_blank" class="contact-map-link">
+                            <i class="bi bi-map me-1"></i>{% trans "Ver en Google Maps" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <div class="col-lg-7">
+                <div class="contact-form-card">
+                    <h2 class="contact-h2">{% trans "Envíanos un mensaje" %}</h2>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} d-flex align-items-center">
+                            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill{% else %}bi-exclamation-triangle-fill{% endif %} me-2"></i>
+                            <div>{{ message }}</div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Honeypot anti-spam (oculto) -->
+                        <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;">
+                            <label for="id_website">Website</label>
+                            {{ form.website }}
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="contact-flabel" for="{{ form.name.id_for_label }}">
+                                    {% trans "Nombre" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.errors %}<div class="invalid-feedback d-block">{{ form.name.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="contact-flabel" for="{{ form.email.id_for_label }}">
+                                    {% trans "Correo electrónico" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}<div class="invalid-feedback d-block">{{ form.email.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-12">
+                                <label class="contact-flabel" for="{{ form.subject.id_for_label }}">
+                                    {% trans "Asunto" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.subject }}
+                                {% if form.subject.errors %}<div class="invalid-feedback d-block">{{ form.subject.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-12">
+                                <label class="contact-flabel" for="{{ form.message.id_for_label }}">
+                                    {% trans "Mensaje" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.message }}
+                                {% if form.message.errors %}<div class="invalid-feedback d-block">{{ form.message.errors.0 }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-contact-submit mt-4">
+                            <span>{% trans "Enviar mensaje" %}</span>
+                            <i class="bi bi-send ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+        color: #fff; padding: 4rem 0 3rem;
+    }
+    .contact-eyebrow {
+        display: inline-block; text-transform: uppercase; letter-spacing: 2px;
+        font-size: 0.8rem; font-weight: 600; color: var(--asnc-gold); margin-bottom: 0.75rem;
+    }
+    .contact-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .contact-subtitle { color: rgba(255,255,255,0.8); max-width: 640px; margin: 0 auto; font-size: 1.05rem; }
+
+    .contact-body { padding: 3.5rem 0; }
+    .contact-info-card, .contact-form-card {
+        background: #fff; border-radius: 20px; padding: 2rem;
+        box-shadow: 0 10px 30px rgba(27,42,65,0.06); height: 100%;
+    }
+    .contact-h2 { font-size: 1.25rem; font-weight: 700; color: var(--asnc-navy); margin-bottom: 1.5rem; }
+
+    .contact-item { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 1.25rem; }
+    .contact-icon {
+        flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px;
+        background: rgba(33,58,92,0.08); color: var(--asnc-blue);
+        display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .contact-label { display: block; font-size: 0.78rem; text-transform: uppercase;
+        letter-spacing: 0.5px; color: #94a3b8; font-weight: 600; }
+    .contact-value { display: block; color: var(--asnc-navy); font-weight: 500; text-decoration: none; }
+    a.contact-value:hover { color: var(--asnc-blue); }
+
+    .contact-socials { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eef2f6; }
+    .contact-social {
+        width: 40px; height: 40px; border-radius: 10px; background: var(--asnc-bg);
+        color: var(--asnc-navy); display: inline-flex; align-items: center; justify-content: center;
+        font-size: 1.05rem; transition: all 0.2s ease;
+    }
+    .contact-social:hover { background: var(--asnc-navy); color: var(--asnc-gold); transform: translateY(-2px); }
+
+    .contact-map { margin-top: 1.5rem; }
+    .contact-map iframe {
+        width: 100%; height: 220px; border: 0; border-radius: 14px; display: block;
+    }
+    .contact-map-link {
+        display: inline-flex; align-items: center; margin-top: 0.75rem; font-size: 0.9rem;
+        font-weight: 600; color: var(--asnc-blue); text-decoration: none;
+    }
+    .contact-map-link:hover { color: var(--asnc-navy); }
+
+    .contact-flabel { font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.4rem; }
+    .contact-form-card .form-control {
+        border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc; padding: 0.8rem 1rem;
+    }
+    .contact-form-card .form-control:focus {
+        border-color: var(--asnc-blue); box-shadow: 0 0 0 4px rgba(33,58,92,0.1); background: #fff;
+    }
+    .btn-contact-submit {
+        background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
+        color: #fff; border: 0; border-radius: 12px; padding: 0.9rem 2rem; font-weight: 600;
+        display: inline-flex; align-items: center; transition: all 0.3s ease;
+        box-shadow: 0 4px 14px rgba(27,42,65,0.25);
+    }
+    .btn-contact-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(27,42,65,0.35); color: var(--asnc-gold); }
+
+    @media (max-width: 576px) {
+        .contact-title { font-size: 2rem; }
+        .contact-info-card, .contact-form-card { padding: 1.5rem; }
+    }
+</style>
+{% endblock %}

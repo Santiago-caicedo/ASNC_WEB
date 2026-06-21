@@ -27,6 +27,9 @@ msgstr "Eventos"
 msgid "Noticias"
 msgstr "Notícias"
 
+msgid "Contacto"
+msgstr "Contato"
+
 msgid "Acceso Asociados"
 msgstr "Acesso de Associados"
 
@@ -58,8 +61,8 @@ msgstr "Estatutos"
 msgid "Política de Datos"
 msgstr "Política de Dados"
 
-msgid "Contacto"
-msgstr "Contato"
+msgid "Envíanos un mensaje"
+msgstr "Envie-nos uma mensagem"
 
 msgid "Todos los derechos reservados."
 msgstr "Todos os direitos reservados."
@@ -1993,6 +1996,59 @@ msgstr "Compartilhar:"
 msgid "Más noticias"
 msgstr "Mais notícias"
 
+msgid ""
+"Ponte en contacto con la Asociación Nuclear Colombiana (ASNC). Escríbenos "
+"tus dudas, propuestas o solicitudes."
+msgstr ""
+"Entre em contato com a Asociación Nuclear Colombiana (ASNC). Escreva-nos "
+"suas dúvidas, propostas ou solicitações."
+
+msgid "Contáctanos"
+msgstr "Fale Conosco"
+
+msgid ""
+"¿Tienes preguntas, propuestas o quieres saber más sobre la ASNC? Estamos "
+"para ayudarte."
+msgstr ""
+"Tem perguntas, propostas ou quer saber mais sobre a ASNC? Estamos aqui para "
+"ajudar."
+
+msgid "Información de contacto"
+msgstr "Informações de contato"
+
+msgid "Correo electrónico"
+msgstr "E-mail"
+
+msgid "Ubicación"
+msgstr "Localização"
+
+msgid "Respuesta"
+msgstr "Resposta"
+
+msgid "Te responderemos lo antes posible."
+msgstr "Responderemos o mais breve possível."
+
+msgid "Síguenos en redes sociales"
+msgstr "Siga-nos nas redes sociais"
+
+msgid "Mapa de Bucaramanga"
+msgstr "Mapa de Bucaramanga"
+
+msgid "Ver en Google Maps"
+msgstr "Ver no Google Maps"
+
+msgid "Nombre"
+msgstr "Nome"
+
+msgid "Asunto"
+msgstr "Assunto"
+
+msgid "Mensaje"
+msgstr "Mensagem"
+
+msgid "Enviar mensaje"
+msgstr "Enviar mensagem"
+
 msgid "Forma parte de la comunidad nuclear más importante de Colombia"
 msgstr "Faça parte da mais importante comunidade nuclear da Colombia"
 
@@ -2001,9 +2057,6 @@ msgstr "Nome"
 
 msgid "Apellidos"
 msgstr "Sobrenome"
-
-msgid "Correo electrónico"
-msgstr "E-mail"
 
 msgid "Teléfono"
 msgstr "Telefone"
@@ -2056,9 +2109,6 @@ msgstr ""
 
 msgid "Volver al inicio"
 msgstr "Voltar ao início"
-
-msgid "Síguenos en redes sociales"
-msgstr "Siga-nos nas redes sociais"
 
 msgid "Convocatorias"
 msgstr "Editais"
@@ -2181,6 +2231,18 @@ msgstr "Pendente de Ativação"
 
 msgid "Si cree que esto es un error, contacte a"
 msgstr "Se você acredita que isto é um erro, entre em contato com"
+
+msgid "Tu nombre"
+msgstr "Seu nome"
+
+msgid "Escribe tu mensaje aquí..."
+msgstr "Escreva sua mensagem aqui..."
+
+msgid "Has enviado demasiados mensajes. Por favor intenta más tarde."
+msgstr "Você enviou muitas mensagens. Por favor, tente novamente mais tarde."
+
+msgid "Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!"
+msgstr "Sua mensagem foi enviada com sucesso. Obrigado por nos escrever!"
 
 msgid "Este carné ha sido verificado %(counter)s vez"
 msgid_plural "Este carné ha sido verificado %(counter)s veces"

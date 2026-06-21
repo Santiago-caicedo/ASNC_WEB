@@ -1,5 +1,20 @@
+import logging
+from email.utils import formataddr
+
+from django.conf import settings
+from django.contrib import messages
+from django.core.cache import cache
+from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic.edit import FormView
+
+from .forms import ContactForm
 from .models import FeaturedMember, NewsArticle
+
+logger = logging.getLogger(__name__)
 
 
 class HomeView(TemplateView):
@@ -37,6 +52,54 @@ class AboutView(ListView):
 class EventsView(TemplateView):
     """Página de Eventos"""
     template_name = 'website/events.html'
+
+
+class ContactView(FormView):
+    """Página de Contacto: formulario que guarda el mensaje y notifica por correo."""
+    template_name = 'website/contact.html'
+    form_class = ContactForm
+    success_url = reverse_lazy('contact')
+
+    def _client_ip(self):
+        xff = self.request.META.get('HTTP_X_FORWARDED_FOR', '')
+        if xff:
+            return xff.split(',')[0].strip()
+        return self.request.META.get('REMOTE_ADDR')
+
+    def form_valid(self, form):
+        ip = self._client_ip()
+        cache_key = f'contact_rate_{ip}'
+        if cache.get(cache_key, 0) >= 5:
+            messages.error(self.request, _(
+                'Has enviado demasiados mensajes. Por favor intenta más tarde.'))
+            return redirect('contact')
+
+        contact = form.save(commit=False)
+        contact.ip_address = ip
+        contact.save()
+        cache.set(cache_key, cache.get(cache_key, 0) + 1, 3600)
+
+        # Notificación por correo (fuera de cualquier transacción; no rompe el flujo)
+        try:
+            subject = f'[Contacto web] {contact.subject}'
+            body = (
+                f'Nombre: {contact.name}\n'
+                f'Correo: {contact.email}\n\n'
+                f'Mensaje:\n{contact.message}'
+            )
+            email = EmailMultiAlternatives(
+                subject, body,
+                formataddr(('Asociación Nuclear Colombiana', settings.DEFAULT_FROM_EMAIL)),
+                [settings.DEFAULT_FROM_EMAIL],
+                reply_to=[contact.email],
+            )
+            email.send(fail_silently=False)
+        except Exception:
+            logger.exception('Fallo al enviar el correo de contacto')
+
+        messages.success(self.request, _(
+            'Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!'))
+        return super().form_valid(form)
 
 
 class PowerPointTemplateView(TemplateView):

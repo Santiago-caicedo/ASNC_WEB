@@ -152,3 +152,24 @@ class NewsArticle(models.Model):
             from django.utils import timezone
             self.published_at = timezone.now()
         super().save(*args, **kwargs)
+
+
+class ContactMessage(models.Model):
+    """Mensaje enviado desde el formulario público de Contacto."""
+
+    name = models.CharField(_('Nombre'), max_length=150)
+    email = models.EmailField(_('Correo electrónico'))
+    subject = models.CharField(_('Asunto'), max_length=200)
+    message = models.TextField(_('Mensaje'))
+
+    is_read = models.BooleanField(_('Leído'), default=False)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('Mensaje de Contacto')
+        verbose_name_plural = _('Mensajes de Contacto')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.name} — {self.subject}'
