@@ -1,7 +1,11 @@
+import uuid
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import default_storage
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView, FormView
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -224,6 +228,49 @@ class NewsDeleteView(NewsEditorRequiredMixin, LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'Noticia eliminada exitosamente.')
         return super().form_valid(form)
+
+
+# Imágenes permitidas dentro del contenido de las noticias (editor Quill)
+NEWS_IMAGE_ALLOWED_TYPES = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/gif': 'gif',
+    'image/webp': 'webp',
+}
+NEWS_IMAGE_MAX_SIZE = 5 * 1024 * 1024  # 5 MB por imagen
+
+
+@login_required
+@require_POST
+def news_image_upload(request):
+    """Recibe una imagen del editor Quill, la guarda en el almacenamiento
+    (S3 en producción, local en desarrollo) y devuelve su URL pública.
+
+    Así el contenido de la noticia guarda solo la URL de la imagen, en vez
+    de incrustarla como base64 (que hacía crecer el POST más allá de
+    DATA_UPLOAD_MAX_MEMORY_SIZE)."""
+    user = request.user
+    if not (user.can_edit_news or user.is_admin):
+        return JsonResponse({'error': 'No tienes permisos para subir imágenes.'}, status=403)
+
+    upload = request.FILES.get('image')
+    if not upload:
+        return JsonResponse({'error': 'No se recibió ninguna imagen.'}, status=400)
+
+    extension = NEWS_IMAGE_ALLOWED_TYPES.get(upload.content_type)
+    if not extension:
+        return JsonResponse(
+            {'error': 'Formato no permitido. Usa JPG, PNG, GIF o WEBP.'}, status=400
+        )
+
+    if upload.size > NEWS_IMAGE_MAX_SIZE:
+        return JsonResponse(
+            {'error': 'La imagen supera el tamaño máximo de 5 MB.'}, status=400
+        )
+
+    filename = f'news/content/{uuid.uuid4().hex}.{extension}'
+    saved_name = default_storage.save(filename, upload)
+    return JsonResponse({'url': default_storage.url(saved_name)})
 
 
 # ============================================

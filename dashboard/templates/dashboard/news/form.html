@@ -167,27 +167,74 @@
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('news-form');
+    const hiddenInput = document.getElementById('id_content');
+    const uploadUrl = "{% url 'news_image_upload' %}";
+    const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
     const quill = new Quill('#quill-editor', {
         theme: 'snow',
         placeholder: 'Escribe el contenido de la noticia...',
         modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'align': [] }],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                ['blockquote'],
-                ['link', 'image', 'video'],
-                ['clean']
-            ]
+            toolbar: {
+                container: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['blockquote'],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ],
+                handlers: {
+                    // Sube la imagen al servidor (S3) e inserta solo su URL,
+                    // en vez de incrustarla como base64.
+                    image: function () {
+                        const input = document.createElement('input');
+                        input.setAttribute('type', 'file');
+                        input.setAttribute('accept', 'image/png, image/jpeg, image/gif, image/webp');
+                        input.click();
+
+                        input.onchange = function () {
+                            const file = input.files[0];
+                            if (!file) return;
+
+                            if (file.size > 5 * 1024 * 1024) {
+                                alert('La imagen supera el tamaño máximo de 5 MB.');
+                                return;
+                            }
+
+                            const range = quill.getSelection(true);
+                            const formData = new FormData();
+                            formData.append('image', file);
+
+                            fetch(uploadUrl, {
+                                method: 'POST',
+                                headers: { 'X-CSRFToken': csrfToken },
+                                body: formData,
+                            })
+                            .then(function (response) {
+                                return response.json().then(function (data) {
+                                    if (!response.ok) throw new Error(data.error || 'Error al subir la imagen.');
+                                    return data;
+                                });
+                            })
+                            .then(function (data) {
+                                quill.insertEmbed(range.index, 'image', data.url, 'user');
+                                quill.setSelection(range.index + 1);
+                            })
+                            .catch(function (error) {
+                                alert(error.message || 'No se pudo subir la imagen.');
+                            });
+                        };
+                    }
+                }
+            }
         }
     });
 
     // Sync Quill content to hidden textarea on form submit
-    const form = document.getElementById('news-form');
-    const hiddenInput = document.getElementById('id_content');
-
     form.addEventListener('submit', function(e) {
         const content = quill.root.innerHTML;
         hiddenInput.value = (content === '<p><br></p>') ? '' : content;
