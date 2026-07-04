@@ -9,6 +9,8 @@ from .views import (
     FeaturedMemberListView, FeaturedMemberCreateView,
     FeaturedMemberUpdateView, FeaturedMemberDeleteView,
     NewsListView, NewsCreateView, NewsUpdateView, NewsDeleteView,
+    NewsCategoryListView, NewsCategoryCreateView, NewsCategoryUpdateView,
+    NewsCategoryDeleteView,
     news_image_upload,
     EmailComposeView, EmailHistoryView, EmailDetailView,
     DirectoryListView, DirectoryDetailView,
@@ -63,6 +65,12 @@ urlpatterns = [
     path('noticias/<int:pk>/editar/', NewsUpdateView.as_view(), name='news_update'),
     path('noticias/<int:pk>/eliminar/', NewsDeleteView.as_view(), name='news_delete'),
     path('noticias/subir-imagen/', news_image_upload, name='news_image_upload'),
+
+    # Categorías de noticias
+    path('noticias/categorias/', NewsCategoryListView.as_view(), name='news_category_list'),
+    path('noticias/categorias/nueva/', NewsCategoryCreateView.as_view(), name='news_category_create'),
+    path('noticias/categorias/<int:pk>/editar/', NewsCategoryUpdateView.as_view(), name='news_category_update'),
+    path('noticias/categorias/<int:pk>/eliminar/', NewsCategoryDeleteView.as_view(), name='news_category_delete'),
 
     # Módulo de Correos
     path('correos/', EmailHistoryView.as_view(), name='email_history'),

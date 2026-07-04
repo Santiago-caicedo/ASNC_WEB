@@ -1,7 +1,7 @@
 import nh3
 from django import forms
 from django.contrib.auth import get_user_model
-from website.models import FeaturedMember, NewsArticle
+from website.models import FeaturedMember, NewsArticle, NewsCategory
 from admissions.models import MembershipApplication
 
 User = get_user_model()
@@ -74,8 +74,8 @@ class NewsArticleForm(forms.ModelForm):
             'category', 'title', 'cover_image', 'excerpt', 'content', 'is_published'
         ]
         widgets = {
-            'category': forms.RadioSelect(attrs={
-                'class': 'form-check-input'
+            'category': forms.Select(attrs={
+                'class': 'form-select'
             }),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -99,6 +99,13 @@ class NewsArticleForm(forms.ModelForm):
             }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Solo categorías activas; el campo es obligatorio al crear/editar.
+        self.fields['category'].queryset = NewsCategory.objects.filter(is_active=True)
+        self.fields['category'].required = True
+        self.fields['category'].empty_label = 'Selecciona una categoría'
+
     def clean_content(self):
         content = self.cleaned_data.get('content', '')
         return nh3.clean(
@@ -116,6 +123,29 @@ class NewsArticleForm(forms.ModelForm):
             },
             link_rel='noopener noreferrer',
         )
+
+
+class NewsCategoryForm(forms.ModelForm):
+    class Meta:
+        model = NewsCategory
+        fields = ['name', 'description', 'is_active', 'display_order']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: Mundial Nuclear'
+            }),
+            'description': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Descripción opcional que se muestra en la página de la categoría'
+            }),
+            'is_active': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'display_order': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 0
+            }),
+        }
 
 
 class UserRoleForm(forms.ModelForm):

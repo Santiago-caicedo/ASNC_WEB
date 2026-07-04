@@ -11,8 +11,10 @@ from django.utils.translation import gettext as _
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import FormView
 
+from django.shortcuts import get_object_or_404
+
 from .forms import ContactForm
-from .models import FeaturedMember, NewsArticle
+from .models import FeaturedMember, NewsArticle, NewsCategory
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +24,17 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        published = NewsArticle.objects.filter(is_published=True)
+        published = NewsArticle.objects.filter(
+            is_published=True
+        ).select_related('category')
+        # Barra lateral: noticias de la categoría "De la Asociación".
         context['news_association'] = published.filter(
-            category=NewsArticle.Category.ASSOCIATION
+            category__slug='de-la-asociacion'
         )[:4]
-        context['news_nuclear'] = published.filter(
-            category=NewsArticle.Category.NUCLEAR
+        # Sección principal: últimas noticias del resto de categorías
+        # (incluye cualquier categoría nueva, p. ej. "Mundial Nuclear").
+        context['news_nuclear'] = published.exclude(
+            category__slug='de-la-asociacion'
         )[:4]
         return context
 
@@ -112,6 +119,14 @@ class PrivacyPolicyView(TemplateView):
     template_name = 'website/privacy_policy.html'
 
 
+def get_active_news_categories():
+    """Categorías activas que tienen al menos una noticia publicada."""
+    return NewsCategory.objects.filter(
+        is_active=True,
+        articles__is_published=True,
+    ).distinct()
+
+
 class NewsListView(ListView):
     """Listado público de noticias"""
     model = NewsArticle
@@ -120,7 +135,36 @@ class NewsListView(ListView):
     paginate_by = 9
 
     def get_queryset(self):
-        return NewsArticle.objects.filter(is_published=True)
+        return NewsArticle.objects.filter(
+            is_published=True
+        ).select_related('category')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = get_active_news_categories()
+        return context
+
+
+class NewsCategoryDetailView(ListView):
+    """Listado público de noticias filtradas por categoría"""
+    model = NewsArticle
+    template_name = 'website/news/list.html'
+    context_object_name = 'articles'
+    paginate_by = 9
+
+    def get_queryset(self):
+        self.category = get_object_or_404(
+            NewsCategory, slug=self.kwargs['slug'], is_active=True
+        )
+        return NewsArticle.objects.filter(
+            is_published=True, category=self.category
+        ).select_related('category')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = get_active_news_categories()
+        context['current_category'] = self.category
+        return context
 
 
 class NewsDetailView(DetailView):
@@ -132,11 +176,11 @@ class NewsDetailView(DetailView):
     slug_url_kwarg = 'slug'
 
     def get_queryset(self):
-        return NewsArticle.objects.filter(is_published=True)
+        return NewsArticle.objects.filter(is_published=True).select_related('category')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['recent_articles'] = NewsArticle.objects.filter(
             is_published=True
-        ).exclude(pk=self.object.pk)[:3]
+        ).exclude(pk=self.object.pk).select_related('category')[:3]
         return context

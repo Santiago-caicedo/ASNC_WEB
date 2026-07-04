@@ -378,8 +378,11 @@
             {% endif %}
 
             {% if user.can_edit_news or user.is_admin %}
-            <a href="{% url 'news_list' %}" class="nav-link {% if 'noticias' in request.path %}active{% endif %}">
+            <a href="{% url 'news_list' %}" class="nav-link {% if 'noticias' in request.path and 'categorias' not in request.path %}active{% endif %}">
                 <i class="bi bi-newspaper"></i> Noticias
+            </a>
+            <a href="{% url 'news_category_list' %}" class="nav-link {% if 'categorias' in request.path %}active{% endif %}">
+                <i class="bi bi-tags"></i> Categorías
             </a>
             {% endif %}
 

@@ -106,7 +106,7 @@
                         <div class="news-card">
                             <div class="news-card-img">
                                 <img src="{{ article.cover_image.url }}" alt="{{ article.title }}">
-                                <span class="news-card-badge badge-nuclear">{% trans "Nuclear" %}</span>
+                                {% if article.category %}<span class="news-card-badge badge-nuclear">{{ article.category.name }}</span>{% endif %}
                             </div>
                             <div class="news-card-body">
                                 <span class="news-card-date">

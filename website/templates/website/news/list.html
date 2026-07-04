@@ -11,15 +11,36 @@
 <section class="news-hero">
     <div class="container">
         <div class="news-hero-content text-center">
+            {% if current_category %}
+            <span class="news-tag">{% trans "Categoría" %}</span>
+            <h1>{{ current_category.name }}</h1>
+            <p>{% if current_category.description %}{{ current_category.description }}{% else %}{% trans "Noticias de esta categoría" %}{% endif %}</p>
+            {% else %}
             <span class="news-tag">{% trans "Blog ASNC" %}</span>
             <h1>{% trans "Noticias y Novedades" %}</h1>
             <p>{% trans "Lo último del sector nuclear colombiano y la comunidad ASNC" %}</p>
+            {% endif %}
         </div>
     </div>
 </section>
 
 <section class="news-list-section">
     <div class="container">
+        {% if categories %}
+        <div class="news-filters">
+            <a href="{% url 'public_news_list' %}"
+               class="news-filter-chip {% if not current_category %}active{% endif %}">
+                {% trans "Todas" %}
+            </a>
+            {% for cat in categories %}
+            <a href="{% url 'public_news_category' cat.slug %}"
+               class="news-filter-chip {% if current_category and current_category.pk == cat.pk %}active{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% if articles %}
         <div class="row g-4">
             {% for article in articles %}
@@ -33,6 +54,9 @@
                             <div class="news-card-placeholder">
                                 <i class="bi bi-newspaper"></i>
                             </div>
+                            {% endif %}
+                            {% if article.category %}
+                            <span class="news-card-cat">{{ article.category.name }}</span>
                             {% endif %}
                         </div>
                         <div class="news-card-body">
@@ -125,6 +149,56 @@
 .news-list-section {
     padding: 4rem 0 6rem;
     background: var(--asnc-bg);
+}
+
+.news-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+}
+
+.news-filter-chip {
+    display: inline-block;
+    padding: 0.5rem 1.15rem;
+    border-radius: 50px;
+    background: white;
+    color: var(--asnc-navy);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: all 0.25s ease;
+}
+
+.news-filter-chip:hover {
+    border-color: var(--asnc-gold);
+    color: var(--asnc-navy);
+}
+
+.news-filter-chip.active {
+    background: var(--asnc-navy);
+    color: white;
+    border-color: var(--asnc-navy);
+}
+
+.news-card-image {
+    position: relative;
+}
+
+.news-card-cat {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    background: rgba(27, 42, 65, 0.92);
+    color: white;
+    padding: 0.3rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(4px);
 }
 
 .news-card-link {

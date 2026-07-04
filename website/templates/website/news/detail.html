@@ -23,6 +23,13 @@
                     <a href="{% url 'public_news_list' %}" class="article-back">
                         <i class="bi bi-arrow-left me-1"></i> {% trans "Todas las noticias" %}
                     </a>
+                    {% if article.category %}
+                    <div>
+                        <a href="{% url 'public_news_category' article.category.slug %}" class="article-category">
+                            <i class="bi bi-tag-fill me-1"></i>{{ article.category.name }}
+                        </a>
+                    </div>
+                    {% endif %}
                     <h1>{{ article.title }}</h1>
                     <div class="article-meta">
                         <span>
@@ -139,6 +146,25 @@
     color: var(--asnc-gold);
 }
 
+.article-category {
+    display: inline-block;
+    background: rgba(244, 195, 67, 0.15);
+    color: var(--asnc-gold);
+    padding: 0.35rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    transition: all 0.25s ease;
+}
+
+.article-category:hover {
+    background: var(--asnc-gold);
+    color: var(--asnc-navy);
+}
+
 .article-header h1 {
     font-size: 2.25rem;
     font-weight: 800;
@@ -169,11 +195,14 @@
 }
 
 .article-cover img {
+    display: block;
     width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: contain;
     border-radius: 16px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-    max-height: 480px;
-    object-fit: cover;
+    background: var(--asnc-bg);
 }
 
 .article-content-section {
@@ -182,37 +211,107 @@
 }
 
 .article-body {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     color: #374151;
-    line-height: 1.9;
+    line-height: 1.85;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .article-body p {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.4rem;
+}
+
+.article-body > *:first-child {
+    margin-top: 0;
 }
 
 .article-body img {
     max-width: 100%;
+    height: auto;
     border-radius: 12px;
-    margin: 1.5rem 0;
+    margin: 1.75rem auto;
+    display: block;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
-.article-body h2, .article-body h3 {
+.article-body h1,
+.article-body h2,
+.article-body h3 {
     color: var(--asnc-navy);
     font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
+    line-height: 1.3;
+    margin-top: 2.25rem;
+    margin-bottom: 0.9rem;
 }
+
+.article-body h1 { font-size: 1.9rem; }
+.article-body h2 { font-size: 1.5rem; }
+.article-body h3 { font-size: 1.25rem; }
+
+.article-body a {
+    color: var(--asnc-blue);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 500;
+}
+
+.article-body a:hover {
+    color: var(--asnc-gold);
+}
+
+.article-body ul,
+.article-body ol {
+    margin: 0 0 1.4rem;
+    padding-left: 1.75rem;
+}
+
+.article-body li {
+    margin-bottom: 0.5rem;
+}
+
+.article-body strong { font-weight: 700; color: #1f2937; }
 
 .article-body blockquote {
     border-left: 4px solid var(--asnc-gold);
     padding: 1rem 1.5rem;
-    margin: 1.5rem 0;
+    margin: 1.75rem 0;
     background: var(--asnc-bg);
     border-radius: 0 12px 12px 0;
     font-style: italic;
     color: #4b5563;
 }
+
+.article-body pre {
+    background: var(--asnc-navy);
+    color: #f8f9fa;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    margin: 1.75rem 0;
+}
+
+/* Videos embebidos (iframe) responsivos */
+.article-body iframe {
+    max-width: 100%;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border: 0;
+    border-radius: 12px;
+    margin: 1.75rem 0;
+}
+
+/* Soporte para el formato generado por el editor Quill */
+.article-body .ql-align-center { text-align: center; }
+.article-body .ql-align-right { text-align: right; }
+.article-body .ql-align-justify { text-align: justify; }
+.article-body img.ql-align-center { margin-left: auto; margin-right: auto; }
+.article-body img.ql-align-right { margin-left: auto; margin-right: 0; }
+.article-body .ql-indent-1 { padding-left: 3rem; }
+.article-body .ql-indent-2 { padding-left: 6rem; }
+.article-body .ql-indent-3 { padding-left: 9rem; }
 
 /* Share */
 .article-share {
@@ -326,11 +425,20 @@
         font-size: 1.6rem;
     }
     .article-body {
-        font-size: 0.95rem;
+        font-size: 1rem;
+        line-height: 1.75;
     }
+    .article-body h1 { font-size: 1.5rem; }
+    .article-body h2 { font-size: 1.3rem; }
+    .article-body h3 { font-size: 1.15rem; }
     .article-cover img {
         border-radius: 12px;
+        max-height: 380px;
     }
+    /* Reducir sangrías de Quill en móvil para que no se desborden */
+    .article-body .ql-indent-1 { padding-left: 1.5rem; }
+    .article-body .ql-indent-2 { padding-left: 3rem; }
+    .article-body .ql-indent-3 { padding-left: 4.5rem; }
 }
 </style>
 {% endblock %}

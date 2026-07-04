@@ -1,7 +1,17 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from .models import FeaturedMember, ContactMessage
+from .models import FeaturedMember, ContactMessage, NewsCategory
+
+
+@admin.register(NewsCategory)
+class NewsCategoryAdmin(admin.ModelAdmin):
+    """Categorías de noticias."""
+    list_display = ('name', 'slug', 'is_active', 'display_order', 'published_count')
+    list_filter = ('is_active',)
+    list_editable = ('is_active', 'display_order')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(ContactMessage)

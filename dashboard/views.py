@@ -14,10 +14,10 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from email.utils import formataddr
 from admissions.models import MembershipApplication
-from website.models import FeaturedMember, NewsArticle
+from website.models import FeaturedMember, NewsArticle, NewsCategory
 from carnets.models import MemberCard
 from users.models import User
-from .forms import FeaturedMemberForm, NewsArticleForm, EmailComposeForm, UserRoleForm
+from .forms import FeaturedMemberForm, NewsArticleForm, NewsCategoryForm, EmailComposeForm, UserRoleForm
 from .models import SentEmail
 
 
@@ -227,6 +227,77 @@ class NewsDeleteView(NewsEditorRequiredMixin, LoginRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Noticia eliminada exitosamente.')
+        return super().form_valid(form)
+
+
+# ============================================
+# Categorías de Noticias (News editors / Admins)
+# ============================================
+
+class NewsCategoryListView(NewsEditorRequiredMixin, LoginRequiredMixin, ListView):
+    """Listado de categorías de noticias"""
+    model = NewsCategory
+    template_name = 'dashboard/news/category_list.html'
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        from django.db.models import Count
+        return NewsCategory.objects.annotate(article_count=Count('articles'))
+
+
+class NewsCategoryCreateView(NewsEditorRequiredMixin, LoginRequiredMixin, CreateView):
+    """Crear categoría de noticias"""
+    model = NewsCategory
+    form_class = NewsCategoryForm
+    template_name = 'dashboard/news/category_form.html'
+    success_url = reverse_lazy('news_category_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Categoría creada exitosamente.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Nueva Categoría'
+        context['button_text'] = 'Crear Categoría'
+        return context
+
+
+class NewsCategoryUpdateView(NewsEditorRequiredMixin, LoginRequiredMixin, UpdateView):
+    """Editar categoría de noticias"""
+    model = NewsCategory
+    form_class = NewsCategoryForm
+    template_name = 'dashboard/news/category_form.html'
+    success_url = reverse_lazy('news_category_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Categoría actualizada exitosamente.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar Categoría'
+        context['button_text'] = 'Guardar Cambios'
+        return context
+
+
+class NewsCategoryDeleteView(NewsEditorRequiredMixin, LoginRequiredMixin, DeleteView):
+    """Eliminar categoría de noticias"""
+    model = NewsCategory
+    template_name = 'dashboard/news/category_confirm_delete.html'
+    success_url = reverse_lazy('news_category_list')
+
+    def form_valid(self, form):
+        # No permitir borrar una categoría que aún tiene noticias asignadas
+        # (la FK usa PROTECT y lanzaría ProtectedError).
+        if self.get_object().articles.exists():
+            messages.error(
+                self.request,
+                'No puedes eliminar una categoría que tiene noticias asignadas. '
+                'Reasigna o elimina esas noticias primero.'
+            )
+            return redirect('news_category_list')
+        messages.success(self.request, 'Categoría eliminada exitosamente.')
         return super().form_valid(form)
 
 

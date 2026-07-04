@@ -93,19 +93,55 @@ class FeaturedMember(models.Model):
         return self._localized(self.professional_trajectory, self.professional_trajectory_en)
 
 
+class NewsCategory(models.Model):
+    """Categoría de noticias, gestionable desde el panel de administración."""
+
+    name = models.CharField(_('Nombre'), max_length=100, unique=True)
+    slug = models.SlugField(_('Slug'), max_length=120, unique=True, blank=True)
+    description = models.CharField(
+        _('Descripción'),
+        max_length=200,
+        blank=True,
+        help_text=_('Texto opcional que se muestra en la página de la categoría')
+    )
+    is_active = models.BooleanField(_('Activa'), default=True)
+    display_order = models.PositiveIntegerField(_('Orden'), default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('Categoría de Noticia')
+        verbose_name_plural = _('Categorías de Noticias')
+        ordering = ['display_order', 'name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while NewsCategory.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    @property
+    def published_count(self):
+        return self.articles.filter(is_published=True).count()
+
+
 class NewsArticle(models.Model):
     """Modelo para noticias/blog de la ASNC"""
 
-    class Category(models.TextChoices):
-        ASSOCIATION = 'ASSOCIATION', _('De la Asociación')
-        NUCLEAR = 'NUCLEAR', _('Temática Nuclear')
-
-    category = models.CharField(
-        _('Categoría'),
-        max_length=15,
-        choices=Category.choices,
-        default=Category.NUCLEAR,
-        help_text=_('Selecciona si es una noticia de la asociación o sobre temática nuclear')
+    category = models.ForeignKey(
+        'NewsCategory',
+        on_delete=models.PROTECT,
+        null=True,
+        related_name='articles',
+        verbose_name=_('Categoría'),
+        help_text=_('Categoría a la que pertenece la noticia')
     )
     title = models.CharField(_('Título'), max_length=255)
     slug = models.SlugField(_('Slug'), max_length=280, unique=True, blank=True)

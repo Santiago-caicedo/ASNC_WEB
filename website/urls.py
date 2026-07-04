@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     HomeView, AboutView, EventsView, PowerPointTemplateView,
-    PrivacyPolicyView, NewsListView, NewsDetailView, ContactView,
+    PrivacyPolicyView, NewsListView, NewsCategoryDetailView,
+    NewsDetailView, ContactView,
 )
 
 urlpatterns = [
@@ -10,6 +11,7 @@ urlpatterns = [
     path('eventos/', EventsView.as_view(), name='events'),
     path('contacto/', ContactView.as_view(), name='contact'),
     path('noticias/', NewsListView.as_view(), name='public_news_list'),
+    path('noticias/categoria/<slug:slug>/', NewsCategoryDetailView.as_view(), name='public_news_category'),
     path('noticias/<slug:slug>/', NewsDetailView.as_view(), name='public_news_detail'),
     path('recursos/plantilla-presentacion/', PowerPointTemplateView.as_view(), name='powerpoint_template'),
     path('politica-de-privacidad/', PrivacyPolicyView.as_view(), name='privacy_policy'),

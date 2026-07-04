@@ -41,13 +41,13 @@
                         <td class="ps-3 ps-md-0">
                             <span class="fw-semibold text-dark d-block text-truncate" style="max-width: 250px;">{{ article.title }}</span>
                             <span class="d-block mt-1">
-                                {% if article.category == 'ASSOCIATION' %}
-                                <span class="badge bg-warning-subtle text-dark rounded-pill" style="font-size: 0.7rem;">
-                                    <i class="bi bi-flag-fill me-1"></i>Asociación
+                                {% if article.category %}
+                                <span class="badge bg-primary-subtle text-primary rounded-pill" style="font-size: 0.7rem;">
+                                    <i class="bi bi-tag-fill me-1"></i>{{ article.category.name }}
                                 </span>
                                 {% else %}
-                                <span class="badge bg-primary-subtle text-primary rounded-pill" style="font-size: 0.7rem;">
-                                    <i class="bi bi-atom me-1"></i>Nuclear
+                                <span class="badge bg-secondary-subtle text-secondary rounded-pill" style="font-size: 0.7rem;">
+                                    <i class="bi bi-dash-circle me-1"></i>Sin categoría
                                 </span>
                                 {% endif %}
                             </span>
