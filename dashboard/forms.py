@@ -114,12 +114,20 @@ class NewsArticleForm(forms.ModelForm):
                 'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3',
                 'ul', 'ol', 'li', 'blockquote', 'a', 'img', 'span',
                 'iframe', 'sub', 'sup', 'pre', 'code',
+                # Tablas (para contenido pegado desde Word, Google Docs, etc.)
+                'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th',
+                'caption', 'colgroup', 'col',
             },
             attributes={
                 '*': {'class', 'style'},
                 'a': {'href', 'target'},
                 'img': {'src', 'alt', 'width', 'height'},
                 'iframe': {'src', 'width', 'height', 'frameborder', 'allowfullscreen'},
+                'table': {'border', 'cellpadding', 'cellspacing', 'width'},
+                'td': {'colspan', 'rowspan', 'width', 'height', 'align', 'valign'},
+                'th': {'colspan', 'rowspan', 'width', 'height', 'align', 'valign', 'scope'},
+                'col': {'span', 'width'},
+                'colgroup': {'span', 'width'},
             },
             link_rel='noopener noreferrer',
         )

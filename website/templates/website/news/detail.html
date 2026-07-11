@@ -300,6 +300,41 @@
     margin: 1.75rem 0;
 }
 
+/* Tablas dentro del contenido */
+.article-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.75rem 0;
+    font-size: 0.95rem;
+}
+
+.article-body table th,
+.article-body table td {
+    border: 1px solid #e2e8f0;
+    padding: 0.6rem 0.85rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.article-body table th {
+    background: var(--asnc-navy);
+    color: #fff;
+    font-weight: 600;
+}
+
+.article-body table tr:nth-child(even) td {
+    background: var(--asnc-bg);
+}
+
+/* En móvil, las tablas anchas se desplazan horizontalmente en vez de apeñuscarse */
+@media (max-width: 767px) {
+    .article-body table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
 /* Soporte para el formato generado por el editor Quill */
 .article-body .ql-align-center { text-align: center; }
 .article-body .ql-align-right { text-align: right; }
