@@ -20,7 +20,8 @@ class SecurityHeadersMiddleware:
             # Fonts: self + S3 static + Google Fonts + CDN (Bootstrap Icons)
             "font-src 'self' vadomdata.s3.amazonaws.com fonts.gstatic.com cdn.jsdelivr.net",
             # Images: self + data URIs (for inline images) + S3 bucket + Google Analytics
-            "img-src 'self' data: vadomdata.s3.amazonaws.com www.google-analytics.com",
+            # + flagcdn.com (banderas de países del Comité Asesor)
+            "img-src 'self' data: vadomdata.s3.amazonaws.com www.google-analytics.com flagcdn.com",
             # Connections: self + Google Analytics
             "connect-src 'self' www.google-analytics.com www.googletagmanager.com",
             # Frames: self + mapa de OpenStreetMap (página de contacto)
