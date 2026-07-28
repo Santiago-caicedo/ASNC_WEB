@@ -368,13 +368,13 @@
 
                 <div class="member-content">
                     <h4 class="member-name">{{ member.full_name }}</h4>
+                    <span class="member-position member-position-intl">{{ member.display_position }}</span>
                     {% if member.country %}
                     <span class="member-country">
                         <img src="{{ member.country_flag_url }}" alt="{{ member.country_name }}" loading="lazy">
                         {{ member.country_name }}
                     </span>
                     {% endif %}
-                    <span class="member-position member-position-intl">{{ member.display_position }}</span>
                     <p class="member-profession">{{ member.display_profession }}</p>
 
                     <div class="card-action">
@@ -1097,13 +1097,14 @@
 }
 
 .member-country {
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
     align-items: center;
     gap: 0.45rem;
     font-size: 0.85rem;
     font-weight: 600;
     color: #6b7280;
-    margin: -0.35rem 0 0.75rem;
+    margin: 0.1rem 0 0.85rem;
 }
 
 .member-country img {
@@ -1114,6 +1115,7 @@
 }
 
 .modal-country {
+    justify-content: flex-start;
     color: rgba(255,255,255,0.85);
     margin: 0.25rem 0 0.5rem;
 }
