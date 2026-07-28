@@ -60,6 +60,10 @@ class FeaturedMemberAdmin(admin.ModelAdmin):
             'fields': ('association_position_en', 'profession_en', 'professional_trajectory_en'),
             'description': 'Si se deja vacío, el sitio en inglés mostrará el texto en español.',
         }),
+        ('Clasificación', {
+            'fields': ('is_international', 'country'),
+            'description': 'Miembros del Comité Asesor (sección internacional de Quiénes Somos).',
+        }),
         ('Visualización', {
             'fields': ('is_active', 'display_order')
         }),

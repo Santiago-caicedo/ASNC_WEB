@@ -42,7 +42,12 @@
                             <span class="fw-semibold text-dark d-block text-truncate" style="max-width: 150px;">{{ member.full_name }}</span>
                             {% if member.is_international %}
                             <span class="badge bg-info-subtle text-info rounded-pill" style="font-size: 0.68rem;">
-                                <i class="bi bi-globe2 me-1"></i>Internacional
+                                {% if member.country %}
+                                <img src="{{ member.country_flag_url }}" alt="{{ member.country_name }}"
+                                     style="width: 14px; height: auto; border-radius: 2px; margin-right: 3px; vertical-align: -1px;">
+                                {% else %}
+                                <i class="bi bi-globe2 me-1"></i>
+                                {% endif %}Comité Asesor
                             </span>
                             {% endif %}
                             <span class="text-muted small d-lg-none">{{ member.association_position|truncatechars:20 }}</span>

@@ -301,6 +301,7 @@
                         <div class="modal-header-info">
                             <span class="modal-badge" id="modalPosition"></span>
                             <h2 class="modal-name" id="modalName"></h2>
+                            <span class="member-country modal-country" id="modalCountry"></span>
                             <p class="modal-profession" id="modalProfession"></p>
                         </div>
                     </div>
@@ -334,9 +335,9 @@
     <div class="container">
         <div class="section-header text-center">
             <span class="section-tag-intl"><i class="bi bi-globe2 me-1"></i> {% trans "Red Global" %}</span>
-            <h2 class="section-title">{% trans "Asociados Internacionales" %}</h2>
+            <h2 class="section-title">{% trans "Comité Asesor" %}</h2>
             <p class="section-subtitle">
-                {% trans "Profesionales y colaboradores alrededor del mundo que fortalecen nuestra misión" %}
+                {% trans "Expertos internacionales que asesoran y fortalecen nuestra misión" %}
             </p>
         </div>
 
@@ -367,6 +368,12 @@
 
                 <div class="member-content">
                     <h4 class="member-name">{{ member.full_name }}</h4>
+                    {% if member.country %}
+                    <span class="member-country">
+                        <img src="{{ member.country_flag_url }}" alt="{{ member.country_name }}" loading="lazy">
+                        {{ member.country_name }}
+                    </span>
+                    {% endif %}
                     <span class="member-position member-position-intl">{{ member.display_position }}</span>
                     <p class="member-profession">{{ member.display_profession }}</p>
 
@@ -386,7 +393,7 @@
                 <i class="bi bi-globe2"></i>
             </div>
             <h4>{% trans "Próximamente" %}</h4>
-            <p>{% trans "Conocerás a nuestros asociados internacionales muy pronto" %}</p>
+            <p>{% trans "Conocerás a nuestro Comité Asesor muy pronto" %}</p>
         </div>
         {% endif %}
     </div>
@@ -419,7 +426,9 @@
     "profession": "{{ member.display_profession }}",
     "trajectory": "{{ member.display_trajectory|escapejs }}",
     "photo": "{% if member.photo %}{{ member.photo.url }}{% endif %}",
-    "linkedin": "{{ member.linkedin_url }}"
+    "linkedin": "{{ member.linkedin_url }}",
+    "country": "{{ member.country_name|escapejs }}",
+    "flag": "{{ member.country_flag_url }}"
 }{% if not forloop.last or international_members %},{% endif %}
 {% endfor %}
 {% for member in international_members %}
@@ -430,7 +439,9 @@
     "profession": "{{ member.display_profession }}",
     "trajectory": "{{ member.display_trajectory|escapejs }}",
     "photo": "{% if member.photo %}{{ member.photo.url }}{% endif %}",
-    "linkedin": "{{ member.linkedin_url }}"
+    "linkedin": "{{ member.linkedin_url }}",
+    "country": "{{ member.country_name|escapejs }}",
+    "flag": "{{ member.country_flag_url }}"
 }{% if not forloop.last %},{% endif %}
 {% endfor %}
 ]
@@ -1085,6 +1096,28 @@
     line-height: 1.3;
 }
 
+.member-country {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin: -0.35rem 0 0.75rem;
+}
+
+.member-country img {
+    width: 22px;
+    height: auto;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.modal-country {
+    color: rgba(255,255,255,0.85);
+    margin: 0.25rem 0 0.5rem;
+}
+
 .member-position {
     display: inline-block;
     background: linear-gradient(135deg, var(--asnc-gold), #fbbf24);
@@ -1565,6 +1598,14 @@ function openMemberModal(memberId) {
     document.getElementById('modalName').textContent = member.name;
     document.getElementById('modalPosition').textContent = member.position;
     document.getElementById('modalProfession').textContent = member.profession;
+
+    const countryEl = document.getElementById('modalCountry');
+    if (member.country) {
+        countryEl.innerHTML = `<img src="${member.flag}" alt="${member.country}"> ${member.country}`;
+        countryEl.style.display = '';
+    } else {
+        countryEl.style.display = 'none';
+    }
     document.getElementById('modalTrajectory').textContent = member.trajectory;
 
     const photoContainer = document.getElementById('modalPhoto');

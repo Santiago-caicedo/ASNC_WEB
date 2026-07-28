@@ -2,6 +2,7 @@ import nh3
 from django import forms
 from django.contrib.auth import get_user_model
 from website.models import FeaturedMember, NewsArticle, NewsCategory
+from website.countries import COUNTRIES
 from admissions.models import MembershipApplication
 
 User = get_user_model()
@@ -14,7 +15,7 @@ class FeaturedMemberForm(forms.ModelForm):
             'full_name', 'photo', 'association_position', 'association_position_en',
             'profession', 'profession_en', 'professional_trajectory',
             'professional_trajectory_en', 'linkedin_url',
-            'is_international', 'is_active', 'display_order'
+            'is_international', 'country', 'is_active', 'display_order'
         ]
         widgets = {
             'full_name': forms.TextInput(attrs={
@@ -57,6 +58,9 @@ class FeaturedMemberForm(forms.ModelForm):
             'is_international': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
+            'country': forms.Select(attrs={
+                'class': 'form-select'
+            }),
             'is_active': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
@@ -65,6 +69,16 @@ class FeaturedMemberForm(forms.ModelForm):
                 'min': 0
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['country'].choices = [('', 'Selecciona un país')] + list(COUNTRIES)
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get('is_international') and not cleaned.get('country'):
+            self.add_error('country', 'Selecciona el país del miembro del Comité Asesor.')
+        return cleaned
 
 
 class NewsArticleForm(forms.ModelForm):

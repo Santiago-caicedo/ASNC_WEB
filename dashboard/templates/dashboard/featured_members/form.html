@@ -133,7 +133,7 @@
 
                         <hr class="my-2">
 
-                        <!-- Asociado Internacional -->
+                        <!-- Comité Asesor -->
                         <div class="col-12">
                             <label class="form-label fw-semibold d-block">
                                 <i class="bi bi-globe2 me-2 text-primary"></i>Clasificación
@@ -141,10 +141,22 @@
                             <div class="form-check form-switch mt-2">
                                 {{ form.is_international }}
                                 <label class="form-check-label" for="id_is_international">
-                                    Es asociado internacional
+                                    Hace parte del Comité Asesor
                                 </label>
                             </div>
-                            <small class="text-muted d-block mt-1">Si se marca, aparecerá en la sección de Asociados Internacionales</small>
+                            <small class="text-muted d-block mt-1">Si se marca, aparecerá en la sección "Comité Asesor" de Quiénes Somos, con la bandera de su país</small>
+                        </div>
+
+                        <!-- País (solo Comité Asesor) -->
+                        <div class="col-md-6" id="country-field" style="display: none;">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-flag me-2 text-primary"></i>País *
+                            </label>
+                            {{ form.country }}
+                            {% if form.country.errors %}
+                            <div class="text-danger small mt-1">{{ form.country.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted d-block mt-1">La bandera de este país se mostrará en su tarjeta</small>
                         </div>
 
                         <!-- Orden de visualización -->
@@ -183,4 +195,18 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const checkbox = document.getElementById('id_is_international');
+    const countryField = document.getElementById('country-field');
+
+    function toggleCountry() {
+        countryField.style.display = checkbox.checked ? '' : 'none';
+    }
+
+    toggleCountry();  // estado inicial (al editar un miembro ya marcado)
+    checkbox.addEventListener('change', toggleCountry);
+});
+</script>
 {% endblock %}

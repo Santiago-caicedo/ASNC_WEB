@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _, get_language
 from django.utils.text import slugify
 
+from .countries import COUNTRIES
+
 
 class FeaturedMember(models.Model):
     """Modelo para los asociados destacados que aparecen en la página Quiénes Somos"""
@@ -48,9 +50,16 @@ class FeaturedMember(models.Model):
 
     # Classification
     is_international = models.BooleanField(
-        _('Asociado Internacional'),
+        _('Comité Asesor'),
         default=False,
-        help_text=_('Marcar si es un asociado o colaborador internacional')
+        help_text=_('Marcar si hace parte del Comité Asesor (sección internacional)')
+    )
+    country = models.CharField(
+        _('País'),
+        max_length=2,
+        blank=True,
+        choices=COUNTRIES,
+        help_text=_('País del miembro del Comité Asesor (se muestra con su bandera)')
     )
 
     # Display control
@@ -91,6 +100,17 @@ class FeaturedMember(models.Model):
     @property
     def display_trajectory(self):
         return self._localized(self.professional_trajectory, self.professional_trajectory_en)
+
+    @property
+    def country_name(self):
+        return self.get_country_display() if self.country else ''
+
+    @property
+    def country_flag_url(self):
+        """URL de la bandera del país (flagcdn.com, código ISO en minúsculas)."""
+        if self.country:
+            return f'https://flagcdn.com/w40/{self.country.lower()}.png'
+        return ''
 
 
 class NewsCategory(models.Model):
