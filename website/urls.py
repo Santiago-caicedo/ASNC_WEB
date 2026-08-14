@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    HomeView, AboutView, EventsView, PowerPointTemplateView,
+    HomeView, AboutView, AdvisoryCommitteeView, EventsView, PowerPointTemplateView,
     PrivacyPolicyView, NewsListView, NewsCategoryDetailView,
     NewsDetailView, ContactView,
 )
@@ -8,6 +8,7 @@ from .views import (
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('quienes-somos/', AboutView.as_view(), name='about'),
+    path('comite-asesor/', AdvisoryCommitteeView.as_view(), name='advisory_committee'),
     path('eventos/', EventsView.as_view(), name='events'),
     path('contacto/', ContactView.as_view(), name='contact'),
     path('noticias/', NewsListView.as_view(), name='public_news_list'),

@@ -1,0 +1,525 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Comité Asesor" %}{% endblock %}
+{% block meta_description %}{% trans "Conoce al Comité Asesor de la Asociación Nuclear Colombiana: expertos internacionales que asesoran y fortalecen la misión del gremio nuclear de Colombia." %}{% endblock %}
+{% block og_title %}{% trans "Comité Asesor" %} | ASNC{% endblock %}
+{% block og_description %}{% trans "Expertos internacionales que asesoran y fortalecen nuestra misión." %}{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="advisory-hero">
+    <div class="hero-orbit hero-orbit-1"></div>
+    <div class="hero-orbit hero-orbit-2"></div>
+    <div class="container position-relative">
+        <div class="text-center">
+            <span class="hero-tag reveal"><i class="bi bi-globe2 me-2"></i>{% trans "Red Global" %}</span>
+            <h1 class="hero-title reveal">{% trans "Comité Asesor" %}</h1>
+            <p class="hero-subtitle reveal">
+                {% trans "Expertos internacionales que asesoran y fortalecen nuestra misión, conectando a Colombia con la comunidad nuclear del mundo." %}
+            </p>
+
+            {% if members %}
+            <div class="hero-stats reveal">
+                <div class="stat-item">
+                    <span class="stat-number">{{ members|length }}</span>
+                    <span class="stat-label">{% trans "Expertos" %}</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ countries_count }}</span>
+                    <span class="stat-label">{% trans "Países" %}</span>
+                </div>
+            </div>
+
+            <div class="hero-flags reveal">
+                {% for member in members %}
+                {% if member.country %}
+                <img src="{{ member.country_flag_url }}" alt="{{ member.country_name }}"
+                     title="{{ member.country_name }}" class="hero-flag" loading="lazy">
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Members Grid -->
+<section class="advisory-members">
+    <div class="container">
+        {% if members %}
+        <div class="advisory-grid">
+            {% for member in members %}
+            <div class="advisory-card reveal" onclick="openAdvisorModal({{ member.pk }})">
+                <div class="advisory-card-top">
+                    <div class="card-glow"></div>
+                    {% if member.country %}
+                    <span class="card-country-chip">
+                        <img src="{{ member.country_flag_url }}" alt="{{ member.country_name }}" loading="lazy">
+                        {{ member.country_name }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="advisory-photo-wrap">
+                    <div class="advisory-photo-ring"></div>
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.full_name }}" class="advisory-photo">
+                    {% else %}
+                    <div class="advisory-photo-placeholder"><i class="bi bi-person-fill"></i></div>
+                    {% endif %}
+                    {% if member.linkedin_url %}
+                    <a href="{{ member.linkedin_url }}" target="_blank" rel="noopener"
+                       class="advisory-linkedin" onclick="event.stopPropagation()" aria-label="LinkedIn">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="advisory-card-body">
+                    <h3 class="advisory-name">{{ member.full_name }}</h3>
+                    <span class="advisory-position">{{ member.display_position }}</span>
+                    <p class="advisory-profession">{{ member.display_profession }}</p>
+                    <div class="advisory-action">
+                        <span>{% trans "Ver perfil completo" %}</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="advisory-empty">
+            <div class="advisory-empty-icon"><i class="bi bi-globe2"></i></div>
+            <h4>{% trans "Próximamente" %}</h4>
+            <p>{% trans "Conocerás a nuestro Comité Asesor muy pronto" %}</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="advisory-cta">
+    <div class="container">
+        <div class="advisory-cta-card reveal">
+            <div>
+                <h3>{% trans "¿Quieres conocer al resto del equipo?" %}</h3>
+                <p>{% trans "Descubre la junta directiva y los asociados que lideran la ASNC" %}</p>
+            </div>
+            <a href="{% url 'about' %}" class="advisory-cta-btn">
+                <span>{% trans "Quiénes Somos" %}</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Modal -->
+<div class="advisor-modal" id="advisorModal" aria-hidden="true">
+    <div class="advisor-modal-overlay" onclick="closeAdvisorModal()"></div>
+    <div class="advisor-modal-dialog" role="dialog" aria-modal="true">
+        <button class="advisor-modal-close" onclick="closeAdvisorModal()" aria-label="{% trans 'Cerrar' %}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="advisor-modal-header">
+            <div class="advisor-modal-photo" id="advisorModalPhoto"></div>
+            <div>
+                <span class="advisor-modal-badge" id="advisorModalPosition"></span>
+                <h2 class="advisor-modal-name" id="advisorModalName"></h2>
+                <span class="advisor-modal-country" id="advisorModalCountry"></span>
+                <p class="advisor-modal-profession" id="advisorModalProfession"></p>
+            </div>
+        </div>
+        <div class="advisor-modal-body">
+            <h5 class="advisor-modal-section"><i class="bi bi-briefcase-fill me-2"></i>{% trans "Trayectoria Profesional" %}</h5>
+            <div class="advisor-modal-trajectory" id="advisorModalTrajectory"></div>
+            <a href="#" class="advisor-modal-linkedin" id="advisorModalLinkedIn" target="_blank" rel="noopener">
+                <i class="bi bi-linkedin"></i>
+                <span>{% trans "Ver perfil en LinkedIn" %}</span>
+                <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Member data -->
+<script type="application/json" id="advisorsData">
+[
+{% for member in members %}
+{
+    "id": {{ member.pk }},
+    "name": "{{ member.full_name|escapejs }}",
+    "position": "{{ member.display_position|escapejs }}",
+    "profession": "{{ member.display_profession|escapejs }}",
+    "trajectory": "{{ member.display_trajectory|escapejs }}",
+    "photo": "{% if member.photo %}{{ member.photo.url|escapejs }}{% endif %}",
+    "linkedin": "{{ member.linkedin_url|escapejs }}",
+    "country": "{{ member.country_name|escapejs }}",
+    "flag": "{{ member.country_flag_url|escapejs }}"
+}{% if not forloop.last %},{% endif %}
+{% endfor %}
+]
+</script>
+
+<style>
+/* ===== Hero ===== */
+.advisory-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 7rem 0 4.5rem;
+    background: linear-gradient(135deg, #1B2A41 0%, #213a5c 60%, #2a4a75 100%);
+    color: #fff;
+}
+.hero-orbit {
+    position: absolute;
+    border: 1px solid rgba(244, 195, 67, 0.18);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.hero-orbit-1 { width: 620px; height: 620px; top: -320px; right: -180px; }
+.hero-orbit-2 { width: 420px; height: 420px; bottom: -260px; left: -140px; border-color: rgba(255,255,255,0.08); }
+.hero-tag {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(244, 195, 67, 0.15);
+    color: #f4c343;
+    border: 1px solid rgba(244, 195, 67, 0.35);
+    padding: 0.4rem 1.1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+}
+.hero-title {
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+.hero-subtitle {
+    max-width: 640px;
+    margin: 0 auto 2.2rem;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.7;
+}
+.hero-stats {
+    display: inline-flex;
+    align-items: center;
+    gap: 2rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 1rem 2.2rem;
+    margin-bottom: 1.8rem;
+    backdrop-filter: blur(6px);
+}
+.stat-item { display: flex; flex-direction: column; align-items: center; }
+.stat-number { font-size: 2rem; font-weight: 800; color: #f4c343; line-height: 1.1; }
+.stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); }
+.stat-divider { width: 1px; height: 44px; background: rgba(255, 255, 255, 0.18); }
+.hero-flags { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.6rem; }
+.hero-flag {
+    width: 34px; height: 25px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: transform 0.2s ease;
+}
+.hero-flag:hover { transform: translateY(-4px) scale(1.12); }
+
+/* ===== Grid ===== */
+.advisory-members { padding: 4.5rem 0; background: #F5F7FA; }
+.advisory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.8rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.advisory-card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(27, 42, 65, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+.advisory-card:hover { transform: translateY(-6px); box-shadow: 0 14px 34px rgba(27, 42, 65, 0.16); }
+.advisory-card-top {
+    position: relative;
+    height: 86px;
+    background: linear-gradient(135deg, #1B2A41 0%, #2a4a75 100%);
+}
+.card-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(244, 195, 67, 0.25), transparent 55%);
+}
+.card-country-chip {
+    position: absolute;
+    top: 12px; left: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.25rem 0.7rem;
+    border-radius: 50px;
+    backdrop-filter: blur(4px);
+}
+.card-country-chip img { width: 20px; height: 14px; object-fit: cover; border-radius: 2px; }
+.advisory-photo-wrap { position: relative; width: 120px; height: 120px; margin: -60px auto 0; }
+.advisory-photo-ring {
+    position: absolute; inset: -5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f4c343, #e0a92e);
+}
+.advisory-photo, .advisory-photo-placeholder {
+    position: relative;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+}
+.advisory-photo-placeholder {
+    background: #e9edf2;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; color: #aab4c0;
+}
+.advisory-linkedin {
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #0a66c2;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    border: 2px solid #fff;
+    transition: transform 0.2s ease;
+}
+.advisory-linkedin:hover { transform: scale(1.15); color: #fff; }
+.advisory-card-body {
+    padding: 1.1rem 1.4rem 1.5rem;
+    text-align: center;
+    display: flex; flex-direction: column;
+    flex-grow: 1;
+}
+.advisory-name { font-size: 1.15rem; font-weight: 700; color: #1B2A41; margin-bottom: 0.45rem; }
+.advisory-position {
+    display: inline-block;
+    align-self: center;
+    background: rgba(244, 195, 67, 0.16);
+    color: #a97c0f;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 0.28rem 0.9rem;
+    border-radius: 50px;
+    margin-bottom: 0.7rem;
+}
+.advisory-profession { font-size: 0.92rem; color: #5b6673; margin-bottom: 1rem; flex-grow: 1; }
+.advisory-action {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    color: #213a5c; font-weight: 600; font-size: 0.88rem;
+    transition: gap 0.2s ease;
+}
+.advisory-card:hover .advisory-action { gap: 0.9rem; color: #a97c0f; }
+
+/* ===== Empty state ===== */
+.advisory-empty { text-align: center; padding: 4rem 1rem; color: #5b6673; }
+.advisory-empty-icon {
+    width: 86px; height: 86px;
+    margin: 0 auto 1.2rem;
+    border-radius: 50%;
+    background: rgba(33, 58, 92, 0.08);
+    color: #213a5c;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.4rem;
+}
+
+/* ===== CTA ===== */
+.advisory-cta { padding: 0 0 4.5rem; background: #F5F7FA; }
+.advisory-cta-card {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #1B2A41 0%, #213a5c 100%);
+    color: #fff;
+    border-radius: 20px;
+    padding: 2.2rem 2.6rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1.5rem; flex-wrap: wrap;
+}
+.advisory-cta-card h3 { font-weight: 700; margin-bottom: 0.4rem; }
+.advisory-cta-card p { margin: 0; color: rgba(255, 255, 255, 0.75); }
+.advisory-cta-btn {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: #f4c343; color: #1B2A41;
+    font-weight: 700;
+    padding: 0.8rem 1.6rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.advisory-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(244, 195, 67, 0.4); color: #1B2A41; }
+
+/* ===== Modal ===== */
+.advisor-modal { position: fixed; inset: 0; z-index: 1060; display: none; }
+.advisor-modal.open { display: block; }
+.advisor-modal-overlay { position: absolute; inset: 0; background: rgba(15, 23, 36, 0.72); backdrop-filter: blur(4px); }
+.advisor-modal-dialog {
+    position: relative;
+    max-width: 620px;
+    margin: 5vh auto;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 20px;
+    animation: advisorModalIn 0.28s ease;
+}
+@keyframes advisorModalIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.advisor-modal-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 38px; height: 38px;
+    border: none; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 2;
+}
+.advisor-modal-header {
+    display: flex; align-items: center; gap: 1.4rem;
+    padding: 2rem 2rem 1.5rem;
+    background: linear-gradient(135deg, #1B2A41 0%, #2a4a75 100%);
+    color: #fff;
+    border-radius: 20px 20px 0 0;
+    flex-wrap: wrap;
+}
+.advisor-modal-photo {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background-size: cover; background-position: center;
+    background-color: #e9edf2;
+    border: 4px solid #f4c343;
+    flex-shrink: 0;
+}
+.advisor-modal-badge {
+    display: inline-block;
+    background: rgba(244, 195, 67, 0.2);
+    color: #f4c343;
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 0.25rem 0.8rem;
+    border-radius: 50px;
+    margin-bottom: 0.5rem;
+}
+.advisor-modal-name { font-size: 1.45rem; font-weight: 800; margin-bottom: 0.3rem; }
+.advisor-modal-country {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    font-size: 0.9rem; color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 0.3rem;
+}
+.advisor-modal-country img { width: 22px; height: 16px; object-fit: cover; border-radius: 3px; }
+.advisor-modal-profession { margin: 0; color: rgba(255, 255, 255, 0.75); font-size: 0.95rem; }
+.advisor-modal-body { padding: 1.8rem 2rem 2.2rem; }
+.advisor-modal-section { font-weight: 700; color: #1B2A41; margin-bottom: 1rem; }
+.advisor-modal-trajectory { color: #45505c; line-height: 1.8; white-space: pre-line; margin-bottom: 1.6rem; }
+.advisor-modal-linkedin {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: #0a66c2; color: #fff;
+    font-weight: 600;
+    padding: 0.7rem 1.4rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+.advisor-modal-linkedin:hover { transform: translateY(-2px); color: #fff; }
+
+/* ===== Reveal animation ===== */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+@media (max-width: 576px) {
+    .advisory-hero { padding: 5.5rem 0 3.5rem; }
+    .hero-stats { gap: 1.2rem; padding: 0.8rem 1.4rem; }
+    .advisor-modal-dialog { margin: 3vh 0.8rem; }
+    .advisor-modal-header { padding: 1.6rem 1.4rem 1.2rem; }
+    .advisor-modal-body { padding: 1.4rem 1.4rem 1.8rem; }
+    .advisory-cta-card { padding: 1.8rem 1.5rem; }
+}
+</style>
+
+<script>
+(function () {
+    // Reveal on scroll
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(function (el) { observer.observe(el); });
+})();
+
+var advisorsData = JSON.parse(document.getElementById('advisorsData').textContent);
+
+function openAdvisorModal(id) {
+    var member = advisorsData.find(function (m) { return m.id === id; });
+    if (!member) return;
+
+    var photo = document.getElementById('advisorModalPhoto');
+    photo.style.backgroundImage = member.photo ? 'url("' + member.photo + '")' : 'none';
+
+    document.getElementById('advisorModalName').textContent = member.name;
+    document.getElementById('advisorModalPosition').textContent = member.position;
+    document.getElementById('advisorModalProfession').textContent = member.profession;
+    document.getElementById('advisorModalTrajectory').textContent = member.trajectory;
+
+    var countryEl = document.getElementById('advisorModalCountry');
+    if (member.country) {
+        countryEl.innerHTML = '';
+        var flag = document.createElement('img');
+        flag.src = member.flag;
+        flag.alt = member.country;
+        countryEl.appendChild(flag);
+        countryEl.appendChild(document.createTextNode(member.country));
+        countryEl.style.display = 'inline-flex';
+    } else {
+        countryEl.style.display = 'none';
+    }
+
+    var linkedinBtn = document.getElementById('advisorModalLinkedIn');
+    if (member.linkedin) {
+        linkedinBtn.href = member.linkedin;
+        linkedinBtn.style.display = 'inline-flex';
+    } else {
+        linkedinBtn.style.display = 'none';
+    }
+
+    document.getElementById('advisorModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAdvisorModal() {
+    document.getElementById('advisorModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeAdvisorModal();
+});
+</script>
+
+{% endblock %}

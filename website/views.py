@@ -56,6 +56,24 @@ class AboutView(ListView):
         return context
 
 
+class AdvisoryCommitteeView(ListView):
+    """Página dedicada al Comité Asesor internacional"""
+    model = FeaturedMember
+    template_name = 'website/comite_asesor.html'
+    context_object_name = 'members'
+
+    def get_queryset(self):
+        return FeaturedMember.objects.filter(
+            is_active=True, is_international=True
+        ).order_by('display_order', 'full_name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        countries = {m.country for m in context['members'] if m.country}
+        context['countries_count'] = len(countries)
+        return context
+
+
 class EventsView(TemplateView):
     """Página de Eventos"""
     template_name = 'website/events.html'

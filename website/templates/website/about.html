@@ -396,6 +396,16 @@
             <p>{% trans "Conocerás a nuestro Comité Asesor muy pronto" %}</p>
         </div>
         {% endif %}
+
+        {% if international_members %}
+        <div class="text-center mt-4">
+            <a href="{% url 'advisory_committee' %}" class="intl-page-link">
+                <i class="bi bi-globe2"></i>
+                <span>{% trans "Conoce más sobre nuestro Comité Asesor" %}</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        {% endif %}
     </div>
 </section>
 
@@ -1580,6 +1590,27 @@
         text-align: center;
         padding: 2rem;
     }
+}
+
+/* Enlace a la página dedicada del Comité Asesor */
+.intl-page-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: transparent;
+    color: #213a5c;
+    border: 2px solid #213a5c;
+    font-weight: 700;
+    padding: 0.75rem 1.6rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+.intl-page-link:hover {
+    background: #213a5c;
+    color: #f4c343;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(33, 58, 92, 0.25);
 }
 </style>
 
