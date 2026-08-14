@@ -57,7 +57,8 @@
       "Bash(echo \"gettext OK: $\\(msgfmt --version)",
       "Bash(./venv/Scripts/python.exe -c ' *)",
       "Bash(./venv/Scripts/python.exe scripts/build_translations.py)",
-      "Bash(./venv/Scripts/python.exe manage.py shell -c ' *)"
+      "Bash(./venv/Scripts/python.exe manage.py shell -c ' *)",
+      "Bash(./venv/bin/python -c ' *)"
     ]
   }
 }
