@@ -21,6 +21,7 @@ from django.core.cache import cache
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.db import transaction, IntegrityError
+from django.db.models import Q
 from .models import MembershipApplication
 from .forms import MembershipApplicationForm
 
@@ -351,8 +352,57 @@ class ApplicationListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
     ordering = ['-created_at']
     paginate_by = 15
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Search by name, email, profession or institution
+        search = self.request.GET.get('q', '').strip()
+        if search:
+            queryset = queryset.filter(
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(profession__icontains=search) |
+                Q(institution__icontains=search)
+            )
+
+        # Filter by status
+        status = self.request.GET.get('status')
+        if status in MembershipApplication.Status.values:
+            queryset = queryset.filter(status=status)
+
+        # Filter by sector
+        sector = self.request.GET.get('sector')
+        if sector in MembershipApplication.Sector.values:
+            queryset = queryset.filter(sector=sector)
+
+        # Filter by contact flag
+        contactado = self.request.GET.get('contactado')
+        if contactado in ('1', '0'):
+            queryset = queryset.filter(contactado=(contactado == '1'))
+
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # Current filter state (used to repopulate the form and paginator links)
+        context['search_query'] = self.request.GET.get('q', '').strip()
+        context['status_choices'] = MembershipApplication.Status.choices
+        context['sector_choices'] = MembershipApplication.Sector.choices
+        context['current_status'] = self.request.GET.get('status', '')
+        context['current_sector'] = self.request.GET.get('sector', '')
+        context['current_contactado'] = self.request.GET.get('contactado', '')
+        context['has_filters'] = any([
+            context['search_query'], context['current_status'],
+            context['current_sector'], context['current_contactado'],
+        ])
+
+        # Querystring with the active filters, so pagination keeps them
+        params = self.request.GET.copy()
+        params.pop('page', None)
+        context['filter_querystring'] = params.urlencode()
+
         # Build a dictionary of password status for completed applications
         password_status = {}
         for app in context['applications']:
