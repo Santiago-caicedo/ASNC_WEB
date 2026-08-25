@@ -17,7 +17,8 @@ from .views import (
     UserListView, UserDetailView, UserRoleUpdateView,
 )
 from admissions.views import (
-    ApplicationDetailView, ApplicationListView, change_application_status,
+    ApplicationDetailView, ApplicationListView, ApplicationDeleteView,
+    change_application_status,
     resend_password_email, update_application_admin,
     export_applications_csv, export_applications_excel,
 )
@@ -52,6 +53,8 @@ urlpatterns = [
     path('solicitudes/<int:pk>/cambiar-estado/<str:status>/', change_application_status, name='change_status'),
     path('solicitudes/<int:pk>/actualizar-gestion/', update_application_admin, name='update_application_admin'),
     path('solicitudes/<int:pk>/reenviar-correo-contrasena/', resend_password_email, name='resend_password_email'),
+    # Borrado permanente (solo superadmin, ver SuperuserRequiredMixin)
+    path('solicitudes/<int:pk>/eliminar/', ApplicationDeleteView.as_view(), name='application_delete'),
 
     # CRUD Asociados Destacados
     path('asociados-destacados/', FeaturedMemberListView.as_view(), name='featured_member_list'),

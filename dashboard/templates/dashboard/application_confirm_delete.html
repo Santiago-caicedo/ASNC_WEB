@@ -1,0 +1,66 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'application_detail' application.pk %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al expediente
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-header bg-danger text-white p-4 text-center">
+                <i class="bi bi-exclamation-triangle-fill display-4"></i>
+                <h5 class="fw-bold mb-0 mt-3">Eliminar Solicitud de Ingreso</h5>
+            </div>
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+                    <div class="rounded-circle d-inline-flex justify-content-center align-items-center mb-3 fw-bold text-white shadow-sm"
+                         style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--asnc-blue), #4a6fa5);">
+                        {{ application.first_name|first }}{{ application.last_name|first }}
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">{{ application.first_name }} {{ application.last_name }}</h5>
+                    <p class="text-muted small mb-2">{{ application.email }}</p>
+                    <span class="badge bg-light text-dark border">{{ application.get_status_display }}</span>
+                </div>
+
+                <div class="alert alert-danger border-0 rounded-3">
+                    <i class="bi bi-shield-exclamation me-2"></i>
+                    <strong>Esta acción no se puede deshacer.</strong> La solicitud y su hoja de vida
+                    se eliminarán permanentemente.
+                </div>
+
+                {% if linked_user or linked_card %}
+                <div class="alert alert-warning border-0 rounded-3 small mb-0">
+                    <div class="fw-bold mb-2"><i class="bi bi-info-circle me-1"></i> Lo que NO se elimina</div>
+                    <ul class="mb-0 ps-3">
+                        {% if linked_user %}
+                        <li>La cuenta de usuario <strong>{{ linked_user.email }}</strong> seguirá activa.
+                            Para darla de baja, hazlo desde Usuarios.</li>
+                        {% endif %}
+                        {% if linked_card %}
+                        <li>El carné <strong>{{ linked_card.card_number }}</strong> seguirá vigente,
+                            pero perderá el vínculo con esta solicitud.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'application_detail' application.pk %}" class="btn btn-outline-secondary rounded-pill px-4">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">
+                            <i class="bi bi-trash me-2"></i>Sí, eliminar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

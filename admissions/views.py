@@ -9,6 +9,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, TemplateView
 from django.views.generic import ListView
 from django.views.generic import DetailView
+from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
@@ -43,6 +44,30 @@ class AdminRequiredMixin(UserPassesTestMixin):
             if self.request.user.is_staff:
                 messages.warning(self.request, 'No tienes permisos para acceder a esa sección.')
                 return redirect('/portal/')
+            return redirect('/mi-portal/')
+        return super().handle_no_permission()
+
+
+class SuperuserRequiredMixin(UserPassesTestMixin):
+    """Mixin to restrict views to superadmins only (destructive actions).
+
+    Enforced in dispatch(), so it blocks GET and POST alike: hiding the button
+    in the template is cosmetic, this is the actual gate.
+    """
+    login_url = '/acceso/'
+
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        user = self.request.user
+        if user.is_authenticated:
+            messages.error(
+                self.request,
+                'Solo un superadministrador puede realizar esta acción.'
+            )
+            if user.is_staff:
+                return redirect('application_list')
             return redirect('/mi-portal/')
         return super().handle_no_permission()
 
@@ -436,6 +461,48 @@ class ApplicationDetailView(AdminRequiredMixin, LoginRequiredMixin, DetailView):
                 context['has_password'] = user.has_usable_password()
                 context['last_login'] = user.last_login
         return context
+
+
+class ApplicationDeleteView(SuperuserRequiredMixin, LoginRequiredMixin, DeleteView):
+    """Delete a membership application. Superadmin only.
+
+    Django's DeleteView only deletes on POST (GET renders the confirmation),
+    and the form carries a CSRF token, so the destructive path is POST + CSRF
+    + superuser. The linked MemberCard is NOT removed: the FK uses SET_NULL,
+    so an issued card survives with application=None.
+    """
+    model = MembershipApplication
+    template_name = 'dashboard/application_confirm_delete.html'
+    success_url = reverse_lazy('application_list')
+    context_object_name = 'application'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        app = self.object
+        # Warn about records that will outlive the application
+        context['linked_card'] = getattr(app, 'member_card', None)
+        context['linked_user'] = User.objects.filter(email=app.email).first()
+        return context
+
+    def form_valid(self, form):
+        app = self.get_object()
+        label = f'{app.first_name} {app.last_name} <{app.email}>'
+
+        # Remove the CV from storage too; Django leaves orphan files otherwise
+        # and they stay reachable by direct URL.
+        if app.cv_file:
+            try:
+                app.cv_file.delete(save=False)
+            except Exception:
+                logger.exception('No se pudo borrar el CV de la solicitud %s', app.pk)
+
+        logger.warning(
+            'Solicitud %s (%s) eliminada por %s',
+            app.pk, label, self.request.user.email
+        )
+        response = super().form_valid(form)
+        messages.success(self.request, f'Solicitud de {label} eliminada permanentemente.')
+        return response
 
 
 @login_required

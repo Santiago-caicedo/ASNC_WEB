@@ -220,6 +220,16 @@
                                         <span class="dropdown-item disabled text-muted"><i class="bi bi-file-earmark-x me-2"></i> Sin CV</span>
                                         {% endif %}
                                     </li>
+
+                                    {% if user.is_superuser %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header text-uppercase small fw-bold text-danger">Zona de peligro</h6></li>
+                                    <li>
+                                        <a class="dropdown-item py-2 text-danger" href="{% url 'application_delete' app.pk %}">
+                                            <i class="bi bi-trash me-2"></i> Eliminar Solicitud
+                                        </a>
+                                    </li>
+                                    {% endif %}
                                 </ul>
                             </div>
                         </td>
