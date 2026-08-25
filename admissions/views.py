@@ -23,6 +23,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.db import transaction, IntegrityError
 from django.db.models import Q
+from config.exports import sanitize_spreadsheet_value
 from .models import MembershipApplication
 from .forms import MembershipApplicationForm
 
@@ -353,8 +354,12 @@ class ApplicationCreateView(CreateView):
         try:
             send_application_email(self.object)
         except Exception:
-            # Si falla el email, no interrumpimos el flujo
-            pass
+            # No interrumpimos el flujo, pero debe quedar rastro: si no,
+            # una solicitud entra sin que el comité se entere.
+            logger.exception(
+                'Fallo al enviar el correo de confirmación de la solicitud %s',
+                self.object.pk,
+            )
 
         return super().form_valid(form)
 
@@ -601,8 +606,13 @@ def _get_applications_for_export():
 
 
 def _application_row_values(app):
-    """Fila de valores en el mismo orden que EXPORT_HEADERS."""
-    return [
+    """Fila de valores en el mismo orden que EXPORT_HEADERS.
+
+    Cada celda pasa por sanitize_spreadsheet_value: el contenido lo escribe el
+    público en el formulario de solicitud y no puede acabar siendo una fórmula
+    ejecutable al abrir el archivo.
+    """
+    values = [
         app.first_name,
         app.last_name,
         app.email,
@@ -618,6 +628,7 @@ def _application_row_values(app):
         app.contribution_statement,
         timezone.localtime(app.created_at).strftime('%d/%m/%Y %H:%M'),
     ]
+    return [sanitize_spreadsheet_value(v) for v in values]
 
 
 @login_required
@@ -694,7 +705,9 @@ def export_applications_excel(request):
                 fmt = sector_fmt
             else:
                 fmt = cell_fmt
-            ws.write(row_idx, col, value, fmt)
+            # write_string (y no write) para que xlsxwriter jamás interprete
+            # el valor como fórmula, aunque el saneado anterior fallara.
+            ws.write_string(row_idx, col, value, fmt)
         row_idx += 1
 
     workbook.close()

@@ -12,6 +12,7 @@ from django.views.generic import (
 from dashboard.views import AdminRequiredMixin
 
 from .forms import ConvocatoriaFieldForm, ConvocatoriaForm, SubmissionForm
+from config.exports import sanitize_spreadsheet_value
 from .models import (
     Convocatoria, ConvocatoriaField, ConvocatoriaSubmission, ConvocatoriaSubmissionFile,
 )
@@ -290,10 +291,11 @@ class ConvocatoriaSubmissionExportView(AdminRequiredMixin, View):
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         response.write('\ufeff')  # BOM for Excel UTF-8
         writer = csv.writer(response)
-        writer.writerow(['Fecha', 'IP'] + labels)
+        writer.writerow(['Fecha', 'IP'] + [sanitize_spreadsheet_value(l) for l in labels])
         for sub in submissions:
             row = [sub.submitted_at.strftime('%Y-%m-%d %H:%M'), sub.ip_address or '']
             for label in labels:
                 row.append(sub.data.get(label, ''))
-            writer.writerow(row)
+            # Los valores los escribe el público en el formulario dinámico
+            writer.writerow([sanitize_spreadsheet_value(v) for v in row])
         return response

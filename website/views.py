@@ -4,6 +4,7 @@ from email.utils import formataddr
 from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -85,6 +86,11 @@ class ContactView(FormView):
     form_class = ContactForm
     success_url = reverse_lazy('contact')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_token'] = TimestampSigner().sign('contact')
+        return context
+
     def _client_ip(self):
         xff = self.request.META.get('HTTP_X_FORWARDED_FOR', '')
         if xff:
@@ -92,6 +98,29 @@ class ContactView(FormView):
         return self.request.META.get('REMOTE_ADDR')
 
     def form_valid(self, form):
+        # Control de velocidad: un humano no diligencia el formulario en <3s.
+        # Es la capa que ya usa el formulario de solicitudes y que faltaba aquí.
+        token = form.cleaned_data.get('form_token', '')
+        if not token:
+            form.add_error(None, _('Error en el formulario. Por favor recarga la página.'))
+            return self.form_invalid(form)
+        signer = TimestampSigner()
+        try:
+            signer.unsign(token, max_age=86400)
+        except (BadSignature, SignatureExpired):
+            form.add_error(None, _('La sesión del formulario ha expirado. Por favor recarga la página.'))
+            return self.form_invalid(form)
+        try:
+            signer.unsign(token, max_age=3)
+        except SignatureExpired:
+            pass  # Tardó más de 3s: comportamiento humano esperado
+        except BadSignature:
+            form.add_error(None, _('Error en el formulario. Por favor recarga la página.'))
+            return self.form_invalid(form)
+        else:
+            form.add_error(None, _('Por favor toma un momento para completar el formulario.'))
+            return self.form_invalid(form)
+
         ip = self._client_ip()
         cache_key = f'contact_rate_{ip}'
         if cache.get(cache_key, 0) >= 5:
