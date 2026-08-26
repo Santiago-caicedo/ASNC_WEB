@@ -334,16 +334,16 @@
 <section class="international-section">
     <div class="container">
         <div class="section-header text-center">
-            <span class="section-tag-intl"><i class="bi bi-globe2 me-1"></i> {% trans "Red Global" %}</span>
+            <span class="section-tag-intl"><i class="bi bi-people-fill me-1"></i> {% trans "Expertos Asesores" %}</span>
             <h2 class="section-title">{% trans "Comité Asesor" %}</h2>
             <p class="section-subtitle">
-                {% trans "Expertos internacionales que asesoran y fortalecen nuestra misión" %}
+                {% trans "Expertos nacionales e internacionales que asesoran y fortalecen nuestra misión" %}
             </p>
         </div>
 
-        {% if international_members %}
+        {% if advisory_members %}
         <div class="team-grid">
-            {% for member in international_members %}
+            {% for member in advisory_members %}
             <div class="team-card" onclick="openMemberModal({{ member.pk }})">
                 <div class="card-header-bg card-header-intl">
                     <div class="header-pattern"></div>
@@ -397,7 +397,7 @@
         </div>
         {% endif %}
 
-        {% if international_members %}
+        {% if advisory_members %}
         <div class="text-center mt-4">
             <a href="{% url 'advisory_committee' %}" class="intl-page-link">
                 <i class="bi bi-globe2"></i>
@@ -439,9 +439,9 @@
     "linkedin": "{{ member.linkedin_url }}",
     "country": "{{ member.country_name|escapejs }}",
     "flag": "{{ member.country_flag_url }}"
-}{% if not forloop.last or international_members %},{% endif %}
+}{% if not forloop.last or advisory_members %},{% endif %}
 {% endfor %}
-{% for member in international_members %}
+{% for member in advisory_members %}
 {
     "id": {{ member.pk }},
     "name": "{{ member.full_name }}",

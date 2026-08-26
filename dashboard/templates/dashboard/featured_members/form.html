@@ -139,15 +139,15 @@
                                 <i class="bi bi-globe2 me-2 text-primary"></i>Clasificación
                             </label>
                             <div class="form-check form-switch mt-2">
-                                {{ form.is_international }}
-                                <label class="form-check-label" for="id_is_international">
+                                {{ form.is_advisory }}
+                                <label class="form-check-label" for="id_is_advisory">
                                     Hace parte del Comité Asesor
                                 </label>
                             </div>
-                            <small class="text-muted d-block mt-1">Si se marca, aparecerá en la sección "Comité Asesor" de Quiénes Somos, con la bandera de su país</small>
+                            <small class="text-muted d-block mt-1">Si se marca, aparecerá en la sección "Comité Asesor" de Quiénes Somos, con la bandera de su país. Colombia lo ubica en el comité nacional; cualquier otro país, en el internacional.</small>
                         </div>
 
-                        <!-- País (solo Comité Asesor) -->
+                        <!-- País (obligatorio para el Comité Asesor: define nacional vs. internacional) -->
                         <div class="col-md-6" id="country-field" style="display: none;">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-flag me-2 text-primary"></i>País *
@@ -198,7 +198,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const checkbox = document.getElementById('id_is_international');
+    const checkbox = document.getElementById('id_is_advisory');
     const countryField = document.getElementById('country-field');
 
     function toggleCountry() {

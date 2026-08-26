@@ -61,8 +61,8 @@ class FeaturedMemberAdmin(admin.ModelAdmin):
             'description': 'Si se deja vacío, el sitio en inglés mostrará el texto en español.',
         }),
         ('Clasificación', {
-            'fields': ('is_international', 'country'),
-            'description': 'Miembros del Comité Asesor (sección internacional de Quiénes Somos).',
+            'fields': ('is_advisory', 'country'),
+            'description': 'Miembros del Comité Asesor. El país define si aparecen en el comité nacional (Colombia) o internacional.',
         }),
         ('Visualización', {
             'fields': ('is_active', 'display_order')

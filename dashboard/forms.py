@@ -15,7 +15,7 @@ class FeaturedMemberForm(forms.ModelForm):
             'full_name', 'photo', 'association_position', 'association_position_en',
             'profession', 'profession_en', 'professional_trajectory',
             'professional_trajectory_en', 'linkedin_url',
-            'is_international', 'country', 'is_active', 'display_order'
+            'is_advisory', 'country', 'is_active', 'display_order'
         ]
         widgets = {
             'full_name': forms.TextInput(attrs={
@@ -55,7 +55,7 @@ class FeaturedMemberForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'https://linkedin.com/in/...'
             }),
-            'is_international': forms.CheckboxInput(attrs={
+            'is_advisory': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
             'country': forms.Select(attrs={
@@ -76,7 +76,7 @@ class FeaturedMemberForm(forms.ModelForm):
 
     def clean(self):
         cleaned = super().clean()
-        if cleaned.get('is_international') and not cleaned.get('country'):
+        if cleaned.get('is_advisory') and not cleaned.get('country'):
             self.add_error('country', 'Selecciona el país del miembro del Comité Asesor.')
         return cleaned
 

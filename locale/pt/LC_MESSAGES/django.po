@@ -112,9 +112,6 @@ msgid ""
 "Lo más relevante del mundo nuclear: avances, investigaciones y tendencias."
 msgstr "O mais relevante do mundo nuclear: avanços, pesquisas e tendências."
 
-msgid "Nuclear"
-msgstr "Nuclear"
-
 msgid "Próximamente publicaremos noticias del sector nuclear."
 msgstr "Em breve publicaremos notícias do setor nuclear."
 
@@ -728,20 +725,24 @@ msgstr "Em breve"
 msgid "Conocerás a nuestro increíble equipo muy pronto"
 msgstr "Você conhecerá nossa incrível equipe muito em breve"
 
-msgid "Red Global"
-msgstr "Rede Global"
+msgid "Expertos Asesores"
+msgstr "Especialistas Assessores"
 
-msgid "Asociados Internacionales"
-msgstr "Associados Internacionais"
+msgid "Comité Asesor"
+msgstr "Comitê Assessor"
 
 msgid ""
-"Profesionales y colaboradores alrededor del mundo que fortalecen nuestra "
+"Expertos nacionales e internacionales que asesoran y fortalecen nuestra "
 "misión"
 msgstr ""
-"Profissionais e colaboradores ao redor do mundo que fortalecem nossa missão"
+"Especialistas nacionais e internacionais que assessoram e fortalecem a nossa"
+" missão"
 
-msgid "Conocerás a nuestros asociados internacionales muy pronto"
-msgstr "Você conhecerá nossos associados internacionais muito em breve"
+msgid "Conocerás a nuestro Comité Asesor muy pronto"
+msgstr "Você conhecerá o nosso Comitê Assessor muito em breve"
+
+msgid "Conoce más sobre nuestro Comité Asesor"
+msgstr "Saiba mais sobre o nosso Comitê Assessor"
 
 msgid "¿Quieres ser parte de la ASNC?"
 msgstr "Quer fazer parte da ASNC?"
@@ -751,6 +752,44 @@ msgstr "Junte-se à mais importante comunidade científica nuclear da Colombia"
 
 msgid "Solicitar Ingreso"
 msgstr "Solicitar Ingresso"
+
+msgid ""
+"Conoce al Comité Asesor de la Asociación Nuclear Colombiana: expertos "
+"nacionales e internacionales que asesoran y fortalecen la misión del gremio "
+"nuclear de Colombia."
+msgstr ""
+"Conheça o Comitê Assessor da Associação Nuclear Colombiana: especialistas "
+"nacionais e internacionais que assessoram e fortalecem a missão do setor "
+"nuclear da Colômbia."
+
+msgid ""
+"Expertos nacionales e internacionales que asesoran y fortalecen nuestra "
+"misión."
+msgstr ""
+"Especialistas nacionais e internacionais que assessoram e fortalecem a nossa"
+" missão."
+
+msgid ""
+"Expertos nacionales e internacionales que asesoran y fortalecen nuestra "
+"misión, conectando a Colombia con la comunidad nuclear del mundo."
+msgstr ""
+"Especialistas nacionais e internacionais que assessoram e fortalecem a nossa"
+" missão, conectando a Colômbia com a comunidade nuclear mundial."
+
+msgid "Expertos"
+msgstr "Especialistas"
+
+msgid "Países"
+msgstr "Países"
+
+msgid "¿Quieres conocer al resto del equipo?"
+msgstr "Quer conhecer o resto da equipe?"
+
+msgid "Descubre la junta directiva y los asociados que lideran la ASNC"
+msgstr "Conheça a diretoria e os associados que lideram a ASNC"
+
+msgid "Cerrar"
+msgstr "Fechar"
 
 msgid "Eventos ASNC"
 msgstr "Eventos ASNC"
@@ -820,6 +859,9 @@ msgstr "Webinars"
 msgid ""
 "Sesiones en línea sobre temas específicos con interacción en tiempo real"
 msgstr "Sessões on-line sobre temas específicos com interação em tempo real"
+
+msgid "100%% Online"
+msgstr "100%% Online"
 
 msgid "Talleres"
 msgstr "Workshops"
@@ -1972,6 +2014,12 @@ msgstr ""
 "Notícias e novidades da Asociación Nuclear Colombiana (ASNC). Mantenha-se "
 "informado sobre o setor nuclear na Colombia."
 
+msgid "Categoría"
+msgstr "Categoria"
+
+msgid "Noticias de esta categoría"
+msgstr "Notícias desta categoria"
+
 msgid "Blog ASNC"
 msgstr "Blog ASNC"
 
@@ -1980,6 +2028,9 @@ msgstr "Notícias e Novidades"
 
 msgid "Lo último del sector nuclear colombiano y la comunidad ASNC"
 msgstr "As últimas novidades do setor nuclear colombiano e da comunidade ASNC"
+
+msgid "Todas"
+msgstr "Todas"
 
 msgid "Leer más"
 msgstr "Leia mais"

@@ -49,17 +49,20 @@ class FeaturedMember(models.Model):
     linkedin_url = models.URLField(_('Perfil de LinkedIn'), blank=True)
 
     # Classification
-    is_international = models.BooleanField(
+    is_advisory = models.BooleanField(
         _('Comité Asesor'),
         default=False,
-        help_text=_('Marcar si hace parte del Comité Asesor (sección internacional)')
+        help_text=_('Marcar si hace parte del Comité Asesor')
     )
     country = models.CharField(
         _('País'),
         max_length=2,
         blank=True,
         choices=COUNTRIES,
-        help_text=_('País del miembro del Comité Asesor (se muestra con su bandera)')
+        help_text=_(
+            'País del miembro del Comité Asesor (se muestra con su bandera). '
+            'Colombia lo ubica en el comité nacional; cualquier otro país, en el internacional.'
+        )
     )
 
     # Display control
@@ -100,6 +103,11 @@ class FeaturedMember(models.Model):
     @property
     def display_trajectory(self):
         return self._localized(self.professional_trajectory, self.professional_trajectory_en)
+
+    @property
+    def is_national_advisor(self):
+        """El Comité Asesor se divide por país: Colombia es el comité nacional."""
+        return self.country == 'CO'
 
     @property
     def country_name(self):

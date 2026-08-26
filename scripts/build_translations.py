@@ -37,6 +37,7 @@ TEMPLATE_FILES = [
     'templates/base.html',
     'website/templates/website/home.html',
     'website/templates/website/about.html',
+    'website/templates/website/comite_asesor.html',
     'website/templates/website/events.html',
     'website/templates/website/privacy_policy.html',
     'website/templates/website/news/list.html',
@@ -808,6 +809,28 @@ CONTACT_PT = {
 # ---------------------------------------------------------------------------
 # Extracción de msgid reales + compilación
 # ---------------------------------------------------------------------------
+# --- Comité Asesor (nacional + internacional) y cadenas pendientes ---
+TRANSLATIONS.update({
+    'Expertos Asesores': 'Advisory Experts',
+    'Comité Asesor': 'Advisory Committee',
+    'Expertos nacionales e internacionales que asesoran y fortalecen nuestra misión': 'National and international experts who advise and strengthen our mission',
+    'Conocerás a nuestro Comité Asesor muy pronto': "You'll meet our Advisory Committee very soon",
+    'Conoce más sobre nuestro Comité Asesor': 'Learn more about our Advisory Committee',
+    'Conoce al Comité Asesor de la Asociación Nuclear Colombiana: expertos nacionales e internacionales que asesoran y fortalecen la misión del gremio nuclear de Colombia.': "Meet the Advisory Committee of the Colombian Nuclear Association: national and international experts who advise and strengthen the mission of Colombia's nuclear sector.",
+    'Expertos nacionales e internacionales que asesoran y fortalecen nuestra misión.': 'National and international experts who advise and strengthen our mission.',
+    'Expertos nacionales e internacionales que asesoran y fortalecen nuestra misión, conectando a Colombia con la comunidad nuclear del mundo.': 'National and international experts who advise and strengthen our mission, connecting Colombia with the global nuclear community.',
+    'Expertos': 'Experts',
+    'Países': 'Countries',
+    '¿Quieres conocer al resto del equipo?': 'Want to meet the rest of the team?',
+    'Descubre la junta directiva y los asociados que lideran la ASNC': 'Discover the board and the members who lead ASNC',
+    'Cerrar': 'Close',
+    '100%% Online': '100%% Online',
+    'Categoría': 'Category',
+    'Noticias de esta categoría': 'News in this category',
+    'Todas': 'All',
+})
+
+
 def _norm(s):
     return re.sub(r'\s+', ' ', s).strip()
 

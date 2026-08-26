@@ -40,7 +40,7 @@
                         </td>
                         <td class="ps-3 ps-md-0">
                             <span class="fw-semibold text-dark d-block text-truncate" style="max-width: 150px;">{{ member.full_name }}</span>
-                            {% if member.is_international %}
+                            {% if member.is_advisory %}
                             <span class="badge bg-info-subtle text-info rounded-pill" style="font-size: 0.68rem;">
                                 {% if member.country %}
                                 <img src="{{ member.country_flag_url }}" alt="{{ member.country_name }}"

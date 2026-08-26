@@ -47,25 +47,25 @@ class AboutView(ListView):
     context_object_name = 'members'
 
     def get_queryset(self):
-        return FeaturedMember.objects.filter(is_active=True, is_international=False).order_by('display_order', 'full_name')
+        return FeaturedMember.objects.filter(is_active=True, is_advisory=False).order_by('display_order', 'full_name')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['international_members'] = FeaturedMember.objects.filter(
-            is_active=True, is_international=True
+        context['advisory_members'] = FeaturedMember.objects.filter(
+            is_active=True, is_advisory=True
         ).order_by('display_order', 'full_name')
         return context
 
 
 class AdvisoryCommitteeView(ListView):
-    """Página dedicada al Comité Asesor internacional"""
+    """Página dedicada al Comité Asesor (nacional e internacional)"""
     model = FeaturedMember
     template_name = 'website/comite_asesor.html'
     context_object_name = 'members'
 
     def get_queryset(self):
         return FeaturedMember.objects.filter(
-            is_active=True, is_international=True
+            is_active=True, is_advisory=True
         ).order_by('display_order', 'full_name')
 
     def get_context_data(self, **kwargs):
