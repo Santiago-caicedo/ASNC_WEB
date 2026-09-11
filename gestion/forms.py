@@ -88,9 +88,12 @@ class ProyectoForm(forms.ModelForm):
         model = Proyecto
         fields = [
             'title', 'comite', 'responsable', 'estado', 'prioridad',
-            'start_date', 'due_date', 'description',
+            'start_date', 'due_date', 'avance', 'description',
         ]
-        widgets = {'start_date': DateInput(), 'due_date': DateInput()}
+        widgets = {
+            'start_date': DateInput(), 'due_date': DateInput(),
+            'avance': forms.NumberInput(attrs={'min': 0, 'max': 100, 'step': 5}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

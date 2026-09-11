@@ -118,7 +118,7 @@ class GestionFlowTests(TestCase):
         persona = Persona.objects.create(first_name='Luis', last_name='Gómez')
         r = self.client.post(reverse('gestion:proyecto_create'), {
             'title': 'Webinar nuclear', 'comite': self.comite.pk, 'responsable': persona.pk,
-            'estado': 'EN_CURSO', 'prioridad': 'ALTA', 'start_date': '2026-09-01', 'due_date': '2026-10-01',
+            'estado': 'EN_CURSO', 'prioridad': 'ALTA', 'start_date': '2026-09-01', 'due_date': '2026-10-01', 'avance': 0,
             'description': 'Serie de charlas',
         })
         proyecto = Proyecto.objects.get(title='Webinar nuclear')
@@ -169,6 +169,14 @@ class GestionFlowTests(TestCase):
         self.assertEqual(p.progress, 50)
         r = self.client.get(p.get_absolute_url())
         self.assertContains(r, '50%')
+
+    def test_reported_progress_used_without_tasks(self):
+        p = Proyecto.objects.create(title='Sin tareas', avance=60)
+        self.assertEqual(p.progress, 60)
+        Tarea.objects.create(title='a', proyecto=p)
+        self.assertEqual(p.progress, 0)  # tasks take over
+        p.estado = 'COMPLETADO'; p.tareas.all().delete()
+        self.assertEqual(p.progress, 100)
 
     def test_notes_on_every_target(self):
         persona = Persona.objects.create(first_name='N')

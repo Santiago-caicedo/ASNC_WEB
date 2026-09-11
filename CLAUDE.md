@@ -287,7 +287,7 @@ Internal workspace to manage committee people, projects and tasks. **Visible onl
 - **Comite**: `name`, `slug`, `description`, `icon` (Bootstrap Icons class), `color` (hex), `coordinator` (FK User), `is_active`, `order`. Seeded by migration `0002_seed_comites` with the six public committees (Divulgación, Científico, Regulación y Gobierno, Financiero, Educación, Industria y Transporte) using the same icons/colors as `about.html`. Properties: `active_members_count`, `open_tasks_count`, `active_projects_count`.
 - **Persona**: CRM contact (`first_name`, `last_name`, `email`, `phone`, `organization`, `position`, `tipo` ASOCIADO|ALIADO|VOLUNTARIO|INSTITUCION|PROVEEDOR|OTRO, `linkedin_url`, `notes`, `is_active`), optional OneToOne `user` → User (`related_name='persona_crm'`). `Persona.from_user(user)` builds a contact from a platform account; the "Importar asociados" button creates one for every active non-admin user without one.
 - **MiembroComite**: `comite` × `persona` (unique together), `rol` COORDINADOR|SECRETARIO|MIEMBRO|COLABORADOR, `joined_at`, `is_active`, `notes`.
-- **Proyecto**: `title`, `description`, `comite` (nullable = transversal), `responsable` (FK Persona), `estado` IDEA|PLANEACION|EN_CURSO|PAUSADO|COMPLETADO|CANCELADO, `prioridad` (shared `Prioridad` choices BAJA|MEDIA|ALTA|URGENTE), `start_date`, `due_date`. Properties `progress` (% of non-cancelled tasks completed), `is_overdue`.
+- **Proyecto**: `title`, `description`, `comite` (nullable = transversal), `responsable` (FK Persona), `estado` IDEA|PLANEACION|EN_CURSO|PAUSADO|COMPLETADO|CANCELADO, `prioridad` (shared `Prioridad` choices BAJA|MEDIA|ALTA|URGENTE), `start_date`, `due_date`, `avance` (reported %, 0-100). Properties `progress` (% of non-cancelled tasks completed; falls back to `avance` when the project has no tasks), `is_overdue`.
 - **Tarea**: `title`, `description`, `comite`, `proyecto` (CASCADE), `asignado_a` (FK Persona), `estado` PENDIENTE|EN_PROGRESO|EN_REVISION|COMPLETADA|CANCELADA, `prioridad`, `due_date`, `completed_at` (auto-set/cleared in `save()`). A task without committee inherits its project's committee. Property `is_overdue`.
 - **Nota**: follow-up note (`content`, `author`) attached to exactly one of `comite` / `persona` / `proyecto` / `tarea`; shown as a timeline on each detail page and as "Actividad reciente" on the CRM panel.
 
@@ -718,6 +718,9 @@ python manage.py showmigrations
 ### gestion
 - `0001_initial.py` (2026-09-11) - Creates Comite, Persona, MiembroComite, Proyecto, Tarea, Nota
 - `0002_seed_comites.py` - Data migration seeding the 6 public committees (idempotent, reversible)
+- `0003_proyecto_avance.py` - Adds `Proyecto.avance` (reported progress %)
+
+**Management command:** `python manage.py cargar_libro_asnc [--dry-run]` loads the committee status from "Libro ASNC.xlsx" (Sept 2026, data normalised inside the command): people, directors/members, projects per committee, external contacts + follow-up tasks for "Comité de Relaciones Estratégicas", creates "Comité Ejecutivo", and deactivates "Comité Financiero" ("Se borra"). Idempotent; safe to re-run.
 
 > Migrations for `capacitaciones` live only on the `aula-virtual` branch.
 

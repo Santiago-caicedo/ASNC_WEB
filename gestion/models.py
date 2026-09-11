@@ -3,6 +3,7 @@
 Only superadmins can use it for now (see ``SuperuserRequiredMixin`` in views).
 """
 from django.conf import settings
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
@@ -207,6 +208,10 @@ class Proyecto(models.Model):
     prioridad = models.CharField('Prioridad', max_length=10, choices=Prioridad.choices, default=Prioridad.MEDIA)
     start_date = models.DateField('Fecha de inicio', null=True, blank=True)
     due_date = models.DateField('Fecha objetivo', null=True, blank=True)
+    avance = models.PositiveSmallIntegerField(
+        'Avance reportado (%)', default=0, validators=[MaxValueValidator(100)],
+        help_text='Se usa mientras el proyecto no tenga tareas; con tareas el avance se calcula automáticamente.',
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='+',
@@ -249,7 +254,7 @@ class Proyecto(models.Model):
     def progress(self):
         total = self.tasks_total
         if not total:
-            return 100 if self.estado == self.Estado.COMPLETADO else 0
+            return 100 if self.estado == self.Estado.COMPLETADO else self.avance
         return int(self.tasks_done * 100 / total)
 
 
