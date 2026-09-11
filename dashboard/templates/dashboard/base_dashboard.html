@@ -416,6 +416,31 @@
             </a>
             {% endif %}
 
+            {% if user.is_superuser %}
+            {% with ns=request.resolver_match.namespace un=request.resolver_match.url_name %}
+            <div class="menu-label">Gestion Interna</div>
+
+            <a href="{% url 'gestion:home' %}" class="nav-link {% if ns == 'gestion' and un == 'home' %}active{% endif %}">
+                <i class="bi bi-kanban"></i> Panel CRM
+                {% if gestion_vencidas %}
+                <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.6em;" title="Tareas vencidas">{{ gestion_vencidas }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'gestion:comite_list' %}" class="nav-link {% if ns == 'gestion' and 'comite' in un %}active{% endif %}">
+                <i class="bi bi-diagram-3"></i> Comites
+            </a>
+            <a href="{% url 'gestion:persona_list' %}" class="nav-link {% if ns == 'gestion' and 'persona' in un %}active{% endif %}">
+                <i class="bi bi-person-lines-fill"></i> Personas
+            </a>
+            <a href="{% url 'gestion:proyecto_list' %}" class="nav-link {% if ns == 'gestion' and 'proyecto' in un %}active{% endif %}">
+                <i class="bi bi-rocket-takeoff"></i> Proyectos
+            </a>
+            <a href="{% url 'gestion:tarea_list' %}" class="nav-link {% if ns == 'gestion' and 'tarea' in un %}active{% endif %}">
+                <i class="bi bi-check2-square"></i> Tareas
+            </a>
+            {% endwith %}
+            {% endif %}
+
             {% if not user.is_admin and user.can_edit_news %}
             <div class="menu-label">Mi Cuenta</div>
 

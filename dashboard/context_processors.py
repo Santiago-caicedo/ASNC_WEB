@@ -1,4 +1,7 @@
+from django.utils import timezone
+
 from admissions.models import MembershipApplication
+from gestion.models import Tarea
 from users.models import User
 
 
@@ -22,5 +25,11 @@ def dashboard_context(request):
             is_staff=True
         ).order_by('first_name', 'last_name'),
     }
+
+    # CRM interno: badge de tareas vencidas (solo superadmin ve la sección)
+    if request.user.is_superuser:
+        context['gestion_vencidas'] = Tarea.objects.exclude(
+            estado__in=Tarea.CLOSED_STATES
+        ).filter(due_date__lt=timezone.localdate()).count()
 
     return context

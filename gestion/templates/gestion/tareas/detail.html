@@ -1,0 +1,59 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load gestion_extras %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4 gap-2 flex-wrap">
+    <a href="{% if tarea.proyecto %}{% url 'gestion:proyecto_detail' tarea.proyecto.pk %}{% else %}{% url 'gestion:tarea_list' %}{% endif %}" class="btn btn-light rounded-circle" title="Volver"><i class="bi bi-arrow-left"></i></a>
+    <h1 class="page-title mb-0">{{ tarea.title }}</h1>
+    <span class="badge rounded-pill {{ tarea.estado|estado_tarea_class }} px-3">{{ tarea.get_estado_display }}</span>
+    <span class="badge rounded-pill {{ tarea.prioridad|prioridad_class }} px-3">{{ tarea.get_prioridad_display }}</span>
+    {% if tarea.is_overdue %}<span class="badge bg-danger-subtle text-danger rounded-pill px-3"><i class="bi bi-exclamation-circle me-1"></i>Vencida</span>{% endif %}
+    <div class="ms-auto d-flex gap-2">
+        <a href="{% url 'gestion:tarea_update' tarea.pk %}" class="btn btn-sm btn-outline-secondary rounded-pill"><i class="bi bi-pencil me-1"></i>Editar</a>
+        <a href="{% url 'gestion:tarea_delete' tarea.pk %}" class="btn btn-sm btn-outline-danger rounded-pill" title="Eliminar"><i class="bi bi-trash"></i></a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                {% if tarea.description %}<p class="text-break mb-4" style="white-space: pre-wrap;">{{ tarea.description }}</p>{% else %}<p class="text-muted small mb-4">Sin descripción.</p>{% endif %}
+                <div class="row g-3 small">
+                    <div class="col-6 col-md-4"><div class="text-muted">Comité</div>
+                        <div class="fw-medium">{% if tarea.comite %}<a href="{% url 'gestion:comite_detail' tarea.comite.pk %}" class="text-decoration-none"><i class="bi {{ tarea.comite.icon }} me-1" style="color: {{ tarea.comite.color }}"></i>{{ tarea.comite.name }}</a>{% else %}—{% endif %}</div></div>
+                    <div class="col-6 col-md-4"><div class="text-muted">Proyecto</div>
+                        <div class="fw-medium">{% if tarea.proyecto %}<a href="{% url 'gestion:proyecto_detail' tarea.proyecto.pk %}" class="text-decoration-none">{{ tarea.proyecto.title }}</a>{% else %}—{% endif %}</div></div>
+                    <div class="col-6 col-md-4"><div class="text-muted">Asignada a</div>
+                        <div class="fw-medium">{% if tarea.asignado_a %}<a href="{% url 'gestion:persona_detail' tarea.asignado_a.pk %}" class="text-decoration-none">{{ tarea.asignado_a }}</a>{% else %}<span class="text-warning-emphasis">Sin asignar</span>{% endif %}</div></div>
+                    <div class="col-6 col-md-4"><div class="text-muted">Fecha límite</div>
+                        <div class="fw-medium {% if tarea.is_overdue %}text-danger{% endif %}">{{ tarea.due_date|date:"d/m/Y"|default:"—" }}</div></div>
+                    <div class="col-6 col-md-4"><div class="text-muted">Creada</div>
+                        <div class="fw-medium">{{ tarea.created_at|date:"d/m/Y" }}{% if tarea.created_by %} · {{ tarea.created_by.get_full_name|default:tarea.created_by.email }}{% endif %}</div></div>
+                    {% if tarea.completed_at %}
+                    <div class="col-6 col-md-4"><div class="text-muted">Completada</div><div class="fw-medium text-success">{{ tarea.completed_at|date:"d/m/Y H:i" }}</div></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h6 class="fw-semibold mb-3"><i class="bi bi-arrow-repeat me-2"></i>Mover a</h6>
+                <div class="d-flex gap-2 flex-wrap">
+                    {% for val, label in estados %}
+                    {% if val != tarea.estado %}
+                    <form method="post" action="{% url 'gestion:tarea_estado' tarea.pk val %}">
+                        {% csrf_token %}
+                        <button class="btn btn-sm rounded-pill px-3 {% if val == 'COMPLETADA' %}btn-success{% elif val == 'CANCELADA' %}btn-outline-danger{% else %}btn-outline-primary{% endif %}">{{ label }}</button>
+                    </form>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">{% include 'gestion/includes/notas.html' with object=tarea %}</div>
+</div>
+{% endblock %}

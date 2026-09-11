@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'carnets',
     'members',
     'convocatorias',
+    'gestion',
 ]
 
 MIDDLEWARE = [
@@ -277,4 +278,4 @@ if not DEBUG:
 # Redirecciones
 LOGIN_URL = '/acceso/'
 LOGIN_REDIRECT_URL = '/mi-portal/'
-LOGOUT_REDIRECT_URL = '/acceso/'
+LOGOUT_REDIRECT_URL = '/acceso/'

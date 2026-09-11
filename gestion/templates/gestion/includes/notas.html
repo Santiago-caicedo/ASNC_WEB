@@ -1,0 +1,42 @@
+{# Follow-up notes panel. Expects: notas, nota_form, nota_kind, object #}
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-journal-text me-2"></i>Seguimiento ({{ notas|length }})</h6>
+
+        <form method="post" action="{% url 'gestion:nota_add' nota_kind object.pk %}" class="mb-3">
+            {% csrf_token %}
+            {{ nota_form.content }}
+            <div class="text-end mt-2">
+                <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">
+                    <i class="bi bi-plus-lg me-1"></i>Agregar nota
+                </button>
+            </div>
+        </form>
+
+        {% if notas %}
+        <div class="d-flex flex-column gap-3">
+            {% for n in notas %}
+            <div class="border-start border-3 ps-3" style="border-color: var(--asnc-gold) !important;">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <small class="text-muted">
+                        <strong class="text-dark">{{ n.author.get_full_name|default:n.author.email|default:"Sistema" }}</strong>
+                        · {{ n.created_at|date:"d/m/Y H:i" }}
+                    </small>
+                    <form method="post" action="{% url 'gestion:nota_delete' n.pk %}"
+                          onsubmit="return confirm('¿Eliminar esta nota?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="btn btn-link btn-sm text-muted p-0" title="Eliminar nota">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="text-break" style="white-space: pre-wrap;">{{ n.content }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted small mb-0">Aún no hay notas de seguimiento.</p>
+        {% endif %}
+    </div>
+</div>

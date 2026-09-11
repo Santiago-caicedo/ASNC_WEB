@@ -1,0 +1,50 @@
+{# Shared filter bar for task list/board. Expects: action_url, filters, comites, proyectos_filtro, personas_filtro, prioridades, estados, show_estado #}
+<form method="get" action="{% url action_url %}" class="card border-0 shadow-sm rounded-4 mb-3">
+    <div class="card-body p-3 row g-2 align-items-center">
+        <div class="col-md-3">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                <input type="search" name="q" value="{{ filters.q }}" class="form-control border-start-0" placeholder="Buscar tarea…">
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <select name="comite" class="form-select" onchange="this.form.submit()">
+                <option value="">Comité</option>
+                {% for c in comites %}<option value="{{ c.pk }}" {% if filters.comite == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-6 col-md-2">
+            <select name="proyecto" class="form-select" onchange="this.form.submit()">
+                <option value="">Proyecto</option>
+                {% for p in proyectos_filtro %}<option value="{{ p.pk }}" {% if filters.proyecto == p.pk|stringformat:"s" %}selected{% endif %}>{{ p.title|truncatechars:40 }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-6 col-md-2">
+            <select name="persona" class="form-select" onchange="this.form.submit()">
+                <option value="">Responsable</option>
+                <option value="nadie" {% if filters.persona == 'nadie' %}selected{% endif %}>Sin asignar</option>
+                {% for p in personas_filtro %}<option value="{{ p.pk }}" {% if filters.persona == p.pk|stringformat:"s" %}selected{% endif %}>{{ p.full_name }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-6 col-md-{% if show_estado %}1{% else %}2{% endif %}">
+            <select name="prioridad" class="form-select" onchange="this.form.submit()">
+                <option value="">Prioridad</option>
+                {% for val, label in prioridades %}<option value="{{ val }}" {% if filters.prioridad == val %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+        </div>
+        {% if show_estado %}
+        <div class="col-6 col-md-1">
+            <select name="estado" class="form-select" onchange="this.form.submit()">
+                <option value="abiertas" {% if filters.estado == 'abiertas' %}selected{% endif %}>Abiertas</option>
+                <option value="vencidas" {% if filters.estado == 'vencidas' %}selected{% endif %}>Vencidas</option>
+                {% for val, label in estados %}<option value="{{ val }}" {% if filters.estado == val %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                <option value="todas" {% if filters.estado == 'todas' %}selected{% endif %}>Todas</option>
+            </select>
+        </div>
+        {% endif %}
+        <div class="col-6 col-md-1 d-flex gap-1">
+            <button class="btn btn-primary w-100" title="Filtrar"><i class="bi bi-funnel"></i></button>
+            {% if filters.q or filters.comite or filters.proyecto or filters.persona or filters.prioridad %}<a href="{% url action_url %}" class="btn btn-light" title="Limpiar"><i class="bi bi-x-lg"></i></a>{% endif %}
+        </div>
+    </div>
+</form>

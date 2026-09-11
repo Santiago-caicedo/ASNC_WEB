@@ -1,0 +1,90 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load gestion_extras %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4 gap-2 flex-wrap">
+    <a href="{% url 'gestion:proyecto_list' %}" class="btn btn-light rounded-circle" title="Volver"><i class="bi bi-arrow-left"></i></a>
+    <h1 class="page-title mb-0">{{ proyecto.title }}</h1>
+    <span class="badge rounded-pill {{ proyecto.estado|estado_proyecto_class }} px-3">{{ proyecto.get_estado_display }}</span>
+    {% if proyecto.is_overdue %}<span class="badge bg-danger-subtle text-danger rounded-pill px-3"><i class="bi bi-exclamation-circle me-1"></i>Vencido</span>{% endif %}
+    <div class="ms-auto d-flex gap-2 flex-wrap">
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-primary rounded-pill dropdown-toggle" data-bs-toggle="dropdown">Cambiar estado</button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                {% for val, label in estados_proyecto %}{% if val != proyecto.estado %}
+                <li><form method="post" action="{% url 'gestion:proyecto_estado' proyecto.pk val %}">{% csrf_token %}<button class="dropdown-item">{{ label }}</button></form></li>
+                {% endif %}{% endfor %}
+            </ul>
+        </div>
+        <a href="{% url 'gestion:proyecto_update' proyecto.pk %}" class="btn btn-sm btn-outline-secondary rounded-pill"><i class="bi bi-pencil me-1"></i>Editar</a>
+        <a href="{% url 'gestion:proyecto_delete' proyecto.pk %}" class="btn btn-sm btn-outline-danger rounded-pill" title="Eliminar"><i class="bi bi-trash"></i></a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4">
+                {% if proyecto.description %}<p class="text-break mb-4" style="white-space: pre-wrap;">{{ proyecto.description }}</p>{% endif %}
+                <div class="row g-3 small">
+                    <div class="col-6 col-md-3"><div class="text-muted">Comité</div>
+                        <div class="fw-medium">{% if proyecto.comite %}<a href="{% url 'gestion:comite_detail' proyecto.comite.pk %}" class="text-decoration-none"><i class="bi {{ proyecto.comite.icon }} me-1" style="color: {{ proyecto.comite.color }}"></i>{{ proyecto.comite.name }}</a>{% else %}Transversal{% endif %}</div></div>
+                    <div class="col-6 col-md-3"><div class="text-muted">Responsable</div>
+                        <div class="fw-medium">{% if proyecto.responsable %}<a href="{% url 'gestion:persona_detail' proyecto.responsable.pk %}" class="text-decoration-none">{{ proyecto.responsable }}</a>{% else %}—{% endif %}</div></div>
+                    <div class="col-6 col-md-3"><div class="text-muted">Prioridad</div>
+                        <div><span class="badge rounded-pill {{ proyecto.prioridad|prioridad_class }}">{{ proyecto.get_prioridad_display }}</span></div></div>
+                    <div class="col-6 col-md-3"><div class="text-muted">Fechas</div>
+                        <div class="fw-medium">{{ proyecto.start_date|date:"d/m/Y"|default:"—" }} → <span class="{% if proyecto.is_overdue %}text-danger{% endif %}">{{ proyecto.due_date|date:"d/m/Y"|default:"—" }}</span></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4 d-flex flex-column justify-content-center text-center">
+                <div class="display-5 fw-bold" style="color: var(--asnc-blue);">{{ proyecto.progress }}%</div>
+                <div class="progress my-2" style="height: 10px;"><div class="progress-bar" style="width: {{ proyecto.progress }}%; background-color: var(--asnc-gold);"></div></div>
+                <small class="text-muted">{{ proyecto.tasks_done }} de {{ proyecto.tasks_total }} tareas completadas</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tablero de tareas del proyecto -->
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-bold mb-0"><i class="bi bi-kanban me-2"></i>Tareas del proyecto</h5>
+    <a href="{% url 'gestion:tarea_create' %}?proyecto={{ proyecto.pk }}&next={{ request.path|urlencode }}" class="btn btn-sm btn-primary rounded-pill"><i class="bi bi-plus-lg me-1"></i>Nueva tarea</a>
+</div>
+<div class="board-scroll mb-4">
+    <div class="board-row">
+        {% for estado, label, items in columnas %}
+        <div class="board-col">
+            <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                <span class="badge rounded-pill {{ estado|estado_tarea_class }}">{{ label }}</span>
+                <small class="text-muted fw-semibold">{{ items|length }}</small>
+            </div>
+            <div class="d-flex flex-column gap-2">
+                {% for t in items %}{% include 'gestion/includes/tarea_card.html' with t=t %}{% empty %}
+                <div class="text-center text-muted small py-4 border rounded-3 bg-white bg-opacity-50">Sin tareas</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% if canceladas %}
+<p class="small text-muted"><i class="bi bi-x-circle me-1"></i>{{ canceladas|length }} tarea{{ canceladas|length|pluralize }} cancelada{{ canceladas|length|pluralize }}:
+    {% for t in canceladas %}<a href="{% url 'gestion:tarea_detail' t.pk %}" class="text-decoration-none text-muted"><s>{{ t.title }}</s></a>{% if not forloop.last %}, {% endif %}{% endfor %}
+</p>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-lg-7">{% include 'gestion/includes/notas.html' with object=proyecto %}</div>
+</div>
+
+<style>
+    .board-scroll { overflow-x: auto; padding-bottom: .5rem; }
+    .board-row { display: flex; gap: 1rem; min-width: 900px; }
+    .board-col { flex: 1 1 0; min-width: 210px; background: #eef1f5; border-radius: 1rem; padding: .75rem; }
+</style>
+{% endblock %}

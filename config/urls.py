@@ -45,6 +45,9 @@ urlpatterns = [
 
     # Convocatorias admin (protected, under /portal/)
     path('portal/convocatorias/', include('convocatorias.admin_urls')),
+
+    # Gestión interna / CRM de comités (solo superadmin, bajo /portal/)
+    path('portal/gestion/', include('gestion.urls')),
 ]
 
 # Configuración para servir archivos media en modo DEBUG

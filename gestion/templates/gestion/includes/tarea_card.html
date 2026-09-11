@@ -1,0 +1,40 @@
+{% load gestion_extras %}
+{# Compact task card for boards. Expects: t (Tarea), optional show_proyecto #}
+<div class="border rounded-3 p-3 bg-white {% if t.is_overdue %}border-danger{% endif %}">
+    <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+        <a href="{% url 'gestion:tarea_detail' t.pk %}" class="fw-semibold text-decoration-none text-dark text-break">{{ t.title }}</a>
+        <span class="badge rounded-pill {{ t.prioridad|prioridad_class }}" style="font-size: .65rem;">{{ t.get_prioridad_display }}</span>
+    </div>
+    <div class="small text-muted d-flex flex-wrap gap-2 align-items-center">
+        {% if show_proyecto and t.proyecto %}
+        <span><i class="bi bi-rocket-takeoff me-1"></i>{{ t.proyecto.title|truncatechars:30 }}</span>
+        {% endif %}
+        {% if show_comite and t.comite %}
+        <span><i class="bi {{ t.comite.icon }} me-1"></i>{{ t.comite.name|truncatechars:24 }}</span>
+        {% endif %}
+        {% if t.asignado_a %}
+        <span title="{{ t.asignado_a }}"><i class="bi bi-person me-1"></i>{{ t.asignado_a.full_name|truncatechars:22 }}</span>
+        {% else %}
+        <span class="text-warning-emphasis"><i class="bi bi-person-dash me-1"></i>Sin asignar</span>
+        {% endif %}
+        {% if t.due_date %}
+        <span class="{% if t.is_overdue %}text-danger fw-semibold{% endif %}">
+            <i class="bi bi-calendar-event me-1"></i>{{ t.due_date|date:"d M" }}
+        </span>
+        {% endif %}
+    </div>
+    {% if not t.is_closed %}
+    <div class="d-flex gap-1 mt-2 flex-wrap">
+        {% if t.estado != 'EN_PROGRESO' %}
+        <form method="post" action="{% url 'gestion:tarea_estado' t.pk 'EN_PROGRESO' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn btn-outline-primary btn-sm rounded-pill py-0 px-2" style="font-size:.7rem" title="Pasar a En progreso"><i class="bi bi-play-fill"></i></button></form>
+        {% endif %}
+        {% if t.estado != 'EN_REVISION' %}
+        <form method="post" action="{% url 'gestion:tarea_estado' t.pk 'EN_REVISION' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn btn-outline-warning btn-sm rounded-pill py-0 px-2" style="font-size:.7rem" title="Pasar a En revisión"><i class="bi bi-eye"></i></button></form>
+        {% endif %}
+        <form method="post" action="{% url 'gestion:tarea_estado' t.pk 'COMPLETADA' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn btn-outline-success btn-sm rounded-pill py-0 px-2" style="font-size:.7rem" title="Marcar completada"><i class="bi bi-check-lg"></i></button></form>
+    </div>
+    {% endif %}
+</div>

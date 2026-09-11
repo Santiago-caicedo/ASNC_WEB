@@ -1,0 +1,58 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load gestion_extras %}
+
+{% block content %}
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-2">
+    <div>
+        <h1 class="page-title mb-0">Comités</h1>
+        <p class="text-muted small mb-0">Equipos de trabajo de la Asociación y su gestión interna.</p>
+    </div>
+    <a href="{% url 'gestion:comite_create' %}" class="btn btn-primary rounded-pill px-3 px-md-4 btn-sm">
+        <i class="bi bi-plus-lg me-1 me-md-2"></i>Nuevo comité
+    </a>
+</div>
+
+<div class="row g-3 g-md-4">
+    {% for c in comites %}
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 {% if not c.is_active %}opacity-75{% endif %}" style="border-top: 4px solid {{ c.color }} !important;">
+            <div class="card-body p-4 d-flex flex-column">
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                         style="width: 52px; height: 52px; background-color: {{ c.color|hex_alpha }}; color: {{ c.color }};">
+                        <i class="bi {{ c.icon }} fs-3"></i>
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <h5 class="fw-bold mb-1"><a href="{% url 'gestion:comite_detail' c.pk %}" class="text-decoration-none text-dark">{{ c.name }}</a></h5>
+                        {% if not c.is_active %}<span class="badge bg-secondary-subtle text-secondary rounded-pill">Inactivo</span>{% endif %}
+                        <p class="text-muted small mb-0">{{ c.description|truncatechars:110 }}</p>
+                    </div>
+                </div>
+                <div class="small text-muted mb-3">
+                    <i class="bi bi-person-badge me-1"></i>
+                    {% if c.coordinator %}{{ c.coordinator.get_full_name|default:c.coordinator.email }}{% else %}Sin coordinador asignado{% endif %}
+                </div>
+                <div class="d-flex justify-content-between text-center small border-top pt-3 mt-auto">
+                    <div><div class="fw-bold fs-5">{{ c.n_miembros }}</div><div class="text-muted">Personas</div></div>
+                    <div><div class="fw-bold fs-5">{{ c.n_proyectos }}</div><div class="text-muted">Proyectos</div></div>
+                    <div><div class="fw-bold fs-5">{{ c.n_tareas }}</div><div class="text-muted">Tareas</div></div>
+                    <div><div class="fw-bold fs-5 {% if c.n_vencidas %}text-danger{% endif %}">{{ c.n_vencidas }}</div><div class="text-muted">Vencidas</div></div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{% url 'gestion:comite_detail' c.pk %}" class="btn btn-sm btn-outline-primary rounded-pill flex-grow-1"><i class="bi bi-eye me-1"></i>Abrir</a>
+                    <a href="{% url 'gestion:comite_update' c.pk %}" class="btn btn-sm btn-outline-secondary rounded-pill" title="Editar"><i class="bi bi-pencil"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4"><div class="card-body text-center py-5">
+            <i class="bi bi-diagram-3 text-muted" style="font-size: 4rem;"></i>
+            <h5 class="text-muted mt-3">Aún no hay comités</h5>
+            <a href="{% url 'gestion:comite_create' %}" class="btn btn-primary rounded-pill px-4 mt-2">Crear el primero</a>
+        </div></div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
