@@ -265,3 +265,6 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python
+
+# Documentos internos de trabajo (fuente de datos de comandos de carga)
+Libro ASNC.xlsx
