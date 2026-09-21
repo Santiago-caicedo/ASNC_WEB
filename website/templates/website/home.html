@@ -3838,7 +3838,7 @@
 </style>
 
 <!-- ===== ANIME.JS ===== -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -4291,8 +4291,12 @@ document.addEventListener('DOMContentLoaded', function() {
             duration: 800,
             easing: 'easeOutExpo'
         }, '-=600');
+});
+</script>
 
-
+<!-- Observatorio ENSO: script independiente para que un fallo en las
+     animaciones de arriba (p. ej. un CDN bloqueado) no lo detenga. -->
+<script>
     // ==================== OBSERVATORIO ENSO ====================
     (function () {
         const board = document.getElementById('ensoBoard');
@@ -4865,8 +4869,6 @@ document.addEventListener('DOMContentLoaded', function() {
             rt = setTimeout(drawAll, 180);
         });
     })();
-
-});
 </script>
 
-{% endblock %}
+{% endblock %}
