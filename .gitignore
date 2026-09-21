@@ -268,3 +268,6 @@ pyrightconfig.json
 
 # Documentos internos de trabajo (fuente de datos de comandos de carga)
 Libro ASNC.xlsx
+
+# Material de trabajo del proyecto (no forma parte de la plataforma)
+nino/

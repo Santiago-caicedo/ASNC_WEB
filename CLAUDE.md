@@ -79,7 +79,8 @@ asnc_platform/
 ├── website/                     # Public-facing pages
 │   ├── templates/website/       # Home, About (comités), Events, News, PowerPoint
 │   ├── models.py                # FeaturedMember, NewsArticle models
-│   ├── views.py                 # HomeView, AboutView, EventsView, News views
+│   ├── views.py                 # HomeView, AboutView, EventsView, News views, enso_data
+│   ├── data/enso.json           # Datos del Observatorio ENSO (generados, versionados)
 │   └── sitemaps.py              # SEO sitemaps
 ├── convocatorias/               # Public calls with dynamic form builder
 │   ├── models.py                # Convocatoria, ConvocatoriaField, Submission, SubmissionFile
@@ -307,7 +308,8 @@ Internal workspace to manage committee people, projects and tasks. **Visible onl
 
 ```
 # Public Website
-/                              → Homepage (HomeView) - shows latest news
+/                              → Homepage (HomeView) - latest news + Observatorio ENSO
+/datos/enso.json               → JSON con la serie ONI, episodios y modelo (enso_data)
 /quienes-somos/                → About page with team + comités (AboutView)
 /eventos/                      → Events page - under construction (EventsView)
 /noticias/                     → Public news list (NewsListView)
@@ -727,7 +729,8 @@ python manage.py showmigrations
 ## Views Summary
 
 ### Website App
-- `HomeView` (TemplateView) - Public homepage (latest news)
+- `HomeView` (TemplateView) - Public homepage (latest news + Observatorio ENSO)
+- `enso_data()` - Sirve `website/data/enso.json` (cacheado 24 h) para el tablero de la portada
 - `AboutView` (ListView) - About page with FeaturedMembers + comités
 - `EventsView` (TemplateView) - Events page (under construction)
 - `PrivacyPolicyView` (TemplateView) - Privacy policy
@@ -1018,6 +1021,32 @@ dashboard/templates/dashboard/
 └── featured_members/list.html # Hidden columns on mobile
 ```
 
+## Observatorio ENSO (Fenómeno del Niño)
+
+Sección tipo tablero de BI en la portada, **justo debajo del hero** (`id="enso"` en `website/templates/website/home.html`). Muestra la serie histórica del ONI, los episodios de El Niño / La Niña y los resultados del análisis estadístico.
+
+**Flujo de datos:** el script `scripts/generar_datos_enso.py` lee la tabla ONI de la NOAA (`Data T sea surface.xlsx`, columnas SEAS/YR/TOTAL/ANOM, 889 temporadas 1950-2024) y escribe `website/data/enso.json` (~53 KB). El JSON se versiona; la vista `enso_data` lo sirve en `/datos/enso.json` desde el mismo dominio (no como estático, para no depender de CORS en S3) y lo cachea 24 h. El tablero lo carga con `fetch` diferido cuando la sección entra en pantalla.
+
+**El script no es un management command a propósito:** necesita numpy/scipy/pandas/openpyxl, que no están en `requirements.txt`. Solo se ejecuta en desarrollo cuando hay datos nuevos:
+
+```bash
+python3 scripts/generar_datos_enso.py \
+    --input "/ruta/Data T sea surface.xlsx" \
+    --output website/data/enso.json
+```
+
+**Qué calcula:**
+- **Episodios**: rachas de ≥5 temporadas solapadas con |ONI| ≥ 0,5 (criterio operativo NOAA), clasificadas por pico en débil / moderado / fuerte / muy fuerte.
+- **Caracterización**: ventanas deslizantes de 36 meses (paso 1 mes, 854 ventanas) con variables de tiempo, Welch y STFT. Cada ventana se etiqueta con **la fase de su mes final**.
+- **Selección**: Kruskal-Wallis + FDR de Benjamini-Hochberg al 5 %, y descarte de variables con |r| ≥ 0,90.
+- **Capacidad predictiva**: regresión logística multinomial (implementada con numpy, sin sklearn) entrenada con el 70 % más antiguo y evaluada sobre los años posteriores, para horizontes de 0 a 12 meses, siempre contra una línea base de clase mayoritaria.
+
+**Dos correcciones sobre el pipeline original** (`fenomeno_nino/oni_pipeline_fixed.py`), documentadas porque cambian los resultados:
+1. Su lectura "robusta" aplanaba las columnas YR, TOTAL y ANOM en una sola serie, así que analizaba valores que mezclaban años (1950), temperatura (24,7 °C) y anomalía (−1,53). Se comprueba en sus propios resultados: `iqr = 1950,465`. Aquí se usa solo la columna ANOM.
+2. Etiquetar la ventana completa con la regla de racha degeneraba a 36 meses (79 % de ventanas en la clase Nino y La Niña casi ausente). Se etiqueta por la fase del mes final, lo que da tres clases equilibradas.
+
+**Frontend:** SVG dibujado a mano en JavaScript (sin librería de gráficas), redibujado al cambiar el tamaño. Incluye filtros de rango, filtro por tipo de episodio, enfoque cruzado al hacer clic en un episodio, pestañas para variables / correlación / PCA, y panel de metodología. Estilos bajo el prefijo `.enso-`.
+
 ## SEO Configuration
 
 ### Sitemap (`website/sitemaps.py`)
@@ -1166,6 +1195,7 @@ sudo systemctl restart gunicorn  # or your server process
 - [ ] Celery for async email queue
 - [ ] Migrate to Amazon SES for better deliverability
 - [ ] Events management system (replace placeholder)
+- [x] ~~Observatorio ENSO en la portada~~ (Implementado - tablero con datos NOAA)
 - [ ] Email open/click tracking
 - [ ] Bulk email with rate limiting
 - [x] ~~Card renewal workflow~~ (Implemented - CardRenewView)

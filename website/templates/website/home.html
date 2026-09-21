@@ -86,6 +86,171 @@
     </div>
 </section>
 
+<!-- ==================== OBSERVATORIO ENSO (FENÓMENO DEL NIÑO) ==================== -->
+<section class="enso-section" id="enso">
+    <div class="container">
+        <div class="section-header text-center" data-animate="fadeInUp">
+            <span class="section-tag">{% trans "Datos abiertos · NOAA" %}</span>
+            <h2 class="section-title-lg">{% trans "Observatorio del Fenómeno del Niño" %}</h2>
+            <p class="section-subtitle">
+                {% trans "Setenta y cuatro años de temperatura del Pacífico ecuatorial, los episodios de El Niño y La Niña, y qué tan lejos alcanza a predecirlos un modelo estadístico." %}
+            </p>
+        </div>
+
+        <div class="enso-board" id="ensoBoard" data-src="{% url 'enso_data' %}" data-animate="fadeInUp">
+
+            <!-- Estado de carga -->
+            <div class="enso-state" id="ensoLoading">
+                <div class="enso-spinner"></div>
+                <p>{% trans "Cargando datos del Pacífico…" %}</p>
+            </div>
+
+            <!-- Estado de error -->
+            <div class="enso-state enso-state-error" id="ensoError" hidden>
+                <i class="bi bi-cloud-slash"></i>
+                <p>{% trans "No pudimos cargar los datos en este momento." %}</p>
+                <button type="button" class="enso-retry" id="ensoRetry">{% trans "Reintentar" %}</button>
+            </div>
+
+            <!-- Tablero -->
+            <div class="enso-content" id="ensoContent" hidden>
+
+                <!-- Barra de estado y filtros -->
+                <div class="enso-toolbar">
+                    <div class="enso-status" id="ensoStatus"></div>
+                    <div class="enso-filters" role="group" aria-label="{% trans 'Rango de años' %}">
+                        <button type="button" class="enso-chip is-active" data-range="all">{% trans "Todo" %}</button>
+                        <button type="button" class="enso-chip" data-range="40">{% trans "40 años" %}</button>
+                        <button type="button" class="enso-chip" data-range="25">{% trans "25 años" %}</button>
+                        <button type="button" class="enso-chip" data-range="10">{% trans "10 años" %}</button>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="enso-kpis" id="ensoKpis"></div>
+
+                <!-- Serie ONI -->
+                <div class="enso-grid">
+                    <article class="enso-card enso-card--chart">
+                        <header class="enso-card-head">
+                            <div>
+                                <h3>{% trans "Índice Oceánico del Niño (ONI)" %}</h3>
+                                <p id="ensoChartSub"></p>
+                            </div>
+                            <div class="enso-legend">
+                                <span><i class="dot dot-nino"></i>{% trans "El Niño" %}</span>
+                                <span><i class="dot dot-neutral"></i>{% trans "Neutral" %}</span>
+                                <span><i class="dot dot-nina"></i>{% trans "La Niña" %}</span>
+                            </div>
+                        </header>
+                        <div class="enso-chart-wrap">
+                            <div class="enso-tooltip" id="ensoTip" hidden></div>
+                            <svg id="ensoChart" role="img"
+                                 aria-label="{% trans 'Serie histórica del Índice Oceánico del Niño' %}"></svg>
+                        </div>
+                        <p class="enso-foot">
+                            {% trans "Anomalía de la temperatura superficial del mar en la región Niño 3.4. Un episodio se declara cuando el índice supera ±0,5 °C durante cinco temporadas seguidas." %}
+                        </p>
+                    </article>
+                </div>
+
+                <!-- Episodios y pronóstico -->
+                <div class="enso-grid">
+                    <article class="enso-card enso-card--episodes">
+                        <header class="enso-card-head">
+                            <div>
+                                <h3>{% trans "Episodios registrados" %}</h3>
+                                <p id="ensoEpSub"></p>
+                            </div>
+                            <div class="enso-filters enso-filters--sm" role="group" aria-label="{% trans 'Tipo de episodio' %}">
+                                <button type="button" class="enso-chip is-active" data-ep="all">{% trans "Todos" %}</button>
+                                <button type="button" class="enso-chip" data-ep="nino">{% trans "El Niño" %}</button>
+                                <button type="button" class="enso-chip" data-ep="nina">{% trans "La Niña" %}</button>
+                            </div>
+                        </header>
+                        <div class="enso-table-wrap">
+                            <table class="enso-table">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Periodo" %}</th>
+                                        <th class="num">{% trans "Meses" %}</th>
+                                        <th class="num">{% trans "Pico" %}</th>
+                                        <th>{% trans "Intensidad" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ensoEpBody"></tbody>
+                            </table>
+                        </div>
+                        <p class="enso-foot">{% trans "Selecciona una fila para enfocar ese episodio en la gráfica." %}</p>
+                    </article>
+
+                    <article class="enso-card enso-card--skill">
+                        <header class="enso-card-head">
+                            <div>
+                                <h3>{% trans "Hasta dónde llega el pronóstico" %}</h3>
+                                <p>{% trans "Aciertos del modelo frente a la conjetura trivial" %}</p>
+                            </div>
+                        </header>
+                        <svg id="ensoSkill" role="img"
+                             aria-label="{% trans 'Acierto del modelo según el horizonte de predicción' %}"></svg>
+                        <div class="enso-legend enso-legend--skill">
+                            <span><i class="dot dot-model"></i>{% trans "Modelo" %}</span>
+                            <span><i class="dot dot-base"></i>{% trans "Línea base" %}</span>
+                        </div>
+                        <p class="enso-note" id="ensoSkillNote"></p>
+                    </article>
+                </div>
+
+                <!-- Modelo -->
+                <div class="enso-grid">
+                    <article class="enso-card enso-card--model">
+                        <header class="enso-card-head">
+                            <div>
+                                <h3>{% trans "Qué distingue a cada fase" %}</h3>
+                                <p id="ensoModelSub"></p>
+                            </div>
+                            <div class="enso-tabs" role="tablist">
+                                <button type="button" class="enso-tab is-active" data-tab="ranking" role="tab">{% trans "Variables" %}</button>
+                                <button type="button" class="enso-tab" data-tab="corr" role="tab">{% trans "Correlación" %}</button>
+                                <button type="button" class="enso-tab" data-tab="pca" role="tab">{% trans "Componentes" %}</button>
+                            </div>
+                        </header>
+
+                        <div class="enso-pane is-active" data-pane="ranking">
+                            <div id="ensoRanking" class="enso-bars"></div>
+                            <p class="enso-foot">
+                                {% trans "Tamaño del efecto (épsilon cuadrado) de la prueba de Kruskal-Wallis, que mide cuánto separa cada variable a El Niño, La Niña y Neutral. Se muestran solo las que superan la corrección FDR y no son redundantes entre sí." %}
+                            </p>
+                        </div>
+
+                        <div class="enso-pane" data-pane="corr">
+                            <div class="enso-heat-wrap"><div id="ensoHeat" class="enso-heat"></div></div>
+                            <p class="enso-foot">
+                                {% trans "Correlación de Pearson entre las variables seleccionadas. Azul indica relación inversa y ámbar, relación directa." %}
+                            </p>
+                        </div>
+
+                        <div class="enso-pane" data-pane="pca">
+                            <svg id="ensoPca" role="img" aria-label="{% trans 'Varianza explicada por componente principal' %}"></svg>
+                            <p class="enso-foot" id="ensoPcaFoot"></p>
+                        </div>
+                    </article>
+
+                </div>
+
+                <!-- Metodología -->
+                <details class="enso-method">
+                    <summary>
+                        <i class="bi bi-info-circle"></i>
+                        {% trans "Metodología y fuente de los datos" %}
+                    </summary>
+                    <div class="enso-method-body" id="ensoMethod"></div>
+                </details>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- ==================== NEWS SECTION (Temática Nuclear) ==================== -->
 <section class="news-home-section" id="noticias">
     <div class="container">
@@ -3218,6 +3383,458 @@
         justify-content: center;
     }
 }
+
+/* ===== OBSERVATORIO ENSO (FENÓMENO DEL NIÑO) ===== */
+.enso-section {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, #f1f5f9 0%, #ffffff 100%);
+    --enso-nino: #d64545;
+    --enso-nina: #2a7fb8;
+    --enso-neutral: #cbd5e1;
+    --enso-line: #e2e8f0;
+    --enso-ink: #0f172a;
+    --enso-mute: #64748b;
+}
+
+.enso-board {
+    position: relative;
+    min-height: 320px;
+}
+
+/* --- estados --- */
+.enso-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 5rem 1rem;
+    color: var(--enso-mute);
+}
+
+.enso-state i { font-size: 2.5rem; color: #94a3b8; }
+.enso-state p { margin: 0; }
+
+.enso-spinner {
+    width: 38px;
+    height: 38px;
+    border: 3px solid rgba(27, 42, 65, 0.12);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: ensoSpin 0.9s linear infinite;
+}
+
+@keyframes ensoSpin { to { transform: rotate(360deg); } }
+
+.enso-retry {
+    border: 1px solid rgba(27, 42, 65, 0.2);
+    background: #fff;
+    color: var(--navy);
+    padding: 0.5rem 1.25rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.enso-retry:hover { background: #f8fafc; }
+
+/* --- barra superior --- */
+.enso-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.enso-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #fff;
+    border: 1px solid var(--enso-line);
+    border-radius: 50px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.92rem;
+    color: var(--enso-ink);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.enso-status .pulse {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+}
+
+.enso-status b { font-weight: 700; }
+
+.enso-filters { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.enso-chip {
+    border: 1px solid var(--enso-line);
+    background: #fff;
+    color: var(--enso-mute);
+    padding: 0.4rem 0.95rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.enso-chip:hover { border-color: #cbd5e1; color: var(--navy); }
+
+.enso-chip.is-active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+}
+
+.enso-filters--sm .enso-chip { padding: 0.3rem 0.75rem; font-size: 0.78rem; }
+
+/* --- KPIs --- */
+.enso-kpis {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.enso-kpi {
+    background: #fff;
+    border: 1px solid var(--enso-line);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    border-top: 3px solid var(--enso-neutral);
+}
+
+.enso-kpi--nino { border-top-color: var(--enso-nino); }
+.enso-kpi--nina { border-top-color: var(--enso-nina); }
+.enso-kpi--gold { border-top-color: var(--gold); }
+
+.enso-kpi-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--enso-mute);
+    margin-bottom: 0.4rem;
+}
+
+.enso-kpi-value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--enso-ink);
+    line-height: 1.1;
+}
+
+.enso-kpi-value small { font-size: 0.95rem; font-weight: 700; color: var(--enso-mute); }
+.enso-kpi-sub { font-size: 0.82rem; color: var(--enso-mute); margin-top: 0.3rem; }
+
+/* --- rejilla y tarjetas --- */
+.enso-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.enso-card {
+    background: #fff;
+    border: 1px solid var(--enso-line);
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.enso-card--chart { grid-column: span 2; }
+.enso-card--model { grid-column: span 2; }
+
+.enso-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.1rem;
+}
+
+.enso-card-head h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--enso-ink);
+    margin: 0 0 0.2rem;
+}
+
+.enso-card-head p { font-size: 0.85rem; color: var(--enso-mute); margin: 0; }
+
+.enso-legend {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--enso-mute);
+}
+
+.enso-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+.enso-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.dot-nino { background: var(--enso-nino); }
+.dot-nina { background: var(--enso-nina); }
+.dot-neutral { background: var(--enso-neutral); }
+.dot-model { background: var(--navy); }
+.dot-base { background: #cbd5e1; }
+
+.enso-legend--skill { margin-top: 0.5rem; }
+
+.enso-foot {
+    font-size: 0.78rem;
+    color: var(--enso-mute);
+    margin: 0.9rem 0 0;
+    line-height: 1.55;
+}
+
+/* --- gráfica principal --- */
+.enso-chart-wrap { position: relative; }
+#ensoChart { width: 100%; display: block; }
+
+.enso-tooltip {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    background: var(--enso-ink);
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    white-space: nowrap;
+    transform: translate(-50%, -115%);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.22);
+}
+
+.enso-tooltip b { font-size: 0.9rem; }
+
+/* --- tabla de episodios --- */
+.enso-table-wrap { overflow-y: auto; max-height: 340px; }
+
+.enso-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+
+.enso-table th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--enso-mute);
+    padding: 0.55rem 0.6rem;
+    border-bottom: 1px solid var(--enso-line);
+    z-index: 1;
+}
+
+.enso-table td {
+    padding: 0.55rem 0.6rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--enso-ink);
+}
+
+.enso-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.enso-table tbody tr { cursor: pointer; transition: background 0.15s ease; }
+.enso-table tbody tr:hover { background: #f8fafc; }
+.enso-table tbody tr.is-active { background: rgba(244, 195, 67, 0.16); }
+
+.enso-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+}
+
+.enso-pill i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.enso-tag {
+    display: inline-block;
+    padding: 0.12rem 0.5rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: var(--enso-mute);
+}
+
+.enso-tag--3 { background: rgba(214, 69, 69, 0.14); color: #b03a3a; }
+.enso-tag--2 { background: rgba(244, 195, 67, 0.22); color: #9a7209; }
+
+/* --- pestañas del modelo --- */
+.enso-tabs { display: flex; gap: 0.25rem; background: #f1f5f9; border-radius: 50px; padding: 0.22rem; }
+
+.enso-tab {
+    border: 0;
+    background: transparent;
+    color: var(--enso-mute);
+    padding: 0.35rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.enso-tab.is-active { background: #fff; color: var(--navy); box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12); }
+
+.enso-pane { display: none; }
+.enso-pane.is-active { display: block; }
+
+/* --- barras de variables --- */
+.enso-bars { display: flex; flex-direction: column; gap: 0.55rem; }
+
+.enso-bar-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 210px) 1fr auto;
+    align-items: center;
+    gap: 0.85rem;
+    font-size: 0.82rem;
+}
+
+.enso-bar-name { color: var(--enso-ink); font-weight: 600; }
+.enso-bar-name em { font-style: normal; color: var(--enso-mute); font-weight: 500; font-size: 0.75rem; display: block; }
+.enso-bar-track { background: #f1f5f9; border-radius: 50px; height: 12px; overflow: hidden; }
+
+.enso-bar-fill {
+    height: 100%;
+    border-radius: 50px;
+    background: linear-gradient(90deg, var(--navy-light), var(--navy));
+    width: 0;
+    transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.enso-bar-val { font-variant-numeric: tabular-nums; color: var(--enso-mute); font-weight: 600; min-width: 46px; text-align: right; }
+
+/* --- mapa de calor --- */
+.enso-heat-wrap { overflow-x: auto; }
+.enso-heat { display: grid; gap: 2px; min-width: 700px; }
+
+.enso-heat-label {
+    font-size: 0.66rem;
+    color: var(--enso-mute);
+    /* Bloque, no flex: así los nombres largos se recortan por el final
+       (con puntos suspensivos) y no por el principio. */
+    display: block;
+    align-self: center;
+    text-align: right;
+    padding-right: 0.45rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.enso-heat-top {
+    font-size: 0.62rem;
+    color: var(--enso-mute);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    align-self: end;
+    justify-self: center;
+    height: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.enso-heat-cell { aspect-ratio: 1; border-radius: 3px; min-height: 16px; }
+
+/* --- PCA y pronóstico --- */
+#ensoPca, #ensoSkill { width: 100%; display: block; }
+.enso-note {
+    font-size: 0.78rem;
+    color: var(--enso-mute);
+    line-height: 1.55;
+    background: #f8fafc;
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 0.7rem 0.85rem;
+    margin: 0.9rem 0 0;
+}
+
+/* --- metodología --- */
+.enso-method {
+    background: #fff;
+    border: 1px solid var(--enso-line);
+    border-radius: 14px;
+    padding: 0.4rem 1.25rem;
+}
+
+.enso-method summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 0.9rem;
+    padding: 0.8rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+}
+
+.enso-method summary::-webkit-details-marker { display: none; }
+.enso-method summary i { color: var(--gold); }
+
+.enso-method-body {
+    font-size: 0.85rem;
+    color: var(--enso-mute);
+    line-height: 1.7;
+    padding-bottom: 1rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1rem;
+}
+
+.enso-method-body dt { font-weight: 700; color: var(--enso-ink); margin-top: 0.75rem; }
+.enso-method-body dd { margin: 0.15rem 0 0; }
+.enso-method-body dl { margin: 0; }
+
+/* --- responsive --- */
+@media (max-width: 1199px) {
+    .enso-kpis { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 991px) {
+    .enso-grid { grid-template-columns: 1fr; }
+    .enso-card--chart, .enso-card--model { grid-column: span 1; }
+}
+
+@media (max-width: 767px) {
+    .enso-section { padding: 4rem 0; }
+    .enso-kpis { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    .enso-kpi { padding: 1rem; }
+    .enso-kpi-value { font-size: 1.5rem; }
+    .enso-card { padding: 1.15rem; border-radius: 14px; }
+    .enso-card-head { flex-direction: column; align-items: stretch; }
+    .enso-bar-row { grid-template-columns: 1fr; gap: 0.25rem; }
+    .enso-bar-val { text-align: left; }
+    .enso-toolbar { flex-direction: column; align-items: stretch; }
+    .enso-status { justify-content: center; }
+    .enso-filters { justify-content: center; }
+}
+
+@media (max-width: 480px) {
+    .enso-kpis { grid-template-columns: 1fr; }
+}
 </style>
 
 <!-- ===== ANIME.JS ===== -->
@@ -3674,6 +4291,580 @@ document.addEventListener('DOMContentLoaded', function() {
             duration: 800,
             easing: 'easeOutExpo'
         }, '-=600');
+
+
+    // ==================== OBSERVATORIO ENSO ====================
+    (function () {
+        const board = document.getElementById('ensoBoard');
+        if (!board) return;
+
+        const NS = 'http://www.w3.org/2000/svg';
+        const COLOR = { nino: '#d64545', nina: '#2a7fb8', neutral: '#cbd5e1' };
+        const NAVY = '#1B2A41';
+        const GOLD = '#f4c343';
+        const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun',
+                       'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+        let DATA = null;          // payload completo
+        let range = 'all';        // rango activo de la gráfica
+        let focus = null;         // [i, j] cuando se enfoca un episodio
+        let epFilter = 'all';     // filtro de la tabla de episodios
+
+        // --- utilidades ---
+        const el = (id) => document.getElementById(id);
+        const mk = (tag, attrs) => {
+            const n = document.createElementNS(NS, tag);
+            for (const k in attrs) n.setAttribute(k, attrs[k]);
+            return n;
+        };
+        // Formato numérico en convención española (coma decimal).
+        const num = (v, d) => v.toFixed(d === undefined ? 2 : d).replace('.', ',');
+        const signo = (v, d) => (v > 0 ? '+' : '') + num(v, d);
+        const fase = (v) => (v >= 0.5 ? 'nino' : v <= -0.5 ? 'nina' : 'neutral');
+        const NOMBRE = { nino: 'El Niño', nina: 'La Niña', neutral: 'Neutral' };
+        const mesAnio = (f) => MESES[parseInt(f.slice(5, 7), 10) - 1] + ' ' + f.slice(0, 4);
+        const clear = (node) => { while (node.firstChild) node.removeChild(node.firstChild); };
+
+        // --- carga diferida: solo cuando la sección entra en pantalla ---
+        function load() {
+            fetch(board.dataset.src, { headers: { 'Accept': 'application/json' } })
+                .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+                .then((d) => {
+                    DATA = d;
+                    el('ensoLoading').hidden = true;
+                    el('ensoContent').hidden = false;
+                    render();
+                })
+                .catch(() => {
+                    el('ensoLoading').hidden = true;
+                    el('ensoError').hidden = false;
+                });
+        }
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((e) => {
+                if (e.isIntersecting) { io.unobserve(e.target); load(); }
+            });
+        }, { rootMargin: '250px' });
+        io.observe(board);
+
+        el('ensoRetry').addEventListener('click', function () {
+            el('ensoError').hidden = true;
+            el('ensoLoading').hidden = false;
+            load();
+        });
+
+        // --- render maestro ---
+        function render() {
+            renderStatus();
+            renderKpis();
+            renderEpisodes();
+            renderRanking();
+            renderMethod();
+            drawAll();
+        }
+
+        function drawAll() {
+            drawSeries();
+            drawHeat();
+            drawPca();
+            drawSkill();
+        }
+
+        // --- barra de estado ---
+        function renderStatus() {
+            const k = DATA.kpis;
+            const f = k.fase_actual;
+            el('ensoStatus').innerHTML =
+                '<span class="pulse" style="background:' + COLOR[f] + '"></span>' +
+                '<span>Último dato · <b>' + NOMBRE[f] + '</b> con ONI ' + signo(k.ultimo_oni) +
+                ' °C en ' + k.ultimo_mes + '</span>';
+        }
+
+        // --- KPIs ---
+        function renderKpis() {
+            const k = DATA.kpis;
+            const tiles = [
+                {
+                    cls: 'enso-kpi--' + k.fase_actual,
+                    label: 'Fase más reciente',
+                    value: signo(k.ultimo_oni) + ' <small>°C</small>',
+                    sub: NOMBRE[k.fase_actual] + ' · ' + k.ultimo_periodo
+                },
+                {
+                    cls: 'enso-kpi--nino',
+                    label: 'Episodios El Niño',
+                    value: k.episodios_nino,
+                    sub: k.meses_nino + ' meses desde 1950'
+                },
+                {
+                    cls: 'enso-kpi--nina',
+                    label: 'Episodios La Niña',
+                    value: k.episodios_nina,
+                    sub: k.meses_nina + ' meses desde 1950'
+                },
+                {
+                    cls: 'enso-kpi--gold',
+                    label: 'El Niño más intenso',
+                    value: signo(k.nino_mas_fuerte.pico) + ' <small>°C</small>',
+                    sub: k.nino_mas_fuerte.inicio_seas + ' – ' + k.nino_mas_fuerte.fin_seas
+                },
+                {
+                    cls: '',
+                    label: 'Reparto del tiempo',
+                    value: num(k.pct_neutral, 1) + ' <small>% neutral</small>',
+                    sub: num(k.pct_nino, 1) + ' % El Niño · ' + num(k.pct_nina, 1) + ' % La Niña'
+                }
+            ];
+            el('ensoKpis').innerHTML = tiles.map((t) =>
+                '<div class="enso-kpi ' + t.cls + '">' +
+                '<div class="enso-kpi-label">' + t.label + '</div>' +
+                '<div class="enso-kpi-value">' + t.value + '</div>' +
+                '<div class="enso-kpi-sub">' + t.sub + '</div></div>'
+            ).join('');
+        }
+
+        // --- rango visible de la serie ---
+        function visibleRange() {
+            const n = DATA.serie.length;
+            if (focus) return focus;
+            if (range === 'all') return [0, n];
+            return [Math.max(0, n - parseInt(range, 10) * 12), n];
+        }
+
+        // --- gráfica principal: barras ONI ---
+        function drawSeries() {
+            const svg = el('ensoChart');
+            const wrap = svg.parentElement;
+            const W = wrap.clientWidth || 640;
+            const H = W < 560 ? 250 : 330;
+            const m = { t: 14, r: 10, b: 26, l: 40 };
+            const pw = W - m.l - m.r;
+            const ph = H - m.t - m.b;
+
+            clear(svg);
+            svg.setAttribute('width', W);
+            svg.setAttribute('height', H);
+            svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+            const [a, b] = visibleRange();
+            const pts = DATA.serie.slice(a, b);
+            if (!pts.length) return;
+
+            const maxAbs = Math.max(1, Math.ceil(Math.max.apply(null,
+                pts.map((p) => Math.abs(p.v))) * 2) / 2);
+            const y = (v) => m.t + ph / 2 - (v / maxAbs) * (ph / 2);
+            const bw = pw / pts.length;
+
+            // rejilla horizontal
+            const step = maxAbs > 2 ? 1 : 0.5;
+            for (let v = -maxAbs; v <= maxAbs + 1e-9; v += step) {
+                const yy = y(v);
+                svg.appendChild(mk('line', {
+                    x1: m.l, x2: W - m.r, y1: yy, y2: yy,
+                    stroke: Math.abs(v) < 1e-9 ? '#94a3b8' : '#eef2f6',
+                    'stroke-width': Math.abs(v) < 1e-9 ? 1 : 1
+                }));
+                const tx = mk('text', {
+                    x: m.l - 7, y: yy + 3.5, 'text-anchor': 'end',
+                    'font-size': 10, fill: '#94a3b8'
+                });
+                tx.textContent = signo(v, 1);
+                svg.appendChild(tx);
+            }
+
+            // umbrales ±0,5
+            [0.5, -0.5].forEach((v) => {
+                svg.appendChild(mk('line', {
+                    x1: m.l, x2: W - m.r, y1: y(v), y2: y(v),
+                    stroke: v > 0 ? COLOR.nino : COLOR.nina,
+                    'stroke-width': 1, 'stroke-dasharray': '4 4', 'stroke-opacity': 0.5
+                }));
+            });
+
+            // barras agrupadas por fase en tres paths (DOM ligero)
+            const paths = { nino: '', nina: '', neutral: '' };
+            const y0 = y(0);
+            pts.forEach((p, i) => {
+                const x = m.l + i * bw;
+                const yv = y(p.v);
+                const top = Math.min(y0, yv);
+                const hgt = Math.max(Math.abs(yv - y0), 0.8);
+                const w = Math.max(bw * 0.9, 0.7);
+                paths[fase(p.v)] += 'M' + x.toFixed(2) + ' ' + top.toFixed(2) +
+                    'h' + w.toFixed(2) + 'v' + hgt.toFixed(2) + 'h' + (-w).toFixed(2) + 'Z';
+            });
+            ['neutral', 'nina', 'nino'].forEach((k) => {
+                if (paths[k]) svg.appendChild(mk('path', { d: paths[k], fill: COLOR[k] }));
+            });
+
+            // eje temporal
+            const years = pts.length / 12;
+            const cada = years > 60 ? 10 : years > 30 ? 5 : years > 12 ? 2 : 1;
+            let last = -1;
+            pts.forEach((p, i) => {
+                const yr = parseInt(p.f.slice(0, 4), 10);
+                if (yr % cada === 0 && yr !== last && p.f.slice(5, 7) === '01') {
+                    last = yr;
+                    const x = m.l + i * bw + bw / 2;
+                    const t = mk('text', {
+                        x: x, y: H - 8, 'text-anchor': 'middle',
+                        'font-size': 10, fill: '#94a3b8'
+                    });
+                    t.textContent = yr;
+                    svg.appendChild(t);
+                }
+            });
+
+            // guía y captura del puntero
+            const guide = mk('line', {
+                x1: 0, x2: 0, y1: m.t, y2: m.t + ph,
+                stroke: NAVY, 'stroke-width': 1, 'stroke-opacity': 0.35, visibility: 'hidden'
+            });
+            svg.appendChild(guide);
+
+            const tip = el('ensoTip');
+            const hit = mk('rect', {
+                x: m.l, y: m.t, width: pw, height: ph, fill: 'transparent'
+            });
+            svg.appendChild(hit);
+
+            function move(ev) {
+                const box = svg.getBoundingClientRect();
+                const cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - box.left;
+                let i = Math.floor((cx - m.l) / bw);
+                i = Math.max(0, Math.min(pts.length - 1, i));
+                const p = pts[i];
+                const x = m.l + i * bw + bw / 2;
+                guide.setAttribute('x1', x);
+                guide.setAttribute('x2', x);
+                guide.setAttribute('visibility', 'visible');
+                tip.hidden = false;
+                tip.innerHTML = '<b>' + signo(p.v) + ' °C</b> · ' + NOMBRE[fase(p.v)] +
+                    '<br>' + mesAnio(p.f) + ' · ' + num(p.t) + ' °C de superficie';
+                tip.style.left = Math.max(70, Math.min(W - 70, x)) + 'px';
+                tip.style.top = y(p.v) + 'px';
+            }
+            function leave() {
+                guide.setAttribute('visibility', 'hidden');
+                tip.hidden = true;
+            }
+            hit.addEventListener('mousemove', move);
+            hit.addEventListener('mouseleave', leave);
+            hit.addEventListener('touchmove', function (e) { move(e); }, { passive: true });
+            hit.addEventListener('touchend', leave);
+
+            const desde = pts[0].f.slice(0, 4);
+            const hasta = pts[pts.length - 1].f.slice(0, 4);
+            el('ensoChartSub').textContent = desde + ' – ' + hasta + ' · ' +
+                pts.length + ' temporadas' + (focus ? ' · episodio enfocado' : '');
+        }
+
+        // --- tabla de episodios ---
+        function renderEpisodes() {
+            const eps = DATA.episodios.filter((e) => epFilter === 'all' || e.tipo === epFilter)
+                .slice().reverse();
+            const nivel = { 'Muy fuerte': 3, 'Fuerte': 3, 'Moderado': 2, 'Debil': 1, 'Débil': 1 };
+            el('ensoEpBody').innerHTML = eps.map((e) =>
+                '<tr data-ini="' + e.inicio + '" data-fin="' + e.fin + '">' +
+                '<td><span class="enso-pill"><i style="background:' + COLOR[e.tipo] + '"></i>' +
+                e.inicio_seas + ' – ' + e.fin_seas + '</span></td>' +
+                '<td class="num">' + e.duracion + '</td>' +
+                '<td class="num">' + signo(e.pico) + '</td>' +
+                '<td><span class="enso-tag enso-tag--' + (nivel[e.intensidad] || 1) + '">' +
+                (e.intensidad === 'Debil' ? 'Débil' : e.intensidad) + '</span></td></tr>'
+            ).join('');
+
+            el('ensoEpSub').textContent = eps.length + ' episodios · ' +
+                DATA.meta.desde.slice(0, 4) + '–' + DATA.meta.hasta.slice(0, 4);
+
+            el('ensoEpBody').querySelectorAll('tr').forEach((tr) => {
+                tr.addEventListener('click', function () {
+                    const activa = tr.classList.contains('is-active');
+                    el('ensoEpBody').querySelectorAll('tr').forEach((r) => r.classList.remove('is-active'));
+                    if (activa) {
+                        focus = null;
+                    } else {
+                        tr.classList.add('is-active');
+                        const idx = (f) => DATA.serie.findIndex((p) => p.f === f.slice(0, 7));
+                        const i = idx(tr.dataset.ini);
+                        const j = idx(tr.dataset.fin);
+                        // margen de dos años a cada lado para dar contexto
+                        focus = [Math.max(0, i - 24), Math.min(DATA.serie.length, j + 25)];
+                    }
+                    drawSeries();
+                });
+            });
+        }
+
+        // --- ranking de variables ---
+        function renderRanking() {
+            const top = DATA.modelo.ranking.filter((r) => r.seleccionada).slice(0, 12);
+            const max = Math.max.apply(null, top.map((r) => r.epsilon2)) || 1;
+            const fmtQ = (q) => (q < 0.001 ? 'q < 0,001' : 'q = ' + num(q, 3));
+            el('ensoRanking').innerHTML = top.map((r) =>
+                '<div class="enso-bar-row">' +
+                '<div class="enso-bar-name">' + r.nombre + '<em>' + r.familia + ' · ' + fmtQ(r.q) + '</em></div>' +
+                '<div class="enso-bar-track"><div class="enso-bar-fill" data-w="' +
+                (r.epsilon2 / max * 100).toFixed(1) + '"></div></div>' +
+                '<div class="enso-bar-val">' + num(r.epsilon2, 3) + '</div></div>'
+            ).join('');
+
+            const m = DATA.modelo;
+            el('ensoModelSub').textContent = m.ventanas + ' ventanas de ' + DATA.meta.ventana_meses +
+                ' meses · ' + m.seleccionadas.length + ' variables no redundantes de ' +
+                m.variables_totales + ' evaluadas';
+
+            // animación de entrada de las barras
+            requestAnimationFrame(() => {
+                el('ensoRanking').querySelectorAll('.enso-bar-fill').forEach((f) => {
+                    f.style.width = f.dataset.w + '%';
+                });
+            });
+        }
+
+        // --- mapa de calor de correlación ---
+        function drawHeat() {
+            const c = DATA.modelo.correlacion;
+            const n = c.variables.length;
+            const heat = el('ensoHeat');
+            heat.style.gridTemplateColumns = 'minmax(110px,185px) repeat(' + n + ', minmax(16px,1fr))';
+
+            // Azul para correlación inversa, ámbar para directa.
+            const color = (v) => {
+                const a = Math.min(1, Math.abs(v));
+                return v < 0
+                    ? 'rgba(42,127,184,' + (0.08 + a * 0.85) + ')'
+                    : 'rgba(244,195,67,' + (0.08 + a * 0.9) + ')';
+            };
+
+            let html = '<div></div>';
+            c.variables.forEach((v) => {
+                html += '<div class="enso-heat-top" title="' + v + '">' + v + '</div>';
+            });
+            c.matriz.forEach((fila, i) => {
+                html += '<div class="enso-heat-label" title="' + c.variables[i] + '">' + c.variables[i] + '</div>';
+                fila.forEach((v, j) => {
+                    html += '<div class="enso-heat-cell" style="background:' + color(v) + '" title="' +
+                        c.variables[i] + ' ↔ ' + c.variables[j] + ': r = ' + num(v, 2) + '"></div>';
+                });
+            });
+            heat.innerHTML = html;
+        }
+
+        // --- varianza explicada (PCA) ---
+        function drawPca() {
+            const svg = el('ensoPca');
+            const p = DATA.modelo.pca;
+            const W = svg.parentElement.clientWidth || 600;
+            const H = W < 560 ? 230 : 280;
+            const m = { t: 16, r: 14, b: 34, l: 42 };
+            const pw = W - m.l - m.r;
+            const ph = H - m.t - m.b;
+
+            clear(svg);
+            svg.setAttribute('width', W);
+            svg.setAttribute('height', H);
+            svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+            const n = p.componentes.length;
+            const bw = pw / n;
+            const y = (v) => m.t + ph - (v / 100) * ph;
+
+            for (let v = 0; v <= 100; v += 25) {
+                svg.appendChild(mk('line', {
+                    x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: '#eef2f6'
+                }));
+                const t = mk('text', { x: m.l - 7, y: y(v) + 3.5, 'text-anchor': 'end', 'font-size': 10, fill: '#94a3b8' });
+                t.textContent = v + '%';
+                svg.appendChild(t);
+            }
+
+            // referencia del 95 %
+            svg.appendChild(mk('line', {
+                x1: m.l, x2: W - m.r, y1: y(95), y2: y(95),
+                stroke: GOLD, 'stroke-width': 1.5, 'stroke-dasharray': '5 4'
+            }));
+
+            // barras de varianza individual
+            p.varianza.forEach((v, i) => {
+                svg.appendChild(mk('rect', {
+                    x: m.l + i * bw + bw * 0.22, y: y(v),
+                    width: bw * 0.56, height: Math.max(ph - (y(v) - m.t), 1),
+                    fill: '#c7d3de', rx: 2
+                }));
+            });
+
+            // curva acumulada
+            let d = '';
+            p.acumulada.forEach((v, i) => {
+                const x = m.l + i * bw + bw / 2;
+                d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y(v).toFixed(1);
+            });
+            svg.appendChild(mk('path', { d: d, fill: 'none', stroke: NAVY, 'stroke-width': 2.2 }));
+            p.acumulada.forEach((v, i) => {
+                svg.appendChild(mk('circle', {
+                    cx: m.l + i * bw + bw / 2, cy: y(v), r: 3, fill: '#fff',
+                    stroke: NAVY, 'stroke-width': 2
+                }));
+            });
+
+            p.componentes.forEach((c, i) => {
+                if (n > 8 && i % 2) return;
+                const t = mk('text', {
+                    x: m.l + i * bw + bw / 2, y: H - 12,
+                    'text-anchor': 'middle', 'font-size': 10, fill: '#94a3b8'
+                });
+                t.textContent = 'PC' + c;
+                svg.appendChild(t);
+            });
+
+            el('ensoPcaFoot').textContent =
+                'Las ' + p.n_variables + ' variables se resumen en ' + p.n_para_95 +
+                ' componentes que explican el 95 % de la varianza; el primero solo ya concentra ' +
+                num(p.varianza[0], 1) + ' %. La línea dorada marca ese 95 %.';
+        }
+
+        // --- capacidad predictiva ---
+        function drawSkill() {
+            const svg = el('ensoSkill');
+            const hs = DATA.pronostico.horizontes;
+            const W = svg.parentElement.clientWidth || 600;
+            const H = W < 560 ? 240 : 290;
+            const m = { t: 22, r: 12, b: 42, l: 40 };
+            const pw = W - m.l - m.r;
+            const ph = H - m.t - m.b;
+
+            clear(svg);
+            svg.setAttribute('width', W);
+            svg.setAttribute('height', H);
+            svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+            const y = (v) => m.t + ph - (v / 100) * ph;
+            const gw = pw / hs.length;
+
+            for (let v = 0; v <= 100; v += 25) {
+                svg.appendChild(mk('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: '#eef2f6' }));
+                const t = mk('text', { x: m.l - 7, y: y(v) + 3.5, 'text-anchor': 'end', 'font-size': 10, fill: '#94a3b8' });
+                t.textContent = v + '%';
+                svg.appendChild(t);
+            }
+
+            hs.forEach((h, i) => {
+                const x0 = m.l + i * gw;
+                const bw = Math.min(gw * 0.3, 34);
+                // línea base
+                svg.appendChild(mk('rect', {
+                    x: x0 + gw / 2 - bw - 3, y: y(h.base),
+                    width: bw, height: Math.max(ph - (y(h.base) - m.t), 1),
+                    fill: '#cbd5e1', rx: 3
+                }));
+                // modelo: dorado si supera la base, gris azulado si no
+                const gana = h.acierto > h.base;
+                svg.appendChild(mk('rect', {
+                    x: x0 + gw / 2 + 3, y: y(h.acierto),
+                    width: bw, height: Math.max(ph - (y(h.acierto) - m.t), 1),
+                    fill: gana ? NAVY : '#94a3b8', rx: 3
+                }));
+                const v = mk('text', {
+                    x: x0 + gw / 2 + 3 + bw / 2, y: y(h.acierto) - 6,
+                    'text-anchor': 'middle', 'font-size': 11,
+                    'font-weight': 700, fill: gana ? NAVY : '#94a3b8'
+                });
+                v.textContent = num(h.acierto, 1) + '%';
+                svg.appendChild(v);
+
+                const t = mk('text', {
+                    x: x0 + gw / 2, y: H - 22, 'text-anchor': 'middle',
+                    'font-size': 11, fill: '#475569', 'font-weight': 600
+                });
+                t.textContent = h.horizonte === 0 ? 'Mes actual' : '+' + h.horizonte + ' meses';
+                svg.appendChild(t);
+            });
+
+            const ax = mk('text', {
+                x: m.l + pw / 2, y: H - 5, 'text-anchor': 'middle',
+                'font-size': 10, fill: '#94a3b8'
+            });
+            ax.textContent = 'Horizonte de predicción';
+            svg.appendChild(ax);
+
+            const h0 = hs[0];
+            const util = hs.filter((h) => h.acierto > h.base);
+            const ultimo = util.length ? util[util.length - 1].horizonte : 0;
+            el('ensoSkillNote').textContent =
+                'El modelo identifica la fase del mes en curso con ' + num(h0.acierto, 1) +
+                ' % de acierto, frente al ' + num(h0.base, 1) + ' % de acertar siempre la fase más común. ' +
+                'La ventaja se agota hacia los ' + ultimo + ' meses: más allá, la historia reciente del ONI ' +
+                'deja de aportar información. ' + DATA.pronostico.nota;
+        }
+
+        // --- metodología ---
+        function renderMethod() {
+            const m = DATA.meta;
+            const mo = DATA.modelo;
+            el('ensoMethod').innerHTML =
+                '<dl>' +
+                '<dt>Fuente</dt><dd>' + m.fuente + '. Serie de ' + m.n_temporadas +
+                ' temporadas trimestrales solapadas, de ' + m.desde.slice(0, 4) + ' a ' + m.hasta.slice(0, 4) + '.</dd>' +
+                '<dt>Definición de episodio</dt><dd>Al menos ' + m.racha_minima +
+                ' temporadas consecutivas con el índice en ±' + num(m.umbral, 1) +
+                ' °C o más, según el criterio operativo de la NOAA. La intensidad se clasifica por el pico: ' +
+                'débil (0,5–0,9), moderado (1,0–1,4), fuerte (1,5–1,9) y muy fuerte (2,0 o más).</dd>' +
+                '<dt>Caracterización</dt><dd>Ventanas deslizantes de ' + m.ventana_meses +
+                ' meses con paso de un mes (' + mo.ventanas + ' ventanas). De cada una se evalúan ' +
+                mo.variables_totales + ' variables de tiempo, frecuencia (Welch) y tiempo-frecuencia (STFT). ' +
+                'Cada ventana se etiqueta con la fase de su mes final.</dd>' +
+                '<dt>Selección</dt><dd>Prueba de Kruskal-Wallis con corrección FDR de Benjamini-Hochberg al 5 %: ' +
+                mo.significativas + ' variables resultan significativas y quedan ' + mo.seleccionadas.length +
+                ' tras descartar las que se correlacionan por encima de 0,90.</dd>' +
+                '<dt>Evaluación predictiva</dt><dd>Regresión logística multinomial sobre las variables seleccionadas, ' +
+                'entrenada con el 70 % más antiguo de la serie y evaluada sobre los años posteriores, que el modelo ' +
+                'nunca vio. Es una medición retrospectiva de capacidad, no un pronóstico operativo.</dd>' +
+                '<dt>Actualización</dt><dd>Datos generados el ' + m.generado.split('-').reverse().join('/') + '.</dd>' +
+                '</dl>';
+        }
+
+        // --- controles ---
+        board.querySelectorAll('[data-range]').forEach((btn) => {
+            btn.addEventListener('click', function () {
+                board.querySelectorAll('[data-range]').forEach((b) => b.classList.remove('is-active'));
+                btn.classList.add('is-active');
+                range = btn.dataset.range;
+                focus = null;
+                el('ensoEpBody').querySelectorAll('tr').forEach((r) => r.classList.remove('is-active'));
+                drawSeries();
+            });
+        });
+
+        board.querySelectorAll('[data-ep]').forEach((btn) => {
+            btn.addEventListener('click', function () {
+                board.querySelectorAll('[data-ep]').forEach((b) => b.classList.remove('is-active'));
+                btn.classList.add('is-active');
+                epFilter = btn.dataset.ep;
+                renderEpisodes();
+            });
+        });
+
+        board.querySelectorAll('[data-tab]').forEach((btn) => {
+            btn.addEventListener('click', function () {
+                board.querySelectorAll('[data-tab]').forEach((b) => b.classList.remove('is-active'));
+                board.querySelectorAll('[data-pane]').forEach((p) => p.classList.remove('is-active'));
+                btn.classList.add('is-active');
+                board.querySelector('[data-pane="' + btn.dataset.tab + '"]').classList.add('is-active');
+                // Los SVG ocultos miden 0: se redibujan al mostrarse.
+                if (btn.dataset.tab === 'pca') drawPca();
+            });
+        });
+
+        // --- redibujar al cambiar el tamaño ---
+        let rt;
+        window.addEventListener('resize', function () {
+            if (!DATA) return;
+            clearTimeout(rt);
+            rt = setTimeout(drawAll, 180);
+        });
+    })();
 
 });
 </script>

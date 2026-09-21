@@ -1,14 +1,18 @@
+import json
 import logging
 from email.utils import formataddr
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.core.mail import EmailMultiAlternatives
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
+from django.views.decorators.cache import cache_control
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import FormView
 
@@ -18,6 +22,29 @@ from .forms import ContactForm
 from .models import FeaturedMember, NewsArticle, NewsCategory
 
 logger = logging.getLogger(__name__)
+
+# Datos del Observatorio ENSO, generados por scripts/generar_datos_enso.py.
+ENSO_DATA_PATH = Path(__file__).resolve().parent / 'data' / 'enso.json'
+
+
+@cache_control(max_age=60 * 60 * 24, public=True)
+def enso_data(request):
+    """Serie ONI, episodios y resultados del modelo, para el tablero de la home.
+
+    Se sirve desde el mismo dominio (y no como archivo estático) para que el
+    `fetch` del tablero no dependa de la configuración CORS del bucket S3.
+    El contenido es estático, así que se cachea en memoria tras la primera
+    lectura y se marca como cacheable por 24 horas en el navegador.
+    """
+    payload = cache.get('enso_data_json')
+    if payload is None:
+        try:
+            payload = ENSO_DATA_PATH.read_text(encoding='utf-8')
+        except OSError:
+            logger.exception('No se pudo leer el archivo de datos ENSO')
+            raise Http404('Datos ENSO no disponibles')
+        cache.set('enso_data_json', payload, 60 * 60 * 24)
+    return JsonResponse(json.loads(payload))
 
 
 class HomeView(TemplateView):
