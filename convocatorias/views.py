@@ -260,9 +260,12 @@ class ConvocatoriaSubmissionListView(AdminRequiredMixin, ListView):
         ctx = super().get_context_data(**kwargs)
         ctx['convocatoria'] = get_object_or_404(Convocatoria, pk=self.kwargs['pk'])
         # Para el botón "Copiar correos": listos para pegar en Google Calendar.
-        emails = ctx['convocatoria'].collect_emails()
-        ctx['emails'] = emails
-        ctx['emails_joined'] = ', '.join(emails)
+        report = ctx['convocatoria'].email_report()
+        ctx['emails'] = report['emails']
+        ctx['emails_joined'] = ', '.join(report['emails'])
+        ctx['emails_duplicadas'] = report['duplicadas']
+        ctx['emails_sin_correo'] = report['sin_correo']
+        ctx['emails_excluidas'] = len(report['duplicadas']) + len(report['sin_correo'])
         return ctx
 
 

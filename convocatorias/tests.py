@@ -30,6 +30,22 @@ class CollectEmailsTests(TestCase):
         self.inscribir(Nombre='Mal escrito', Correo='no-es-un-correo')
         self.assertEqual(self.conv.collect_emails(), ['ana@example.com', 'LUIS@example.com'])
 
+    def test_reporte_explica_las_inscripciones_excluidas(self):
+        self.inscribir(Nombre='Ana', Correo='ana@example.com')
+        s2 = self.inscribir(Nombre='Ana de nuevo', Correo='ANA@example.com')
+        s3 = self.inscribir(Nombre='Sin correo', Correo='')
+        rep = self.conv.email_report()
+        self.assertEqual(rep['emails'], ['ana@example.com'])
+        self.assertEqual(rep['duplicadas'], [(s2, 'ANA@example.com')])
+        self.assertEqual(rep['sin_correo'], [s3])
+
+        self.client.force_login(self.admin)
+        r = self.client.get(self.url)
+        self.assertEqual(r.context['emails_excluidas'], 2)
+        self.assertContains(r, '2 inscripciones no aportan un correo nuevo')
+        self.assertContains(r, reverse('convocatorias_admin:submission_detail', args=[self.conv.pk, s2.pk]))
+        self.assertContains(r, reverse('convocatorias_admin:submission_detail', args=[self.conv.pk, s3.pk]))
+
     def test_acepta_correos_escritos_en_campos_de_texto(self):
         # El formulario pudo pedir el correo en un campo TEXT: también cuenta.
         self.inscribir(Nombre='carlos@example.com', Correo='')

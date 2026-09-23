@@ -89,33 +89,44 @@ class Convocatoria(models.Model):
     # Correo "razonable": sin espacios ni separadores, con arroba y dominio con punto.
     EMAIL_RE = re.compile(r'^[^@\s,;<>]+@[^@\s,;<>]+\.[^@\s,;<>]+$')
 
-    def collect_emails(self):
-        """Correos de todas las inscripciones, sin duplicados y en orden de llegada.
+    def email_report(self):
+        """Correos de las inscripciones y explicación de las que no aportan uno.
 
-        Primero se toman los campos de tipo correo; como respaldo se acepta
+        Devuelve un dict con:
+          - ``emails``: correos únicos, en orden de llegada (para Calendar).
+          - ``duplicadas``: inscripciones cuyo correo ya apareció antes, con el
+            correo repetido (una misma persona inscrita más de una vez).
+          - ``sin_correo``: inscripciones sin ninguna respuesta con forma de correo.
+
+        Primero se miran los campos de tipo correo; como respaldo se acepta
         cualquier respuesta que tenga forma de correo, por si el formulario lo
-        pidió en un campo de texto. Sirve para pegarlos en una invitación de
-        Google Calendar, que los acepta separados por comas.
+        pidió en un campo de texto. Las mayúsculas no cuentan al deduplicar.
         """
-        email_labels = set(self.fields.filter(field_type=ConvocatoriaField.FieldType.EMAIL)
-                           .values_list('label', flat=True))
-        seen, out = set(), []
+        email_labels = list(self.fields.filter(field_type=ConvocatoriaField.FieldType.EMAIL)
+                            .values_list('label', flat=True))
+        seen, emails, duplicadas, sin_correo = set(), [], [], []
 
-        def add(value):
-            if not isinstance(value, str):
-                return
-            v = value.strip()
-            if self.EMAIL_RE.match(v) and v.lower() not in seen:
-                seen.add(v.lower())
-                out.append(v)
-
-        for sub in self.submissions.order_by('submitted_at').only('data'):
+        for sub in self.submissions.order_by('submitted_at'):
             data = sub.data or {}
-            for label in email_labels:
-                add(data.get(label))
-            for value in data.values():
-                add(value)
-        return out
+            candidatos = [data.get(l) for l in email_labels] + list(data.values())
+            valido = None
+            for value in candidatos:
+                v = value.strip() if isinstance(value, str) else ''
+                if self.EMAIL_RE.match(v):
+                    valido = v
+                    break
+            if valido is None:
+                sin_correo.append(sub)
+            elif valido.lower() in seen:
+                duplicadas.append((sub, valido))
+            else:
+                seen.add(valido.lower())
+                emails.append(valido)
+        return {'emails': emails, 'duplicadas': duplicadas, 'sin_correo': sin_correo}
+
+    def collect_emails(self):
+        """Solo la lista de correos únicos (ver ``email_report``)."""
+        return self.email_report()['emails']
 
     @property
     def submissions_count(self):

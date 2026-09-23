@@ -32,10 +32,50 @@
             </div>
             <div class="modal-body">
                 <p class="text-muted small mb-3">
-                    {{ emails|length }} correo{{ emails|length|pluralize }} único{{ emails|length|pluralize }},
-                    separados por comas. Pégalos tal cual en el campo <strong>Invitados</strong> de Google Calendar
+                    <strong>{{ emails|length }}</strong> correo{{ emails|length|pluralize }} único{{ emails|length|pluralize }}
+                    de <strong>{{ convocatoria.submissions_count }}</strong> inscripciones, separados por comas.
+                    Pégalos tal cual en el campo <strong>Invitados</strong> de Google Calendar
                     o en el destinatario de un correo.
                 </p>
+                {% if emails_excluidas %}
+                <details class="mb-3 small">
+                    <summary class="text-warning-emphasis fw-semibold" style="cursor: pointer;">
+                        <i class="bi bi-info-circle me-1"></i>
+                        {{ emails_excluidas }} inscripci{{ emails_excluidas|pluralize:"ón,ones" }} no aporta{{ emails_excluidas|pluralize:"n" }} un correo nuevo
+                    </summary>
+                    <div class="mt-2 ps-3 border-start border-2 border-warning-subtle">
+                        {% if emails_duplicadas %}
+                        <p class="mb-1 text-muted">
+                            <strong>{{ emails_duplicadas|length }}</strong> repetida{{ emails_duplicadas|length|pluralize }}:
+                            la misma persona se inscribió más de una vez. El correo se incluye una sola vez.
+                        </p>
+                        <ul class="mb-2 ps-3">
+                            {% for sub, correo in emails_duplicadas %}
+                            <li>
+                                <a href="{% url 'convocatorias_admin:submission_detail' convocatoria.pk sub.pk %}" class="text-decoration-none">
+                                    {{ sub.submitted_at|date:"d/m/Y H:i" }}</a>
+                                · <span class="font-monospace">{{ correo }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% if emails_sin_correo %}
+                        <p class="mb-1 text-muted">
+                            <strong>{{ emails_sin_correo|length }}</strong> sin ninguna respuesta con forma de correo:
+                        </p>
+                        <ul class="mb-0 ps-3">
+                            {% for sub in emails_sin_correo %}
+                            <li>
+                                <a href="{% url 'convocatorias_admin:submission_detail' convocatoria.pk sub.pk %}" class="text-decoration-none">
+                                    {{ sub.submitted_at|date:"d/m/Y H:i" }}</a>
+                                · {{ sub.summary|default:"(sin datos)"|truncatechars:60 }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </details>
+                {% endif %}
                 <textarea id="emailsText" class="form-control font-monospace small" rows="7" readonly
                           spellcheck="false">{{ emails_joined }}</textarea>
                 <div id="emailsCopied" class="text-success small mt-2" hidden>
