@@ -6,12 +6,87 @@
         <i class="bi bi-arrow-left"></i>
     </a>
     <h1 class="page-title mb-0">Inscripciones</h1>
-    <div class="ms-auto">
+    <div class="ms-auto d-flex gap-2 flex-wrap">
+        <button type="button" class="btn btn-outline-primary rounded-pill btn-sm"
+                data-bs-toggle="modal" data-bs-target="#emailsModal" {% if not emails %}disabled{% endif %}
+                title="{% if emails %}Copiar los {{ emails|length }} correos para una invitación{% else %}Aún no hay correos en las inscripciones{% endif %}">
+            <i class="bi bi-envelope-at me-2"></i><span class="d-none d-sm-inline">Copiar correos</span><span class="d-sm-none">Correos</span>
+            {% if emails %}<span class="badge bg-primary rounded-pill ms-1">{{ emails|length }}</span>{% endif %}
+        </button>
         <a href="{% url 'convocatorias_admin:submission_export' convocatoria.pk %}" class="btn btn-success rounded-pill btn-sm">
             <i class="bi bi-download me-2"></i><span class="d-none d-sm-inline">Exportar CSV</span><span class="d-sm-none">CSV</span>
         </a>
     </div>
 </div>
+
+{% if emails %}
+<!-- Correos de los inscritos, listos para pegar en el campo "Invitados" de Google Calendar -->
+<div class="modal fade" id="emailsModal" tabindex="-1" aria-labelledby="emailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="emailsModalLabel">
+                    <i class="bi bi-envelope-at me-2 text-primary"></i>Correos de los inscritos
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">
+                    {{ emails|length }} correo{{ emails|length|pluralize }} único{{ emails|length|pluralize }},
+                    separados por comas. Pégalos tal cual en el campo <strong>Invitados</strong> de Google Calendar
+                    o en el destinatario de un correo.
+                </p>
+                <textarea id="emailsText" class="form-control font-monospace small" rows="7" readonly
+                          spellcheck="false">{{ emails_joined }}</textarea>
+                <div id="emailsCopied" class="text-success small mt-2" hidden>
+                    <i class="bi bi-check-circle me-1"></i>Copiados al portapapeles.
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" id="emailsCopyBtn">
+                    <i class="bi bi-clipboard me-2"></i>Copiar todos
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var btn = document.getElementById('emailsCopyBtn');
+    var area = document.getElementById('emailsText');
+    var ok = document.getElementById('emailsCopied');
+    if (!btn) return;
+
+    function done() {
+        ok.hidden = false;
+        btn.innerHTML = '<i class="bi bi-check2 me-2"></i>Copiados';
+        setTimeout(function () {
+            btn.innerHTML = '<i class="bi bi-clipboard me-2"></i>Copiar todos';
+            ok.hidden = true;
+        }, 2500);
+    }
+
+    // Respaldo para navegadores sin la API moderna de portapapeles (o sin HTTPS).
+    function fallback() {
+        area.focus();
+        area.select();
+        try { document.execCommand('copy'); done(); } catch (e) { /* queda seleccionado para copiar a mano */ }
+    }
+
+    btn.addEventListener('click', function () {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(area.value).then(done, fallback);
+        } else {
+            fallback();
+        }
+    });
+    // Un clic en el cuadro selecciona todo, para quien prefiera Ctrl+C.
+    area.addEventListener('focus', function () { area.select(); });
+})();
+</script>
+{% endif %}
 
 <p class="text-muted mb-4">Convocatoria: <strong>{{ convocatoria.title }}</strong></p>
 

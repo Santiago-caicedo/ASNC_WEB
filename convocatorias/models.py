@@ -1,3 +1,4 @@
+import re
 import uuid as uuid_lib
 
 from django.db import models
@@ -84,6 +85,37 @@ class Convocatoria(models.Model):
         if self.closes_at and now > self.closes_at:
             return False
         return True
+
+    # Correo "razonable": sin espacios ni separadores, con arroba y dominio con punto.
+    EMAIL_RE = re.compile(r'^[^@\s,;<>]+@[^@\s,;<>]+\.[^@\s,;<>]+$')
+
+    def collect_emails(self):
+        """Correos de todas las inscripciones, sin duplicados y en orden de llegada.
+
+        Primero se toman los campos de tipo correo; como respaldo se acepta
+        cualquier respuesta que tenga forma de correo, por si el formulario lo
+        pidió en un campo de texto. Sirve para pegarlos en una invitación de
+        Google Calendar, que los acepta separados por comas.
+        """
+        email_labels = set(self.fields.filter(field_type=ConvocatoriaField.FieldType.EMAIL)
+                           .values_list('label', flat=True))
+        seen, out = set(), []
+
+        def add(value):
+            if not isinstance(value, str):
+                return
+            v = value.strip()
+            if self.EMAIL_RE.match(v) and v.lower() not in seen:
+                seen.add(v.lower())
+                out.append(v)
+
+        for sub in self.submissions.order_by('submitted_at').only('data'):
+            data = sub.data or {}
+            for label in email_labels:
+                add(data.get(label))
+            for value in data.values():
+                add(value)
+        return out
 
     @property
     def submissions_count(self):
