@@ -76,8 +76,24 @@
                     </div>
                 </details>
                 {% endif %}
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <label for="emailsCount" class="form-label small fw-semibold mb-0">Copiar los primeros</label>
+                    <input type="number" id="emailsCount" class="form-control form-control-sm" style="width: 6rem;"
+                           min="1" max="{{ emails|length }}" value="{{ emails|length }}" inputmode="numeric">
+                    <span class="small text-muted">de {{ emails|length }}</span>
+                    <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="Cantidades rápidas">
+                        {% if emails|length > 25 %}<button type="button" class="btn btn-outline-secondary" data-count="25">25</button>{% endif %}
+                        {% if emails|length > 50 %}<button type="button" class="btn btn-outline-secondary" data-count="50">50</button>{% endif %}
+                        {% if emails|length > 100 %}<button type="button" class="btn btn-outline-secondary" data-count="100">100</button>{% endif %}
+                        <button type="button" class="btn btn-outline-secondary" data-count="all">Todos</button>
+                    </div>
+                </div>
                 <textarea id="emailsText" class="form-control font-monospace small" rows="7" readonly
                           spellcheck="false">{{ emails_joined }}</textarea>
+                <div id="emailsRange" class="form-text">
+                    Orden de inscripción: del más antiguo al más reciente.
+                </div>
+                {{ emails|json_script:"emailsData" }}
                 <div id="emailsCopied" class="text-success small mt-2" hidden>
                     <i class="bi bi-check-circle me-1"></i>Copiados al portapapeles.
                 </div>
@@ -99,11 +115,45 @@
     var ok = document.getElementById('emailsCopied');
     if (!btn) return;
 
+    // Correos en orden de inscripción (del más antiguo al más reciente).
+    var todos = JSON.parse(document.getElementById('emailsData').textContent);
+    var countInput = document.getElementById('emailsCount');
+    var rangeText = document.getElementById('emailsRange');
+
+    function cantidad() {
+        var n = parseInt(countInput.value, 10);
+        if (isNaN(n) || n < 1) n = 1;
+        if (n > todos.length) n = todos.length;
+        return n;
+    }
+
+    function refrescar() {
+        var n = cantidad();
+        area.value = todos.slice(0, n).join(', ');
+        rangeText.textContent = (n === todos.length
+            ? 'Todos los ' + n + ' correos'
+            : 'Correos 1 a ' + n + ' de ' + todos.length)
+            + ', en orden de inscripción: del más antiguo al más reciente.';
+        btn.innerHTML = '<i class="bi bi-clipboard me-2"></i>Copiar ' + (n === todos.length ? 'todos' : 'los primeros ' + n);
+        btn.dataset.label = btn.innerHTML;
+    }
+
+    countInput.addEventListener('input', refrescar);
+    countInput.addEventListener('change', function () { countInput.value = cantidad(); refrescar(); });
+    document.querySelectorAll('#emailsModal [data-count]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            countInput.value = b.dataset.count === 'all' ? todos.length : b.dataset.count;
+            refrescar();
+        });
+    });
+    refrescar();
+
     function done() {
         ok.hidden = false;
+        ok.innerHTML = '<i class="bi bi-check-circle me-1"></i>' + cantidad() + ' correo' + (cantidad() === 1 ? '' : 's') + ' copiado' + (cantidad() === 1 ? '' : 's') + ' al portapapeles.';
         btn.innerHTML = '<i class="bi bi-check2 me-2"></i>Copiados';
         setTimeout(function () {
-            btn.innerHTML = '<i class="bi bi-clipboard me-2"></i>Copiar todos';
+            btn.innerHTML = btn.dataset.label;
             ok.hidden = true;
         }, 2500);
     }

@@ -60,6 +60,10 @@ class CollectEmailsTests(TestCase):
         self.assertEqual(r.context['emails_joined'], 'ana@example.com, luis@example.com')
         self.assertContains(r, 'id="emailsModal"')
         self.assertContains(r, 'ana@example.com, luis@example.com')
+        # Selector "copiar los primeros N" y la lista en orden de inscripción para el script.
+        self.assertContains(r, 'id="emailsCount"')
+        self.assertContains(r, 'max="2" value="2"')
+        self.assertContains(r, '<script id="emailsData" type="application/json">["ana@example.com", "luis@example.com"]</script>')
 
     def test_sin_correos_el_boton_queda_deshabilitado(self):
         self.inscribir(Nombre='Sin correo', Correo='')
