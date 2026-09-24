@@ -77,17 +77,28 @@
                 </details>
                 {% endif %}
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                    <label for="emailsCount" class="form-label small fw-semibold mb-0">Copiar los primeros</label>
-                    <input type="number" id="emailsCount" class="form-control form-control-sm" style="width: 6rem;"
-                           min="1" max="{{ emails|length }}" value="{{ emails|length }}" inputmode="numeric">
+                    <span class="small fw-semibold">Copiar del</span>
+                    <input type="number" id="emailsFrom" class="form-control form-control-sm" style="width: 5.5rem;"
+                           min="1" max="{{ emails|length }}" value="1" inputmode="numeric" aria-label="Desde">
+                    <span class="small fw-semibold">al</span>
+                    <input type="number" id="emailsTo" class="form-control form-control-sm" style="width: 5.5rem;"
+                           min="1" max="{{ emails|length }}" value="{{ emails|length }}" inputmode="numeric" aria-label="Hasta">
                     <span class="small text-muted">de {{ emails|length }}</span>
-                    <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="Cantidades rápidas">
-                        {% if emails|length > 25 %}<button type="button" class="btn btn-outline-secondary" data-count="25">25</button>{% endif %}
-                        {% if emails|length > 50 %}<button type="button" class="btn btn-outline-secondary" data-count="50">50</button>{% endif %}
-                        {% if emails|length > 100 %}<button type="button" class="btn btn-outline-secondary" data-count="100">100</button>{% endif %}
-                        <button type="button" class="btn btn-outline-secondary" data-count="all">Todos</button>
+                    <div class="d-flex align-items-center gap-1 ms-auto">
+                        <span class="small text-muted me-1">Tandas de</span>
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Tamaño de tanda">
+                            <button type="button" class="btn btn-outline-secondary" data-batch="25">25</button>
+                            <button type="button" class="btn btn-outline-secondary" data-batch="50">50</button>
+                            <button type="button" class="btn btn-outline-secondary" data-batch="100">100</button>
+                            <button type="button" class="btn btn-outline-secondary" data-batch="all">Todos</button>
+                        </div>
+                        <div class="btn-group btn-group-sm ms-1" role="group" aria-label="Cambiar de tanda">
+                            <button type="button" class="btn btn-outline-primary" id="emailsPrev" title="Tanda anterior"><i class="bi bi-chevron-left"></i></button>
+                            <button type="button" class="btn btn-outline-primary" id="emailsNext" title="Siguiente tanda"><i class="bi bi-chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
+                <div id="emailsResume" class="alert alert-warning py-2 px-3 small mb-2" hidden></div>
                 <textarea id="emailsText" class="form-control font-monospace small" rows="7" readonly
                           spellcheck="false">{{ emails_joined }}</textarea>
                 <div id="emailsRange" class="form-text">
@@ -117,38 +128,75 @@
 
     // Correos en orden de inscripción (del más antiguo al más reciente).
     var todos = JSON.parse(document.getElementById('emailsData').textContent);
-    var countInput = document.getElementById('emailsCount');
+    var total = todos.length;
+    var fromInput = document.getElementById('emailsFrom');
+    var toInput = document.getElementById('emailsTo');
     var rangeText = document.getElementById('emailsRange');
+    var resume = document.getElementById('emailsResume');
+    // Se recuerda hasta dónde se copió, por convocatoria, para seguir más tarde.
+    var memKey = 'asnc.emails.ultimo.{{ convocatoria.pk }}';
+    var batch = 25;
 
-    function cantidad() {
-        var n = parseInt(countInput.value, 10);
-        if (isNaN(n) || n < 1) n = 1;
-        if (n > todos.length) n = todos.length;
-        return n;
-    }
+    function clamp(v, lo, hi) { v = parseInt(v, 10); if (isNaN(v)) v = lo; return Math.min(hi, Math.max(lo, v)); }
+    function desde() { return clamp(fromInput.value, 1, total); }
+    function hasta() { return clamp(toInput.value, desde(), total); }
+    function setRango(a, b) { fromInput.value = clamp(a, 1, total); toInput.value = clamp(b, fromInput.value, total); refrescar(); }
+    function cantidad() { return hasta() - desde() + 1; }
 
     function refrescar() {
-        var n = cantidad();
-        area.value = todos.slice(0, n).join(', ');
-        rangeText.textContent = (n === todos.length
-            ? 'Todos los ' + n + ' correos'
-            : 'Correos 1 a ' + n + ' de ' + todos.length)
+        var a = desde(), b = hasta();
+        area.value = todos.slice(a - 1, b).join(', ');
+        var tanda = '';
+        // Solo se numera la tanda cuando el rango arranca en un múltiplo del tamaño de tanda.
+        if (batch && (a - 1) % batch === 0 && (b - a + 1) <= batch) {
+            tanda = ' (tanda ' + Math.ceil(b / batch) + ' de ' + Math.ceil(total / batch) + ')';
+        }
+        rangeText.textContent = (a === 1 && b === total
+            ? 'Todos los ' + total + ' correos'
+            : 'Correos ' + a + ' a ' + b + ' de ' + total + tanda)
             + ', en orden de inscripción: del más antiguo al más reciente.';
-        btn.innerHTML = '<i class="bi bi-clipboard me-2"></i>Copiar ' + (n === todos.length ? 'todos' : 'los primeros ' + n);
+        btn.innerHTML = '<i class="bi bi-clipboard me-2"></i>Copiar ' +
+            (a === 1 && b === total ? 'todos' : 'del ' + a + ' al ' + b);
         btn.dataset.label = btn.innerHTML;
+        document.getElementById('emailsPrev').disabled = a <= 1;
+        document.getElementById('emailsNext').disabled = b >= total;
     }
 
-    countInput.addEventListener('input', refrescar);
-    countInput.addEventListener('change', function () { countInput.value = cantidad(); refrescar(); });
-    document.querySelectorAll('#emailsModal [data-count]').forEach(function (b) {
+    fromInput.addEventListener('input', refrescar);
+    toInput.addEventListener('input', refrescar);
+    fromInput.addEventListener('change', function () { setRango(fromInput.value, toInput.value); });
+    toInput.addEventListener('change', function () { setRango(fromInput.value, toInput.value); });
+
+    document.querySelectorAll('#emailsModal [data-batch]').forEach(function (b) {
         b.addEventListener('click', function () {
-            countInput.value = b.dataset.count === 'all' ? todos.length : b.dataset.count;
-            refrescar();
+            if (b.dataset.batch === 'all') { batch = 0; setRango(1, total); }
+            else { batch = parseInt(b.dataset.batch, 10); setRango(1, batch); }
         });
     });
-    refrescar();
+    document.getElementById('emailsNext').addEventListener('click', function () {
+        var size = batch || cantidad();
+        setRango(hasta() + 1, hasta() + size);
+    });
+    document.getElementById('emailsPrev').addEventListener('click', function () {
+        var size = batch || cantidad();
+        setRango(desde() - size, desde() - 1);
+    });
+
+    // Al abrir: si la última vez se copió hasta el N y faltan más, se propone la siguiente tanda.
+    var ultimo = 0;
+    try { ultimo = parseInt(localStorage.getItem(memKey), 10) || 0; } catch (e) {}
+    if (ultimo > 0 && ultimo < total) {
+        setRango(ultimo + 1, ultimo + batch);
+        resume.hidden = false;
+        resume.innerHTML = '<i class="bi bi-clock-history me-1"></i>La última vez copiaste hasta el correo <strong>' +
+            ultimo + '</strong>. Te dejamos lista la siguiente tanda: del ' + desde() + ' al ' + hasta() + '.';
+    } else {
+        refrescar();
+    }
 
     function done() {
+        try { localStorage.setItem(memKey, String(hasta())); } catch (e) {}
+        resume.hidden = true;
         ok.hidden = false;
         ok.innerHTML = '<i class="bi bi-check-circle me-1"></i>' + cantidad() + ' correo' + (cantidad() === 1 ? '' : 's') + ' copiado' + (cantidad() === 1 ? '' : 's') + ' al portapapeles.';
         btn.innerHTML = '<i class="bi bi-check2 me-2"></i>Copiados';
