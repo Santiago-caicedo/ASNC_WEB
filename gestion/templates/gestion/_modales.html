@@ -1,0 +1,99 @@
+{# Un modal por entidad; el script de workspace.html rellena los campos y la acción. #}
+
+<div class="modal fade ws-modal" id="modalComite" tabindex="-1" aria-labelledby="modalComiteTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="{% url 'gestion:comite_create' %}">
+                {% csrf_token %}<input type="hidden" name="next" value="">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalComiteTitulo">Comité</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label for="cf-name">Nombre</label>{{ comite_form.name }}</div>
+                    <div class="mb-3"><label for="cf-description">Propósito</label>{{ comite_form.description }}</div>
+                    <div class="row g-3">
+                        <div class="col-md-8"><label>Coordinador</label>{{ comite_form.coordinator }}</div>
+                        <div class="col-md-4"><label>Orden</label>{{ comite_form.order }}</div>
+                    </div>
+                    <div class="form-check form-switch mt-3">
+                        {{ comite_form.is_active }}<label class="form-check-label" for="{{ comite_form.is_active.id_for_label }}">Comité activo</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="ws-btn" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="ws-btn ws-btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ws-modal" id="modalProyecto" tabindex="-1" aria-labelledby="modalProyectoTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'gestion:proyecto_create' %}">
+                {% csrf_token %}<input type="hidden" name="next" value="">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProyectoTitulo">Proyecto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label>Título</label>{{ proyecto_form.title }}</div>
+                    <div class="row g-3">
+                        <div class="col-md-6"><label>Comité</label>{{ proyecto_form.comite }}</div>
+                        <div class="col-md-6"><label>Responsable</label>{{ proyecto_form.responsable }}</div>
+                        <div class="col-md-3"><label>Estado</label>{{ proyecto_form.estado }}</div>
+                        <div class="col-md-3"><label>Prioridad</label>{{ proyecto_form.prioridad }}</div>
+                        <div class="col-md-3"><label>Inicio</label>{{ proyecto_form.start_date }}</div>
+                        <div class="col-md-3"><label>Fecha objetivo</label>{{ proyecto_form.due_date }}</div>
+                        <div class="col-12"><label>Descripción</label>{{ proyecto_form.description }}</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="ws-btn" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="ws-btn ws-btn-primary">Guardar</button>
+                </div>
+            </form>
+            <form method="post" action="" class="px-4 pb-3 text-end" data-borrar hidden
+                  data-confirm="¿Eliminar este proyecto y todas sus tareas? No se puede deshacer.">
+                {% csrf_token %}<input type="hidden" name="next" value="">
+                <button type="submit" class="ws-btn ws-btn-quiet">Eliminar proyecto</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ws-modal" id="modalTarea" tabindex="-1" aria-labelledby="modalTareaTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'gestion:tarea_create' %}">
+                {% csrf_token %}<input type="hidden" name="next" value="">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTareaTitulo">Tarea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label>Tarea</label>{{ tarea_form.title }}</div>
+                    <div class="row g-3">
+                        <div class="col-md-6"><label>Comité</label>{{ tarea_form.comite }}</div>
+                        <div class="col-md-6"><label>Proyecto</label>{{ tarea_form.proyecto }}</div>
+                        <div class="col-md-6"><label>Responsable</label>{{ tarea_form.asignado_a }}</div>
+                        <div class="col-md-2"><label>Estado</label>{{ tarea_form.estado }}</div>
+                        <div class="col-md-2"><label>Prioridad</label>{{ tarea_form.prioridad }}</div>
+                        <div class="col-md-2"><label>Fecha límite</label>{{ tarea_form.due_date }}</div>
+                        <div class="col-12"><label>Detalle</label>{{ tarea_form.description }}</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="ws-btn" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="ws-btn ws-btn-primary">Guardar</button>
+                </div>
+            </form>
+            <form method="post" action="" class="px-4 pb-3 text-end" data-borrar hidden data-confirm="¿Eliminar esta tarea?">
+                {% csrf_token %}<input type="hidden" name="next" value="">
+                <button type="submit" class="ws-btn ws-btn-quiet">Eliminar tarea</button>
+            </form>
+        </div>
+    </div>
+</div>

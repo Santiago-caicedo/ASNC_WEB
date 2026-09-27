@@ -87,13 +87,13 @@ asnc_platform/
 │   ├── views.py                 # Public (list/detail/submit) + admin CRUD/export
 │   ├── urls.py / admin_urls.py  # Public routes + /portal/convocatorias/ routes
 │   └── templates/convocatorias/ # public/ and admin/ templates
-├── gestion/                     # Internal CRM (SUPERADMIN ONLY): comités, personas, proyectos, tareas
-│   ├── models.py                # Comite, Persona, MiembroComite, Proyecto, Tarea, Nota
-│   ├── views.py                 # Panel + CRUD, task board, quick status changes, notes
-│   ├── forms.py                 # ComiteForm, PersonaForm, MiembroComiteForm, ProyectoForm, TareaForm, NotaForm
-│   ├── templatetags/gestion_extras.py  # Badge color filters (estado/prioridad/rol/tipo), hex_alpha
-│   ├── migrations/0002_seed_comites.py # Seeds the 6 public committees
-│   └── templates/gestion/       # home, comites/, personas/, proyectos/, tareas/, includes/
+├── gestion/                     # Gestión de comités, single-screen (SUPERADMIN ONLY)
+│   ├── models.py                # Comite, MiembroComite (User), Proyecto, Tarea, Nota
+│   ├── views.py                 # WorkspaceView + POST action views (guardar/estado/eliminar)
+│   ├── forms.py                 # ComiteForm, MiembroForm, ProyectoForm, TareaForm, TareaRapidaForm, NotaForm
+│   ├── templatetags/gestion_extras.py  # `iniciales`, `nombre` (user display helpers)
+│   ├── migrations/              # 0002 seeds the 6 committees; 0004 drops Persona (users only)
+│   └── templates/gestion/       # workspace.html + _tarea, _tarea_rapida, _modales
 # capacitaciones/                # LMS — lives on the `aula-virtual` branch, NOT main
 ├── templates/                   # Base templates
 │   ├── base.html                # Main layout with SEO meta tags
@@ -118,7 +118,7 @@ asnc_platform/
 | `dashboard` | Protected admin views, KPIs, application management, directory, featured members CRUD, **news CRUD**, **user/role management**, email mailing |
 | `website` | Public pages: homepage, about (with comités), events, **news (blog)**, PowerPoint template |
 | `convocatorias` | Public calls (convocatorias) with a dynamic form builder, submissions, file uploads and CSV export |
-| `gestion` | **Internal CRM (superadmin only)**: committees, people, projects, tasks (list + kanban board), follow-up notes |
+| `gestion` | **Gestión de comités (superadmin only)**: one screen with committees, members (registered users only), projects with tasks, notes |
 | `capacitaciones` | **LMS / Aula Virtual — on the `aula-virtual` branch only, NOT in `main`** |
 
 ## Key Models
@@ -283,14 +283,21 @@ Public calls with a dynamic form builder.
 - **ConvocatoriaSubmission**: uuid, `data` (JSONField), `submitted_at`, `ip_address`.
 - **ConvocatoriaSubmissionFile**: file attachments for FILE-type fields.
 
-### Gestión Interna / CRM models (`gestion/models.py`)
-Internal workspace to manage committee people, projects and tasks. **Visible only to `is_superuser`** (sidebar section "Gestion Interna"; all views use `SuperuserRequiredMixin` / `superuser_required`). Mounted at `/portal/gestion/` (namespace `gestion`).
-- **Comite**: `name`, `slug`, `description`, `icon` (Bootstrap Icons class), `color` (hex), `coordinator` (FK User), `is_active`, `order`. Seeded by migration `0002_seed_comites` with the six public committees (Divulgación, Científico, Regulación y Gobierno, Financiero, Educación, Industria y Transporte) using the same icons/colors as `about.html`. Properties: `active_members_count`, `open_tasks_count`, `active_projects_count`.
-- **Persona**: CRM contact (`first_name`, `last_name`, `email`, `phone`, `organization`, `position`, `tipo` ASOCIADO|ALIADO|VOLUNTARIO|INSTITUCION|PROVEEDOR|OTRO, `linkedin_url`, `notes`, `is_active`), optional OneToOne `user` → User (`related_name='persona_crm'`). `Persona.from_user(user)` builds a contact from a platform account; the "Importar asociados" button creates one for every active non-admin user without one.
-- **MiembroComite**: `comite` × `persona` (unique together), `rol` COORDINADOR|SECRETARIO|MIEMBRO|COLABORADOR, `joined_at`, `is_active`, `notes`.
-- **Proyecto**: `title`, `description`, `comite` (nullable = transversal), `responsable` (FK Persona), `estado` IDEA|PLANEACION|EN_CURSO|PAUSADO|COMPLETADO|CANCELADO, `prioridad` (shared `Prioridad` choices BAJA|MEDIA|ALTA|URGENTE), `start_date`, `due_date`, `avance` (reported %, 0-100). Properties `progress` (% of non-cancelled tasks completed; falls back to `avance` when the project has no tasks), `is_overdue`.
-- **Tarea**: `title`, `description`, `comite`, `proyecto` (CASCADE), `asignado_a` (FK Persona), `estado` PENDIENTE|EN_PROGRESO|EN_REVISION|COMPLETADA|CANCELADA, `prioridad`, `due_date`, `completed_at` (auto-set/cleared in `save()`). A task without committee inherits its project's committee. Property `is_overdue`.
-- **Nota**: follow-up note (`content`, `author`) attached to exactly one of `comite` / `persona` / `proyecto` / `tarea`; shown as a timeline on each detail page and as "Actividad reciente" on the CRM panel.
+### Gestión de comités (`gestion/models.py`)
+Single-screen work management for the committees. **Visible only to `is_superuser`** (sidebar link "Gestión de comités"; every view uses `SuperuserRequiredMixin` / `superuser_required`). Mounted at `/portal/gestion/` (namespace `gestion`).
+
+**Only registered users take part.** There is no contacts model: members, project leads and task assignees are all `User` FKs. Migration `0004_solo_usuarios_registrados` removed the former `Persona` model, keeping whatever was already linked to an account.
+- **Comite**: `name`, `slug`, `description` ("Propósito"), `coordinator` (FK User), `is_active`, `order`. Seeded by `0002_seed_comites` with the six public committees. `get_absolute_url()` → workspace with `?comite=<pk>`.
+- **MiembroComite**: `comite` × `user` (unique together), `rol` COORDINADOR|MIEMBRO, `joined_at`.
+- **Proyecto**: `title`, `description`, `comite` (nullable = transversal), `responsable` (FK User), `estado` ACTIVO|PAUSADO|CERRADO, `prioridad` NORMAL|ALTA, `start_date`, `due_date`. Property `is_overdue`. No progress field: the page shows tasks, not bars.
+- **Tarea**: `title`, `description`, `comite`, `proyecto` (CASCADE), `asignado_a` (FK User), `estado` PENDIENTE|EN_PROGRESO|COMPLETADA|CANCELADA, `prioridad`, `due_date`, `completed_at` (auto in `save()`). A task without committee inherits its project's. `Tarea.CLOSED_STATES` is used by the sidebar badge (`gestion_vencidas` in `dashboard/context_processors.py`).
+- **Nota**: `content`, `author`, attached to one of `comite` / `proyecto` / `tarea`.
+
+**Screen (`gestion/templates/gestion/workspace.html`):** left rail with "Vista general" and the committees (open/overdue counts); main area for the chosen committee: header (edit / delete), *Integrantes* (inline role select, remove, add-row with a select of users not yet members), *Trabajo* (projects as groups with inline status select and an "Añadir tarea…" row each, plus a "Sin proyecto" group; toggle `?todas=1` shows closed work), *Notas*. Without `?comite`, the *Vista general* lists overdue tasks first, then open tasks grouped by committee, then transversal projects. Task rows: circular submit-button checkbox (COMPLETADA↔PENDIENTE), title, "Alta" flag, assignee avatar, due date (red if overdue), "Editar". One Bootstrap modal per entity (`_modales.html`) is filled from the trigger button's `data-*` by the page script; the same modal serves create and edit, and hosts the delete form.
+
+**Design tokens** live on `.ws` in `workspace.html` (ink/line/paper/navy/gold/late/done). Flat surfaces, hairlines, 14px Outfit, tabular numerals for dates, 44px row height, sentence case; no gradients, no colored badges, no cards-within-cards.
+
+**Management command:** `python manage.py cargar_libro_asnc [--dry-run]` loads the committee status from "Libro ASNC.xlsx" (Sept 2026): matches each name against registered users by first/last name; names without an account are mentioned in the project description instead of being assigned, and the command lists them at the end. Idempotent.
 
 ### SentEmail (`dashboard/models.py`)
 - `subject`: CharField (255)
@@ -398,20 +405,16 @@ Internal workspace to manage committee people, projects and tasks. **Visible onl
 /portal/convocatorias/<id>/inscripciones/     → Submissions list
 /portal/convocatorias/<id>/inscripciones/exportar/ → Export submissions CSV
 
-# Gestión Interna / CRM (Protected - SUPERADMIN ONLY, namespace `gestion`)
-/portal/gestion/                              → Panel CRM (KPIs, comités, próximos vencimientos, actividad)
-/portal/gestion/comites/                      → Committee cards; /nuevo/, /<id>/, /<id>/editar/, /<id>/eliminar/
-/portal/gestion/comites/<id>/miembros/agregar/ → Add person to committee (POST)
-/portal/gestion/comites/miembros/<id>/rol/    → Change role / toggle active (POST)
-/portal/gestion/comites/miembros/<id>/quitar/ → Remove from committee (POST)
-/portal/gestion/personas/                     → People list (search, tipo, comité, estado filters); /nueva/, /<id>/, /editar/, /eliminar/
-/portal/gestion/personas/importar-asociados/  → Create Persona for every associate without one (POST)
-/portal/gestion/proyectos/                    → Project cards with progress; /nuevo/, /<id>/ (mini board), /editar/, /eliminar/
-/portal/gestion/proyectos/<id>/estado/<estado>/ → Change project status (POST)
-/portal/gestion/tareas/                       → Task list (filters + KPIs); /tablero/ (kanban by estado); /nueva/, /<id>/, /editar/, /eliminar/
-/portal/gestion/tareas/<id>/estado/<estado>/  → Quick status change (POST, honors ?next=)
-/portal/gestion/notas/agregar/<kind>/<id>/    → Add follow-up note (kind: comite|persona|proyecto|tarea) (POST)
-/portal/gestion/notas/<id>/eliminar/          → Delete note (POST)
+# Gestión de comités (Protected - SUPERUSER ONLY, namespace `gestion`)
+/portal/gestion/                              → Single screen; ?comite=<id> selects a committee, ?todas=1 shows closed work
+/portal/gestion/comites/nuevo/ , /<id>/guardar/ , /<id>/eliminar/       → Comité create / update / delete (POST)
+/portal/gestion/comites/<id>/integrantes/agregar/                        → Add a registered user (POST)
+/portal/gestion/integrantes/<id>/rol/ , /quitar/                         → Change role / remove (POST)
+/portal/gestion/proyectos/nuevo/ , /<id>/guardar/ , /<id>/estado/ , /<id>/eliminar/   (POST)
+/portal/gestion/tareas/rapida/                                           → Quick add from the list row (POST)
+/portal/gestion/tareas/nueva/ , /<id>/guardar/ , /<id>/estado/ , /<id>/eliminar/      (POST)
+/portal/gestion/notas/<kind>/<id>/agregar/ , /portal/gestion/notas/<id>/eliminar/     (kind: comite|proyecto|tarea; POST)
+All POST views honor a local `next` and otherwise return to `?comite=<id>`.
 
 # Email Module (Protected)
 /portal/correos/               → Email history list
@@ -721,6 +724,7 @@ python manage.py showmigrations
 - `0001_initial.py` (2026-09-11) - Creates Comite, Persona, MiembroComite, Proyecto, Tarea, Nota
 - `0002_seed_comites.py` - Data migration seeding the 6 public committees (idempotent, reversible)
 - `0003_proyecto_avance.py` - Adds `Proyecto.avance` (reported progress %)
+- `0004_solo_usuarios_registrados.py` (2026-09-27) - Drops `Persona`; members/leads/assignees become `User` FKs (data kept only where a persona was linked to an account); simplifies estados, prioridad and roles; removes `Comite.icon/color` and `Proyecto.avance`
 
 **Management command:** `python manage.py cargar_libro_asnc [--dry-run]` loads the committee status from "Libro ASNC.xlsx" (Sept 2026, data normalised inside the command): people, directors/members, projects per committee, external contacts + follow-up tasks for "Comité de Relaciones Estratégicas", creates "Comité Ejecutivo", and deactivates "Comité Financiero" ("Se borra"). Idempotent; safe to re-run.
 
@@ -799,16 +803,14 @@ python manage.py showmigrations
 - Public: `PublicConvocatoriaListView`, `PublicConvocatoriaDetailView` (renders dynamic form + saves submission), `PublicConvocatoriaSuccessView`
 - Admin (`AdminRequiredMixin`): Convocatoria CRUD, `ConvocatoriaFieldsView` (manage dynamic fields), submissions list/detail, `ConvocatoriaSubmissionExportView` (CSV)
 
-### Gestion App (Internal CRM, superadmin only)
-- `GestionHomeView` - Panel: KPIs, committee cards with counters, upcoming deadlines, projects in motion, recent notes
-- `ComiteListView` / `ComiteDetailView` / `ComiteCreateView` / `ComiteUpdateView` / `ComiteDeleteView`
-- `add_member()` / `update_member()` / `remove_member()` - Committee membership management (POST only)
-- `PersonaListView` (filters, paginated 25) / `PersonaDetailView` / Create / Update / Delete; `import_users()`
-- `ProyectoListView` (filters, paginated 20) / `ProyectoDetailView` (mini kanban of its tasks) / Create / Update / Delete; `change_project_status()`
-- `TareaListView` / `TareaBoardView` (share `TareaFilterMixin`) / `TareaDetailView` / Create (prefill via `?comite=&proyecto=&persona=`, redirect via `?next=`) / Update / Delete; `change_task_status()`
-- `add_note()` / `delete_note()` - Follow-up notes on any CRM object
-- Generic templates: `gestion/form.html` (renders any ModelForm, uses `object.get_absolute_url`) and `gestion/confirm_delete.html`
-- Tests: `gestion/tests.py` (access control + flows). Run with a SQLite settings override if PostgreSQL is not reachable locally.
+### Gestion App (Gestión de comités, superadmin only)
+- `WorkspaceView` - The single screen (rail + selected committee, or the overview)
+- `comite_guardar()` (create/update) / `comite_eliminar()`
+- `miembro_agregar()` / `miembro_rol()` / `miembro_quitar()` - registered users only
+- `proyecto_guardar()` / `proyecto_estado()` / `proyecto_eliminar()`
+- `tarea_rapida()` (title + assignee + date from the list row) / `tarea_guardar()` / `tarea_estado()` / `tarea_eliminar()`
+- `nota_agregar()` / `nota_eliminar()`
+- Tests: `gestion/tests.py` (access + flows). Run with a SQLite settings override if PostgreSQL is not reachable locally.
 
 ### Capacitaciones App (on `aula-virtual` branch only)
 - Public certificate verification, virtual classroom (dashboard, programa/clase detail, quizzes, certificates), admin CRUD for programs/modules/classes/participants/enrollments/quizzes/attendance/certificates. See the branch for details.
@@ -922,11 +924,7 @@ ADMINISTRACIÓN
 └── Configuración (placeholder)
 
 GESTIÓN INTERNA (only if user.is_superuser)
-├── Panel CRM (gestion:home) — badge with overdue tasks (`gestion_vencidas` from context processor)
-├── Comités (gestion:comite_list)
-├── Personas (gestion:persona_list)
-├── Proyectos (gestion:proyecto_list)
-└── Tareas (gestion:tarea_list)
+└── Gestión de comités (gestion:workspace) — badge with overdue tasks (`gestion_vencidas` from context processor)
 ```
 
 > On the `aula-virtual` branch the sidebar also shows "Capacitaciones" and "Aula Virtual" links (not present on `main`).

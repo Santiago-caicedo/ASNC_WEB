@@ -1,0 +1,29 @@
+{% load gestion_extras %}
+{# Fila de tarea. Espera: t (Tarea). Opcional: con_comite para mostrar el comité en la meta. #}
+<li class="ws-row {% if t.is_done %}is-done{% elif t.estado == 'EN_PROGRESO' %}ws-row-inprogress{% endif %}">
+    <form method="post" action="{% url 'gestion:tarea_estado' t.pk %}" class="ws-inline">
+        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button type="submit" name="estado" value="{% if t.is_done %}PENDIENTE{% else %}COMPLETADA{% endif %}"
+                class="ws-check {% if t.is_done %}is-on{% endif %}"
+                aria-label="{% if t.is_done %}Marcar como pendiente{% else %}Marcar como completada{% endif %}"
+                title="{% if t.is_done %}Reabrir{% else %}Completar{% endif %}">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg>
+        </button>
+    </form>
+    <span class="ws-row-main">
+        <span class="ws-row-title">{{ t.title }}{% if t.prioridad == 'ALTA' and not t.is_closed %} <span class="ws-flag">Alta</span>{% endif %}</span>
+        <span class="ws-row-meta">
+            {% if t.estado == 'EN_PROGRESO' %}En progreso · {% elif t.estado == 'CANCELADA' %}Cancelada · {% endif %}
+            {% if con_comite and t.comite %}{{ t.comite.name }} · {% endif %}
+            {% if t.proyecto and con_comite %}{{ t.proyecto.title }} · {% endif %}
+            {% if t.asignado_a %}{{ t.asignado_a|nombre }}{% else %}<span class="is-quiet">Sin responsable</span>{% endif %}
+        </span>
+    </span>
+    {% if t.asignado_a %}<span class="ws-avatar" title="{{ t.asignado_a|nombre }}">{{ t.asignado_a|iniciales }}</span>{% endif %}
+    <span class="ws-date {% if t.is_overdue %}is-late{% endif %}">{% if t.due_date %}{{ t.due_date|date:"j M" }}{% endif %}</span>
+    <button type="button" class="ws-link" data-bs-toggle="modal" data-bs-target="#modalTarea"
+            data-pk="{{ t.pk }}" data-title="{{ t.title }}" data-description="{{ t.description }}"
+            data-comite="{{ t.comite_id|default:'' }}" data-proyecto="{{ t.proyecto_id|default:'' }}"
+            data-asignado_a="{{ t.asignado_a_id|default:'' }}" data-estado="{{ t.estado }}"
+            data-prioridad="{{ t.prioridad }}" data-due_date="{{ t.due_date|date:'Y-m-d' }}">Editar</button>
+</li>

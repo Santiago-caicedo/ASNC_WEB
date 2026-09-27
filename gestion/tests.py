@@ -6,212 +6,177 @@ from django.utils import timezone
 
 from users.models import User
 
-from .models import Comite, MiembroComite, Nota, Persona, Proyecto, Tarea
+from .models import Comite, MiembroComite, Nota, Proyecto, Tarea
 
 
-class GestionAccessTests(TestCase):
-    """Only superadmins can reach the CRM; everyone else is redirected."""
+def crear_super():
+    return User.objects.create_superuser(
+        username='root', email='root@asncol.com', password='x', first_name='Root', last_name='Admin',
+    )
+
+
+class AccesoTests(TestCase):
+    """Solo superadministradores; el resto es redirigido, también en los POST."""
 
     def setUp(self):
-        self.superuser = User.objects.create_superuser(
-            username='root', email='root@asncol.com', password='x', first_name='Root', last_name='Admin',
-        )
+        self.su = crear_super()
         self.admin = User.objects.create_user(
             username='admin', email='admin@asncol.com', password='x', role=User.Role.ADMIN, is_staff=True,
         )
-        self.member = User.objects.create_user(username='m', email='m@asncol.com', password='x')
+        self.comite = Comite.objects.first()
 
-    def test_anonymous_redirected_to_login(self):
-        r = self.client.get(reverse('gestion:home'))
+    def test_anonimo_va_al_login(self):
+        r = self.client.get(reverse('gestion:workspace'))
         self.assertEqual(r.status_code, 302)
         self.assertIn('/acceso/', r.url)
 
-    def test_admin_without_superuser_is_blocked(self):
+    def test_admin_sin_superusuario_bloqueado(self):
         self.client.force_login(self.admin)
-        for name in ('gestion:home', 'gestion:comite_list', 'gestion:persona_list',
-                     'gestion:proyecto_list', 'gestion:tarea_list', 'gestion:tarea_board'):
-            r = self.client.get(reverse(name))
-            self.assertEqual(r.status_code, 302, name)
-            self.assertFalse(r.url.startswith('/portal/gestion'), name)
-
-    def test_member_is_blocked_from_post_actions(self):
-        self.client.force_login(self.member)
-        comite = Comite.objects.first()
-        r = self.client.post(reverse('gestion:nota_add', args=['comite', comite.pk]), {'content': 'hola'})
+        self.assertEqual(self.client.get(reverse('gestion:workspace')).status_code, 302)
+        r = self.client.post(reverse('gestion:nota_add', args=['comite', self.comite.pk]), {'content': 'x'})
         self.assertEqual(r.status_code, 302)
         self.assertEqual(Nota.objects.count(), 0)
 
-    def test_superuser_sees_everything(self):
-        self.client.force_login(self.superuser)
-        for name in ('gestion:home', 'gestion:comite_list', 'gestion:persona_list',
-                     'gestion:proyecto_list', 'gestion:tarea_list', 'gestion:tarea_board',
-                     'gestion:comite_create', 'gestion:persona_create',
-                     'gestion:proyecto_create', 'gestion:tarea_create'):
-            r = self.client.get(reverse(name))
-            self.assertEqual(r.status_code, 200, name)
-
-    def test_sidebar_section_only_for_superuser(self):
+    def test_superusuario_entra_y_ve_el_menu(self):
+        self.client.force_login(self.su)
+        self.assertEqual(self.client.get(reverse('gestion:workspace')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('gestion:workspace') + f'?comite={self.comite.pk}').status_code, 200)
+        self.assertContains(self.client.get('/portal/'), 'Gestión de comités')
         self.client.force_login(self.admin)
-        r = self.client.get('/portal/')
-        self.assertNotContains(r, 'Panel CRM')
-        self.client.force_login(self.superuser)
-        r = self.client.get('/portal/')
-        self.assertContains(r, 'Panel CRM')
+        self.assertNotContains(self.client.get('/portal/'), 'Gestión de comités')
 
 
-class GestionFlowTests(TestCase):
+class FlujoTests(TestCase):
 
     def setUp(self):
-        self.superuser = User.objects.create_superuser(
-            username='root', email='root@asncol.com', password='x', first_name='Root', last_name='Admin',
-        )
-        self.client.force_login(self.superuser)
+        self.su = crear_super()
+        self.client.force_login(self.su)
         self.comite = Comite.objects.get(slug='comite-cientifico')
+        self.ana = User.objects.create_user(username='ana', email='ana@x.com', password='x', first_name='Ana', last_name='Pérez')
+        self.luis = User.objects.create_user(username='luis', email='luis@x.com', password='x', first_name='Luis', last_name='Gómez')
+        self.url = reverse('gestion:workspace') + f'?comite={self.comite.pk}'
 
-    def test_seed_created_six_committees(self):
+    def test_semilla_de_comites(self):
         self.assertEqual(Comite.objects.count(), 6)
-        self.assertTrue(Comite.objects.filter(name='Comité de Divulgación').exists())
 
-    def test_persona_lifecycle_and_membership(self):
-        r = self.client.post(reverse('gestion:persona_create'), {
-            'first_name': 'Ana', 'last_name': 'Pérez', 'tipo': 'ASOCIADO',
-            'email': 'ana@example.com', 'phone': '', 'organization': 'UIS', 'position': 'Docente',
-            'linkedin_url': '', 'user': '', 'notes': '', 'is_active': 'on',
-        })
-        persona = Persona.objects.get(email='ana@example.com')
-        self.assertRedirects(r, persona.get_absolute_url())
-
-        r = self.client.post(reverse('gestion:comite_add_member', args=[self.comite.pk]), {
-            'persona': persona.pk, 'rol': 'COORDINADOR', 'joined_at': '2026-01-15', 'notes': '',
-        })
-        self.assertRedirects(r, self.comite.get_absolute_url())
-        m = MiembroComite.objects.get(comite=self.comite, persona=persona)
+    def test_integrantes_solo_usuarios_registrados(self):
+        r = self.client.post(reverse('gestion:miembro_add', args=[self.comite.pk]), {'user': self.ana.pk, 'rol': 'COORDINADOR'})
+        self.assertRedirects(r, self.url)
+        m = MiembroComite.objects.get(comite=self.comite, user=self.ana)
         self.assertEqual(m.rol, 'COORDINADOR')
 
-        # Adding the same person twice is rejected gracefully
-        self.client.post(reverse('gestion:comite_add_member', args=[self.comite.pk]), {
-            'persona': persona.pk, 'rol': 'MIEMBRO', 'joined_at': '2026-01-15',
-        })
+        # Repetido: no se duplica.
+        self.client.post(reverse('gestion:miembro_add', args=[self.comite.pk]), {'user': self.ana.pk, 'rol': 'MIEMBRO'})
         self.assertEqual(MiembroComite.objects.filter(comite=self.comite).count(), 1)
 
-        self.client.post(reverse('gestion:comite_update_member', args=[m.pk]), {'rol': 'SECRETARIO'})
+        # Solo aparecen en el selector quienes aún no son integrantes.
+        html = self.client.get(self.url).content.decode()
+        self.assertIn('Ana Pérez', html)
+        idx = html.index('Añadir integrante…')
+        self.assertNotIn('ana@x.com</option>', html[idx:idx + 4000])
+        self.assertIn('luis@x.com</option>', html[idx:idx + 4000])
+
+        self.client.post(reverse('gestion:miembro_rol', args=[m.pk]), {'rol': 'MIEMBRO'})
         m.refresh_from_db()
-        self.assertEqual(m.rol, 'SECRETARIO')
-
-        r = self.client.get(self.comite.get_absolute_url())
-        self.assertContains(r, 'Ana Pérez')
-
-        self.client.post(reverse('gestion:comite_remove_member', args=[m.pk]))
+        self.assertEqual(m.rol, 'MIEMBRO')
+        self.client.post(reverse('gestion:miembro_remove', args=[m.pk]))
         self.assertFalse(MiembroComite.objects.filter(pk=m.pk).exists())
 
-    def test_import_users_creates_personas_once(self):
-        User.objects.create_user(username='u1', email='u1@x.com', password='x', first_name='Uno', last_name='Dos')
-        User.objects.create_user(username='u2', email='u2@x.com', password='x', first_name='Tres', last_name='Cuatro')
-        self.client.post(reverse('gestion:persona_import'))
-        self.assertEqual(Persona.objects.count(), 2)
-        self.client.post(reverse('gestion:persona_import'))
-        self.assertEqual(Persona.objects.count(), 2)
-        # superuser itself is not imported
-        self.assertFalse(Persona.objects.filter(user=self.superuser).exists())
+    def test_alta_rapida_de_tarea_y_completar(self):
+        p = Proyecto.objects.create(title='Webinar', comite=self.comite, created_by=self.su)
+        r = self.client.post(reverse('gestion:tarea_quick'), {
+            'title': 'Definir ponentes', 'comite': self.comite.pk, 'proyecto': p.pk,
+            'asignado_a': self.ana.pk, 'due_date': '2026-10-15', 'next': self.url,
+        })
+        self.assertRedirects(r, self.url)
+        t = Tarea.objects.get(title='Definir ponentes')
+        self.assertEqual((t.comite, t.proyecto, t.asignado_a), (self.comite, p, self.ana))
 
-    def test_project_and_task_flow(self):
-        persona = Persona.objects.create(first_name='Luis', last_name='Gómez')
+        self.client.post(reverse('gestion:tarea_estado', args=[t.pk]), {'estado': 'COMPLETADA'})
+        t.refresh_from_db()
+        self.assertTrue(t.is_done)
+        self.assertIsNotNone(t.completed_at)
+        # Completada: desaparece de la vista por defecto y vuelve con ?todas=1.
+        self.assertNotContains(self.client.get(self.url), 'Definir ponentes')
+        self.assertContains(self.client.get(self.url + '&todas=1'), 'Definir ponentes')
+
+        self.client.post(reverse('gestion:tarea_estado', args=[t.pk]), {'estado': 'PENDIENTE'})
+        t.refresh_from_db()
+        self.assertIsNone(t.completed_at)
+        self.client.post(reverse('gestion:tarea_estado', args=[t.pk]), {'estado': 'INVENTADO'})
+        t.refresh_from_db()
+        self.assertEqual(t.estado, 'PENDIENTE')
+
+    def test_editar_tarea_desde_el_modal(self):
+        t = Tarea.objects.create(title='Vieja', comite=self.comite)
+        r = self.client.post(reverse('gestion:tarea_update', args=[t.pk]), {
+            'title': 'Nueva', 'comite': self.comite.pk, 'proyecto': '', 'asignado_a': self.luis.pk,
+            'estado': 'EN_PROGRESO', 'prioridad': 'ALTA', 'due_date': '', 'description': 'detalle',
+        })
+        self.assertRedirects(r, self.url)
+        t.refresh_from_db()
+        self.assertEqual((t.title, t.asignado_a, t.estado, t.prioridad), ('Nueva', self.luis, 'EN_PROGRESO', 'ALTA'))
+        self.client.post(reverse('gestion:tarea_delete', args=[t.pk]))
+        self.assertFalse(Tarea.objects.filter(pk=t.pk).exists())
+
+    def test_proyecto_crear_estado_y_eliminar_con_tareas(self):
         r = self.client.post(reverse('gestion:proyecto_create'), {
-            'title': 'Webinar nuclear', 'comite': self.comite.pk, 'responsable': persona.pk,
-            'estado': 'EN_CURSO', 'prioridad': 'ALTA', 'start_date': '2026-09-01', 'due_date': '2026-10-01', 'avance': 0,
-            'description': 'Serie de charlas',
+            'title': 'Curso', 'comite': self.comite.pk, 'responsable': self.ana.pk, 'estado': 'ACTIVO',
+            'prioridad': 'NORMAL', 'start_date': '2026-10-01', 'due_date': '2026-09-01', 'description': '',
         })
-        proyecto = Proyecto.objects.get(title='Webinar nuclear')
-        self.assertRedirects(r, proyecto.get_absolute_url())
-        self.assertEqual(proyecto.progress, 0)
-
-        # Task created from the project inherits its committee
-        r = self.client.post(reverse('gestion:tarea_create') + f'?next={proyecto.get_absolute_url()}', {
-            'title': 'Definir ponentes', 'comite': '', 'proyecto': proyecto.pk, 'asignado_a': persona.pk,
-            'estado': 'PENDIENTE', 'prioridad': 'MEDIA', 'due_date': '2026-09-15', 'description': '',
-            'next': proyecto.get_absolute_url(),
+        self.assertEqual(Proyecto.objects.filter(title='Curso').count(), 0)  # fecha objetivo anterior al inicio
+        self.client.post(reverse('gestion:proyecto_create'), {
+            'title': 'Curso', 'comite': self.comite.pk, 'responsable': self.ana.pk, 'estado': 'ACTIVO',
+            'prioridad': 'NORMAL', 'start_date': '2026-09-01', 'due_date': '2026-10-01', 'description': '',
         })
-        tarea = Tarea.objects.get(title='Definir ponentes')
-        self.assertRedirects(r, proyecto.get_absolute_url())
-        self.assertEqual(tarea.comite, self.comite)
-        self.assertEqual(tarea.asignado_a, persona)
-        proyecto.refresh_from_db()
-        self.assertEqual(proyecto.tasks_total, 1)
-
-    def test_task_overdue_and_completion(self):
-        yesterday = timezone.localdate() - timedelta(days=1)
-        tarea = Tarea.objects.create(title='Vencida', comite=self.comite, due_date=yesterday)
-        self.assertTrue(tarea.is_overdue)
-        r = self.client.get(reverse('gestion:tarea_list') + '?estado=vencidas')
-        self.assertContains(r, 'Vencida')
-
-        self.client.post(reverse('gestion:tarea_estado', args=[tarea.pk, 'COMPLETADA']))
-        tarea.refresh_from_db()
-        self.assertEqual(tarea.estado, 'COMPLETADA')
-        self.assertIsNotNone(tarea.completed_at)
-        self.assertFalse(tarea.is_overdue)
-
-        # Invalid state is ignored
-        self.client.post(reverse('gestion:tarea_estado', args=[tarea.pk, 'LOQUESEA']))
-        tarea.refresh_from_db()
-        self.assertEqual(tarea.estado, 'COMPLETADA')
-
-        # Reopening clears completed_at
-        self.client.post(reverse('gestion:tarea_estado', args=[tarea.pk, 'EN_PROGRESO']))
-        tarea.refresh_from_db()
-        self.assertIsNone(tarea.completed_at)
-
-    def test_project_progress(self):
-        p = Proyecto.objects.create(title='P', comite=self.comite)
-        Tarea.objects.create(title='a', proyecto=p, estado='COMPLETADA')
-        Tarea.objects.create(title='b', proyecto=p)
-        Tarea.objects.create(title='c', proyecto=p, estado='CANCELADA')
-        self.assertEqual(p.progress, 50)
-        r = self.client.get(p.get_absolute_url())
-        self.assertContains(r, '50%')
-
-    def test_reported_progress_used_without_tasks(self):
-        p = Proyecto.objects.create(title='Sin tareas', avance=60)
-        self.assertEqual(p.progress, 60)
+        p = Proyecto.objects.get(title='Curso')
         Tarea.objects.create(title='a', proyecto=p)
-        self.assertEqual(p.progress, 0)  # tasks take over
-        p.estado = 'COMPLETADO'; p.tareas.all().delete()
-        self.assertEqual(p.progress, 100)
+        self.client.post(reverse('gestion:proyecto_estado', args=[p.pk]), {'estado': 'CERRADO'})
+        p.refresh_from_db()
+        self.assertEqual(p.estado, 'CERRADO')
+        self.assertNotContains(self.client.get(self.url), 'Curso')
+        self.client.post(reverse('gestion:proyecto_delete', args=[p.pk]))
+        self.assertEqual(Tarea.objects.filter(title='a').count(), 0)
 
-    def test_notes_on_every_target(self):
-        persona = Persona.objects.create(first_name='N')
-        proyecto = Proyecto.objects.create(title='P')
-        tarea = Tarea.objects.create(title='T')
-        for kind, obj in (('comite', self.comite), ('persona', persona), ('proyecto', proyecto), ('tarea', tarea)):
-            r = self.client.post(reverse('gestion:nota_add', args=[kind, obj.pk]), {'content': f'nota {kind}'})
-            self.assertRedirects(r, obj.get_absolute_url())
-        self.assertEqual(Nota.objects.count(), 4)
-        nota = Nota.objects.get(tarea=tarea)
-        r = self.client.post(reverse('gestion:nota_delete', args=[nota.pk]))
-        self.assertRedirects(r, tarea.get_absolute_url())
-        self.assertEqual(Nota.objects.count(), 3)
+    def test_vista_general_agrupa_y_marca_vencidas(self):
+        ayer = timezone.localdate() - timedelta(days=1)
+        Tarea.objects.create(title='Vencida', comite=self.comite, due_date=ayer)
+        Tarea.objects.create(title='Suelta', comite=None)
+        r = self.client.get(reverse('gestion:workspace'))
+        html = r.content.decode()
+        self.assertIn('Vencidas', html)
+        self.assertLess(html.index('Vencida'), html.index('Suelta'))
+        self.assertIn('Sin comité', html)
+        # Badge del menú lateral.
+        self.assertEqual(r.context['gestion_vencidas'], 1)
 
-        # Empty note is rejected
-        self.client.post(reverse('gestion:nota_add', args=['comite', self.comite.pk]), {'content': '  '})
-        self.assertEqual(Nota.objects.count(), 3)
-
-        r = self.client.get(reverse('gestion:home'))
-        self.assertContains(r, 'nota comite')
-
-    def test_delete_committee_keeps_projects_and_tasks(self):
+    def test_notas_en_comite_proyecto_y_tarea(self):
         p = Proyecto.objects.create(title='P', comite=self.comite)
         t = Tarea.objects.create(title='T', comite=self.comite)
-        self.client.post(reverse('gestion:comite_delete', args=[self.comite.pk]))
+        for kind, obj in (('comite', self.comite), ('proyecto', p), ('tarea', t)):
+            r = self.client.post(reverse('gestion:nota_add', args=[kind, obj.pk]), {'content': f'nota {kind}'})
+            self.assertRedirects(r, self.url)
+        self.assertEqual(Nota.objects.count(), 3)
+        self.client.post(reverse('gestion:nota_add', args=['comite', self.comite.pk]), {'content': ' '})
+        self.assertEqual(Nota.objects.count(), 3)
+        n = Nota.objects.get(tarea=t)
+        self.client.post(reverse('gestion:nota_delete', args=[n.pk]))
+        self.assertEqual(Nota.objects.count(), 2)
+
+    def test_comite_crear_editar_y_eliminar_conserva_trabajo(self):
+        self.client.post(reverse('gestion:comite_create'), {
+            'name': 'Comité Nuevo', 'description': 'x', 'coordinator': self.ana.pk, 'is_active': 'on', 'order': 9,
+        })
+        c = Comite.objects.get(name='Comité Nuevo')
+        self.assertEqual(c.coordinator, self.ana)
+        self.client.post(reverse('gestion:comite_update', args=[c.pk]), {
+            'name': 'Comité Renombrado', 'description': '', 'coordinator': '', 'order': 9,
+        })
+        c.refresh_from_db()
+        self.assertEqual((c.name, c.is_active), ('Comité Renombrado', False))
+        p = Proyecto.objects.create(title='P', comite=c)
+        t = Tarea.objects.create(title='T', comite=c)
+        self.client.post(reverse('gestion:comite_delete', args=[c.pk]))
         p.refresh_from_db(); t.refresh_from_db()
         self.assertIsNone(p.comite)
         self.assertIsNone(t.comite)
-
-    def test_persona_detail_and_filters(self):
-        persona = Persona.objects.create(first_name='Filtro', last_name='Uno', tipo='ALIADO', organization='ANLA')
-        MiembroComite.objects.create(comite=self.comite, persona=persona)
-        r = self.client.get(reverse('gestion:persona_list') + f'?comite={self.comite.pk}&tipo=ALIADO&q=anla')
-        self.assertContains(r, 'Filtro Uno')
-        r = self.client.get(reverse('gestion:persona_list') + '?tipo=PROVEEDOR')
-        self.assertNotContains(r, 'Filtro Uno')
-        r = self.client.get(persona.get_absolute_url())
-        self.assertContains(r, self.comite.name)

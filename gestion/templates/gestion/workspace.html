@@ -1,0 +1,475 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load gestion_extras %}
+
+{% block content %}
+<div class="ws" id="ws" data-next="{{ request.get_full_path }}">
+
+    <!-- ───────── Comités ───────── -->
+    <aside class="ws-rail" aria-label="Comités">
+        <div class="ws-rail-head">
+            <span>Comités</span>
+            <button type="button" class="ws-iconbtn" data-bs-toggle="modal" data-bs-target="#modalComite"
+                    data-nuevo="1" title="Nuevo comité" aria-label="Nuevo comité">+</button>
+        </div>
+        <a class="ws-rail-item {% if not comite %}is-active{% endif %}" href="{% url 'gestion:workspace' %}">
+            <span class="ws-rail-name">Vista general</span>
+        </a>
+        <div class="ws-rail-sep"></div>
+        {% for c in comites %}
+        <a class="ws-rail-item {% if comite and comite.pk == c.pk %}is-active{% endif %} {% if not c.is_active %}is-muted{% endif %}"
+           href="{% url 'gestion:workspace' %}?comite={{ c.pk }}">
+            <span class="ws-rail-name">{{ c.name }}</span>
+            {% if c.vencidas %}<span class="ws-rail-count is-late" title="{{ c.vencidas }} vencidas">{{ c.vencidas }}</span>
+            {% elif c.abiertas %}<span class="ws-rail-count">{{ c.abiertas }}</span>{% endif %}
+        </a>
+        {% empty %}
+        <p class="ws-rail-empty">Aún no hay comités.</p>
+        {% endfor %}
+    </aside>
+
+    <!-- ───────── Contenido ───────── -->
+    <main class="ws-main">
+    {% if comite %}
+
+        <header class="ws-head">
+            <div>
+                <h1 class="ws-title">{{ comite.name }}{% if not comite.is_active %} <span class="ws-tag">Inactivo</span>{% endif %}</h1>
+                <p class="ws-sub">
+                    {% if comite.coordinator %}Coordina {{ comite.coordinator|nombre }}{% else %}Sin coordinador{% endif %}
+                    · {{ miembros|length }} integrante{{ miembros|length|pluralize }}
+                </p>
+                {% if comite.description %}<p class="ws-desc">{{ comite.description }}</p>{% endif %}
+            </div>
+            <div class="ws-head-actions">
+                <button type="button" class="ws-btn" data-bs-toggle="modal" data-bs-target="#modalComite"
+                        data-pk="{{ comite.pk }}" data-name="{{ comite.name }}" data-description="{{ comite.description }}"
+                        data-coordinator="{{ comite.coordinator_id|default:'' }}" data-is_active="{{ comite.is_active|yesno:'1,0' }}"
+                        data-order="{{ comite.order }}">Editar</button>
+                <form method="post" action="{% url 'gestion:comite_delete' comite.pk %}" class="d-inline"
+                      data-confirm="¿Eliminar el comité «{{ comite.name }}»? Sus proyectos y tareas quedarán sin comité.">
+                    {% csrf_token %}
+                    <button type="submit" class="ws-btn ws-btn-quiet">Eliminar</button>
+                </form>
+            </div>
+        </header>
+
+        <!-- Integrantes -->
+        <section class="ws-section">
+            <h2 class="ws-h2">Integrantes</h2>
+            <ul class="ws-list">
+                {% for m in miembros %}
+                <li class="ws-row">
+                    <span class="ws-avatar">{{ m.user|iniciales }}</span>
+                    <span class="ws-row-main">
+                        <span class="ws-row-title">{{ m.user|nombre }}</span>
+                        <span class="ws-row-meta">{{ m.user.email }}{% if m.user.institution %} · {{ m.user.institution }}{% endif %}</span>
+                    </span>
+                    <form method="post" action="{% url 'gestion:miembro_rol' m.pk %}" class="ws-inline">
+                        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <select name="rol" class="ws-select" data-autosubmit aria-label="Rol de {{ m.user|nombre }}">
+                            {% for v, l in roles %}<option value="{{ v }}" {% if m.rol == v %}selected{% endif %}>{{ l }}</option>{% endfor %}
+                        </select>
+                    </form>
+                    <form method="post" action="{% url 'gestion:miembro_remove' m.pk %}" class="ws-inline"
+                          data-confirm="¿Quitar a {{ m.user|nombre }} del comité?">
+                        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="ws-x" aria-label="Quitar del comité" title="Quitar">×</button>
+                    </form>
+                </li>
+                {% empty %}
+                <li class="ws-empty">Nadie todavía. Añade integrantes entre los usuarios registrados.</li>
+                {% endfor %}
+                <li class="ws-row ws-row-add">
+                    <form method="post" action="{% url 'gestion:miembro_add' comite.pk %}" class="ws-addform">
+                        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <select name="user" class="ws-select ws-grow" required aria-label="Usuario">
+                            <option value="">Añadir integrante…</option>
+                            {% for u in usuarios_otros %}<option value="{{ u.pk }}">{{ u|nombre }} · {{ u.email }}</option>{% endfor %}
+                        </select>
+                        <select name="rol" class="ws-select" aria-label="Rol">
+                            {% for v, l in roles %}<option value="{{ v }}" {% if v == 'MIEMBRO' %}selected{% endif %}>{{ l }}</option>{% endfor %}
+                        </select>
+                        <button type="submit" class="ws-btn ws-btn-primary">Añadir</button>
+                    </form>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Trabajo -->
+        <section class="ws-section">
+            <div class="ws-h2-row">
+                <h2 class="ws-h2">Trabajo</h2>
+                <div class="ws-h2-tools">
+                    {% if cerradas %}
+                    <a class="ws-toggle {% if mostrar_todas %}is-on{% endif %}"
+                       href="{% url 'gestion:workspace' %}?comite={{ comite.pk }}{% if not mostrar_todas %}&todas=1{% endif %}">
+                        {% if mostrar_todas %}Ocultar cerradas{% else %}Ver cerradas ({{ cerradas }}){% endif %}
+                    </a>
+                    {% endif %}
+                    <button type="button" class="ws-btn" data-bs-toggle="modal" data-bs-target="#modalProyecto"
+                            data-nuevo="1" data-comite="{{ comite.pk }}">Nuevo proyecto</button>
+                </div>
+            </div>
+
+            {% for p in proyectos %}
+            <div class="ws-group {% if p.estado == 'CERRADO' %}is-closed{% endif %}">
+                <div class="ws-group-head">
+                    <div class="ws-group-title">
+                        <span>{{ p.title }}</span>
+                        {% if p.prioridad == 'ALTA' %}<span class="ws-flag">Prioridad alta</span>{% endif %}
+                    </div>
+                    <span class="ws-group-meta">
+                        {% if p.responsable %}{{ p.responsable|nombre }}{% else %}Sin responsable{% endif %}
+                        {% if p.due_date %} · <span class="{% if p.is_overdue %}is-late{% endif %}">{{ p.due_date|date:"j M Y" }}</span>{% endif %}
+                    </span>
+                    <form method="post" action="{% url 'gestion:proyecto_estado' p.pk %}" class="ws-inline">
+                        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <select name="estado" class="ws-select ws-select-sm" data-autosubmit aria-label="Estado del proyecto">
+                            {% for v, l in estados_proyecto %}<option value="{{ v }}" {% if p.estado == v %}selected{% endif %}>{{ l }}</option>{% endfor %}
+                        </select>
+                    </form>
+                    <button type="button" class="ws-link" data-bs-toggle="modal" data-bs-target="#modalProyecto"
+                            data-pk="{{ p.pk }}" data-title="{{ p.title }}" data-description="{{ p.description }}"
+                            data-comite="{{ p.comite_id|default:'' }}" data-responsable="{{ p.responsable_id|default:'' }}"
+                            data-estado="{{ p.estado }}" data-prioridad="{{ p.prioridad }}"
+                            data-start_date="{{ p.start_date|date:'Y-m-d' }}" data-due_date="{{ p.due_date|date:'Y-m-d' }}">Editar</button>
+                </div>
+                {% if p.description %}<p class="ws-group-desc">{{ p.description }}</p>{% endif %}
+                <ul class="ws-list">
+                    {% for t in p.lista_tareas %}{% include 'gestion/_tarea.html' with t=t %}{% endfor %}
+                    {% include 'gestion/_tarea_rapida.html' with proyecto=p %}
+                </ul>
+            </div>
+            {% endfor %}
+
+            <div class="ws-group">
+                <div class="ws-group-head"><div class="ws-group-title"><span class="is-quiet">Sin proyecto</span></div></div>
+                <ul class="ws-list">
+                    {% for t in tareas_sueltas %}{% include 'gestion/_tarea.html' with t=t %}{% endfor %}
+                    {% include 'gestion/_tarea_rapida.html' with proyecto=None %}
+                </ul>
+            </div>
+        </section>
+
+        <!-- Notas -->
+        <section class="ws-section">
+            <h2 class="ws-h2">Notas</h2>
+            <form method="post" action="{% url 'gestion:nota_add' 'comite' comite.pk %}" class="ws-noteform">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <textarea name="content" class="ws-textarea" rows="2" placeholder="Acuerdos, novedades, pendientes…" required></textarea>
+                <button type="submit" class="ws-btn ws-btn-primary">Guardar nota</button>
+            </form>
+            <ul class="ws-notes">
+                {% for n in notas %}
+                <li class="ws-note">
+                    <div class="ws-note-meta">
+                        <span>{{ n.author|nombre|default:"Sistema" }}</span>
+                        <time datetime="{{ n.created_at|date:'c' }}">{{ n.created_at|date:"j M Y, H:i" }}</time>
+                        <form method="post" action="{% url 'gestion:nota_delete' n.pk %}" class="ws-inline" data-confirm="¿Eliminar esta nota?">
+                            {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit" class="ws-x" aria-label="Eliminar nota">×</button>
+                        </form>
+                    </div>
+                    <p class="ws-note-body">{{ n.content }}</p>
+                </li>
+                {% empty %}
+                <li class="ws-empty">Sin notas.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+    {% else %}
+
+        <header class="ws-head">
+            <div>
+                <h1 class="ws-title">Vista general</h1>
+                <p class="ws-sub">
+                    {{ total_abiertas }} tarea{{ total_abiertas|pluralize }} abierta{{ total_abiertas|pluralize }}
+                    {% if vencidas %} · <span class="is-late">{{ vencidas|length }} vencida{{ vencidas|length|pluralize }}</span>{% endif %}
+                    · {{ hoy|date:"l j \d\e F" }}
+                </p>
+            </div>
+            <div class="ws-head-actions">
+                <button type="button" class="ws-btn" data-bs-toggle="modal" data-bs-target="#modalProyecto" data-nuevo="1">Nuevo proyecto</button>
+                <button type="button" class="ws-btn ws-btn-primary" data-bs-toggle="modal" data-bs-target="#modalTarea" data-nuevo="1">Nueva tarea</button>
+            </div>
+        </header>
+
+        {% if vencidas %}
+        <section class="ws-section">
+            <h2 class="ws-h2 is-late">Vencidas</h2>
+            <ul class="ws-list">
+                {% for t in vencidas %}{% include 'gestion/_tarea.html' with t=t con_comite=True %}{% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% for c, tareas in grupos %}
+        <section class="ws-section">
+            <div class="ws-h2-row">
+                <h2 class="ws-h2">
+                    {% if c %}<a href="{% url 'gestion:workspace' %}?comite={{ c.pk }}" class="ws-h2-link">{{ c.name }}</a>{% else %}Sin comité{% endif %}
+                </h2>
+                <span class="ws-h2-count">{{ tareas|length }}</span>
+            </div>
+            <ul class="ws-list">
+                {% for t in tareas %}{% if not t.is_overdue %}{% include 'gestion/_tarea.html' with t=t %}{% endif %}{% endfor %}
+            </ul>
+        </section>
+        {% empty %}
+        <section class="ws-section">
+            <p class="ws-empty">No hay tareas abiertas. Elige un comité a la izquierda para empezar.</p>
+        </section>
+        {% endfor %}
+
+        {% if transversales %}
+        <section class="ws-section">
+            <h2 class="ws-h2">Proyectos transversales</h2>
+            <ul class="ws-list">
+                {% for p in transversales %}
+                <li class="ws-row">
+                    <span class="ws-row-main">
+                        <span class="ws-row-title">{{ p.title }}</span>
+                        <span class="ws-row-meta">{% if p.responsable %}{{ p.responsable|nombre }}{% else %}Sin responsable{% endif %} · {{ p.get_estado_display }}</span>
+                    </span>
+                    {% if p.due_date %}<span class="ws-date {% if p.is_overdue %}is-late{% endif %}">{{ p.due_date|date:"j M" }}</span>{% endif %}
+                    <button type="button" class="ws-link" data-bs-toggle="modal" data-bs-target="#modalProyecto"
+                            data-pk="{{ p.pk }}" data-title="{{ p.title }}" data-description="{{ p.description }}"
+                            data-comite="" data-responsable="{{ p.responsable_id|default:'' }}"
+                            data-estado="{{ p.estado }}" data-prioridad="{{ p.prioridad }}"
+                            data-start_date="{{ p.start_date|date:'Y-m-d' }}" data-due_date="{{ p.due_date|date:'Y-m-d' }}">Editar</button>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+    {% endif %}
+    </main>
+</div>
+
+{% include 'gestion/_modales.html' %}
+
+<style>
+/* ── Tokens ─────────────────────────────────────────────── */
+/* También en .ws-modal: los modales se montan fuera de .ws y sin esto sus
+   botones quedan sin color. */
+.ws, .ws-modal {
+    --ink: #16202B; --ink-2: #5B6774; --ink-3: #8A95A1;
+    --line: #E6EAF0; --line-strong: #CBD3DC;
+    --paper: #FFFFFF; --canvas: #F5F7FA; --wash: #F2F4F7;
+    --navy: #1B2A41; --gold: #f4c343;
+    --late: #B3261E; --done: #1E7F4F;
+}
+.ws {
+    display: grid; grid-template-columns: 232px 1fr; gap: 0;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    min-height: calc(100vh - 140px); color: var(--ink); font-size: 14px; line-height: 1.45;
+}
+.ws *:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+/* ── Rail ───────────────────────────────────────────────── */
+.ws-rail { border-right: 1px solid var(--line); padding: 14px 10px; background: var(--wash); border-radius: 12px 0 0 12px; }
+.ws-rail-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 10px;
+    font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.ws-rail-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px;
+    color: var(--ink-2); text-decoration: none; min-height: 36px; }
+.ws-rail-item:hover { background: #E9EDF2; color: var(--ink); }
+.ws-rail-item.is-active { background: var(--paper); color: var(--ink); font-weight: 600;
+    box-shadow: inset 3px 0 0 var(--gold), 0 0 0 1px var(--line); }
+.ws-rail-item.is-muted { opacity: .55; }
+.ws-rail-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws-rail-count { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--ink-3); }
+.ws-rail-count.is-late { color: var(--late); font-weight: 600; }
+.ws-rail-sep { height: 1px; background: var(--line); margin: 8px 6px; }
+.ws-rail-empty { padding: 8px 10px; color: var(--ink-3); font-size: 13px; }
+
+/* ── Main ───────────────────────────────────────────────── */
+.ws-main { padding: 28px 36px 48px; min-width: 0; }
+.ws-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.ws-title { font-size: 24px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 2px; }
+.ws-sub { color: var(--ink-2); margin: 0; }
+.ws-desc { color: var(--ink-2); margin: 10px 0 0; max-width: 64ch; }
+.ws-head-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.ws-tag { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3);
+    border: 1px solid var(--line-strong); border-radius: 4px; padding: 2px 6px; vertical-align: middle; }
+
+.ws-section { padding: 26px 0 6px; }
+.ws-section + .ws-section { border-top: 1px solid var(--line); }
+.ws-h2 { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin: 0 0 10px; }
+.ws-h2-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.ws-h2-row .ws-h2 { margin: 0; }
+.ws-h2-tools { display: flex; align-items: center; gap: 12px; }
+.ws-h2-link { color: inherit; text-decoration: none; }
+.ws-h2-link:hover { color: var(--ink); }
+.ws-h2-count { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* ── Rows ───────────────────────────────────────────────── */
+.ws-list { list-style: none; margin: 0; padding: 0; }
+.ws-row { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 6px 8px; border-radius: 6px; }
+.ws-row + .ws-row { border-top: 1px solid var(--line); border-radius: 0; }
+.ws-row:hover { background: var(--wash); }
+.ws-row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ws-row-title { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws-row-meta { font-size: 12px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws-row.is-done .ws-row-title { color: var(--ink-3); text-decoration: line-through; }
+.ws-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 11px;
+    font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: .02em; }
+.ws-avatar.is-empty { background: transparent; color: var(--ink-3); border: 1px dashed var(--line-strong); }
+.ws-date { font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 56px; text-align: right; }
+.is-late { color: var(--late) !important; }
+.is-quiet { color: var(--ink-3); }
+.ws-flag { font-size: 11px; font-weight: 600; color: var(--late); border: 1px solid currentColor; border-radius: 4px; padding: 1px 6px; }
+.ws-empty { color: var(--ink-3); padding: 10px 8px; }
+
+/* checkbox: un botón de envío que parece casilla */
+.ws-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--line-strong); background: var(--paper);
+    flex-shrink: 0; cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: transparent; }
+.ws-check:hover { border-color: var(--navy); }
+.ws-check.is-on { background: var(--done); border-color: var(--done); color: #fff; }
+.ws-check svg { width: 12px; height: 12px; }
+.ws-row-inprogress .ws-check { border-color: var(--navy); box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 20px var(--navy); }
+
+/* grupos (proyectos) */
+.ws-group { margin-top: 18px; }
+.ws-group.is-closed { opacity: .6; }
+.ws-group-head { display: flex; align-items: center; gap: 12px; padding: 6px 8px; }
+.ws-group-title { flex: 1; min-width: 0; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.ws-group-meta { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.ws-group-desc { margin: -2px 8px 6px; color: var(--ink-2); font-size: 13px; max-width: 70ch; }
+
+/* alta rápida */
+.ws-row-add { padding-left: 8px; }
+.ws-row-add:hover { background: transparent; }
+.ws-addform, .ws-quick { display: flex; align-items: center; gap: 8px; width: 100%; }
+.ws-quick-title { flex: 1; min-width: 0; border: 0; background: transparent; padding: 8px 0; color: var(--ink); font: inherit; }
+.ws-quick-title::placeholder { color: var(--ink-3); }
+/* Los campos secundarios y el botón aparecen solo al escribir o enfocar la fila. */
+.ws-quick .ws-select, .ws-quick .ws-input, .ws-quick .ws-btn { visibility: hidden; }
+.ws-quick:focus-within .ws-select, .ws-quick:focus-within .ws-input, .ws-quick:focus-within .ws-btn,
+.ws-quick.is-open .ws-select, .ws-quick.is-open .ws-input, .ws-quick.is-open .ws-btn { visibility: visible; }
+.ws-quick-plus { color: var(--ink-3); width: 20px; text-align: center; flex-shrink: 0; }
+
+/* controles */
+.ws-select, .ws-input, .ws-textarea { border: 1px solid var(--line-strong); border-radius: 6px; background: var(--paper);
+    color: var(--ink); font: inherit; padding: 6px 10px; min-height: 34px; }
+.ws-select-sm { font-size: 12px; padding: 4px 8px; min-height: 30px; }
+.ws-grow { flex: 1; min-width: 0; }
+.ws-textarea { width: 100%; resize: vertical; }
+.ws-btn { border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink); border-radius: 6px;
+    padding: 7px 14px; font: inherit; font-weight: 500; min-height: 34px; cursor: pointer; white-space: nowrap; }
+.ws-btn:hover { border-color: var(--navy); }
+.ws-btn-primary { background: var(--navy); border-color: var(--navy); color: #fff; }
+.ws-btn-primary:hover { background: #24375a; }
+.ws-btn-quiet { border-color: transparent; color: var(--ink-3); }
+.ws-btn-quiet:hover { color: var(--late); border-color: transparent; }
+.ws-btn-danger { border-color: var(--late); color: var(--late); }
+.ws-iconbtn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink-2); font-size: 16px; line-height: 1; cursor: pointer; }
+.ws-iconbtn:hover { color: var(--ink); border-color: var(--navy); }
+.ws-link { border: 0; background: none; color: var(--ink-3); font: inherit; font-size: 12px; padding: 4px 6px; cursor: pointer; border-radius: 4px; }
+.ws-link:hover { color: var(--navy); background: var(--wash); }
+.ws-x { border: 0; background: none; color: var(--ink-3); font-size: 18px; line-height: 1; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; }
+.ws-x:hover { color: var(--late); background: var(--wash); }
+.ws-inline { display: inline-flex; margin: 0; }
+.ws-toggle { font-size: 12px; color: var(--ink-2); text-decoration: none; border-bottom: 1px dotted var(--line-strong); }
+.ws-toggle:hover, .ws-toggle.is-on { color: var(--navy); }
+
+/* notas */
+.ws-noteform { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 14px; }
+.ws-notes { list-style: none; margin: 0; padding: 0; }
+.ws-note { padding: 10px 8px; border-top: 1px solid var(--line); }
+.ws-note-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
+.ws-note-meta span { color: var(--ink-2); font-weight: 500; }
+.ws-note-meta .ws-inline { margin-left: auto; }
+.ws-note-body { margin: 4px 0 0; white-space: pre-wrap; color: var(--ink); }
+
+/* modales: mismo lenguaje */
+.ws-modal .modal-content { border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 20px 50px rgba(22, 32, 43, .18); }
+.ws-modal .modal-header { border-bottom: 1px solid var(--line); padding: 16px 22px; }
+.ws-modal .modal-title { font-size: 16px; font-weight: 600; }
+.ws-modal .modal-body { padding: 18px 22px 6px; }
+.ws-modal .modal-footer { border-top: 1px solid var(--line); padding: 14px 22px; gap: 8px; }
+.ws-modal label { font-size: 12px; font-weight: 600; color: var(--ink-2); margin-bottom: 4px; }
+.ws-modal .form-control, .ws-modal .form-select { border-color: var(--line-strong); border-radius: 6px; font-size: 14px; }
+.ws-modal .form-control:focus, .ws-modal .form-select:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27, 42, 65, .12); }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 991px) {
+    .ws { grid-template-columns: 1fr; border-radius: 10px; }
+    .ws-rail { border-right: 0; border-bottom: 1px solid var(--line); border-radius: 10px 10px 0 0;
+        display: flex; gap: 4px; overflow-x: auto; padding: 10px; align-items: center; }
+    .ws-rail-head { padding: 0 6px 0 4px; }
+    .ws-rail-sep { width: 1px; height: 22px; margin: 0 4px; flex-shrink: 0; }
+    .ws-rail-item { flex-shrink: 0; min-height: 40px; }
+    .ws-rail-item.is-active { box-shadow: inset 0 -3px 0 var(--gold), 0 0 0 1px var(--line); }
+    .ws-main { padding: 20px 16px 40px; }
+    .ws-head { flex-direction: column; }
+    .ws-row-meta { white-space: normal; }
+    .ws-group-head { flex-wrap: wrap; }
+    .ws-addform { flex-wrap: wrap; }
+    .ws-quick .ws-select, .ws-quick .ws-input, .ws-quick .ws-btn { visibility: visible; }
+    .ws-quick { flex-wrap: wrap; }
+    .ws-quick-plus { display: none; }
+    .ws-quick-title { flex-basis: 100%; border-bottom: 1px solid var(--line); }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .ws-row, .ws-btn, .ws-check, .ws-rail-item { transition: background-color .12s ease, border-color .12s ease, color .12s ease; }
+}
+</style>
+
+<script>
+(function () {
+    var ws = document.getElementById('ws');
+    var next = ws.dataset.next;
+
+    // Confirmación de acciones destructivas.
+    document.querySelectorAll('form[data-confirm]').forEach(function (f) {
+        f.addEventListener('submit', function (e) { if (!confirm(f.dataset.confirm)) e.preventDefault(); });
+    });
+    // Los selectores en línea guardan al cambiar.
+    document.querySelectorAll('select[data-autosubmit]').forEach(function (s) {
+        s.addEventListener('change', function () { s.form.submit(); });
+    });
+    // La fila "Añadir tarea" muestra sus campos al escribir.
+    document.querySelectorAll('.ws-quick-title').forEach(function (i) {
+        i.addEventListener('input', function () { i.closest('.ws-quick').classList.toggle('is-open', i.value.trim() !== ''); });
+    });
+
+    // Un solo modal por entidad: se rellena con los data-* del botón que lo abre.
+    function preparar(modal, botón, cfg) {
+        var form = modal.querySelector('form');
+        var d = botón.dataset;
+        var nuevo = d.nuevo === '1' || !d.pk;
+        form.action = nuevo ? cfg.crear : cfg.editar.replace('/0/', '/' + d.pk + '/');
+        modal.querySelector('.modal-title').textContent = nuevo ? cfg.tituloNuevo : cfg.tituloEditar;
+        var borrar = modal.querySelector('[data-borrar]');
+        if (borrar) {
+            borrar.hidden = nuevo;
+            if (!nuevo) borrar.action = cfg.borrar.replace('/0/', '/' + d.pk + '/');
+        }
+        form.querySelectorAll('[name]').forEach(function (el) {
+            if (el.name === 'csrfmiddlewaretoken' || el.name === 'next') return;
+            var v = d[el.name];
+            if (el.type === 'checkbox') { el.checked = nuevo ? true : v === '1'; return; }
+            if (v === undefined) { if (nuevo) { if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = ''; } return; }
+            el.value = v;
+        });
+        if (nuevo && d.comite !== undefined) { var c = form.querySelector('[name=comite]'); if (c) c.value = d.comite; }
+        form.querySelectorAll('input[name=next]').forEach(function (n) { n.value = next; });
+        var primero = form.querySelector('input[name=title], input[name=name]');
+        modal.addEventListener('shown.bs.modal', function once() { if (primero) primero.focus(); modal.removeEventListener('shown.bs.modal', once); });
+    }
+    var cfgs = {
+        modalComite: { crear: '{% url "gestion:comite_create" %}', editar: '{% url "gestion:comite_update" 0 %}', borrar: '{% url "gestion:comite_delete" 0 %}', tituloNuevo: 'Nuevo comité', tituloEditar: 'Editar comité' },
+        modalProyecto: { crear: '{% url "gestion:proyecto_create" %}', editar: '{% url "gestion:proyecto_update" 0 %}', borrar: '{% url "gestion:proyecto_delete" 0 %}', tituloNuevo: 'Nuevo proyecto', tituloEditar: 'Editar proyecto' },
+        modalTarea: { crear: '{% url "gestion:tarea_create" %}', editar: '{% url "gestion:tarea_update" 0 %}', borrar: '{% url "gestion:tarea_delete" 0 %}', tituloNuevo: 'Nueva tarea', tituloEditar: 'Editar tarea' }
+    };
+    Object.keys(cfgs).forEach(function (id) {
+        var modal = document.getElementById(id);
+        if (!modal) return;
+        modal.addEventListener('show.bs.modal', function (e) { if (e.relatedTarget) preparar(modal, e.relatedTarget, cfgs[id]); });
+    });
+})();
+</script>
+{% endblock %}

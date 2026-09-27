@@ -1,0 +1,24 @@
+{% load gestion_extras %}
+{# Fila de alta rápida. Espera: comite, proyecto (o None), usuarios_comite, usuarios_otros. #}
+<li class="ws-row ws-row-add">
+    <form method="post" action="{% url 'gestion:tarea_quick' %}" class="ws-quick">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <input type="hidden" name="comite" value="{{ comite.pk }}">
+        {% if proyecto %}<input type="hidden" name="proyecto" value="{{ proyecto.pk }}">{% endif %}
+        <span class="ws-quick-plus" aria-hidden="true">+</span>
+        <input type="text" name="title" class="ws-quick-title" maxlength="200" required autocomplete="off"
+               placeholder="Añadir tarea…">
+        <select name="asignado_a" class="ws-select ws-select-sm" aria-label="Responsable">
+            <option value="">Sin responsable</option>
+            {% if usuarios_comite %}<optgroup label="Integrantes">
+                {% for u in usuarios_comite %}<option value="{{ u.pk }}">{{ u|nombre }}</option>{% endfor %}
+            </optgroup>{% endif %}
+            {% if usuarios_otros %}<optgroup label="Otros usuarios">
+                {% for u in usuarios_otros %}<option value="{{ u.pk }}">{{ u|nombre }}</option>{% endfor %}
+            </optgroup>{% endif %}
+        </select>
+        <input type="date" name="due_date" class="ws-input ws-select-sm" aria-label="Fecha límite">
+        <button type="submit" class="ws-btn ws-btn-primary ws-select-sm">Añadir</button>
+    </form>
+</li>
