@@ -1,0 +1,44 @@
+{% load gestion_extras %}
+{# Compositor de "Nueva tarea": oculto hasta pulsar el botón. Espera: comite (o None), proyectos, proyecto_sel, usuarios_comite/usuarios_otros o usuarios. #}
+<form method="post" action="{% url 'gestion:tarea_quick' %}" class="ws-composer" id="composer" hidden>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    {% if comite %}<input type="hidden" name="comite" value="{{ comite.pk }}">{% endif %}
+    <input type="text" name="title" class="ws-composer-title" maxlength="200" required autocomplete="off"
+           placeholder="¿Qué hay que hacer?">
+    <div class="ws-composer-row">
+        {% if comite %}
+        <label class="ws-field">
+            <span>Proyecto</span>
+            <select name="proyecto" class="ws-select ws-select-sm">
+                <option value="">Sin proyecto</option>
+                {% for p in proyectos %}<option value="{{ p.pk }}" {% if proyecto_sel and proyecto_sel.pk == p.pk %}selected{% endif %}>{{ p.title }}</option>{% endfor %}
+            </select>
+        </label>
+        {% endif %}
+        <label class="ws-field">
+            <span>Responsable</span>
+            <select name="asignado_a" class="ws-select ws-select-sm">
+                <option value="">Sin responsable</option>
+                {% if comite %}
+                    {% if usuarios_comite %}<optgroup label="Integrantes">{% for u in usuarios_comite %}<option value="{{ u.pk }}">{{ u|nombre }}</option>{% endfor %}</optgroup>{% endif %}
+                    {% if usuarios_otros %}<optgroup label="Otros usuarios">{% for u in usuarios_otros %}<option value="{{ u.pk }}">{{ u|nombre }}</option>{% endfor %}</optgroup>{% endif %}
+                {% else %}
+                    {% for u in usuarios %}<option value="{{ u.pk }}">{{ u|nombre }}</option>{% endfor %}
+                {% endif %}
+            </select>
+        </label>
+        <label class="ws-field">
+            <span>Fecha límite</span>
+            <input type="date" name="due_date" class="ws-input ws-select-sm">
+        </label>
+        <label class="ws-field ws-field-check">
+            <input type="checkbox" name="alta" value="1" class="form-check-input"> <span>Prioridad alta</span>
+        </label>
+        <span class="ws-composer-actions">
+            <button type="button" class="ws-btn" data-composer-close>Cancelar</button>
+            <button type="submit" class="ws-btn ws-btn-primary">Guardar tarea</button>
+        </span>
+    </div>
+    <p class="ws-help">Con fecha aparecerá en el día que le toque; sin fecha, en «Sin fecha». Puedes cambiar todo después con «Editar».</p>
+</form>

@@ -73,8 +73,8 @@ class FlujoTests(TestCase):
         html = self.client.get(self.url).content.decode()
         self.assertIn('Ana Pérez', html)
         idx = html.index('Añadir integrante…')
-        self.assertNotIn('ana@x.com</option>', html[idx:idx + 4000])
-        self.assertIn('luis@x.com</option>', html[idx:idx + 4000])
+        self.assertNotIn('>Ana Pérez</option>', html[idx:idx + 1500])
+        self.assertIn('>Luis Gómez</option>', html[idx:idx + 1500])
 
         self.client.post(reverse('gestion:miembro_rol', args=[m.pk]), {'rol': 'MIEMBRO'})
         m.refresh_from_db()
@@ -90,15 +90,20 @@ class FlujoTests(TestCase):
         })
         self.assertRedirects(r, self.url)
         t = Tarea.objects.get(title='Definir ponentes')
-        self.assertEqual((t.comite, t.proyecto, t.asignado_a), (self.comite, p, self.ana))
+        self.assertEqual((t.comite, t.proyecto, t.asignado_a, t.prioridad), (self.comite, p, self.ana, 'NORMAL'))
+        # Prioridad alta desde el compositor.
+        self.client.post(reverse('gestion:tarea_quick'), {'title': 'Urgente', 'comite': self.comite.pk, 'alta': '1'})
+        self.assertEqual(Tarea.objects.get(title='Urgente').prioridad, 'ALTA')
 
         self.client.post(reverse('gestion:tarea_estado', args=[t.pk]), {'estado': 'COMPLETADA'})
         t.refresh_from_db()
         self.assertTrue(t.is_done)
         self.assertIsNotNone(t.completed_at)
-        # Completada: desaparece de la vista por defecto y vuelve con ?todas=1.
-        self.assertNotContains(self.client.get(self.url), 'Definir ponentes')
-        self.assertContains(self.client.get(self.url + '&todas=1'), 'Definir ponentes')
+        # Completada: sale de los horizontes y pasa al desplegable de cerradas.
+        r = self.client.get(self.url)
+        abiertas = [x.title for _, _, _, lista in r.context['horizontes'] for x in lista]
+        self.assertEqual(abiertas, ['Urgente'])
+        self.assertEqual([x.pk for x in r.context['cerradas']], [t.pk])
 
         self.client.post(reverse('gestion:tarea_estado', args=[t.pk]), {'estado': 'PENDIENTE'})
         t.refresh_from_db()
@@ -134,21 +139,42 @@ class FlujoTests(TestCase):
         self.client.post(reverse('gestion:proyecto_estado', args=[p.pk]), {'estado': 'CERRADO'})
         p.refresh_from_db()
         self.assertEqual(p.estado, 'CERRADO')
-        self.assertNotContains(self.client.get(self.url), 'Curso')
+        # Cerrado: sale de las tarjetas activas y pasa al desplegable de cerrados.
+        r = self.client.get(self.url)
+        self.assertNotIn(p, r.context['proyectos'])
+        self.assertIn(p, r.context['proyectos_cerrados'])
         self.client.post(reverse('gestion:proyecto_delete', args=[p.pk]))
         self.assertEqual(Tarea.objects.filter(title='a').count(), 0)
 
-    def test_vista_general_agrupa_y_marca_vencidas(self):
-        ayer = timezone.localdate() - timedelta(days=1)
-        Tarea.objects.create(title='Vencida', comite=self.comite, due_date=ayer)
+    def test_horizontes_y_resumen(self):
+        hoy = timezone.localdate()
+        Tarea.objects.create(title='Vencida', comite=self.comite, due_date=hoy - timedelta(days=1))
+        Tarea.objects.create(title='De hoy', comite=self.comite, due_date=hoy)
+        Tarea.objects.create(title='Semana', comite=self.comite, due_date=hoy + timedelta(days=5))
+        Tarea.objects.create(title='Luego', comite=self.comite, due_date=hoy + timedelta(days=30))
         Tarea.objects.create(title='Suelta', comite=None)
         r = self.client.get(reverse('gestion:workspace'))
-        html = r.content.decode()
-        self.assertIn('Vencidas', html)
-        self.assertLess(html.index('Vencida'), html.index('Suelta'))
-        self.assertIn('Sin comité', html)
-        # Badge del menú lateral.
-        self.assertEqual(r.context['gestion_vencidas'], 1)
+        claves = [h[0] for h in r.context['horizontes']]
+        self.assertEqual(claves, ['vencidas', 'hoy', 'semana', 'luego', 'sin_fecha'])
+        self.assertEqual(r.context['resumen'], {'abiertas': 5, 'vencidas': 1, 'semana': 2, 'sin_responsable': 5})
+        self.assertEqual(r.context['gestion_vencidas'], 1)  # badge del menú
+        titulos = [t.title for _, _, _, lista in r.context['horizontes'] for t in lista]
+        self.assertEqual(titulos, ['Vencida', 'De hoy', 'Semana', 'Luego', 'Suelta'])
+
+    def test_seleccionar_proyecto_filtra_las_tareas(self):
+        p = Proyecto.objects.create(title='Webinar', comite=self.comite)
+        q = Proyecto.objects.create(title='Otro', comite=self.comite)
+        Tarea.objects.create(title='Del webinar', proyecto=p)
+        Tarea.objects.create(title='Del otro', proyecto=q, estado='COMPLETADA')
+        Tarea.objects.create(title='Sin proyecto', comite=self.comite)
+        r = self.client.get(self.url + f'&proyecto={p.pk}')
+        self.assertEqual(r.context['proyecto_sel'], p)
+        titulos = [t.title for _, _, _, lista in r.context['horizontes'] for t in lista]
+        self.assertEqual(titulos, ['Del webinar'])
+        # Anillo: hechas/total por proyecto.
+        avance = {x.title: (x.hechas, x.total) for x in r.context['proyectos']}
+        self.assertEqual(avance, {'Webinar': (0, 1), 'Otro': (1, 1)})
+        self.assertContains(r, 'de Webinar')  # filtro visible en el título de Tareas
 
     def test_notas_en_comite_proyecto_y_tarea(self):
         p = Proyecto.objects.create(title='P', comite=self.comite)

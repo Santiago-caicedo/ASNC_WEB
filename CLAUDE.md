@@ -293,9 +293,9 @@ Single-screen work management for the committees. **Visible only to `is_superuse
 - **Tarea**: `title`, `description`, `comite`, `proyecto` (CASCADE), `asignado_a` (FK User), `estado` PENDIENTE|EN_PROGRESO|COMPLETADA|CANCELADA, `prioridad`, `due_date`, `completed_at` (auto in `save()`). A task without committee inherits its project's. `Tarea.CLOSED_STATES` is used by the sidebar badge (`gestion_vencidas` in `dashboard/context_processors.py`).
 - **Nota**: `content`, `author`, attached to one of `comite` / `proyecto` / `tarea`.
 
-**Screen (`gestion/templates/gestion/workspace.html`):** left rail with "Vista general" and the committees (open/overdue counts); main area for the chosen committee: header (edit / delete), *Integrantes* (inline role select, remove, add-row with a select of users not yet members), *Trabajo* (projects as groups with inline status select and an "Añadir tarea…" row each, plus a "Sin proyecto" group; toggle `?todas=1` shows closed work), *Notas*. Without `?comite`, the *Vista general* lists overdue tasks first, then open tasks grouped by committee, then transversal projects. Task rows: circular submit-button checkbox (COMPLETADA↔PENDIENTE), title, "Alta" flag, assignee avatar, due date (red if overdue), "Editar". One Bootstrap modal per entity (`_modales.html`) is filled from the trigger button's `data-*` by the page script; the same modal serves create and edit, and hosts the delete form.
+**Screen (`gestion/templates/gestion/workspace.html`):** three columns. Left rail: "Vista general" + committees (open/overdue counts). Main, for the chosen committee: header (edit / delete), a one-sentence summary strip (`_resumen.html`), *Proyectos* as cards with a progress ring (`_proyecto_card.html`, done/total annotated in `proyectos_con_avance`); clicking a card sets `?proyecto=<pk>` and filters the task list (filter chip with ×), closed projects in a `<details>`; *Tareas* grouped by due-date horizon (`agrupar_por_horizonte`: Vencidas / Hoy / Próximos 7 días / Más adelante / Sin fecha) with a short help line, a "Nueva tarea" button that opens an inline composer (`_composer.html` → `tarea_rapida`, fields title/proyecto/responsable/fecha/alta), and completed+cancelled in a `<details>`. Right aside: *Integrantes* (avatar, bare role select, remove, add-row with users not yet members) and *Notas*. Without `?comite`, the *Vista general* shows the summary, all open tasks by horizon (rows show committee and project), and transversal projects as cards. Task rows: circular submit-button checkbox (COMPLETADA↔PENDIENTE), title, "Alta" flag, meta line, assignee avatar (dashed "?" when unassigned), due date (red if overdue), "Editar". One Bootstrap modal per entity (`_modales.html`) filled from the trigger's `data-*` by the page script; the same modal serves create/edit and hosts the delete form.
 
-**Design tokens** live on `.ws` in `workspace.html` (ink/line/paper/navy/gold/late/done). Flat surfaces, hairlines, 14px Outfit, tabular numerals for dates, 44px row height, sentence case; no gradients, no colored badges, no cards-within-cards.
+**Design tokens** live on `.ws, .ws-modal` in `workspace.html` (ink/line/paper/wash/navy/gold/late/done). Flat surfaces, hairlines, 14px Outfit, tabular numerals for dates, 44px rows, sentence case, every block has a one-line help text; no gradients, no colored badges, no KPI tiles, no kanban. Gold marks only the selected rail item and the selected project's ring.
 
 **Management command:** `python manage.py cargar_libro_asnc [--dry-run]` loads the committee status from "Libro ASNC.xlsx" (Sept 2026): matches each name against registered users by first/last name; names without an account are mentioned in the project description instead of being assigned, and the command lists them at the end. Idempotent.
 
@@ -804,11 +804,11 @@ python manage.py showmigrations
 - Admin (`AdminRequiredMixin`): Convocatoria CRUD, `ConvocatoriaFieldsView` (manage dynamic fields), submissions list/detail, `ConvocatoriaSubmissionExportView` (CSV)
 
 ### Gestion App (Gestión de comités, superadmin only)
-- `WorkspaceView` - The single screen (rail + selected committee, or the overview)
+- `WorkspaceView` - The single screen (rail + selected committee with project cards, horizon-grouped tasks, aside; or the overview). Helpers `agrupar_por_horizonte()`, `proyectos_con_avance()`
 - `comite_guardar()` (create/update) / `comite_eliminar()`
 - `miembro_agregar()` / `miembro_rol()` / `miembro_quitar()` - registered users only
 - `proyecto_guardar()` / `proyecto_estado()` / `proyecto_eliminar()`
-- `tarea_rapida()` (title + assignee + date from the list row) / `tarea_guardar()` / `tarea_estado()` / `tarea_eliminar()`
+- `tarea_rapida()` (composer: title, project, assignee, date, high priority) / `tarea_guardar()` / `tarea_estado()` / `tarea_eliminar()`
 - `nota_agregar()` / `nota_eliminar()`
 - Tests: `gestion/tests.py` (access + flows). Run with a SQLite settings override if PostgreSQL is not reachable locally.
 

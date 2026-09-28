@@ -1,0 +1,7 @@
+{# Estado del comité (o de todo) en una frase. Espera: resumen {abiertas, vencidas, semana, sin_responsable}. #}
+<p class="ws-summary">
+    <span><b>{{ resumen.abiertas }}</b> tarea{{ resumen.abiertas|pluralize }} abierta{{ resumen.abiertas|pluralize }}</span>
+    <span class="{% if resumen.vencidas %}is-late{% endif %}"><b>{{ resumen.vencidas }}</b> vencida{{ resumen.vencidas|pluralize }}</span>
+    <span><b>{{ resumen.semana }}</b> vence{{ resumen.semana|pluralize:"n" }} en los próximos 7 días</span>
+    <span><b>{{ resumen.sin_responsable }}</b> sin responsable</span>
+</p>

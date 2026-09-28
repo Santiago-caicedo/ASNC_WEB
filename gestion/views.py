@@ -1,12 +1,15 @@
 """Gestión de comités en una sola pantalla.
 
-``WorkspaceView`` dibuja todo: la lista de comités, y del comité elegido sus
-integrantes, proyectos con tareas y notas. El resto son acciones POST que
+``WorkspaceView`` dibuja todo: la lista de comités y, del comité elegido, sus
+proyectos (tarjetas con avance), sus tareas por horizonte de vencimiento,
+sus integrantes y sus notas. El resto son acciones POST que
 guardan y vuelven a la misma pantalla. Acceso solo para superadministradores.
 """
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -18,7 +21,7 @@ from admissions.views import SuperuserRequiredMixin
 from .forms import (
     ComiteForm, MiembroForm, NotaForm, ProyectoForm, TareaForm, TareaRapidaForm, usuarios_activos,
 )
-from .models import Comite, MiembroComite, Nota, Proyecto, Tarea
+from .models import Comite, MiembroComite, Nota, Prioridad, Proyecto, Tarea
 
 
 def superuser_required(view_func):
@@ -47,6 +50,42 @@ def _errores(request, form):
 # ---------------------------------------------------------------------------
 
 
+HORIZONTES = (
+    ('vencidas', 'Vencidas', 'Se pasó la fecha límite. Reprográmalas o ciérralas.'),
+    ('hoy', 'Hoy', ''),
+    ('semana', 'Próximos 7 días', ''),
+    ('luego', 'Más adelante', ''),
+    ('sin_fecha', 'Sin fecha', 'Ponles fecha para que aparezcan en el plan.'),
+)
+
+
+def agrupar_por_horizonte(tareas, hoy):
+    """Reparte tareas abiertas en Vencidas / Hoy / 7 días / Más adelante / Sin fecha."""
+    grupos = {k: [] for k, _, _ in HORIZONTES}
+    for t in tareas:
+        if t.is_closed:
+            continue
+        if not t.due_date:
+            grupos['sin_fecha'].append(t)
+        elif t.due_date < hoy:
+            grupos['vencidas'].append(t)
+        elif t.due_date == hoy:
+            grupos['hoy'].append(t)
+        elif t.due_date <= hoy + timedelta(days=7):
+            grupos['semana'].append(t)
+        else:
+            grupos['luego'].append(t)
+    return [(k, titulo, ayuda, grupos[k]) for k, titulo, ayuda in HORIZONTES if grupos[k]]
+
+
+def proyectos_con_avance(qs):
+    """Anota hechas / total (sin canceladas) para el anillo de cada tarjeta."""
+    return qs.annotate(
+        total=Count('tareas', filter=~Q(tareas__estado=Tarea.Estado.CANCELADA), distinct=True),
+        hechas=Count('tareas', filter=Q(tareas__estado=Tarea.Estado.COMPLETADA), distinct=True),
+    )
+
+
 class WorkspaceView(SuperuserRequiredMixin, TemplateView):
     template_name = 'gestion/workspace.html'
 
@@ -63,66 +102,69 @@ class WorkspaceView(SuperuserRequiredMixin, TemplateView):
             .order_by('-is_active', 'order', 'name')
         )
         ctx['hoy'] = hoy
-        ctx['mostrar_todas'] = self.request.GET.get('todas') == '1'
         ctx['usuarios'] = usuarios_activos()
         ctx['comite_form'] = ComiteForm()
         ctx['proyecto_form'] = ProyectoForm()
         ctx['tarea_form'] = TareaForm()
-        ctx['nota_form'] = NotaForm()
-        ctx['estados_tarea'] = Tarea.Estado.choices
         ctx['estados_proyecto'] = Proyecto.Estado.choices
         ctx['roles'] = MiembroComite.Rol.choices
 
         comite_id = self.request.GET.get('comite')
         if comite_id and comite_id.isdigit():
             ctx['comite'] = get_object_or_404(Comite.objects.select_related('coordinator'), pk=int(comite_id))
-            self._contexto_comite(ctx, ctx['comite'])
+            self._contexto_comite(ctx, ctx['comite'], hoy)
         else:
             ctx['comite'] = None
-            self._contexto_general(ctx)
+            self._contexto_general(ctx, hoy)
         return ctx
 
-    def _tareas(self, qs, mostrar_todas):
-        qs = qs.select_related('asignado_a', 'proyecto', 'comite')
-        return qs if mostrar_todas else qs.exclude(estado__in=Tarea.CLOSED_STATES)
-
-    def _contexto_comite(self, ctx, comite):
-        todas = ctx['mostrar_todas']
+    def _contexto_comite(self, ctx, comite, hoy):
         ctx['miembros'] = comite.miembros.select_related('user')
-        ids_miembros = set(ctx['miembros'].values_list('user_id', flat=True))
-        ctx['usuarios_comite'] = [u for u in ctx['usuarios'] if u.pk in ids_miembros]
-        ctx['usuarios_otros'] = [u for u in ctx['usuarios'] if u.pk not in ids_miembros]
-        ctx['miembro_form'] = MiembroForm(comite=comite)
+        ids = set(ctx['miembros'].values_list('user_id', flat=True))
+        ctx['usuarios_comite'] = [u for u in ctx['usuarios'] if u.pk in ids]
+        ctx['usuarios_otros'] = [u for u in ctx['usuarios'] if u.pk not in ids]
 
-        proyectos = comite.proyectos.select_related('responsable')
-        if not todas:
-            proyectos = proyectos.exclude(estado=Proyecto.Estado.CERRADO)
-        ctx['proyectos'] = proyectos.prefetch_related(
-            Prefetch('tareas', queryset=self._tareas(Tarea.objects.all(), todas), to_attr='lista_tareas')
-        )
-        ctx['tareas_sueltas'] = self._tareas(comite.tareas.filter(proyecto__isnull=True), todas)
-        ctx['cerradas'] = comite.tareas.filter(estado__in=Tarea.CLOSED_STATES).count()
+        proyectos = list(proyectos_con_avance(comite.proyectos.select_related('responsable')))
+        ctx['proyectos'] = [p for p in proyectos if p.estado != Proyecto.Estado.CERRADO]
+        ctx['proyectos_cerrados'] = [p for p in proyectos if p.estado == Proyecto.Estado.CERRADO]
+
+        # Tarjeta seleccionada: la lista de tareas se limita a ese proyecto.
+        sel = self.request.GET.get('proyecto')
+        ctx['proyecto_sel'] = next((p for p in proyectos if sel and sel.isdigit() and p.pk == int(sel)), None)
+
+        tareas = comite.tareas.select_related('asignado_a', 'proyecto').order_by('due_date', '-prioridad', 'created_at')
+        if ctx['proyecto_sel']:
+            tareas = tareas.filter(proyecto=ctx['proyecto_sel'])
+        tareas = list(tareas)
+        ctx['horizontes'] = agrupar_por_horizonte(tareas, hoy)
+        ctx['cerradas'] = [t for t in tareas if t.is_closed][:50]
+        abiertas = [t for t in tareas if not t.is_closed]
+        ctx['resumen'] = {
+            'abiertas': len(abiertas),
+            'vencidas': sum(1 for t in abiertas if t.due_date and t.due_date < hoy),
+            'semana': sum(1 for t in abiertas if t.due_date and hoy <= t.due_date <= hoy + timedelta(days=7)),
+            'sin_responsable': sum(1 for t in abiertas if not t.asignado_a_id),
+        }
         ctx['notas'] = comite.notas.select_related('author')[:30]
 
-    def _contexto_general(self, ctx):
-        """Vista general: lo abierto de todos los comités, lo vencido primero."""
-        abiertas = (
+    def _contexto_general(self, ctx, hoy):
+        """Vista general: todo lo abierto de todos los comités, por horizonte."""
+        tareas = list(
             Tarea.objects.exclude(estado__in=Tarea.CLOSED_STATES)
             .select_related('asignado_a', 'proyecto', 'comite')
             .order_by('due_date', '-prioridad')
         )
-        ctx['vencidas'] = [t for t in abiertas if t.is_overdue]
-        grupos = {}
-        for t in abiertas:
-            grupos.setdefault(t.comite, []).append(t)
-        # Comités en su orden; lo sin comité, al final.
-        ordenados = [(c, grupos[c]) for c in ctx['comites'] if c in grupos]
-        if None in grupos:
-            ordenados.append((None, grupos[None]))
-        ctx['grupos'] = ordenados
-        ctx['total_abiertas'] = len(abiertas)
-        ctx['transversales'] = Proyecto.objects.filter(comite__isnull=True).exclude(
-            estado=Proyecto.Estado.CERRADO).select_related('responsable')
+        ctx['horizontes'] = agrupar_por_horizonte(tareas, hoy)
+        ctx['resumen'] = {
+            'abiertas': len(tareas),
+            'vencidas': sum(1 for t in tareas if t.due_date and t.due_date < hoy),
+            'semana': sum(1 for t in tareas if t.due_date and hoy <= t.due_date <= hoy + timedelta(days=7)),
+            'sin_responsable': sum(1 for t in tareas if not t.asignado_a_id),
+        }
+        ctx['transversales'] = list(proyectos_con_avance(
+            Proyecto.objects.filter(comite__isnull=True).exclude(estado=Proyecto.Estado.CERRADO)
+            .select_related('responsable')
+        ))
 
 
 # ---------------------------------------------------------------------------
@@ -254,6 +296,7 @@ def tarea_rapida(request):
             asignado_a=form.cleaned_data['asignado_a'],
             due_date=form.cleaned_data['due_date'],
             proyecto=form.cleaned_data['proyecto'],
+            prioridad=Prioridad.ALTA if form.cleaned_data['alta'] else Prioridad.NORMAL,
             comite_id=comite_id if comite_id and str(comite_id).isdigit() else None,
             created_by=request.user,
         )

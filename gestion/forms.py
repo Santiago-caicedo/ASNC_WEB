@@ -111,6 +111,7 @@ class TareaRapidaForm(forms.Form):
     asignado_a = forms.ModelChoiceField(queryset=User.objects.none(), required=False)
     due_date = forms.DateField(required=False, input_formats=['%Y-%m-%d'])
     proyecto = forms.ModelChoiceField(queryset=Proyecto.objects.all(), required=False)
+    alta = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -1,6 +1,6 @@
 {% load gestion_extras %}
-{# Fila de tarea. Espera: t (Tarea). Opcional: con_comite para mostrar el comité en la meta. #}
-<li class="ws-row {% if t.is_done %}is-done{% elif t.estado == 'EN_PROGRESO' %}ws-row-inprogress{% endif %}">
+{# Fila de tarea. Espera: t (Tarea). Opcionales: con_comite (muestra el comité), con_proyecto (muestra el proyecto). #}
+<li class="ws-row {% if t.is_done %}is-done{% elif t.estado == 'CANCELADA' %}is-cancel{% elif t.estado == 'EN_PROGRESO' %}is-progress{% endif %}">
     <form method="post" action="{% url 'gestion:tarea_estado' t.pk %}" class="ws-inline">
         {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
         <button type="submit" name="estado" value="{% if t.is_done %}PENDIENTE{% else %}COMPLETADA{% endif %}"
@@ -11,15 +11,18 @@
         </button>
     </form>
     <span class="ws-row-main">
-        <span class="ws-row-title">{{ t.title }}{% if t.prioridad == 'ALTA' and not t.is_closed %} <span class="ws-flag">Alta</span>{% endif %}</span>
+        <span class="ws-row-title">
+            {{ t.title }}
+            {% if t.prioridad == 'ALTA' and not t.is_closed %}<span class="ws-flag">Alta</span>{% endif %}
+        </span>
         <span class="ws-row-meta">
-            {% if t.estado == 'EN_PROGRESO' %}En progreso · {% elif t.estado == 'CANCELADA' %}Cancelada · {% endif %}
+            {% if t.estado == 'EN_PROGRESO' %}<span class="ws-dot-progress"></span>En progreso · {% elif t.estado == 'CANCELADA' %}Cancelada · {% endif %}
             {% if con_comite and t.comite %}{{ t.comite.name }} · {% endif %}
-            {% if t.proyecto and con_comite %}{{ t.proyecto.title }} · {% endif %}
+            {% if con_proyecto and t.proyecto %}<span class="ws-chip">{{ t.proyecto.title|truncatechars:38 }}</span> · {% endif %}
             {% if t.asignado_a %}{{ t.asignado_a|nombre }}{% else %}<span class="is-quiet">Sin responsable</span>{% endif %}
         </span>
     </span>
-    {% if t.asignado_a %}<span class="ws-avatar" title="{{ t.asignado_a|nombre }}">{{ t.asignado_a|iniciales }}</span>{% endif %}
+    {% if t.asignado_a %}<span class="ws-avatar" title="{{ t.asignado_a|nombre }}">{{ t.asignado_a|iniciales }}</span>{% else %}<span class="ws-avatar is-empty" title="Sin responsable">?</span>{% endif %}
     <span class="ws-date {% if t.is_overdue %}is-late{% endif %}">{% if t.due_date %}{{ t.due_date|date:"j M" }}{% endif %}</span>
     <button type="button" class="ws-link" data-bs-toggle="modal" data-bs-target="#modalTarea"
             data-pk="{{ t.pk }}" data-title="{{ t.title }}" data-description="{{ t.description }}"
