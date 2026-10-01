@@ -27,6 +27,14 @@ logger = logging.getLogger(__name__)
 ENSO_DATA_PATH = Path(__file__).resolve().parent / 'data' / 'enso.json'
 
 
+def enso_data_version():
+    """Versión del archivo de datos ENSO (su fecha de modificación)."""
+    try:
+        return int(ENSO_DATA_PATH.stat().st_mtime)
+    except OSError:
+        return 0
+
+
 @cache_control(max_age=60 * 60 * 24, public=True)
 def enso_data(request):
     """Serie ONI, episodios y resultados del modelo, para el tablero de la home.
@@ -34,16 +42,19 @@ def enso_data(request):
     Se sirve desde el mismo dominio (y no como archivo estático) para que el
     `fetch` del tablero no dependa de la configuración CORS del bucket S3.
     El contenido es estático, así que se cachea en memoria tras la primera
-    lectura y se marca como cacheable por 24 horas en el navegador.
+    lectura y se marca como cacheable por 24 horas en el navegador. La portada
+    pide la URL con `?v=<versión del archivo>`, de modo que al regenerar los
+    datos el navegador no reutiliza la copia anterior.
     """
-    payload = cache.get('enso_data_json')
+    cache_key = f'enso_data_json:{enso_data_version()}'
+    payload = cache.get(cache_key)
     if payload is None:
         try:
             payload = ENSO_DATA_PATH.read_text(encoding='utf-8')
         except OSError:
             logger.exception('No se pudo leer el archivo de datos ENSO')
             raise Http404('Datos ENSO no disponibles')
-        cache.set('enso_data_json', payload, 60 * 60 * 24)
+        cache.set(cache_key, payload, 60 * 60 * 24)
     return JsonResponse(json.loads(payload))
 
 
@@ -52,6 +63,7 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['enso_version'] = enso_data_version()
         published = NewsArticle.objects.filter(
             is_published=True
         ).select_related('category')

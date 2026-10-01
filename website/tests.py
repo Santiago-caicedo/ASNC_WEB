@@ -12,7 +12,7 @@ class EnsoDataTests(TestCase):
 
     def setUp(self):
         # El endpoint cachea el archivo en memoria; se limpia entre pruebas.
-        cache.delete('enso_data_json')
+        cache.clear()
 
     def test_archivo_de_datos_existe_y_es_coherente(self):
         self.assertTrue(ENSO_DATA_PATH.exists(), 'Falta website/data/enso.json')

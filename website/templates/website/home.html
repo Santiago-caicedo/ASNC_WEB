@@ -91,7 +91,7 @@
     <div class="container">
 
         <!-- Marco compacto: lectura actual + serie. El análisis completo se abre en un diálogo. -->
-        <div class="enso-frame" id="ensoBoard" data-src="{% url 'enso_data' %}" data-animate="fadeInUp">
+        <div class="enso-frame" id="ensoBoard" data-src="{% url 'enso_data' %}?v={{ enso_version }}" data-animate="fadeInUp">
             <header class="enso-frame-head">
                 <div class="enso-frame-title">
                     <h2>{% trans "Fenómeno del Niño y la seguridad energética" %}</h2>
