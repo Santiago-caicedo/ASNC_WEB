@@ -89,31 +89,81 @@
 <!-- ==================== OBSERVATORIO ENSO (FENÓMENO DEL NIÑO) ==================== -->
 <section class="enso-section" id="enso">
     <div class="container">
-        <div class="section-header text-center" data-animate="fadeInUp">
-            <span class="section-tag">{% trans "Datos abiertos · NOAA" %}</span>
-            <h2 class="section-title-lg">{% trans "Observatorio del Fenómeno del Niño" %}</h2>
-            <p class="section-subtitle">
-                {% trans "Setenta y cuatro años de temperatura del Pacífico ecuatorial, los episodios de El Niño y La Niña, y qué tan lejos alcanza a predecirlos un modelo estadístico." %}
-            </p>
+
+        <!-- Marco compacto: lectura actual + serie. El análisis completo se abre en un diálogo. -->
+        <div class="enso-frame" id="ensoBoard" data-src="{% url 'enso_data' %}" data-animate="fadeInUp">
+            <header class="enso-frame-head">
+                <div class="enso-frame-title">
+                    <h2>{% trans "Observatorio del Fenómeno del Niño" %}</h2>
+                    <p>{% trans "Índice Oceánico del Niño (ONI)" %} · NOAA <span id="ensoFrameSpan"></span></p>
+                </div>
+                <div class="enso-legend enso-frame-legend">
+                    <span><i class="dot dot-nino"></i>{% trans "El Niño" %}</span>
+                    <span><i class="dot dot-neutral"></i>{% trans "Neutral" %}</span>
+                    <span><i class="dot dot-nina"></i>{% trans "La Niña" %}</span>
+                </div>
+                <button type="button" class="enso-icon-btn" data-enso-open disabled
+                        aria-haspopup="dialog" aria-label="{% trans 'Ampliar el tablero' %}"
+                        title="{% trans 'Ampliar el tablero' %}">
+                    <i class="bi bi-arrows-angle-expand" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <div class="enso-frame-body">
+                <!-- Estado de carga -->
+                <div class="enso-state" id="ensoLoading">
+                    <div class="enso-spinner"></div>
+                    <p>{% trans "Cargando datos del Pacífico…" %}</p>
+                </div>
+
+                <!-- Estado de error -->
+                <div class="enso-state enso-state-error" id="ensoError" hidden>
+                    <i class="bi bi-cloud-slash"></i>
+                    <p>{% trans "No pudimos cargar los datos en este momento." %}</p>
+                    <button type="button" class="enso-retry" id="ensoRetry">{% trans "Reintentar" %}</button>
+                </div>
+
+                <!-- Vista compacta -->
+                <div class="enso-glance" id="ensoGlance" hidden>
+                    <div class="enso-now" id="ensoNow"></div>
+                    <div class="enso-chart-wrap enso-mini-wrap">
+                        <div class="enso-tooltip" id="ensoMiniTip" hidden></div>
+                        <svg id="ensoMini" role="img"
+                             aria-label="{% trans 'Serie histórica del Índice Oceánico del Niño' %}"></svg>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="enso-frame-foot">
+                <p>{% trans "Anomalía de la temperatura del mar en el Pacífico ecuatorial, de 1950 a hoy." %}</p>
+                <button type="button" class="enso-open-btn" data-enso-open disabled aria-haspopup="dialog">
+                    {% trans "Ver análisis completo" %}
+                    <i class="bi bi-arrows-angle-expand" aria-hidden="true"></i>
+                </button>
+            </footer>
         </div>
 
-        <div class="enso-board" id="ensoBoard" data-src="{% url 'enso_data' %}" data-animate="fadeInUp">
+        <!-- Tablero completo. <dialog> nativo: va a la capa superior del navegador,
+             así no lo afecta el transform de [data-animate] ni ningún z-index. -->
+        <dialog class="enso-dialog" id="ensoDialog" aria-labelledby="ensoDialogTitle">
+            <header class="enso-dialog-head">
+                <div>
+                    <span class="enso-eyebrow">{% trans "Datos abiertos · NOAA" %}</span>
+                    <h2 id="ensoDialogTitle">{% trans "Observatorio del Fenómeno del Niño" %}</h2>
+                </div>
+                <button type="button" class="enso-icon-btn" id="ensoClose"
+                        aria-label="{% trans 'Cerrar' %}" title="{% trans 'Cerrar' %}">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </header>
 
-            <!-- Estado de carga -->
-            <div class="enso-state" id="ensoLoading">
-                <div class="enso-spinner"></div>
-                <p>{% trans "Cargando datos del Pacífico…" %}</p>
-            </div>
+            <div class="enso-dialog-body">
+                <p class="enso-dialog-lede">
+                    {% trans "Setenta y cuatro años de temperatura del Pacífico ecuatorial, los episodios de El Niño y La Niña, y qué tan lejos alcanza a predecirlos un modelo estadístico." %}
+                </p>
 
-            <!-- Estado de error -->
-            <div class="enso-state enso-state-error" id="ensoError" hidden>
-                <i class="bi bi-cloud-slash"></i>
-                <p>{% trans "No pudimos cargar los datos en este momento." %}</p>
-                <button type="button" class="enso-retry" id="ensoRetry">{% trans "Reintentar" %}</button>
-            </div>
-
-            <!-- Tablero -->
-            <div class="enso-content" id="ensoContent" hidden>
+                <!-- Tablero -->
+                <div class="enso-content" id="ensoContent">
 
                 <!-- Barra de estado y filtros -->
                 <div class="enso-toolbar">
@@ -246,8 +296,9 @@
                     </summary>
                     <div class="enso-method-body" id="ensoMethod"></div>
                 </details>
+                </div>
             </div>
-        </div>
+        </dialog>
     </div>
 </section>
 
@@ -3386,7 +3437,7 @@
 
 /* ===== OBSERVATORIO ENSO (FENÓMENO DEL NIÑO) ===== */
 .enso-section {
-    padding: 6rem 0;
+    padding: 3.5rem 0;
     background: linear-gradient(180deg, #f1f5f9 0%, #ffffff 100%);
     --enso-nino: #d64545;
     --enso-nina: #2a7fb8;
@@ -3396,9 +3447,289 @@
     --enso-mute: #64748b;
 }
 
-.enso-board {
+/* --- marco compacto (la "tarjeta" que se ve en la portada) --- */
+.enso-frame {
     position: relative;
-    min-height: 320px;
+    background: #fff;
+    border: 1px solid var(--enso-line);
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 14px 34px -20px rgba(15, 23, 42, 0.22);
+}
+
+.enso-frame-head {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.7rem 0.85rem 0.7rem 1.5rem;
+    border-bottom: 1px solid var(--enso-line);
+}
+
+.enso-frame-title { min-width: 0; margin-right: auto; }
+
+.enso-frame-title h2 {
+    font-size: 1.08rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--enso-ink);
+    margin: 0;
+}
+
+.enso-frame-title p { font-size: 0.8rem; color: var(--enso-mute); margin: 0.1rem 0 0; }
+
+.enso-icon-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: inline-grid;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--enso-mute);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.enso-icon-btn:hover { background: #f1f5f9; color: var(--navy); }
+.enso-icon-btn:disabled { opacity: 0.4; cursor: default; background: transparent; }
+
+.enso-icon-btn:focus-visible,
+.enso-open-btn:focus-visible,
+.enso-chip:focus-visible,
+.enso-tab:focus-visible,
+.enso-retry:focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 2px;
+}
+
+.enso-frame-body {
+    display: flex;
+    align-items: stretch;
+    min-height: 262px;
+    padding: 1.25rem 1.5rem;
+}
+
+.enso-frame-body > * { flex: 1; min-width: 0; }
+
+.enso-glance {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 1.75rem;
+}
+
+/* lectura actual */
+.enso-now {
+    display: flex;
+    flex-direction: column;
+    padding-right: 1.75rem;
+    border-right: 1px solid var(--enso-line);
+}
+
+.enso-now-label { font-size: 0.78rem; font-weight: 600; color: var(--enso-mute); }
+
+.enso-now-value {
+    margin-top: 0.3rem;
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--enso-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.enso-now-value small {
+    margin-left: 0.3rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--enso-mute);
+}
+
+.enso-now-phase {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--enso-ink);
+}
+
+.enso-now-phase i { width: 9px; height: 9px; border-radius: 50%; }
+
+/* escala La Niña · neutral · El Niño con la posición del último dato */
+.enso-gauge {
+    position: relative;
+    height: 6px;
+    margin: 1rem 0 0.35rem;
+    border-radius: 6px;
+    background: linear-gradient(90deg,
+        var(--enso-nina) 0 41.67%,
+        var(--enso-neutral) 41.67% 58.33%,
+        var(--enso-nino) 58.33% 100%);
+}
+
+.enso-gauge-mark {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--enso-ink);
+    transform: translate(-50%, -50%);
+}
+
+.enso-gauge-ends {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--enso-mute);
+    font-variant-numeric: tabular-nums;
+}
+
+.enso-facts { margin: auto 0 0; padding-top: 0.85rem; }
+
+.enso-facts div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.4rem 0;
+    border-top: 1px solid #f1f5f9;
+    font-size: 0.82rem;
+}
+
+.enso-facts dt { font-weight: 500; color: var(--enso-mute); }
+
+.enso-facts dd {
+    margin: 0;
+    font-weight: 700;
+    color: var(--enso-ink);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.enso-mini-wrap { align-self: center; }
+#ensoMini { width: 100%; display: block; }
+
+.enso-frame-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0.85rem 0.7rem 1.5rem;
+    border-top: 1px solid var(--enso-line);
+    background: #fafbfc;
+    border-radius: 0 0 20px 20px;
+}
+
+.enso-frame-foot p { margin: 0; font-size: 0.78rem; color: var(--enso-mute); }
+
+.enso-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 44px;
+    padding: 0 1.2rem;
+    border: 0;
+    border-radius: 50px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.enso-open-btn i { font-size: 0.8rem; }
+.enso-open-btn:hover { background: var(--enso-ink); }
+.enso-open-btn:disabled { opacity: 0.45; cursor: default; background: var(--navy); }
+
+/* --- diálogo con el tablero completo --- */
+html.enso-lock { overflow: hidden; }
+
+.enso-dialog {
+    width: min(1200px, calc(100vw - 3rem));
+    max-width: none;
+    height: min(920px, calc(100dvh - 3rem));
+    max-height: none;
+    padding: 0;
+    border: 0;
+    border-radius: 22px;
+    background: #f4f6f9;
+    color: var(--enso-ink);
+    box-shadow: 0 30px 80px -20px rgba(15, 23, 42, 0.5);
+    overflow: hidden;
+}
+
+.enso-dialog[open] {
+    display: flex;
+    flex-direction: column;
+    animation: ensoPop 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.enso-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.55);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    animation: ensoFade 0.26s ease;
+}
+
+@keyframes ensoPop {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ensoFade { from { opacity: 0; } to { opacity: 1; } }
+
+.enso-dialog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+    padding: 0.9rem 1rem 0.9rem 1.75rem;
+    background: #fff;
+    border-bottom: 1px solid var(--enso-line);
+}
+
+.enso-dialog-head h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--enso-ink);
+    margin: 0.1rem 0 0;
+}
+
+.enso-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--enso-mute);
+}
+
+.enso-dialog-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.5rem 1.75rem 2rem;
+}
+
+.enso-dialog-lede {
+    max-width: 72ch;
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--enso-mute);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .enso-dialog[open], .enso-dialog::backdrop { animation: none; }
 }
 
 /* --- estados --- */
@@ -3408,7 +3739,7 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    padding: 5rem 1rem;
+    padding: 1.5rem 1rem;
     color: var(--enso-mute);
 }
 
@@ -3816,10 +4147,30 @@
 @media (max-width: 991px) {
     .enso-grid { grid-template-columns: 1fr; }
     .enso-card--chart, .enso-card--model { grid-column: span 1; }
+    .enso-frame-legend { display: none; }
+    .enso-glance { grid-template-columns: 220px minmax(0, 1fr); gap: 1.25rem; }
+    .enso-now { padding-right: 1.25rem; }
 }
 
 @media (max-width: 767px) {
-    .enso-section { padding: 4rem 0; }
+    .enso-section { padding: 2.5rem 0; }
+    .enso-frame-head { padding-left: 1.1rem; }
+    .enso-frame-body { padding: 1.1rem; min-height: 0; }
+    .enso-glance { grid-template-columns: 1fr; gap: 1rem; }
+    .enso-now { padding-right: 0; border-right: 0; }
+    .enso-now-value { font-size: 2.2rem; }
+    .enso-facts { display: none; }
+    .enso-frame-foot { flex-direction: column; align-items: stretch; padding: 0.85rem 1.1rem 1.1rem; }
+    .enso-open-btn { justify-content: center; }
+    .enso-dialog {
+        width: 100vw;
+        height: 100dvh;
+        border-radius: 0;
+    }
+    .enso-dialog-head { padding-left: 1.1rem; }
+    .enso-dialog-head h2 { font-size: 1.05rem; }
+    .enso-dialog-body { padding: 1.1rem 1.1rem 2rem; }
+    .enso-chip, .enso-tab { min-height: 40px; }
     .enso-kpis { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
     .enso-kpi { padding: 1rem; }
     .enso-kpi-value { font-size: 1.5rem; }
@@ -4313,6 +4664,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let range = 'all';        // rango activo de la gráfica
         let focus = null;         // [i, j] cuando se enfoca un episodio
         let epFilter = 'all';     // filtro de la tabla de episodios
+        let rendered = false;     // el tablero completo se arma al abrirlo por primera vez
+
+        const root = board.closest('.enso-section');
+        const dialog = document.getElementById('ensoDialog');
 
         // --- utilidades ---
         const el = (id) => document.getElementById(id);
@@ -4336,8 +4691,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then((d) => {
                     DATA = d;
                     el('ensoLoading').hidden = true;
-                    el('ensoContent').hidden = false;
-                    render();
+                    el('ensoGlance').hidden = false;
+                    renderGlance();
+                    drawMini();
+                    root.querySelectorAll('[data-enso-open]').forEach((b) => { b.disabled = false; });
                 })
                 .catch(() => {
                     el('ensoLoading').hidden = true;
@@ -4366,6 +4723,55 @@ document.addEventListener('DOMContentLoaded', function() {
             renderRanking();
             renderMethod();
             drawAll();
+        }
+
+        // --- diálogo con el tablero completo ---
+        function openBoard() {
+            if (!DATA || dialog.open) return;
+            dialog.showModal();
+            document.documentElement.classList.add('enso-lock');
+            // Se arma con el diálogo ya visible: los SVG ocultos miden 0.
+            if (!rendered) { render(); rendered = true; } else { drawAll(); }
+        }
+
+        root.querySelectorAll('[data-enso-open]').forEach((b) => b.addEventListener('click', openBoard));
+        el('ensoClose').addEventListener('click', function () { dialog.close(); });
+        // Clic en el fondo oscuro (el propio <dialog>, fuera de su contenido).
+        dialog.addEventListener('click', function (ev) { if (ev.target === dialog) dialog.close(); });
+        dialog.addEventListener('close', function () {
+            document.documentElement.classList.remove('enso-lock');
+        });
+
+        // --- vista compacta: lectura actual ---
+        function renderGlance() {
+            const k = DATA.kpis;
+            const f = k.fase_actual;
+            const LIM = 3;   // la escala va de −3 a +3 °C
+            const pos = (Math.max(-LIM, Math.min(LIM, k.ultimo_oni)) + LIM) / (2 * LIM) * 100;
+            const top = k.nino_mas_fuerte;
+            el('ensoNow').innerHTML =
+                '<div class="enso-now-label">Último dato · ' + k.ultimo_periodo + '</div>' +
+                '<div class="enso-now-value">' + signo(k.ultimo_oni) + '<small>°C</small></div>' +
+                '<div class="enso-now-phase"><i style="background:' + COLOR[f] + '"></i>' + NOMBRE[f] + '</div>' +
+                '<div class="enso-gauge" aria-hidden="true">' +
+                '<span class="enso-gauge-mark" style="left:' + pos.toFixed(1) + '%"></span></div>' +
+                '<div class="enso-gauge-ends" aria-hidden="true"><span>−3</span><span>0</span><span>+3</span></div>' +
+                '<dl class="enso-facts">' +
+                '<div><dt>Episodios El Niño</dt><dd>' + k.episodios_nino + '</dd></div>' +
+                '<div><dt>Episodios La Niña</dt><dd>' + k.episodios_nina + '</dd></div>' +
+                '<div><dt>Pico histórico</dt><dd>' + signo(top.pico) + ' °C · ' +
+                top.pico_fecha.slice(0, 4) + '</dd></div>' +
+                '</dl>';
+            el('ensoFrameSpan').textContent = '· ' + DATA.meta.desde.slice(0, 4) + '–' +
+                DATA.meta.hasta.slice(0, 4);
+        }
+
+        // --- vista compacta: serie completa ---
+        function drawMini() {
+            const svg = el('ensoMini');
+            const W = svg.parentElement.clientWidth || 640;
+            drawBars(svg, el('ensoMiniTip'), DATA.serie, W, W < 560 ? 170 : 220,
+                     { t: 10, r: 6, b: 24, l: 36 });
         }
 
         function drawAll() {
@@ -4439,10 +4845,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // --- gráfica principal: barras ONI ---
         function drawSeries() {
             const svg = el('ensoChart');
-            const wrap = svg.parentElement;
-            const W = wrap.clientWidth || 640;
-            const H = W < 560 ? 250 : 330;
-            const m = { t: 14, r: 10, b: 26, l: 40 };
+            const W = svg.parentElement.clientWidth || 640;
+            const [a, b] = visibleRange();
+            const pts = DATA.serie.slice(a, b);
+            drawBars(svg, el('ensoTip'), pts, W, W < 560 ? 250 : 330,
+                     { t: 14, r: 10, b: 26, l: 40 });
+            if (!pts.length) return;
+
+            const desde = pts[0].f.slice(0, 4);
+            const hasta = pts[pts.length - 1].f.slice(0, 4);
+            el('ensoChartSub').textContent = desde + ' – ' + hasta + ' · ' +
+                pts.length + ' temporadas' + (focus ? ' · episodio enfocado' : '');
+        }
+
+        // Barras ONI coloreadas por fase; lo usan la vista compacta y el tablero.
+        function drawBars(svg, tip, pts, W, H, m) {
             const pw = W - m.l - m.r;
             const ph = H - m.t - m.b;
 
@@ -4451,8 +4868,6 @@ document.addEventListener('DOMContentLoaded', function() {
             svg.setAttribute('height', H);
             svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
 
-            const [a, b] = visibleRange();
-            const pts = DATA.serie.slice(a, b);
             if (!pts.length) return;
 
             const maxAbs = Math.max(1, Math.ceil(Math.max.apply(null,
@@ -4527,7 +4942,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             svg.appendChild(guide);
 
-            const tip = el('ensoTip');
             const hit = mk('rect', {
                 x: m.l, y: m.t, width: pw, height: ph, fill: 'transparent'
             });
@@ -4557,11 +4971,6 @@ document.addEventListener('DOMContentLoaded', function() {
             hit.addEventListener('mouseleave', leave);
             hit.addEventListener('touchmove', function (e) { move(e); }, { passive: true });
             hit.addEventListener('touchend', leave);
-
-            const desde = pts[0].f.slice(0, 4);
-            const hasta = pts[pts.length - 1].f.slice(0, 4);
-            el('ensoChartSub').textContent = desde + ' – ' + hasta + ' · ' +
-                pts.length + ' temporadas' + (focus ? ' · episodio enfocado' : '');
         }
 
         // --- tabla de episodios ---
@@ -4830,9 +5239,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // --- controles ---
-        board.querySelectorAll('[data-range]').forEach((btn) => {
+        root.querySelectorAll('[data-range]').forEach((btn) => {
             btn.addEventListener('click', function () {
-                board.querySelectorAll('[data-range]').forEach((b) => b.classList.remove('is-active'));
+                root.querySelectorAll('[data-range]').forEach((b) => b.classList.remove('is-active'));
                 btn.classList.add('is-active');
                 range = btn.dataset.range;
                 focus = null;
@@ -4841,21 +5250,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        board.querySelectorAll('[data-ep]').forEach((btn) => {
+        root.querySelectorAll('[data-ep]').forEach((btn) => {
             btn.addEventListener('click', function () {
-                board.querySelectorAll('[data-ep]').forEach((b) => b.classList.remove('is-active'));
+                root.querySelectorAll('[data-ep]').forEach((b) => b.classList.remove('is-active'));
                 btn.classList.add('is-active');
                 epFilter = btn.dataset.ep;
                 renderEpisodes();
             });
         });
 
-        board.querySelectorAll('[data-tab]').forEach((btn) => {
+        root.querySelectorAll('[data-tab]').forEach((btn) => {
             btn.addEventListener('click', function () {
-                board.querySelectorAll('[data-tab]').forEach((b) => b.classList.remove('is-active'));
-                board.querySelectorAll('[data-pane]').forEach((p) => p.classList.remove('is-active'));
+                root.querySelectorAll('[data-tab]').forEach((b) => b.classList.remove('is-active'));
+                root.querySelectorAll('[data-pane]').forEach((p) => p.classList.remove('is-active'));
                 btn.classList.add('is-active');
-                board.querySelector('[data-pane="' + btn.dataset.tab + '"]').classList.add('is-active');
+                root.querySelector('[data-pane="' + btn.dataset.tab + '"]').classList.add('is-active');
                 // Los SVG ocultos miden 0: se redibujan al mostrarse.
                 if (btn.dataset.tab === 'pca') drawPca();
             });
@@ -4866,9 +5275,12 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('resize', function () {
             if (!DATA) return;
             clearTimeout(rt);
-            rt = setTimeout(drawAll, 180);
+            rt = setTimeout(function () {
+                drawMini();
+                if (dialog.open) drawAll();
+            }, 180);
         });
     })();
 </script>
 
-{% endblock %}
+{% endblock %}

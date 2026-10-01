@@ -77,6 +77,9 @@ class EnsoDataTests(TestCase):
         html = r.content.decode()
         self.assertIn('id="ensoBoard"', html)
         self.assertIn(reverse('enso_data'), html)
+        # Marco compacto en la portada; el tablero completo vive en un diálogo.
+        self.assertIn('id="ensoDialog"', html)
+        self.assertIn('data-enso-open', html)
         # La sección va inmediatamente después del hero.
         self.assertLess(html.index('scroll-indicator'), html.index('id="ensoBoard"'))
         self.assertLess(html.index('id="ensoBoard"'), html.index('news-home-section'))
