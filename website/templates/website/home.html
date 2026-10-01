@@ -3828,45 +3828,50 @@ html.enso-lock { overflow: hidden; }
 
 .enso-filters--sm .enso-chip { padding: 0.3rem 0.75rem; font-size: 0.78rem; }
 
-/* --- KPIs --- */
+/* --- cifras: una sola franja con divisores finos, sin tarjetas --- */
 .enso-kpis {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-}
-
-.enso-kpi {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 1rem;
     background: #fff;
     border: 1px solid var(--enso-line);
-    border-radius: 16px;
-    padding: 1.25rem;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-    border-top: 3px solid var(--enso-neutral);
+    border-radius: 18px;
 }
 
-.enso-kpi--nino { border-top-color: var(--enso-nino); }
-.enso-kpi--nina { border-top-color: var(--enso-nina); }
-.enso-kpi--gold { border-top-color: var(--gold); }
+.enso-kpi { padding: 1.1rem 1.5rem 1.15rem; }
+.enso-kpi + .enso-kpi { border-left: 1px solid var(--enso-line); }
 
-.enso-kpi-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 700;
-    color: var(--enso-mute);
-    margin-bottom: 0.4rem;
-}
+.enso-kpi-label { font-size: 0.82rem; font-weight: 500; color: var(--enso-mute); }
 
 .enso-kpi-value {
-    font-size: 1.85rem;
-    font-weight: 800;
+    margin-top: 0.15rem;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
     color: var(--enso-ink);
-    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
 }
 
-.enso-kpi-value small { font-size: 0.95rem; font-weight: 700; color: var(--enso-mute); }
-.enso-kpi-sub { font-size: 0.82rem; color: var(--enso-mute); margin-top: 0.3rem; }
+.enso-kpi-value small {
+    margin-left: 0.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--enso-mute);
+}
+
+.enso-kpi-sub {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+    font-size: 0.82rem;
+    color: var(--enso-mute);
+}
+
+.enso-kpi-sub i { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.enso-kpi-sub b { font-weight: 600; color: var(--enso-ink); }
 
 /* --- rejilla y tarjetas --- */
 .enso-grid {
@@ -4145,10 +4150,6 @@ html.enso-lock { overflow: hidden; }
 .enso-method-body dl { margin: 0; }
 
 /* --- responsive --- */
-@media (max-width: 1199px) {
-    .enso-kpis { grid-template-columns: repeat(3, 1fr); }
-}
-
 @media (max-width: 991px) {
     .enso-grid { grid-template-columns: 1fr; }
     .enso-card--chart, .enso-card--model { grid-column: span 1; }
@@ -4176,9 +4177,19 @@ html.enso-lock { overflow: hidden; }
     .enso-dialog-head h2 { font-size: 1.05rem; }
     .enso-dialog-body { padding: 1.1rem 1.1rem 2rem; }
     .enso-chip, .enso-tab { min-height: 40px; }
-    .enso-kpis { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-    .enso-kpi { padding: 1rem; }
-    .enso-kpi-value { font-size: 1.5rem; }
+    /* en móvil cada cifra es una fila: texto a la izquierda, valor a la derecha */
+    .enso-kpis { grid-template-columns: 1fr; border-radius: 14px; }
+    .enso-kpi {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        column-gap: 1rem;
+        align-items: center;
+        padding: 0.8rem 1.1rem;
+    }
+    .enso-kpi + .enso-kpi { border-left: 0; border-top: 1px solid var(--enso-line); }
+    .enso-kpi-label { grid-column: 1; grid-row: 1; }
+    .enso-kpi-sub { grid-column: 1; grid-row: 2; margin-top: 0.1rem; }
+    .enso-kpi-value { grid-column: 2; grid-row: 1 / span 2; margin: 0; font-size: 1.5rem; }
     .enso-card { padding: 1.15rem; border-radius: 14px; }
     .enso-card-head { flex-direction: column; align-items: stretch; }
     .enso-bar-row { grid-template-columns: 1fr; gap: 0.25rem; }
@@ -4188,9 +4199,6 @@ html.enso-lock { overflow: hidden; }
     .enso-filters { justify-content: center; }
 }
 
-@media (max-width: 480px) {
-    .enso-kpis { grid-template-columns: 1fr; }
-}
 </style>
 
 <!-- ===== ANIME.JS ===== -->
@@ -4810,43 +4818,30 @@ document.addEventListener('DOMContentLoaded', function() {
         // --- KPIs ---
         function renderKpis() {
             const k = DATA.kpis;
-            const tiles = [
+            const top = k.nino_mas_fuerte;
+            const cifras = [
                 {
-                    cls: 'enso-kpi--' + k.fase_actual,
-                    label: 'Fase más reciente',
-                    value: signo(k.ultimo_oni) + ' <small>°C</small>',
-                    sub: NOMBRE[k.fase_actual] + ' · ' + k.ultimo_periodo
+                    label: 'Último dato',
+                    value: signo(k.ultimo_oni) + '<small>°C</small>',
+                    sub: '<i style="background:' + COLOR[k.fase_actual] + '"></i><b>' +
+                        NOMBRE[k.fase_actual] + '</b> · ' + k.ultimo_periodo
                 },
                 {
-                    cls: 'enso-kpi--nino',
-                    label: 'Episodios El Niño',
+                    label: 'Episodios de El Niño',
                     value: k.episodios_nino,
-                    sub: k.meses_nino + ' meses desde 1950'
+                    sub: k.meses_nino + ' meses en total desde ' + DATA.meta.desde.slice(0, 4)
                 },
                 {
-                    cls: 'enso-kpi--nina',
-                    label: 'Episodios La Niña',
-                    value: k.episodios_nina,
-                    sub: k.meses_nina + ' meses desde 1950'
-                },
-                {
-                    cls: 'enso-kpi--gold',
                     label: 'El Niño más intenso',
-                    value: signo(k.nino_mas_fuerte.pico) + ' <small>°C</small>',
-                    sub: k.nino_mas_fuerte.inicio_seas + ' – ' + k.nino_mas_fuerte.fin_seas
-                },
-                {
-                    cls: '',
-                    label: 'Reparto del tiempo',
-                    value: num(k.pct_neutral, 1) + ' <small>% neutral</small>',
-                    sub: num(k.pct_nino, 1) + ' % El Niño · ' + num(k.pct_nina, 1) + ' % La Niña'
+                    value: signo(top.pico) + '<small>°C</small>',
+                    sub: '<b>' + aniosEpisodio(top) + '</b> · pico en ' + mesAnio(top.pico_fecha)
                 }
             ];
-            el('ensoKpis').innerHTML = tiles.map((t) =>
-                '<div class="enso-kpi ' + t.cls + '">' +
-                '<div class="enso-kpi-label">' + t.label + '</div>' +
-                '<div class="enso-kpi-value">' + t.value + '</div>' +
-                '<div class="enso-kpi-sub">' + t.sub + '</div></div>'
+            el('ensoKpis').innerHTML = cifras.map((c) =>
+                '<div class="enso-kpi">' +
+                '<div class="enso-kpi-label">' + c.label + '</div>' +
+                '<div class="enso-kpi-value">' + c.value + '</div>' +
+                '<div class="enso-kpi-sub">' + c.sub + '</div></div>'
             ).join('');
         }
 
