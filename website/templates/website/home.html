@@ -222,6 +222,44 @@
                     </article>
                 </section>
 
+                <!-- Modelo de pronóstico: figuras del modelo (static/images/enso/) -->
+                <section class="enso-card enso-forecast" aria-labelledby="ensoForecastTitle">
+                    <header class="enso-card-head">
+                        <div>
+                            <h3 id="ensoForecastTitle">{% trans "Modelo de pronóstico" %}</h3>
+                            <p>{% trans "Toca una figura para verla en tamaño completo." %}</p>
+                        </div>
+                    </header>
+                    <figure class="enso-fig">
+                        <a href="{% static 'images/enso/modelo_validacion.jpg' %}" target="_blank" rel="noopener">
+                            <img src="{% static 'images/enso/modelo_validacion.jpg' %}" width="1600" height="676" loading="lazy"
+                                 alt="{% trans 'Validación del modelo: se entrena con el 80 % de la serie y se pone a prueba pronosticando a seis meses sobre el 20 % restante.' %}">
+                        </a>
+                        <figcaption>{% trans "Validación del modelo: se entrena con el 80 % de la serie y se pone a prueba pronosticando a seis meses sobre el 20 % restante." %}</figcaption>
+                    </figure>
+                    <figure class="enso-fig">
+                        <a href="{% static 'images/enso/modelo_pronostico_6_meses.jpg' %}" target="_blank" rel="noopener">
+                            <img src="{% static 'images/enso/modelo_pronostico_6_meses.jpg' %}" width="1600" height="657" loading="lazy"
+                                 alt="{% trans 'Pronóstico del índice Niño 3.4 a seis meses, de agosto de 2026 a enero de 2027, con su intervalo de confianza del 95 %.' %}">
+                        </a>
+                        <figcaption>{% trans "Pronóstico del índice Niño 3.4 a seis meses, de agosto de 2026 a enero de 2027, con su intervalo de confianza del 95 %." %}</figcaption>
+                    </figure>
+                    <figure class="enso-fig enso-fig--narrow">
+                        <a href="{% static 'images/enso/modelo_pronostico_temporadas.jpg' %}" target="_blank" rel="noopener">
+                            <img src="{% static 'images/enso/modelo_pronostico_temporadas.jpg' %}" width="1280" height="811" loading="lazy"
+                                 alt="{% trans 'Pronóstico por temporadas de tres meses y probabilidad de cada categoría de intensidad.' %}">
+                        </a>
+                        <figcaption>{% trans "Pronóstico por temporadas de tres meses y probabilidad de cada categoría de intensidad." %}</figcaption>
+                    </figure>
+                    <figure class="enso-fig">
+                        <a href="{% static 'images/enso/modelo_roni_serie.jpg' %}" target="_blank" rel="noopener">
+                            <img src="{% static 'images/enso/modelo_roni_serie.jpg' %}" width="1600" height="704" loading="lazy"
+                                 alt="{% trans 'Serie del índice relativo (RONI) de 1980 a 2026, con los episodios que superaron +2,0 °C.' %}">
+                        </a>
+                        <figcaption>{% trans "Serie del índice relativo (RONI) de 1980 a 2026, con los episodios que superaron +2,0 °C." %}</figcaption>
+                    </figure>
+                </section>
+
                 <!-- Metodología -->
                 <details class="enso-method">
                     <summary>
@@ -3935,6 +3973,33 @@ html.enso-lock { overflow: hidden; }
     content: attr(data-vacio);
     font-size: 0.82rem;
     color: #94a3b8;
+}
+
+/* --- modelo de pronóstico: figuras --- */
+.enso-forecast { margin-bottom: 1rem; }
+
+.enso-fig { margin: 0; }
+.enso-fig + .enso-fig { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--enso-line); }
+
+.enso-fig a { display: block; border-radius: 10px; }
+.enso-fig a:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+.enso-fig img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid var(--enso-line);
+}
+
+/* figura de proporción más alta: se acota para que no domine la pantalla */
+.enso-fig--narrow img { max-width: 860px; margin: 0 auto; }
+
+.enso-fig figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--enso-mute);
 }
 
 /* --- nota bajo la gráfica --- */
