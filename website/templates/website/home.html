@@ -94,7 +94,7 @@
         <div class="enso-frame" id="ensoBoard" data-src="{% url 'enso_data' %}" data-animate="fadeInUp">
             <header class="enso-frame-head">
                 <div class="enso-frame-title">
-                    <h2>{% trans "Observatorio del Fenómeno del Niño" %}</h2>
+                    <h2>{% trans "Fenómeno del Niño y la seguridad energética" %}</h2>
                     <p>{% trans "Índice Oceánico del Niño (ONI)" %} · NOAA <span id="ensoFrameSpan"></span></p>
                 </div>
                 <div class="enso-legend enso-frame-legend">
@@ -149,7 +149,7 @@
             <header class="enso-dialog-head">
                 <div>
                     <span class="enso-eyebrow">{% trans "Datos abiertos · NOAA" %}</span>
-                    <h2 id="ensoDialogTitle">{% trans "Observatorio del Fenómeno del Niño" %}</h2>
+                    <h2 id="ensoDialogTitle">{% trans "Fenómeno del Niño y la seguridad energética" %}</h2>
                 </div>
                 <button type="button" class="enso-icon-btn" id="ensoClose"
                         aria-label="{% trans 'Cerrar' %}" title="{% trans 'Cerrar' %}">
@@ -159,7 +159,7 @@
 
             <div class="enso-dialog-body">
                 <p class="enso-dialog-lede">
-                    {% trans "Setenta y cuatro años de temperatura del Pacífico ecuatorial, los episodios de El Niño y La Niña, y qué tan lejos alcanza a predecirlos un modelo estadístico." %}
+                    {% trans "Más de setenta años de temperatura del Pacífico ecuatorial, los episodios de El Niño y La Niña, y qué tan lejos alcanza a predecirlos un modelo estadístico." %}
                 </p>
 
                 <!-- Tablero -->
@@ -198,6 +198,7 @@
                             <svg id="ensoChart" role="img"
                                  aria-label="{% trans 'Serie histórica del Índice Oceánico del Niño' %}"></svg>
                         </div>
+                        <div class="enso-note enso-super" id="ensoSuper"></div>
                         <p class="enso-foot">
                             {% trans "Anomalía de la temperatura superficial del mar en la región Niño 3.4. Un episodio se declara cuando el índice supera ±0,5 °C durante cinco temporadas seguidas." %}
                         </p>
@@ -4092,6 +4093,10 @@ html.enso-lock { overflow: hidden; }
 
 /* --- PCA y pronóstico --- */
 #ensoPca, #ensoSkill { width: 100%; display: block; }
+.enso-super p { margin: 0; }
+.enso-super ul { margin: 0.3rem 0 0.5rem; padding-left: 1.1rem; }
+.enso-super b { color: var(--enso-ink); }
+
 .enso-note {
     font-size: 0.78rem;
     color: var(--enso-mute);
@@ -4681,6 +4686,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const signo = (v, d) => (v > 0 ? '+' : '') + num(v, d);
         const fase = (v) => (v >= 0.5 ? 'nino' : v <= -0.5 ? 'nina' : 'neutral');
         const NOMBRE = { nino: 'El Niño', nina: 'La Niña', neutral: 'Neutral' };
+        // Líneas de referencia de la gráfica: El Niño en +1,0 °C y Súper Niño en +2,0 °C.
+        const NINO_LINE = 1;
+        const SUPER_LINE = 2;
+        const ROJO_OSCURO = '#a32f2f';
+        const superNinos = () => DATA.episodios.filter((e) => e.tipo === 'nino' && e.pico >= SUPER_LINE);
+        // "1997–98": años que abarca un episodio.
+        const aniosEpisodio = (e) => {
+            const a = e.inicio.slice(0, 4), z = e.fin.slice(0, 4);
+            return a === z ? a : a + '–' + z.slice(2);
+        };
         const mesAnio = (f) => MESES[parseInt(f.slice(5, 7), 10) - 1] + ' ' + f.slice(0, 4);
         const clear = (node) => { while (node.firstChild) node.removeChild(node.firstChild); };
 
@@ -4719,6 +4734,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function render() {
             renderStatus();
             renderKpis();
+            renderSuper();
             renderEpisodes();
             renderRanking();
             renderMethod();
@@ -4771,7 +4787,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const svg = el('ensoMini');
             const W = svg.parentElement.clientWidth || 640;
             drawBars(svg, el('ensoMiniTip'), DATA.serie, W, W < 560 ? 170 : 220,
-                     { t: 10, r: 6, b: 24, l: 36 });
+                     { t: 10, r: 6, b: 24, l: 36 }, true);
         }
 
         function drawAll() {
@@ -4858,8 +4874,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 pts.length + ' temporadas' + (focus ? ' · episodio enfocado' : '');
         }
 
+        // --- Súper Niños y posición del año en curso, en texto ---
+        function renderSuper() {
+            const lista = superNinos().map((e) =>
+                '<li><b>' + aniosEpisodio(e) + '</b> · de ' + e.inicio_seas + ' a ' + e.fin_seas +
+                ', pico de ' + signo(e.pico) + ' °C en ' + mesAnio(e.pico_fecha) + '</li>').join('');
+            const k = DATA.kpis;
+            const v = k.ultimo_oni;
+            const anio = k.ultimo_periodo.slice(-4);
+            let donde;
+            if (v >= SUPER_LINE) {
+                donde = 'ya está sobre la línea de Súper Niño';
+            } else if (v >= NINO_LINE) {
+                donde = 'está por encima de la línea de El Niño y a ' + num(SUPER_LINE - v) +
+                    ' °C de la de Súper Niño';
+            } else {
+                donde = 'está por debajo de la línea de El Niño (' + signo(NINO_LINE, 1) + ' °C)';
+            }
+            el('ensoSuper').innerHTML =
+                '<p><b>Súper Niños desde 1950</b> (pico de ' + signo(SUPER_LINE, 1) + ' °C o más)</p>' +
+                '<ul>' + lista + '</ul>' +
+                '<p><b>' + anio + '</b> ' + donde + ': ' + signo(v) + ' °C en ' + k.ultimo_periodo +
+                ', el último dato publicado.</p>';
+        }
+
         // Barras ONI coloreadas por fase; lo usan la vista compacta y el tablero.
-        function drawBars(svg, tip, pts, W, H, m) {
+        function drawBars(svg, tip, pts, W, H, m, compact) {
             const pw = W - m.l - m.r;
             const ph = H - m.t - m.b;
 
@@ -4934,6 +4974,58 @@ document.addEventListener('DOMContentLoaded', function() {
                     svg.appendChild(t);
                 }
             });
+
+            // --- marcas de lectura ---
+            const halo = { 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 3, 'stroke-linejoin': 'round' };
+            const label = (txt, attrs) => {
+                const t = mk('text', Object.assign({ 'font-size': 10, 'font-weight': 700 }, halo, attrs));
+                t.textContent = txt;
+                svg.appendChild(t);
+            };
+            const xDe = (f) => {
+                const i = pts.findIndex((p) => p.f === f);
+                return i < 0 ? null : m.l + i * bw + bw / 2;
+            };
+
+            // líneas de El Niño (+1,0) y Súper Niño (+2,0)
+            [[NINO_LINE, 'El Niño', 0.55], [SUPER_LINE, 'Súper Niño', 0.95]].forEach((l) => {
+                if (l[0] > maxAbs) return;
+                svg.appendChild(mk('line', {
+                    x1: m.l, x2: W - m.r, y1: y(l[0]), y2: y(l[0]),
+                    stroke: ROJO_OSCURO, 'stroke-width': 1.2, 'stroke-opacity': l[2]
+                }));
+                label(l[1] + (compact ? ' ' : ' · ') + signo(l[0], 1) + (compact ? '' : ' °C'),
+                      { x: m.l + 5, y: y(l[0]) - 4, fill: ROJO_OSCURO });
+            });
+
+            // Súper Niños: episodios cuyo pico llega a +2,0 °C
+            superNinos().forEach((e) => {
+                const x = xDe(e.pico_fecha.slice(0, 7));
+                if (x === null) return;
+                svg.appendChild(mk('circle', {
+                    cx: x, cy: y(e.pico), r: 3.2, fill: '#fff', stroke: ROJO_OSCURO, 'stroke-width': 2
+                }));
+                label(aniosEpisodio(e), {
+                    x: Math.max(m.l + 24, Math.min(W - m.r - 24, x)), y: y(e.pico) - 8,
+                    'text-anchor': 'middle', fill: ROJO_OSCURO
+                });
+            });
+
+            // dónde va el último dato (el año en curso)
+            const ult = DATA.serie[DATA.serie.length - 1];
+            const xu = xDe(ult.f);
+            if (xu !== null) {
+                svg.appendChild(mk('line', {
+                    x1: xu, x2: xu, y1: m.t, y2: m.t + ph,
+                    stroke: NAVY, 'stroke-width': 1, 'stroke-dasharray': '2 3'
+                }));
+                svg.appendChild(mk('circle', {
+                    cx: xu, cy: y(ult.v), r: 4, fill: NAVY, stroke: '#fff', 'stroke-width': 2
+                }));
+                label(ult.f.slice(0, 4) + ' · ' + signo(ult.v), {
+                    x: xu - 7, y: y(ult.v) + (ult.v >= 0 ? -7 : 14), 'text-anchor': 'end', fill: NAVY
+                });
+            }
 
             // guía y captura del puntero
             const guide = mk('line', {
@@ -5208,7 +5300,9 @@ document.addEventListener('DOMContentLoaded', function() {
             el('ensoSkillNote').textContent =
                 'El modelo identifica la fase del mes en curso con ' + num(h0.acierto, 1) +
                 ' % de acierto, frente al ' + num(h0.base, 1) + ' % de acertar siempre la fase más común. ' +
-                'La ventaja se agota hacia los ' + ultimo + ' meses: más allá, la historia reciente del ONI ' +
+                (ultimo > 0
+                    ? 'La ventaja se agota hacia los ' + ultimo + ' meses: más allá, la historia reciente del ONI '
+                    : 'La ventaja no pasa del mes en curso: hacia adelante, la historia reciente del ONI ') +
                 'deja de aportar información. ' + DATA.pronostico.nota;
         }
 

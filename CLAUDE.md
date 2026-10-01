@@ -1023,19 +1023,19 @@ dashboard/templates/dashboard/
 
 Sección tipo tablero de BI en la portada, **justo debajo del hero** (`id="enso"` en `website/templates/website/home.html`). Muestra la serie histórica del ONI, los episodios de El Niño / La Niña y los resultados del análisis estadístico.
 
-**Flujo de datos:** el script `scripts/generar_datos_enso.py` lee la tabla ONI de la NOAA (`Data T sea surface.xlsx`, columnas SEAS/YR/TOTAL/ANOM, 889 temporadas 1950-2024) y escribe `website/data/enso.json` (~53 KB). El JSON se versiona; la vista `enso_data` lo sirve en `/datos/enso.json` desde el mismo dominio (no como estático, para no depender de CORS en S3) y lo cachea 24 h. El tablero lo carga con `fetch` diferido cuando la sección entra en pantalla.
+**Flujo de datos:** el script `scripts/generar_datos_enso.py` lee la tabla ONI de la NOAA (columnas SEAS/YR/TOTAL/ANOM; acepta el `oni.ascii.txt` que publica la NOAA en https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt o el Excel equivalente; última carga 2026-10-01: 919 temporadas, 1950 a JJA 2026) y escribe `website/data/enso.json` (~53 KB). El JSON se versiona; la vista `enso_data` lo sirve en `/datos/enso.json` desde el mismo dominio (no como estático, para no depender de CORS en S3) y lo cachea 24 h. El tablero lo carga con `fetch` diferido cuando la sección entra en pantalla.
 
 **El script no es un management command a propósito:** necesita numpy/scipy/pandas/openpyxl, que no están en `requirements.txt`. Solo se ejecuta en desarrollo cuando hay datos nuevos:
 
 ```bash
 python3 scripts/generar_datos_enso.py \
-    --input "/ruta/Data T sea surface.xlsx" \
+    --input oni.ascii.txt \
     --output website/data/enso.json
 ```
 
 **Qué calcula:**
 - **Episodios**: rachas de ≥5 temporadas solapadas con |ONI| ≥ 0,5 (criterio operativo NOAA), clasificadas por pico en débil / moderado / fuerte / muy fuerte.
-- **Caracterización**: ventanas deslizantes de 36 meses (paso 1 mes, 854 ventanas) con variables de tiempo, Welch y STFT. Cada ventana se etiqueta con **la fase de su mes final**.
+- **Caracterización**: ventanas deslizantes de 36 meses (paso 1 mes, 884 ventanas) con variables de tiempo, Welch y STFT. Cada ventana se etiqueta con **la fase de su mes final**.
 - **Selección**: Kruskal-Wallis + FDR de Benjamini-Hochberg al 5 %, y descarte de variables con |r| ≥ 0,90.
 - **Capacidad predictiva**: regresión logística multinomial (implementada con numpy, sin sklearn) entrenada con el 70 % más antiguo y evaluada sobre los años posteriores, para horizontes de 0 a 12 meses, siempre contra una línea base de clase mayoritaria.
 
@@ -1043,7 +1043,7 @@ python3 scripts/generar_datos_enso.py \
 1. Su lectura "robusta" aplanaba las columnas YR, TOTAL y ANOM en una sola serie, así que analizaba valores que mezclaban años (1950), temperatura (24,7 °C) y anomalía (−1,53). Se comprueba en sus propios resultados: `iqr = 1950,465`. Aquí se usa solo la columna ANOM.
 2. Etiquetar la ventana completa con la regla de racha degeneraba a 36 meses (79 % de ventanas en la clase Nino y La Niña casi ausente). Se etiqueta por la fase del mes final, lo que da tres clases equilibradas.
 
-**Frontend:** en la portada solo se ve un **marco compacto** tipo visual de BI (`.enso-frame`, `id="ensoBoard"`): lectura del último dato con una escala La Niña–neutral–El Niño, tres cifras y la serie ONI completa. Los botones `[data-enso-open]` abren el **tablero completo en un `<dialog>` nativo** (`#ensoDialog`, `showModal()`): filtros de rango, KPIs, filtro por tipo de episodio, enfoque cruzado al hacer clic en un episodio, pestañas para variables / correlación / PCA, y panel de metodología. Se usa `<dialog>` porque va a la capa superior del navegador y no lo rompe el `transform` de `[data-animate]`. El tablero se arma al abrirlo por primera vez (los SVG ocultos miden 0). SVG dibujado a mano en JavaScript (sin librería de gráficas; `drawBars()` sirve a la vista compacta y al tablero), redibujado al cambiar el tamaño. Estilos bajo el prefijo `.enso-`. Los textos generados por JS están solo en español.
+**Frontend:** en la portada solo se ve un **marco compacto** tipo visual de BI (`.enso-frame`, `id="ensoBoard"`): lectura del último dato con una escala La Niña–neutral–El Niño, tres cifras y la serie ONI completa. Los botones `[data-enso-open]` abren el **tablero completo en un `<dialog>` nativo** (`#ensoDialog`, `showModal()`): filtros de rango, KPIs, filtro por tipo de episodio, enfoque cruzado al hacer clic en un episodio, pestañas para variables / correlación / PCA, y panel de metodología. Se usa `<dialog>` porque va a la capa superior del navegador y no lo rompe el `transform` de `[data-animate]`. El tablero se arma al abrirlo por primera vez (los SVG ocultos miden 0). SVG dibujado a mano en JavaScript (sin librería de gráficas; `drawBars()` sirve a la vista compacta y al tablero), redibujado al cambiar el tamaño. La gráfica ONI marca una línea de El Niño en +1,0 °C y otra de Súper Niño en +2,0 °C (`NINO_LINE`, `SUPER_LINE`), rotula los Súper Niños (episodios con pico ≥ +2,0, derivados de los datos) y señala el último dato con su año; bajo la gráfica del tablero se listan sus fechas. Estilos bajo el prefijo `.enso-`. Los textos generados por JS están solo en español.
 
 ## SEO Configuration
 

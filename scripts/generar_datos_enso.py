@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 """Genera `website/data/enso.json`, la fuente del Observatorio ENSO de la home.
 
-Entrada: la tabla ONI de la NOAA ("Data T sea surface.xlsx", hoja Sheet1) con
-columnas SEAS / YR / TOTAL / ANOM, una fila por temporada trimestral solapada.
+Entrada: la tabla ONI de la NOAA con columnas SEAS / YR / TOTAL / ANOM, una fila
+por temporada trimestral solapada. Acepta el texto plano que publica la NOAA
+(https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt, extension .txt) o el
+Excel "Data T sea surface.xlsx" (hoja Sheet1).
 
 Qué hace:
   1. Lee la serie de anomalías (ONI) y le asigna el mes central de cada temporada.
@@ -22,7 +24,7 @@ se versiona y la web solo lo lee.
 
 Uso:
     python3 scripts/generar_datos_enso.py \
-        --input "/ruta/Data T sea surface.xlsx" \
+        --input oni.ascii.txt \
         --output website/data/enso.json
 """
 from __future__ import annotations
@@ -91,7 +93,11 @@ FEATURE_FAMILY = {
 
 def leer_serie(path: Path) -> pd.DataFrame:
     """Lee la tabla ONI y devuelve un DataFrame ordenado con fecha central."""
-    df = pd.read_excel(path, header=1)
+    if path.suffix.lower() == '.txt':
+        # Tabla en texto plano tal como la publica la NOAA (oni.ascii.txt).
+        df = pd.read_csv(path, sep=r'\s+')
+    else:
+        df = pd.read_excel(path, header=1)
     df = df[['SEAS', 'YR', 'TOTAL', 'ANOM']].dropna(subset=['SEAS', 'YR', 'ANOM'])
     df['SEAS'] = df['SEAS'].astype(str).str.strip().str.upper()
     df = df[df['SEAS'].isin(SEASON_CENTER)].copy()
@@ -407,7 +413,7 @@ def evaluar_horizontes(F: pd.DataFrame, cols: list[str], serie: np.ndarray,
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--input', required=True, help='Ruta a "Data T sea surface.xlsx"')
+    ap.add_argument('--input', required=True, help='Ruta a oni.ascii.txt de la NOAA o al Excel equivalente')
     ap.add_argument('--output', default='website/data/enso.json')
     args = ap.parse_args()
 
