@@ -1,4 +1,8 @@
+from datetime import datetime, time
+
 from django.db import models
+from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _, get_language
 from django.utils.text import slugify
 
@@ -237,3 +241,151 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f'{self.name} — {self.subject}'
+
+
+class EventQuerySet(models.QuerySet):
+    """Un evento sin hora de fin se considera vigente hasta el final de su día."""
+
+    @staticmethod
+    def _not_ended():
+        return (
+            models.Q(ends_at__gte=timezone.now())
+            | models.Q(ends_at__isnull=True, starts_at__date__gte=timezone.localdate())
+        )
+
+    def published(self):
+        return self.filter(is_published=True)
+
+    def not_ended(self):
+        return self.filter(self._not_ended())
+
+    def ended(self):
+        return self.exclude(self._not_ended())
+
+    def upcoming(self):
+        """Publicados que aún no terminan, del más próximo al más lejano."""
+        return self.published().not_ended().order_by('starts_at')
+
+    def past(self):
+        """Publicados que ya terminaron, del más reciente al más antiguo."""
+        return self.published().ended().order_by('-starts_at')
+
+
+class Event(models.Model):
+    """Evento público de la ASNC (conferencias, webinars, talleres...).
+
+    Lo crea el superadmin desde /portal/eventos/. El más próximo se muestra en
+    el recuadro del hero de la portada.
+    """
+
+    class EventType(models.TextChoices):
+        CONFERENCE = 'CONFERENCE', _('Conferencia')
+        WEBINAR = 'WEBINAR', _('Webinar')
+        WORKSHOP = 'WORKSHOP', _('Taller')
+        NETWORKING = 'NETWORKING', _('Encuentro')
+        OTHER = 'OTHER', _('Evento')
+
+    class Modality(models.TextChoices):
+        IN_PERSON = 'IN_PERSON', _('Presencial')
+        VIRTUAL = 'VIRTUAL', _('Virtual')
+        HYBRID = 'HYBRID', _('Híbrido')
+
+    title = models.CharField(_('Título'), max_length=200)
+    slug = models.SlugField(_('Slug'), max_length=220, unique=True, blank=True)
+    event_type = models.CharField(
+        _('Tipo de evento'), max_length=20,
+        choices=EventType.choices, default=EventType.CONFERENCE,
+    )
+    modality = models.CharField(
+        _('Modalidad'), max_length=20,
+        choices=Modality.choices, default=Modality.IN_PERSON,
+    )
+    starts_at = models.DateTimeField(_('Inicio'))
+    ends_at = models.DateTimeField(
+        _('Fin'), null=True, blank=True,
+        help_text=_('Opcional. Sin hora de fin, el evento se muestra como próximo hasta el final de su día.'),
+    )
+    location = models.CharField(
+        _('Lugar'), max_length=200, blank=True,
+        help_text=_('En eventos virtuales, la plataforma (Zoom, Meet, YouTube...).'),
+    )
+    summary = models.CharField(
+        _('Resumen'), max_length=280,
+        help_text=_('Una o dos frases. Se muestran en la portada y en la agenda.'),
+    )
+    description = models.TextField(
+        _('Descripción'), blank=True,
+        help_text=_('Programa, ponentes, requisitos. Texto simple: los saltos de línea se respetan.'),
+    )
+    cover_image = models.ImageField(_('Imagen'), upload_to='events/', blank=True)
+    registration_url = models.URLField(
+        _('Enlace de inscripción'), blank=True,
+        help_text=_('Formulario de inscripción o enlace de acceso a la transmisión.'),
+    )
+    is_published = models.BooleanField(
+        _('Publicado'), default=True,
+        help_text=_('Desmárcalo para guardarlo como borrador sin mostrarlo en el sitio.'),
+    )
+    created_by = models.ForeignKey(
+        'users.User', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='events', verbose_name=_('Creado por'),
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = EventQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = _('Evento')
+        verbose_name_plural = _('Eventos')
+        ordering = ['-starts_at']
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title)[:200] or 'evento'
+            slug = base_slug
+            counter = 1
+            while Event.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base_slug}-{counter}'
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('event_detail', args=[self.slug])
+
+    @property
+    def end(self):
+        """Fin efectivo: la hora de fin o, si no hay, el final del día de inicio."""
+        if self.ends_at:
+            return self.ends_at
+        day = timezone.localtime(self.starts_at).date()
+        return timezone.make_aware(datetime.combine(day, time.max))
+
+    @property
+    def is_past(self):
+        return self.end < timezone.now()
+
+    @property
+    def is_ongoing(self):
+        now = timezone.now()
+        return self.starts_at <= now <= self.end
+
+    @property
+    def days_until(self):
+        """Días de calendario que faltan para el inicio (0 = hoy)."""
+        return (timezone.localtime(self.starts_at).date() - timezone.localdate()).days
+
+    @property
+    def start_month(self):
+        """Primer día del mes de inicio (hora local), para agrupar la agenda por mes."""
+        return timezone.localtime(self.starts_at).date().replace(day=1)
+
+    @property
+    def is_multiday(self):
+        if not self.ends_at:
+            return False
+        return timezone.localtime(self.ends_at).date() != timezone.localtime(self.starts_at).date()

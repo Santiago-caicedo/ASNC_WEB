@@ -386,6 +386,12 @@
             </a>
             {% endif %}
 
+            {% if user.is_superuser %}
+            <a href="{% url 'event_list' %}" class="nav-link {% if '/portal/eventos/' in request.path %}active{% endif %}">
+                <i class="bi bi-calendar-event"></i> Eventos
+            </a>
+            {% endif %}
+
             {% if user.is_admin %}
             <a href="{% url 'convocatorias_admin:list' %}" class="nav-link {% if 'convocatorias' in request.path %}active{% endif %}">
                 <i class="bi bi-megaphone"></i> Convocatorias

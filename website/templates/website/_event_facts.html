@@ -1,0 +1,28 @@
+{% load i18n %}
+{# Datos prácticos del evento: fecha, hora, lugar. #}
+<dl class="ev-facts">
+    <div>
+        <dt>{% trans "Fecha" %}</dt>
+        <dd>
+            {% if event.is_multiday %}
+                {{ event.starts_at|date:"j \d\e F" }} – {{ event.ends_at|date:"j \d\e F \d\e Y" }}
+            {% else %}
+                {{ event.starts_at|date:"l j \d\e F \d\e Y" }}
+            {% endif %}
+        </dd>
+    </div>
+    <div>
+        <dt>{% trans "Hora" %}</dt>
+        <dd>
+            {{ event.starts_at|date:"g:i a" }}{% if event.ends_at %} – {{ event.ends_at|date:"g:i a" }}{% endif %}
+            <span class="ev-facts-note">{% trans "hora de Colombia" %}</span>
+        </dd>
+    </div>
+    <div>
+        <dt>{% if event.modality == 'VIRTUAL' %}{% trans "Dónde" %}{% else %}{% trans "Lugar" %}{% endif %}</dt>
+        <dd>
+            {% if event.location %}{{ event.location }}{% else %}{% trans "Por confirmar" %}{% endif %}
+            <span class="ev-facts-note">{{ event.get_modality_display }}</span>
+        </dd>
+    </div>
+</dl>

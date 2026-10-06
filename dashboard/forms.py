@@ -1,7 +1,10 @@
+from datetime import datetime
+
 import nh3
 from django import forms
+from django.utils import timezone
 from django.contrib.auth import get_user_model
-from website.models import FeaturedMember, NewsArticle, NewsCategory
+from website.models import Event, FeaturedMember, NewsArticle, NewsCategory
 from website.countries import COUNTRIES
 from admissions.models import MembershipApplication
 
@@ -290,3 +293,101 @@ class EmailComposeForm(forms.Form):
             emails = [app.email for app in applicants if app.email]
 
         return list(set(emails))
+
+
+class EventForm(forms.ModelForm):
+    """Evento público. La fecha y las horas se piden por separado, como en un
+    calendario, y se combinan en `starts_at` / `ends_at`."""
+
+    MAX_IMAGE_MB = 5
+
+    date = forms.DateField(
+        label='Fecha',
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+    )
+    start_time = forms.TimeField(
+        label='Hora de inicio',
+        widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}, format='%H:%M'),
+    )
+    end_time = forms.TimeField(
+        label='Hora de fin', required=False,
+        widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}, format='%H:%M'),
+    )
+    end_date = forms.DateField(
+        label='Termina el', required=False,
+        help_text='Solo si el evento dura varios días.',
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+    )
+
+    class Meta:
+        model = Event
+        fields = [
+            'title', 'event_type', 'modality', 'location', 'summary',
+            'description', 'cover_image', 'registration_url', 'is_published',
+        ]
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: Jornada de Medicina Nuclear 2026',
+            }),
+            'event_type': forms.Select(attrs={'class': 'form-select'}),
+            'modality': forms.Select(attrs={'class': 'form-select'}),
+            'location': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: Auditorio Mayor UNAB, Bucaramanga',
+            }),
+            'summary': forms.Textarea(attrs={
+                'class': 'form-control', 'rows': 2, 'maxlength': 280,
+                'placeholder': 'De qué trata y a quién va dirigido, en una o dos frases.',
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control', 'rows': 8,
+                'placeholder': 'Programa, ponentes, requisitos de inscripción...',
+            }),
+            'cover_image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'registration_url': forms.URLInput(attrs={
+                'class': 'form-control', 'placeholder': 'https://',
+            }),
+            'is_published': forms.CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        event = self.instance
+        if event.pk and event.starts_at:
+            start = timezone.localtime(event.starts_at)
+            self.initial.setdefault('date', start.date())
+            self.initial.setdefault('start_time', start.time())
+            if event.ends_at:
+                end = timezone.localtime(event.ends_at)
+                self.initial.setdefault('end_time', end.time())
+                if end.date() != start.date():
+                    self.initial.setdefault('end_date', end.date())
+
+    def clean_cover_image(self):
+        image = self.cleaned_data.get('cover_image')
+        if image and hasattr(image, 'size') and image.size > self.MAX_IMAGE_MB * 1024 * 1024:
+            raise forms.ValidationError(f'La imagen pesa más de {self.MAX_IMAGE_MB} MB. Usa una más liviana.')
+        return image
+
+    def clean(self):
+        cleaned = super().clean()
+        day, start_time = cleaned.get('date'), cleaned.get('start_time')
+        end_time, end_date = cleaned.get('end_time'), cleaned.get('end_date')
+        if not day or not start_time:
+            return cleaned
+
+        tz = timezone.get_current_timezone()
+        starts_at = timezone.make_aware(datetime.combine(day, start_time), tz)
+        ends_at = None
+        if end_date and not end_time:
+            self.add_error('end_time', 'Indica a qué hora termina el último día.')
+        elif end_time:
+            ends_at = timezone.make_aware(datetime.combine(end_date or day, end_time), tz)
+            if ends_at <= starts_at:
+                field = 'end_date' if end_date else 'end_time'
+                self.add_error(field, 'El evento debe terminar después de empezar.')
+
+        self.instance.starts_at = starts_at
+        self.instance.ends_at = ends_at
+        return cleaned

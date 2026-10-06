@@ -1,0 +1,7 @@
+{# Campo del formulario de eventos: etiqueta, control, ayuda y error. #}
+<div class="evf-field">
+    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="evf-req" aria-hidden="true">*</span>{% endif %}</label>
+    {{ field }}
+    {% if field.errors %}<div class="evf-error" role="alert">{{ field.errors.0 }}</div>{% endif %}
+    {% if field.help_text %}<div class="evf-help">{{ field.help_text }}</div>{% endif %}
+</div>

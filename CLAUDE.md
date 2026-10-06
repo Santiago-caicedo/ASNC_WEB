@@ -276,6 +276,16 @@ News/blog article shown publicly and managed by admins/news editors.
 - `is_published`: BooleanField, `published_at`: DateTimeField (auto-set on publish)
 - `created_at`, `updated_at`: Timestamps
 
+### Event (`website/models.py`)
+Public events, managed **only by the superadmin** at `/portal/eventos/` (`SuperuserRequiredMixin`; sidebar link "Eventos" under Contenido Web, visible only to `is_superuser`).
+- `title`, `slug` (auto), `event_type` CONFERENCE|WEBINAR|WORKSHOP|NETWORKING|OTHER, `modality` IN_PERSON|VIRTUAL|HYBRID
+- `starts_at`, `ends_at` (optional), `location`, `summary` (≤280, shown on the homepage), `description` (plain text, rendered with `urlize|linebreaks`), `cover_image` (optional, `events/`), `registration_url`, `is_published` (default True), `created_by`
+- `EventQuerySet`: `published()`, `upcoming()` (not ended, by `starts_at`), `past()`, `ended()`, `not_ended()`. **An event without `ends_at` stays upcoming until the end of its day.**
+- Properties: `end`, `is_past`, `is_ongoing`, `days_until`, `is_multiday`, `start_month` (groups the agenda by month)
+- `EventForm` (`dashboard/forms.py`) asks for date / start time / end time / "dura varios días" separately and combines them in `clean()` (Bogotá time).
+- **Homepage hero box** shows the nearest upcoming event (`next_event` in `HomeView`); if there is none it falls back to the "Noticias de la Asociación" list. On mobile only the event box is shown (below the hero buttons).
+- Public: `/eventos/` (next event + rest grouped by month + past), `/eventos/<slug>/` (detail), `/eventos/<slug>/calendario.ics` (add to calendar). Shared partials `website/_event_*.html`. Events are in the sitemap.
+
 ### Convocatoria models (`convocatorias/models.py`)
 Public calls with a dynamic form builder.
 - **Convocatoria**: uuid, title, slug, description, cover_image, is_active, `opens_at`/`closes_at`, `success_message`, created_by. Property `is_open` (active + within date window); `submissions_count`.
@@ -318,7 +328,9 @@ Single-screen work management for the committees. **Visible only to `is_superuse
 /                              → Homepage (HomeView) - latest news + Observatorio ENSO
 /datos/enso.json               → JSON con la serie ONI, episodios y modelo (enso_data)
 /quienes-somos/                → About page with team + comités (AboutView)
-/eventos/                      → Events page - under construction (EventsView)
+/eventos/                      → Events agenda (EventsView)
+/eventos/<slug>/               → Event detail (EventDetailView)
+/eventos/<slug>/calendario.ics → .ics download (event_ics)
 /noticias/                     → Public news list (NewsListView)
 /noticias/<slug>/              → Public news detail (NewsDetailView)
 /recursos/plantilla-presentacion/ → PowerPoint template page
@@ -391,6 +403,10 @@ Single-screen work management for the committees. **Visible only to `is_superuse
 /portal/noticias/nueva/        → Create news
 /portal/noticias/<id>/editar/  → Edit news
 /portal/noticias/<id>/eliminar/ → Delete news
+
+# Events CRUD (Protected - SUPERUSER ONLY)
+/portal/eventos/               → Upcoming / drafts / past
+/portal/eventos/nuevo/ , /<id>/editar/ , /<id>/eliminar/
 
 # User & Role Management (Protected - admins)
 /portal/usuarios/              → User list
@@ -713,6 +729,7 @@ python manage.py showmigrations
 ### website
 - `0001_initial.py` (2026-01-17) - Creates FeaturedMember model
 - Adds `NewsArticle` model (news/blog) in a later migration
+- `0010_event.py` - Creates `Event` (public events)
 
 ### dashboard
 - `0001_initial.py` (2026-01-25) - Creates SentEmail model
@@ -733,10 +750,10 @@ python manage.py showmigrations
 ## Views Summary
 
 ### Website App
-- `HomeView` (TemplateView) - Public homepage (latest news + Observatorio ENSO)
+- `HomeView` (TemplateView) - Public homepage (next event in the hero box, latest news + Observatorio ENSO)
 - `enso_data()` - Sirve `website/data/enso.json` (cacheado 24 h) para el tablero de la portada
 - `AboutView` (ListView) - About page with FeaturedMembers + comités
-- `EventsView` (TemplateView) - Events page (under construction)
+- `EventsView` (TemplateView) - Events agenda; `EventDetailView`; `event_ics()` calendar file
 - `PrivacyPolicyView` (TemplateView) - Privacy policy
 - `PowerPointTemplateView` (TemplateView) - ASNC presentation template
 - `NewsListView` / `NewsDetailView` - Public news (blog)
@@ -914,7 +931,8 @@ GESTIÓN DE ASOCIADOS
 
 CONTENIDO WEB
 ├── Asociados Destacados (featured_member_list)
-└── Noticias (news_list)
+├── Noticias (news_list)
+└── Eventos (event_list) — only if user.is_superuser
 
 COMUNICACIONES
 └── Correos (email_history)
@@ -1192,7 +1210,7 @@ sudo systemctl restart gunicorn  # or your server process
 - [ ] Two-factor authentication
 - [ ] Celery for async email queue
 - [ ] Migrate to Amazon SES for better deliverability
-- [ ] Events management system (replace placeholder)
+- [x] ~~Events management system~~ (Implemented - superadmin CRUD, agenda, next event in the hero)
 - [x] ~~Observatorio ENSO en la portada~~ (Implementado - tablero con datos NOAA)
 - [ ] Email open/click tracking
 - [ ] Bulk email with rate limiting

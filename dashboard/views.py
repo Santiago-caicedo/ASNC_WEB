@@ -14,10 +14,11 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from email.utils import formataddr
 from admissions.models import MembershipApplication
-from website.models import FeaturedMember, NewsArticle, NewsCategory
+from website.models import Event, FeaturedMember, NewsArticle, NewsCategory
 from carnets.models import MemberCard
 from users.models import User
-from .forms import FeaturedMemberForm, NewsArticleForm, NewsCategoryForm, EmailComposeForm, UserRoleForm
+from admissions.views import SuperuserRequiredMixin
+from .forms import EventForm, FeaturedMemberForm, NewsArticleForm, NewsCategoryForm, EmailComposeForm, UserRoleForm
 from .models import SentEmail
 
 
@@ -227,6 +228,61 @@ class NewsDeleteView(NewsEditorRequiredMixin, LoginRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Noticia eliminada exitosamente.')
+        return super().form_valid(form)
+
+
+# ============================================
+# Eventos (solo superadmin)
+# ============================================
+
+class EventListView(SuperuserRequiredMixin, ListView):
+    """Eventos del portal: próximos, borradores pendientes y anteriores."""
+    model = Event
+    template_name = 'dashboard/events/list.html'
+    context_object_name = 'past_events'
+
+    def get_queryset(self):
+        return Event.objects.ended().order_by('-starts_at')[:30]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        upcoming = list(Event.objects.upcoming())
+        context['upcoming_events'] = upcoming
+        context['next_event'] = upcoming[0] if upcoming else None
+        context['draft_events'] = Event.objects.filter(is_published=False).not_ended().order_by('starts_at')
+        return context
+
+
+class EventCreateView(SuperuserRequiredMixin, CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'dashboard/events/form.html'
+    success_url = reverse_lazy('event_list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        messages.success(self.request, f'Evento «{form.instance.title}» creado.')
+        return super().form_valid(form)
+
+
+class EventUpdateView(SuperuserRequiredMixin, UpdateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'dashboard/events/form.html'
+    success_url = reverse_lazy('event_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, f'Cambios guardados en «{form.instance.title}».')
+        return super().form_valid(form)
+
+
+class EventDeleteView(SuperuserRequiredMixin, DeleteView):
+    model = Event
+    template_name = 'dashboard/events/confirm_delete.html'
+    success_url = reverse_lazy('event_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, f'Evento «{self.object.title}» eliminado.')
         return super().form_valid(form)
 
 

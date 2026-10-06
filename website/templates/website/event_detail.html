@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ event.title }}{% endblock %}
+{% block meta_description %}{{ event.summary }}{% endblock %}
+{% block og_title %}{{ event.title }} | ASNC{% endblock %}
+{% block og_description %}{{ event.summary }}{% endblock %}
+{% block og_image %}{% if event.cover_image %}{{ event.cover_image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block content %}
+{% include 'website/_event_styles.html' %}
+
+<div class="ev">
+
+<header class="ev-head ev-detail-head">
+    <div class="container">
+        <a href="{% url 'events' %}" class="ev-back">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> {% trans "Agenda" %}
+        </a>
+        <span class="ev-eyebrow">{{ event.get_event_type_display }} · {{ event.get_modality_display }}</span>
+        <h1>{{ event.title }}</h1>
+        <p>{{ event.summary }}</p>
+    </div>
+</header>
+
+<section class="ev-section">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-7 order-2 order-lg-1">
+                {% if event.cover_image %}
+                <img src="{{ event.cover_image.url }}" alt="" class="ev-detail-cover">
+                {% endif %}
+                {% if event.description %}
+                <div class="ev-detail-text">
+                    {{ event.description|urlize|linebreaks }}
+                </div>
+                {% endif %}
+            </div>
+
+            <aside class="col-lg-5 order-1 order-lg-2">
+                <div class="ev-card">
+                    <div class="ev-card-top">
+                        <span class="ev-card-leaf" aria-hidden="true">
+                            <span class="ev-leaf-day">{{ event.starts_at|date:"j" }}</span>
+                            <span class="ev-leaf-month">{{ event.starts_at|date:"M" }}</span>
+                        </span>
+                        {% if event.is_past %}
+                            <span class="ev-card-status">{% trans "Este evento ya pasó" %}</span>
+                        {% else %}
+                            <span class="ev-when">{% include 'website/_event_when.html' %}</span>
+                        {% endif %}
+                    </div>
+
+                    {% include 'website/_event_facts.html' %}
+
+                    {% if not event.is_past %}
+                    <div class="ev-card-actions">
+                        {% if event.registration_url %}
+                        <a href="{{ event.registration_url }}" class="ev-btn ev-btn--primary" target="_blank" rel="noopener">
+                            {% if event.modality == 'VIRTUAL' and event.is_ongoing %}{% trans "Entrar a la transmisión" %}{% else %}{% trans "Inscribirme" %}{% endif %}
+                            <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'event_ics' event.slug %}" class="ev-btn ev-btn--secondary">
+                            <i class="bi bi-calendar-plus" aria-hidden="true"></i> {% trans "Agregar a mi calendario" %}
+                        </a>
+                    </div>
+                    {% if event.registration_url %}
+                    <p class="ev-card-note">{% trans "La inscripción se abre en otra pestaña." %}</p>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+
+{% if other_events %}
+<section class="ev-section ev-section--wash" aria-labelledby="ev-other-title">
+    <div class="container">
+        <div class="ev-narrow">
+            <h2 class="ev-section-title" id="ev-other-title">{% trans "También en la agenda" %}</h2>
+            <p class="ev-section-help">{% trans "Los siguientes eventos de la ASNC." %}</p>
+            {% for event in other_events %}
+                {% include 'website/_event_row.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+</div>
+
+<style>
+
+.ev-detail-head h1 { max-width: 48rem; }
+.ev-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.82);
+    text-decoration: none;
+    font-weight: 500;
+}
+.ev-back:hover { color: #fff; }
+.ev-back:focus-visible { outline: 3px solid var(--ev-gold); outline-offset: 2px; border-radius: 6px; }
+
+.ev-detail-cover {
+    width: 100%;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+.ev-detail-text {
+    font-size: 1.08rem;
+    line-height: 1.75;
+    color: var(--ev-ink);
+    max-width: 40rem;
+}
+.ev-detail-text p { margin-bottom: 1.1rem; }
+.ev-detail-text a { color: var(--asnc-blue); word-break: break-word; }
+
+/* Ficha lateral */
+.ev-card {
+    position: sticky;
+    top: 1.5rem;
+    border: 1px solid var(--ev-line);
+    border-radius: 18px;
+    padding: 1.5rem;
+    background: var(--ev-paper);
+}
+.ev-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.ev-card-leaf {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 4.75rem;
+    padding: 0.7rem 0.85rem 0.6rem;
+    border-radius: 12px;
+    background: var(--ev-navy);
+    color: #fff;
+    line-height: 1;
+}
+.ev-card-leaf .ev-leaf-day { font-size: 2.4rem; font-weight: 700; color: var(--ev-gold); }
+.ev-card-leaf .ev-leaf-month {
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.ev-card-status { font-size: 0.9rem; font-weight: 600; color: var(--ev-muted); }
+.ev-card-actions { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.5rem; }
+.ev-card-note { font-size: 0.85rem; color: var(--ev-muted); margin: 0.75rem 0 0; text-align: center; }
+
+@media (max-width: 991.98px) {
+    .ev-card { position: static; }
+}
+</style>
+{% endblock %}

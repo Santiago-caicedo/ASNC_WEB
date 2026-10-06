@@ -1,6 +1,8 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
+from .models import Event
+
 
 class StaticViewSitemap(Sitemap):
     """Sitemap para páginas estáticas del sitio público"""
@@ -36,3 +38,16 @@ class HomeSitemap(Sitemap):
 
     def location(self, item):
         return reverse(item)
+
+
+class EventSitemap(Sitemap):
+    """Eventos publicados (próximos y anteriores)."""
+    priority = 0.7
+    changefreq = 'weekly'
+    protocol = 'https'
+
+    def items(self):
+        return Event.objects.published().order_by('-starts_at')
+
+    def lastmod(self, obj):
+        return obj.updated_at

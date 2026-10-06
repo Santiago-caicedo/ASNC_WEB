@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from .models import FeaturedMember, ContactMessage, NewsCategory
+from .models import Event, FeaturedMember, ContactMessage, NewsCategory
 
 
 @admin.register(NewsCategory)
@@ -87,3 +87,13 @@ class FeaturedMemberAdmin(admin.ModelAdmin):
             '<span style="background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px;">Inactivo</span>'
         )
     is_active_badge.short_description = 'Estado'
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    """Eventos públicos (se gestionan normalmente desde /portal/eventos/)."""
+    list_display = ('title', 'event_type', 'modality', 'starts_at', 'location', 'is_published')
+    list_filter = ('is_published', 'event_type', 'modality', 'starts_at')
+    search_fields = ('title', 'summary', 'location')
+    date_hierarchy = 'starts_at'
+    readonly_fields = ('slug', 'created_by', 'created_at', 'updated_at')

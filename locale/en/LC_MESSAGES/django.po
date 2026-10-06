@@ -90,6 +90,18 @@ msgstr "Join the ASNC"
 msgid "Descubre más"
 msgstr "Discover more"
 
+msgid "Próximo evento"
+msgstr "Next event"
+
+msgid "Inscribirme"
+msgstr "Register"
+
+msgid "Ver detalles"
+msgstr "View details"
+
+msgid "Ver agenda"
+msgstr "View calendar"
+
 msgid "Noticias de la Asociación"
 msgstr "Association News"
 
@@ -101,6 +113,9 @@ msgstr "View all news"
 
 msgid "Scroll"
 msgstr "Scroll"
+
+msgid "Cerrar"
+msgstr "Close"
 
 msgid "Actualidad Nuclear"
 msgstr "Nuclear News"
@@ -785,108 +800,104 @@ msgstr "Want to meet the rest of the team?"
 msgid "Descubre la junta directiva y los asociados que lideran la ASNC"
 msgstr "Discover the board and the members who lead ASNC"
 
-msgid "Cerrar"
-msgstr "Close"
-
-msgid "Eventos ASNC"
-msgstr "ASNC Events"
-
 msgid ""
-"Conferencias, talleres, webinars y encuentros para la comunidad\n"
-"                    nuclear colombiana. Un espacio de aprendizaje y networking."
+"Agenda de la Asociación Nuclear Colombiana: conferencias, webinars, talleres"
+" y encuentros de la comunidad nuclear."
 msgstr ""
-"Conferences, workshops, webinars and gatherings for the Colombian nuclear "
-"community. A space for learning and networking."
+"Colombian Nuclear Association calendar: conferences, webinars, workshops and"
+" gatherings of the nuclear community."
 
-msgid "Estamos preparando algo increíble"
-msgstr "We are preparing something amazing"
+msgid "Agenda ASNC"
+msgstr "ASNC calendar"
 
 msgid ""
-"Nuestro calendario de eventos está en desarrollo. Muy pronto podrás\n"
-"                    explorar conferencias, talleres y encuentros exclusivos para la\n"
-"                    comunidad nuclear colombiana."
+"Conferencias, webinars, talleres y encuentros de la comunidad nuclear "
+"colombiana. Todas las horas están en hora de Colombia."
 msgstr ""
-"Our events calendar is under development. Very soon you will be able to "
-"explore conferences, workshops and exclusive gatherings for the Colombian "
-"nuclear community."
+"Conferences, webinars, workshops and gatherings of the Colombian nuclear "
+"community. All times are Colombia time."
 
-msgid "Calendario Interactivo"
-msgstr "Interactive Calendar"
+msgid "El que sigue en la agenda. Inscríbete o agrégalo a tu calendario."
+msgstr "Next on the calendar. Register or add it to your calendar."
 
-msgid "Explora y filtra eventos por fecha y categoría"
-msgstr "Browse and filter events by date and category"
+msgid "Agregar a mi calendario"
+msgstr "Add to my calendar"
 
-msgid "Inscripción Online"
-msgstr "Online Registration"
+msgid "Después"
+msgstr "Later"
 
-msgid "Regístrate fácilmente a los eventos"
-msgstr "Easily register for events"
+msgid "El resto de la agenda, por mes."
+msgstr "The rest of the calendar, by month."
 
-msgid "Notificaciones"
-msgstr "Notifications"
-
-msgid "Recibe alertas de nuevos eventos"
-msgstr "Receive alerts about new events"
-
-msgid "Lo que viene"
-msgstr "What's Coming"
-
-msgid "Tipos de Eventos"
-msgstr "Event Types"
-
-msgid "Diversas actividades para todos los interesados en el sector nuclear"
-msgstr "Diverse activities for everyone interested in the nuclear sector"
-
-msgid "Conferencias"
-msgstr "Conferences"
+msgid "No hay eventos programados por ahora"
+msgstr "No events scheduled for now"
 
 msgid ""
-"Ponencias de expertos nacionales e internacionales sobre avances en "
-"tecnología nuclear"
+"Aquí publicamos las conferencias, webinars y talleres de la ASNC. Los "
+"asociados reciben cada invitación por correo."
 msgstr ""
-"Presentations by national and international experts on advances in nuclear "
-"technology"
-
-msgid "Presencial & Virtual"
-msgstr "In-Person & Virtual"
-
-msgid "Webinars"
-msgstr "Webinars"
-
-msgid ""
-"Sesiones en línea sobre temas específicos con interacción en tiempo real"
-msgstr "Online sessions on specific topics with real-time interaction"
-
-msgid "100%% Online"
-msgstr "100%% Online"
-
-msgid "Talleres"
-msgstr "Workshops"
-
-msgid "Formación práctica y especializada para profesionales del sector"
-msgstr "Practical and specialized training for sector professionals"
-
-msgid "Hands-on"
-msgstr "Hands-on"
-
-msgid "Networking"
-msgstr "Networking"
-
-msgid ""
-"Encuentros para conectar con profesionales y expandir tu red de contactos"
-msgstr "Gatherings to connect with professionals and expand your network"
-
-msgid "Comunidad"
-msgstr "Community"
-
-msgid "¿Quieres ser el primero en enterarte?"
-msgstr "Want to be the first to know?"
-
-msgid "Únete a la ASNC y recibe notificaciones de todos nuestros eventos"
-msgstr "Join the ASNC and receive notifications about all our events"
+"This is where we publish ASNC conferences, webinars and workshops. Members "
+"receive every invitation by email."
 
 msgid "Unirme a la ASNC"
 msgstr "Join the ASNC"
+
+msgid "Eventos anteriores"
+msgstr "Past events"
+
+msgid "Lo que ya pasó, del más reciente al más antiguo."
+msgstr "What already happened, most recent first."
+
+msgid "Los asociados reciben la invitación a cada evento en su correo."
+msgstr "Members receive the invitation to every event in their inbox."
+
+msgid "Agenda"
+msgstr "Calendar"
+
+msgid "Este evento ya pasó"
+msgstr "This event has ended"
+
+msgid "Entrar a la transmisión"
+msgstr "Join the stream"
+
+msgid "La inscripción se abre en otra pestaña."
+msgstr "Registration opens in a new tab."
+
+msgid "También en la agenda"
+msgstr "Also on the calendar"
+
+msgid "Los siguientes eventos de la ASNC."
+msgstr "Upcoming ASNC events."
+
+msgid "En curso"
+msgstr "Happening now"
+
+msgid "Hoy"
+msgstr "Today"
+
+msgid "Mañana"
+msgstr "Tomorrow"
+
+msgid "En %(n)s días"
+msgstr "In %(n)s days"
+
+msgid "Fecha"
+msgstr "Date"
+
+msgid "Hora"
+msgstr "Time"
+
+msgid "hora de Colombia"
+msgstr "Colombia time"
+
+msgid "Dónde"
+msgstr "Where"
+
+msgid "Lugar"
+msgstr "Venue"
+
+msgid "Por confirmar"
+msgstr "To be confirmed"
 
 msgid "Política de Privacidad y Tratamiento de Datos"
 msgstr "Privacy and Data Processing Policy"
@@ -2286,6 +2297,30 @@ msgstr "You have sent too many messages. Please try again later."
 
 msgid "Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!"
 msgstr "Your message has been sent successfully. Thank you for writing to us!"
+
+msgid "Conferencia"
+msgstr "Conference"
+
+msgid "Webinar"
+msgstr "Webinar"
+
+msgid "Taller"
+msgstr "Workshop"
+
+msgid "Encuentro"
+msgstr "Meetup"
+
+msgid "Evento"
+msgstr "Event"
+
+msgid "Presencial"
+msgstr "In person"
+
+msgid "Virtual"
+msgstr "Online"
+
+msgid "Híbrido"
+msgstr "Hybrid"
 
 msgid "Este carné ha sido verificado %(counter)s vez"
 msgid_plural "Este carné ha sido verificado %(counter)s veces"

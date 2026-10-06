@@ -1,0 +1,16 @@
+{% load i18n %}
+{# Fila de agenda: la fecha es el ancla; título y datos prácticos a la derecha. #}
+<a href="{% url 'event_detail' event.slug %}" class="ev-row{% if muted %} ev-row--past{% endif %}">
+    <span class="ev-row-date" aria-hidden="true">
+        <span class="ev-row-day">{{ event.starts_at|date:"j" }}</span>
+        <span class="ev-row-wd">{{ event.starts_at|date:"D" }}</span>
+    </span>
+    <span class="ev-row-body">
+        <span class="ev-row-title">{{ event.title }}</span>
+        <span class="ev-row-meta">
+            <span class="visually-hidden">{{ event.starts_at|date:"l j \d\e F \d\e Y" }},</span>
+            {% if muted %}{{ event.starts_at|date:"F Y" }} · {% endif %}{{ event.get_event_type_display }} · {{ event.get_modality_display }}{% if not muted %} · {{ event.starts_at|date:"g:i a" }}{% endif %}{% if event.location %} · {{ event.location }}{% endif %}
+        </span>
+    </span>
+    <i class="bi bi-chevron-right ev-row-arrow" aria-hidden="true"></i>
+</a>

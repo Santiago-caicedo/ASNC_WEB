@@ -39,6 +39,10 @@ TEMPLATE_FILES = [
     'website/templates/website/about.html',
     'website/templates/website/comite_asesor.html',
     'website/templates/website/events.html',
+    'website/templates/website/event_detail.html',
+    'website/templates/website/_event_row.html',
+    'website/templates/website/_event_when.html',
+    'website/templates/website/_event_facts.html',
     'website/templates/website/privacy_policy.html',
     'website/templates/website/news/list.html',
     'website/templates/website/news/detail.html',
@@ -59,6 +63,9 @@ PYTHON_STRINGS = [
     "Escribe tu mensaje aquí...",
     "Has enviado demasiados mensajes. Por favor intenta más tarde.",
     "Tu mensaje ha sido enviado correctamente. ¡Gracias por escribirnos!",
+    # Tipos y modalidades de evento (website.models.Event)
+    "Conferencia", "Webinar", "Taller", "Encuentro", "Evento",
+    "Presencial", "Virtual", "Híbrido",
 ]
 
 # ---------------------------------------------------------------------------
@@ -830,6 +837,52 @@ TRANSLATIONS.update({
     'Todas': 'All',
 })
 
+
+
+# --- Eventos (agenda, detalle y recuadro de la portada) ---
+TRANSLATIONS.update({
+    'En curso': 'Happening now',
+    'Hoy': 'Today',
+    'Mañana': 'Tomorrow',
+    'En %(n)s días': 'In %(n)s days',
+    'Fecha': 'Date',
+    'Hora': 'Time',
+    'hora de Colombia': 'Colombia time',
+    'Dónde': 'Where',
+    'Lugar': 'Venue',
+    'Por confirmar': 'To be confirmed',
+    'Agenda de la Asociación Nuclear Colombiana: conferencias, webinars, talleres y encuentros de la comunidad nuclear.': 'Colombian Nuclear Association calendar: conferences, webinars, workshops and gatherings of the nuclear community.',
+    'Agenda ASNC': 'ASNC calendar',
+    'Conferencias, webinars, talleres y encuentros de la comunidad nuclear colombiana. Todas las horas están en hora de Colombia.': 'Conferences, webinars, workshops and gatherings of the Colombian nuclear community. All times are Colombia time.',
+    'Próximo evento': 'Next event',
+    'El que sigue en la agenda. Inscríbete o agrégalo a tu calendario.': 'Next on the calendar. Register or add it to your calendar.',
+    'Inscribirme': 'Register',
+    'Agregar a mi calendario': 'Add to my calendar',
+    'Ver detalles': 'View details',
+    'Después': 'Later',
+    'El resto de la agenda, por mes.': 'The rest of the calendar, by month.',
+    'No hay eventos programados por ahora': 'No events scheduled for now',
+    'Aquí publicamos las conferencias, webinars y talleres de la ASNC. Los asociados reciben cada invitación por correo.': 'This is where we publish ASNC conferences, webinars and workshops. Members receive every invitation by email.',
+    'Unirme a la ASNC': 'Join the ASNC',
+    'Eventos anteriores': 'Past events',
+    'Lo que ya pasó, del más reciente al más antiguo.': 'What already happened, most recent first.',
+    'Los asociados reciben la invitación a cada evento en su correo.': 'Members receive the invitation to every event in their inbox.',
+    'Agenda': 'Calendar',
+    'Este evento ya pasó': 'This event has ended',
+    'Entrar a la transmisión': 'Join the stream',
+    'La inscripción se abre en otra pestaña.': 'Registration opens in a new tab.',
+    'También en la agenda': 'Also on the calendar',
+    'Los siguientes eventos de la ASNC.': 'Upcoming ASNC events.',
+    'Ver agenda': 'View calendar',
+    'Conferencia': 'Conference',
+    'Webinar': 'Webinar',
+    'Taller': 'Workshop',
+    'Encuentro': 'Meetup',
+    'Evento': 'Event',
+    'Presencial': 'In person',
+    'Virtual': 'Online',
+    'Híbrido': 'Hybrid',
+})
 
 def _norm(s):
     return re.sub(r'\s+', ' ', s).strip()

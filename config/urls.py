@@ -6,7 +6,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.http import HttpResponseRedirect
 
-from website.sitemaps import StaticViewSitemap
+from website.sitemaps import EventSitemap, StaticViewSitemap
 
 
 def favicon_redirect(request):
@@ -16,6 +16,7 @@ def favicon_redirect(request):
 
 sitemaps = {
     'static': StaticViewSitemap,
+    'events': EventSitemap,
 }
 
 urlpatterns = [

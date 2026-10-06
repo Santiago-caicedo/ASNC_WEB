@@ -3,6 +3,7 @@ from .views import (
     HomeView, AboutView, AdvisoryCommitteeView, EventsView, PowerPointTemplateView,
     PrivacyPolicyView, NewsListView, NewsCategoryDetailView,
     NewsDetailView, ContactView, enso_data,
+    EventDetailView, event_ics,
 )
 
 urlpatterns = [
@@ -12,10 +13,12 @@ urlpatterns = [
     path('quienes-somos/', AboutView.as_view(), name='about'),
     path('comite-asesor/', AdvisoryCommitteeView.as_view(), name='advisory_committee'),
     path('eventos/', EventsView.as_view(), name='events'),
+    path('eventos/<slug:slug>/', EventDetailView.as_view(), name='event_detail'),
+    path('eventos/<slug:slug>/calendario.ics', event_ics, name='event_ics'),
     path('contacto/', ContactView.as_view(), name='contact'),
     path('noticias/', NewsListView.as_view(), name='public_news_list'),
     path('noticias/categoria/<slug:slug>/', NewsCategoryDetailView.as_view(), name='public_news_category'),
     path('noticias/<slug:slug>/', NewsDetailView.as_view(), name='public_news_detail'),
     path('recursos/plantilla-presentacion/', PowerPointTemplateView.as_view(), name='powerpoint_template'),
     path('politica-de-privacidad/', PrivacyPolicyView.as_view(), name='privacy_policy'),
-]
+]

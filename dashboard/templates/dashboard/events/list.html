@@ -1,0 +1,99 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="evp">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-2 gap-2">
+        <h1 class="page-title mb-0">Eventos</h1>
+        <a href="{% url 'event_create' %}" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-plus-lg me-2"></i>Nuevo evento
+        </a>
+    </div>
+    <p class="evp-help">Lo que publiques aquí aparece en la página Eventos. El más próximo se muestra además en el recuadro de la portada.</p>
+
+    {% if next_event %}
+    <div class="evp-now">
+        <i class="bi bi-house-door"></i>
+        <span>En la portada ahora: <strong>{{ next_event.title }}</strong> · {{ next_event.starts_at|date:"j \d\e F, g:i a" }}</span>
+    </div>
+    {% else %}
+    <div class="evp-now evp-now--empty">
+        <i class="bi bi-info-circle"></i>
+        <span>No hay eventos próximos publicados, así que la portada muestra las noticias de la Asociación.</span>
+    </div>
+    {% endif %}
+
+    <section class="evp-block">
+        <h2 class="evp-block-title">Próximos <span class="evp-count">{{ upcoming_events|length }}</span></h2>
+        {% for event in upcoming_events %}
+            {% include 'dashboard/events/_row.html' %}
+        {% empty %}
+            <div class="evp-empty">
+                <p>No hay eventos próximos.</p>
+                <a href="{% url 'event_create' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">Crear el primero</a>
+            </div>
+        {% endfor %}
+    </section>
+
+    {% if draft_events %}
+    <section class="evp-block">
+        <h2 class="evp-block-title">Borradores <span class="evp-count">{{ draft_events|length }}</span></h2>
+        <p class="evp-block-help">Guardados sin publicar: no se ven en el sitio hasta que actives «Publicado».</p>
+        {% for event in draft_events %}
+            {% include 'dashboard/events/_row.html' %}
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if past_events %}
+    <section class="evp-block">
+        <h2 class="evp-block-title">Anteriores</h2>
+        <p class="evp-block-help">Los publicados siguen visibles en el sitio, en «Eventos anteriores». Se listan los últimos 30.</p>
+        {% for event in past_events %}
+            {% include 'dashboard/events/_row.html' with muted=True %}
+        {% endfor %}
+    </section>
+    {% endif %}
+</div>
+
+<style>
+.evp { max-width: 960px; font-variant-numeric: tabular-nums; }
+.evp-help { color: #5B6778; margin: 0 0 1.25rem; }
+.evp-now {
+    display: flex; gap: 0.6rem; align-items: flex-start;
+    padding: 0.85rem 1rem; margin-bottom: 2rem;
+    background: #fff; border: 1px solid #E3E8EF; border-left: 3px solid var(--asnc-gold);
+    border-radius: 10px; font-size: 0.95rem; color: #16202B;
+}
+.evp-now i { color: var(--asnc-navy); margin-top: 0.1rem; }
+.evp-now--empty { border-left-color: #C9D2DE; color: #5B6778; }
+.evp-block { background: #fff; border: 1px solid #E3E8EF; border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+.evp-block-title { font-size: 1.05rem; font-weight: 700; color: #16202B; margin: 0 0 0.25rem; display: flex; align-items: center; gap: 0.5rem; }
+.evp-count { font-size: 0.8rem; font-weight: 600; color: #5B6778; background: #F1F4F8; border-radius: 20px; padding: 0.05rem 0.55rem; }
+.evp-block-help { font-size: 0.88rem; color: #5B6778; margin: 0 0 0.5rem; }
+.evp-row { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 0; border-top: 1px solid #EEF1F5; }
+.evp-block-title + .evp-row, .evp-block-help + .evp-row { border-top: 0; }
+.evp-date { width: 3rem; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.evp-day { font-size: 1.5rem; font-weight: 700; color: var(--asnc-navy); }
+.evp-mon { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #5B6778; margin-top: 0.25rem; }
+.evp-body { flex: 1; min-width: 0; }
+.evp-title { font-weight: 600; color: #16202B; text-decoration: none; }
+.evp-title:hover { color: var(--asnc-blue); text-decoration: underline; }
+.evp-meta { font-size: 0.85rem; color: #5B6778; margin-top: 0.15rem; }
+.evp-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
+.evp-icon {
+    width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 10px; color: #5B6778; text-decoration: none;
+}
+.evp-icon:hover { background: #F1F4F8; color: var(--asnc-navy); }
+.evp-icon--danger:hover { background: #FDECEC; color: #B42318; }
+.evp-draft { margin-left: 0.4rem; font-size: 0.75rem; font-weight: 600; color: #8A5A00; border: 1px solid #F0D58C; border-radius: 6px; padding: 0 0.4rem; }
+.evp-row--past .evp-day { color: #5B6778; font-weight: 600; }
+.evp-empty { padding: 1rem 0 0.25rem; color: #5B6778; }
+.evp-empty p { margin-bottom: 0.75rem; }
+@media (max-width: 575.98px) {
+    .evp-block { padding: 1rem; }
+    .evp-row { align-items: flex-start; }
+    .evp-actions { flex-direction: column; }
+}
+</style>
+{% endblock %}

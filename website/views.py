@@ -1,6 +1,7 @@
 import json
 import logging
 from email.utils import formataddr
+from datetime import timezone as dt_timezone
 from pathlib import Path
 
 from django.conf import settings
@@ -8,9 +9,10 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.core.mail import EmailMultiAlternatives
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_control
 from django.views.generic import TemplateView, ListView, DetailView
@@ -19,7 +21,7 @@ from django.views.generic.edit import FormView
 from django.shortcuts import get_object_or_404
 
 from .forms import ContactForm
-from .models import FeaturedMember, NewsArticle, NewsCategory
+from .models import Event, FeaturedMember, NewsArticle, NewsCategory
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +66,8 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['enso_version'] = enso_data_version()
+        # Recuadro del hero: el evento más próximo; sin eventos, las noticias.
+        context['next_event'] = Event.objects.upcoming().first()
         published = NewsArticle.objects.filter(
             is_published=True
         ).select_related('category')
@@ -115,8 +119,62 @@ class AdvisoryCommitteeView(ListView):
 
 
 class EventsView(TemplateView):
-    """Página de Eventos"""
+    """Agenda pública: el próximo evento, los siguientes por mes y los anteriores."""
     template_name = 'website/events.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        upcoming = list(Event.objects.upcoming())
+        context['next_event'] = upcoming[0] if upcoming else None
+        context['later_events'] = upcoming[1:]
+        context['past_events'] = Event.objects.past()[:6]
+        return context
+
+
+class EventDetailView(DetailView):
+    model = Event
+    template_name = 'website/event_detail.html'
+    context_object_name = 'event'
+
+    def get_queryset(self):
+        return Event.objects.published()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['other_events'] = Event.objects.upcoming().exclude(pk=self.object.pk)[:3]
+        return context
+
+
+def _ics_escape(text):
+    return (text or '').replace('\\', '\\\\').replace(';', '\\;').replace(',', '\\,').replace('\n', '\\n')
+
+
+def event_ics(request, slug):
+    """Archivo .ics para agregar el evento al calendario del visitante."""
+    event = get_object_or_404(Event.objects.published(), slug=slug)
+    fmt = '%Y%m%dT%H%M%SZ'
+    utc = dt_timezone.utc
+    url = request.build_absolute_uri(event.get_absolute_url())
+    lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//ASNC//Eventos//ES',
+        'CALSCALE:GREGORIAN',
+        'BEGIN:VEVENT',
+        f'UID:evento-{event.pk}@asncol.com',
+        f'DTSTAMP:{timezone.now().astimezone(utc).strftime(fmt)}',
+        f'DTSTART:{event.starts_at.astimezone(utc).strftime(fmt)}',
+        f'DTEND:{event.end.astimezone(utc).strftime(fmt)}',
+        f'SUMMARY:{_ics_escape(event.title)}',
+        f'DESCRIPTION:{_ics_escape(event.summary + chr(10) + chr(10) + url)}',
+        f'LOCATION:{_ics_escape(event.location)}',
+        f'URL:{url}',
+        'END:VEVENT',
+        'END:VCALENDAR',
+    ]
+    response = HttpResponse('\r\n'.join(lines) + '\r\n', content_type='text/calendar; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="{event.slug}.ics"'
+    return response
 
 
 class ContactView(FormView):

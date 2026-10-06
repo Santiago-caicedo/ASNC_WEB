@@ -1,0 +1,112 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+<div class="evf">
+    <a href="{% url 'event_list' %}" class="evf-back"><i class="bi bi-arrow-left me-1"></i>Eventos</a>
+    <h1 class="page-title mb-1">{% if object %}Editar evento{% else %}Nuevo evento{% endif %}</h1>
+    <p class="evf-intro">Los campos con * son obligatorios. Las horas son de Colombia.</p>
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <section class="evf-block">
+            <h2>Qué</h2>
+            <p class="evf-block-help">El título y el resumen son lo que se lee en la portada.</p>
+            {% include 'dashboard/events/_field.html' with field=form.title %}
+            <div class="row g-3">
+                <div class="col-sm-6">{% include 'dashboard/events/_field.html' with field=form.event_type %}</div>
+                <div class="col-sm-6">{% include 'dashboard/events/_field.html' with field=form.modality %}</div>
+            </div>
+            {% include 'dashboard/events/_field.html' with field=form.summary %}
+        </section>
+
+        <section class="evf-block">
+            <h2>Cuándo</h2>
+            <p class="evf-block-help">Si no indicas hora de fin, el evento se muestra como próximo hasta que termine ese día.</p>
+            <div class="row g-3">
+                <div class="col-sm-4">{% include 'dashboard/events/_field.html' with field=form.date %}</div>
+                <div class="col-6 col-sm-4">{% include 'dashboard/events/_field.html' with field=form.start_time %}</div>
+                <div class="col-6 col-sm-4">{% include 'dashboard/events/_field.html' with field=form.end_time %}</div>
+            </div>
+            <details class="evf-more"{% if form.end_date.value or form.end_date.errors %} open{% endif %}>
+                <summary>Dura varios días</summary>
+                <div class="row g-3 mt-0">
+                    <div class="col-sm-4">{% include 'dashboard/events/_field.html' with field=form.end_date %}</div>
+                </div>
+            </details>
+        </section>
+
+        <section class="evf-block">
+            <h2>Dónde e inscripción</h2>
+            <p class="evf-block-help">Con enlace de inscripción, la portada muestra el botón «Inscribirme».</p>
+            {% include 'dashboard/events/_field.html' with field=form.location %}
+            {% include 'dashboard/events/_field.html' with field=form.registration_url %}
+        </section>
+
+        <section class="evf-block">
+            <h2>Imagen y detalle</h2>
+            <p class="evf-block-help">Opcionales. La imagen se recorta en formato horizontal; si no hay, se muestra la fecha en grande.</p>
+            {% if object.cover_image %}
+            <div class="evf-current">
+                <img src="{{ object.cover_image.url }}" alt="">
+                <span>Imagen actual. Sube otra para reemplazarla.</span>
+            </div>
+            {% endif %}
+            {% include 'dashboard/events/_field.html' with field=form.cover_image %}
+            {% include 'dashboard/events/_field.html' with field=form.description %}
+        </section>
+
+        <div class="evf-footer">
+            <div class="form-check form-switch m-0">
+                {{ form.is_published }}
+                <label class="form-check-label" for="{{ form.is_published.id_for_label }}">Publicado</label>
+                <div class="evf-help">{{ form.is_published.help_text }}</div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'event_list' %}" class="btn btn-outline-secondary rounded-pill px-4">Cancelar</a>
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    {% if object %}Guardar cambios{% else %}Crear evento{% endif %}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+.evf { max-width: 760px; }
+.evf-back { display: inline-flex; align-items: center; min-height: 44px; color: #5B6778; font-weight: 600; font-size: 0.9rem; text-decoration: none; }
+.evf-back:hover { color: var(--asnc-navy); }
+.evf-intro { color: #5B6778; margin-bottom: 1.5rem; }
+.evf-block { background: #fff; border: 1px solid #E3E8EF; border-radius: 14px; padding: 1.5rem; margin-bottom: 1.25rem; }
+.evf-block h2 { font-size: 1.05rem; font-weight: 700; color: #16202B; margin: 0 0 0.2rem; }
+.evf-block-help { font-size: 0.88rem; color: #5B6778; margin: 0 0 1.1rem; }
+.evf-field { margin-bottom: 1rem; }
+.evf-field .form-label { font-weight: 600; font-size: 0.9rem; color: #16202B; margin-bottom: 0.35rem; }
+.evf-field .form-control, .evf-field .form-select { min-height: 44px; border-radius: 10px; }
+.evf-req { color: #B42318; }
+.evf-help { font-size: 0.82rem; color: #5B6778; margin-top: 0.3rem; }
+.evf-error { font-size: 0.85rem; color: #B42318; margin-top: 0.3rem; font-weight: 500; }
+.evf-error::before { content: '\F33A'; font-family: 'bootstrap-icons'; margin-right: 0.3rem; }
+.evf-more summary { cursor: pointer; color: var(--asnc-blue); font-weight: 600; font-size: 0.9rem; min-height: 32px; }
+.evf-current { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #5B6778; }
+.evf-current img { width: 120px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; }
+.evf-footer {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+    position: sticky; bottom: 0; background: var(--asnc-bg, #F5F7FA);
+    padding: 1rem 0; border-top: 1px solid #E3E8EF; margin-bottom: 1rem;
+}
+.evf-footer .form-check-label { font-weight: 600; color: #16202B; }
+.evf-footer .form-switch { padding-left: 3rem; }
+.evf-footer .form-switch .form-check-input { width: 2.4rem; height: 1.3rem; margin-left: -3rem; margin-top: 0.1rem; cursor: pointer; }
+.evf-footer .evf-help { max-width: 22rem; }
+@media (max-width: 575.98px) {
+    .evf-block { padding: 1.1rem; }
+    .evf-footer > .d-flex { width: 100%; }
+    .evf-footer .btn { flex: 1; }
+}
+</style>
+{% endblock %}

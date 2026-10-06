@@ -12,6 +12,7 @@ from .views import (
     NewsCategoryListView, NewsCategoryCreateView, NewsCategoryUpdateView,
     NewsCategoryDeleteView,
     news_image_upload,
+    EventListView, EventCreateView, EventUpdateView, EventDeleteView,
     EmailComposeView, EmailHistoryView, EmailDetailView,
     DirectoryListView, DirectoryDetailView,
     UserListView, UserDetailView, UserRoleUpdateView,
@@ -70,6 +71,12 @@ urlpatterns = [
     path('noticias/subir-imagen/', news_image_upload, name='news_image_upload'),
 
     # Categorías de noticias
+    # Eventos (solo superadmin)
+    path('eventos/', EventListView.as_view(), name='event_list'),
+    path('eventos/nuevo/', EventCreateView.as_view(), name='event_create'),
+    path('eventos/<int:pk>/editar/', EventUpdateView.as_view(), name='event_update'),
+    path('eventos/<int:pk>/eliminar/', EventDeleteView.as_view(), name='event_delete'),
+
     path('noticias/categorias/', NewsCategoryListView.as_view(), name='news_category_list'),
     path('noticias/categorias/nueva/', NewsCategoryCreateView.as_view(), name='news_category_create'),
     path('noticias/categorias/<int:pk>/editar/', NewsCategoryUpdateView.as_view(), name='news_category_update'),

@@ -1,0 +1,27 @@
+{# Fila del listado de eventos del portal #}
+<div class="evp-row{% if muted %} evp-row--past{% endif %}">
+    <div class="evp-date">
+        <span class="evp-day">{{ event.starts_at|date:"j" }}</span>
+        <span class="evp-mon">{{ event.starts_at|date:"M" }}</span>
+    </div>
+    <div class="evp-body">
+        <a href="{% url 'event_update' event.pk %}" class="evp-title">{{ event.title }}</a>
+        {% if not event.is_published %}<span class="evp-draft">Borrador</span>{% endif %}
+        <div class="evp-meta">
+            {{ event.starts_at|date:"D j M Y · g:i a" }} · {{ event.get_event_type_display }} · {{ event.get_modality_display }}{% if event.location %} · {{ event.location }}{% endif %}
+        </div>
+    </div>
+    <div class="evp-actions">
+        {% if event.is_published %}
+        <a href="{% url 'event_detail' event.slug %}" target="_blank" rel="noopener" class="evp-icon" title="Ver en el sitio" aria-label="Ver «{{ event.title }}» en el sitio">
+            <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+        {% endif %}
+        <a href="{% url 'event_update' event.pk %}" class="evp-icon" title="Editar" aria-label="Editar «{{ event.title }}»">
+            <i class="bi bi-pencil"></i>
+        </a>
+        <a href="{% url 'event_delete' event.pk %}" class="evp-icon evp-icon--danger" title="Eliminar" aria-label="Eliminar «{{ event.title }}»">
+            <i class="bi bi-trash"></i>
+        </a>
+    </div>
+</div>

@@ -45,7 +45,55 @@
                 </div>
             </div>
 
+            {% if next_event %}
+            <div class="col-lg-5 hero-event-col">
+                {% with event=next_event %}
+                <div class="hero-news-panel hero-event">
+                    <div class="hero-news-header">
+                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                        <span>{% trans "Próximo evento" %}</span>
+                        <span class="hero-event-when">{% include 'website/_event_when.html' %}</span>
+                    </div>
+                    <a href="{% url 'event_detail' event.slug %}" class="hero-event-body">
+                        {% if event.cover_image %}
+                        <span class="hero-event-cover">
+                            <img src="{{ event.cover_image.url }}" alt="">
+                        </span>
+                        {% endif %}
+                        <span class="hero-event-main">
+                            <span class="hero-event-leaf" aria-hidden="true">
+                                <span class="hero-event-day">{{ event.starts_at|date:"j" }}</span>
+                                <span class="hero-event-month">{{ event.starts_at|date:"M" }}</span>
+                            </span>
+                            <span class="hero-event-info">
+                                <span class="hero-event-kind">{{ event.get_event_type_display }} · {{ event.get_modality_display }}</span>
+                                <span class="hero-event-title">{{ event.title }}</span>
+                                <span class="hero-event-meta">
+                                    <span class="visually-hidden">{{ event.starts_at|date:"j \d\e F \d\e Y" }}.</span>
+                                    <span><i class="bi bi-clock" aria-hidden="true"></i> {{ event.starts_at|date:"l"|capfirst }}, {{ event.starts_at|date:"g:i a" }}</span>
+                                    {% if event.location %}<span><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ event.location }}</span>{% endif %}
+                                </span>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="hero-event-actions">
+                        {% if event.registration_url %}
+                        <a href="{{ event.registration_url }}" class="hero-event-cta" target="_blank" rel="noopener">
+                            {% trans "Inscribirme" %} <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'event_detail' event.slug %}" class="hero-event-cta">
+                            {% trans "Ver detalles" %} <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'events' %}" class="hero-event-all">{% trans "Ver agenda" %}</a>
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+            {% else %}
             <div class="col-lg-5 d-none d-lg-block">
+                {# Sin eventos próximos: noticias de la Asociación #}
                 <div class="hero-news-panel">
                     <div class="hero-news-header">
                         <i class="bi bi-flag-fill"></i>
@@ -76,6 +124,7 @@
                     </a>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 
@@ -1495,6 +1544,149 @@
 .hero-news-footer:hover {
     background: rgba(244, 195, 67, 0.1);
     color: var(--gold-light);
+}
+
+/* Hero: próximo evento (mismo panel de vidrio que las noticias) */
+.hero-event { max-height: none; }
+.hero-event .hero-news-header { justify-content: flex-start; }
+.hero-event-when {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0;
+}
+.hero-event-when::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 3px rgba(244, 195, 67, 0.25);
+}
+.hero-event-body {
+    display: block;
+    text-decoration: none;
+    color: #fff;
+    transition: background-color 0.25s ease;
+}
+.hero-event-body:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+.hero-event-body:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
+.hero-event-cover {
+    display: block;
+    aspect-ratio: 16 / 8;
+    overflow: hidden;
+}
+.hero-event-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+.hero-event-body:hover .hero-event-cover img { transform: scale(1.03); }
+.hero-event-main {
+    display: flex;
+    gap: 1.1rem;
+    padding: 1.25rem 1.25rem 1.1rem;
+    align-items: flex-start;
+}
+.hero-event-leaf {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 4rem;
+    padding-right: 1.1rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+.hero-event-day {
+    font-size: 2.9rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: -0.02em;
+}
+.hero-event-month {
+    margin-top: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+}
+.hero-event-info { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.hero-event-kind {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.02em;
+}
+.hero-event-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.hero-event-body:hover .hero-event-title { color: var(--gold); }
+.hero-event-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.78);
+}
+.hero-event-meta i { color: rgba(255, 255, 255, 0.55); margin-right: 0.3rem; }
+.hero-event-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem 1.1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.hero-event-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.55rem 1.15rem;
+    border-radius: 10px;
+    background: var(--gold);
+    color: var(--asnc-navy, #1B2A41);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+.hero-event-cta:hover { background: #fff; color: var(--asnc-navy, #1B2A41); }
+.hero-event-all {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-decoration: none;
+}
+.hero-event-all:hover { color: #fff; }
+.hero-event-cta:focus-visible,
+.hero-event-all:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+@media (max-width: 991.98px) {
+    /* En móvil el evento baja bajo los botones del hero (las noticias siguen ocultas) */
+    .hero-event-col { margin-top: 2.5rem; margin-bottom: 6rem; }
+    .hero-event-cover { aspect-ratio: 16 / 7; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hero-event-cover img, .hero-event-body { transition: none; }
+    .hero-event-body:hover .hero-event-cover img { transform: none; }
 }
 
 /* Scroll Indicator */

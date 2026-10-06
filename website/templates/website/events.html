@@ -3,693 +3,261 @@
 {% load i18n %}
 
 {% block title %}{% trans "Eventos" %}{% endblock %}
+{% block meta_description %}{% trans "Agenda de la Asociación Nuclear Colombiana: conferencias, webinars, talleres y encuentros de la comunidad nuclear." %}{% endblock %}
 
 {% block content %}
+{% include 'website/_event_styles.html' %}
 
-<!-- Hero Section -->
-<section class="events-hero">
-    <div class="hero-particles">
-        <span></span><span></span><span></span>
-        <span></span><span></span><span></span>
-    </div>
+<div class="ev">
+
+<header class="ev-head">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <span class="hero-tag">{% trans "Próximamente" %}</span>
-                <h1 class="hero-title">{% trans "Eventos ASNC" %}</h1>
-                <p class="hero-description">
-                    {% blocktrans %}Conferencias, talleres, webinars y encuentros para la comunidad
-                    nuclear colombiana. Un espacio de aprendizaje y networking.{% endblocktrans %}
-                </p>
-            </div>
-        </div>
+        <span class="ev-eyebrow">{% trans "Agenda ASNC" %}</span>
+        <h1>{% trans "Eventos" %}</h1>
+        <p>{% trans "Conferencias, webinars, talleres y encuentros de la comunidad nuclear colombiana. Todas las horas están en hora de Colombia." %}</p>
     </div>
-</section>
+</header>
 
-<!-- Under Construction Section -->
-<section class="construction-section">
+{% if next_event %}
+<!-- Próximo evento -->
+<section class="ev-section" aria-labelledby="ev-next-title">
     <div class="container">
-        <div class="construction-card">
-            <div class="construction-visual">
-                <div class="atom-animation">
-                    <div class="nucleus"></div>
-                    <div class="orbit orbit-1"><span class="electron"></span></div>
-                    <div class="orbit orbit-2"><span class="electron"></span></div>
-                    <div class="orbit orbit-3"><span class="electron"></span></div>
-                </div>
-            </div>
+        <h2 class="ev-section-title" id="ev-next-title">{% trans "Próximo evento" %}</h2>
+        <p class="ev-section-help">{% trans "El que sigue en la agenda. Inscríbete o agrégalo a tu calendario." %}</p>
 
-            <div class="construction-content">
-                <div class="construction-badge">
-                    <i class="bi bi-gear-fill"></i>
-                    <span>{% trans "En Construcción" %}</span>
-                </div>
-                <h2>{% trans "Estamos preparando algo increíble" %}</h2>
-                <p>
-                    {% blocktrans %}Nuestro calendario de eventos está en desarrollo. Muy pronto podrás
-                    explorar conferencias, talleres y encuentros exclusivos para la
-                    comunidad nuclear colombiana.{% endblocktrans %}
-                </p>
-
-                <div class="coming-features">
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <i class="bi bi-calendar-event"></i>
-                        </div>
-                        <div class="feature-text">
-                            <h4>{% trans "Calendario Interactivo" %}</h4>
-                            <p>{% trans "Explora y filtra eventos por fecha y categoría" %}</p>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <i class="bi bi-ticket-perforated"></i>
-                        </div>
-                        <div class="feature-text">
-                            <h4>{% trans "Inscripción Online" %}</h4>
-                            <p>{% trans "Regístrate fácilmente a los eventos" %}</p>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <i class="bi bi-bell"></i>
-                        </div>
-                        <div class="feature-text">
-                            <h4>{% trans "Notificaciones" %}</h4>
-                            <p>{% trans "Recibe alertas de nuevos eventos" %}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Event Types Preview -->
-<section class="events-preview">
-    <div class="container">
-        <div class="section-header text-center">
-            <span class="section-tag">{% trans "Lo que viene" %}</span>
-            <h2 class="section-title">{% trans "Tipos de Eventos" %}</h2>
-            <p class="section-subtitle">
-                {% trans "Diversas actividades para todos los interesados en el sector nuclear" %}
-            </p>
-        </div>
-
-        <div class="events-grid">
-            <div class="event-type-card">
-                <div class="card-glow"></div>
-                <div class="event-type-icon">
-                    <i class="bi bi-mic-fill"></i>
-                </div>
-                <h3>{% trans "Conferencias" %}</h3>
-                <p>{% trans "Ponencias de expertos nacionales e internacionales sobre avances en tecnología nuclear" %}</p>
-                <span class="event-tag">{% trans "Presencial & Virtual" %}</span>
-            </div>
-
-            <div class="event-type-card">
-                <div class="card-glow"></div>
-                <div class="event-type-icon icon-gold">
-                    <i class="bi bi-laptop"></i>
-                </div>
-                <h3>{% trans "Webinars" %}</h3>
-                <p>{% trans "Sesiones en línea sobre temas específicos con interacción en tiempo real" %}</p>
-                <span class="event-tag">{% trans "100% Online" %}</span>
-            </div>
-
-            <div class="event-type-card">
-                <div class="card-glow"></div>
-                <div class="event-type-icon icon-purple">
-                    <i class="bi bi-tools"></i>
-                </div>
-                <h3>{% trans "Talleres" %}</h3>
-                <p>{% trans "Formación práctica y especializada para profesionales del sector" %}</p>
-                <span class="event-tag">{% trans "Hands-on" %}</span>
-            </div>
-
-            <div class="event-type-card">
-                <div class="card-glow"></div>
-                <div class="event-type-icon icon-green">
-                    <i class="bi bi-people-fill"></i>
-                </div>
-                <h3>{% trans "Networking" %}</h3>
-                <p>{% trans "Encuentros para conectar con profesionales y expandir tu red de contactos" %}</p>
-                <span class="event-tag">{% trans "Comunidad" %}</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="events-cta">
-    <div class="container">
-        <div class="cta-card">
-            <div class="cta-icon">
-                <i class="bi bi-envelope-paper-fill"></i>
-            </div>
-            <div class="cta-content">
-                <h3>{% trans "¿Quieres ser el primero en enterarte?" %}</h3>
-                <p>{% trans "Únete a la ASNC y recibe notificaciones de todos nuestros eventos" %}</p>
-            </div>
-            <a href="{% url 'application_create' %}" class="cta-button">
-                <span>{% trans "Unirme a la ASNC" %}</span>
-                <i class="bi bi-arrow-right"></i>
+        {% with event=next_event %}
+        <article class="ev-next">
+            <a href="{% url 'event_detail' event.slug %}" class="ev-next-visual{% if not event.cover_image %} ev-next-visual--plain{% endif %}" tabindex="-1" aria-hidden="true">
+                {% if event.cover_image %}
+                <img src="{{ event.cover_image.url }}" alt="" loading="lazy">
+                {% endif %}
+                <span class="ev-leaf">
+                    <span class="ev-leaf-day">{{ event.starts_at|date:"j" }}</span>
+                    <span class="ev-leaf-month">{{ event.starts_at|date:"M" }}</span>
+                </span>
             </a>
+            <div class="ev-next-body">
+                <div class="ev-next-kicker">
+                    <span>{{ event.get_event_type_display }} · {{ event.get_modality_display }}</span>
+                    <span class="ev-when">{% include 'website/_event_when.html' %}</span>
+                </div>
+                <h3 class="ev-next-title">
+                    <a href="{% url 'event_detail' event.slug %}">{{ event.title }}</a>
+                </h3>
+                <p class="ev-next-summary">{{ event.summary }}</p>
+                {% include 'website/_event_facts.html' %}
+                <div class="ev-next-actions">
+                    {% if event.registration_url %}
+                    <a href="{{ event.registration_url }}" class="ev-btn ev-btn--primary" target="_blank" rel="noopener">
+                        {% trans "Inscribirme" %} <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'event_ics' event.slug %}" class="ev-btn ev-btn--secondary">
+                        <i class="bi bi-calendar-plus" aria-hidden="true"></i> {% trans "Agregar a mi calendario" %}
+                    </a>
+                    <a href="{% url 'event_detail' event.slug %}" class="ev-link">{% trans "Ver detalles" %}</a>
+                </div>
+            </div>
+        </article>
+        {% endwith %}
+    </div>
+</section>
+
+{% if later_events %}
+<!-- Después -->
+<section class="ev-section" aria-labelledby="ev-later-title">
+    <div class="container">
+        <div class="ev-narrow">
+            <h2 class="ev-section-title" id="ev-later-title">{% trans "Después" %}</h2>
+            <p class="ev-section-help">{% trans "El resto de la agenda, por mes." %}</p>
+            {% regroup later_events by start_month as months %}
+            {% for month in months %}
+            <h3 class="ev-month">{{ month.grouper|date:"F Y" }}</h3>
+            {% for event in month.list %}
+                {% include 'website/_event_row.html' %}
+            {% endfor %}
+            {% endfor %}
         </div>
     </div>
 </section>
+{% endif %}
+
+{% else %}
+<!-- Sin eventos programados -->
+<section class="ev-section">
+    <div class="container">
+        <div class="ev-empty">
+            <i class="bi bi-calendar4-week" aria-hidden="true"></i>
+            <div>
+                <h2>{% trans "No hay eventos programados por ahora" %}</h2>
+                <p>{% trans "Aquí publicamos las conferencias, webinars y talleres de la ASNC. Los asociados reciben cada invitación por correo." %}</p>
+                <a href="{% url 'application_create' %}" class="ev-btn ev-btn--primary">{% trans "Unirme a la ASNC" %}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if past_events %}
+<!-- Anteriores -->
+<section class="ev-section ev-section--wash" aria-labelledby="ev-past-title">
+    <div class="container">
+        <div class="ev-narrow">
+            <h2 class="ev-section-title" id="ev-past-title">{% trans "Eventos anteriores" %}</h2>
+            <p class="ev-section-help">{% trans "Lo que ya pasó, del más reciente al más antiguo." %}</p>
+            {% for event in past_events %}
+                {% include 'website/_event_row.html' with muted=True %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if next_event %}
+<section class="ev-section ev-join">
+    <div class="container">
+        <div class="ev-join-inner">
+            <p>{% trans "Los asociados reciben la invitación a cada evento en su correo." %}</p>
+            <a href="{% url 'application_create' %}" class="ev-link">{% trans "Unirme a la ASNC" %} <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+</div>
 
 <style>
-/* ===== HERO SECTION ===== */
-.events-hero {
-    padding: 7rem 0 5rem;
-    background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
-    color: white;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
 
-.hero-particles span {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: var(--asnc-gold);
-    border-radius: 50%;
-    opacity: 0.2;
-    animation: float-particle 8s ease-in-out infinite;
-}
-
-.hero-particles span:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
-.hero-particles span:nth-child(2) { top: 60%; left: 20%; animation-delay: 1s; width: 6px; height: 6px; }
-.hero-particles span:nth-child(3) { top: 30%; right: 15%; animation-delay: 2s; width: 8px; height: 8px; }
-.hero-particles span:nth-child(4) { top: 70%; right: 25%; animation-delay: 3s; }
-.hero-particles span:nth-child(5) { top: 40%; left: 30%; animation-delay: 4s; width: 5px; height: 5px; }
-.hero-particles span:nth-child(6) { top: 80%; right: 10%; animation-delay: 5s; width: 7px; height: 7px; }
-
-@keyframes float-particle {
-    0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
-    50% { transform: translateY(-30px) scale(1.5); opacity: 0.4; }
-}
-
-.hero-tag {
-    display: inline-block;
-    background: rgba(244, 195, 67, 0.2);
-    color: var(--asnc-gold);
-    padding: 0.5rem 1.5rem;
-    border-radius: 30px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border: 1px solid rgba(244, 195, 67, 0.3);
-}
-
-.hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 1.5rem;
-    letter-spacing: -1px;
-}
-
-.hero-description {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.85);
-    line-height: 1.8;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* ===== CONSTRUCTION SECTION ===== */
-.construction-section {
-    padding: 5rem 0;
-    background: #ffffff;
-}
-
-.construction-card {
+/* Próximo evento */
+.ev-next {
     display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 4rem;
-    align-items: center;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 32px;
-    padding: 4rem;
-    border: 1px solid #e2e8f0;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    border: 1px solid var(--ev-line);
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--ev-paper);
 }
-
-.construction-visual {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Atom Animation */
-.atom-animation {
+.ev-next-visual {
     position: relative;
-    width: 200px;
-    height: 200px;
+    display: block;
+    min-height: 320px;
+    background: var(--ev-navy);
 }
-
-.nucleus {
+.ev-next-visual img {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--asnc-gold), #fbbf24);
-    border-radius: 50%;
-    box-shadow: 0 0 30px rgba(244, 195, 67, 0.5);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
-
-.orbit {
+/* Hoja de calendario: la firma visual de los eventos */
+.ev-leaf {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    border: 2px solid rgba(33, 58, 92, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.orbit-1 {
-    width: 100px;
-    height: 100px;
-    animation: spin-orbit 4s linear infinite;
-}
-
-.orbit-2 {
-    width: 150px;
-    height: 150px;
-    animation: spin-orbit 6s linear infinite reverse;
-    transform: translate(-50%, -50%) rotateX(60deg);
-}
-
-.orbit-3 {
-    width: 200px;
-    height: 200px;
-    animation: spin-orbit 8s linear infinite;
-    transform: translate(-50%, -50%) rotateY(60deg);
-}
-
-@keyframes spin-orbit {
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-.electron {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: var(--asnc-blue);
-    border-radius: 50%;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 0 10px rgba(33, 58, 92, 0.4);
-}
-
-.orbit-2 .electron {
-    background: var(--asnc-gold);
-    box-shadow: 0 0 10px rgba(244, 195, 67, 0.4);
-}
-
-.orbit-3 .electron {
-    background: #8b5cf6;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
-}
-
-/* Construction Content */
-.construction-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, var(--asnc-gold), #fbbf24);
-    color: var(--asnc-navy);
-    padding: 0.5rem 1rem;
-    border-radius: 30px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-}
-
-.construction-badge i {
-    animation: spin-gear 4s linear infinite;
-}
-
-@keyframes spin-gear {
-    100% { transform: rotate(360deg); }
-}
-
-.construction-content h2 {
-    font-size: 2.25rem;
-    font-weight: 800;
-    color: var(--asnc-navy);
-    margin-bottom: 1rem;
-}
-
-.construction-content > p {
-    font-size: 1.1rem;
-    color: #64748b;
-    line-height: 1.8;
-    margin-bottom: 2rem;
-}
-
-.coming-features {
+    left: 1.25rem;
+    bottom: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-}
-
-.feature-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
-    background: white;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    transition: all 0.3s ease;
-}
-
-.feature-item:hover {
-    transform: translateX(8px);
-    border-color: var(--asnc-gold);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-.feature-item .feature-icon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--asnc-navy), var(--asnc-blue));
-    border-radius: 12px;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    min-width: 5.5rem;
+    padding: 0.85rem 1rem 0.75rem;
+    border-radius: 14px;
+    background: var(--ev-navy);
+    color: #fff;
+    line-height: 1;
+    box-shadow: 0 10px 30px rgba(10, 20, 35, 0.35);
 }
-
-.feature-item .feature-icon i {
-    font-size: 1.25rem;
-    color: white;
-}
-
-.feature-text h4 {
-    font-size: 1rem;
+.ev-leaf-day {
+    font-size: 3rem;
     font-weight: 700;
-    color: var(--asnc-navy);
-    margin-bottom: 0.25rem;
+    color: var(--ev-gold);
+    letter-spacing: -0.02em;
 }
-
-.feature-text p {
-    font-size: 0.9rem;
-    color: #64748b;
-    margin: 0;
-}
-
-/* ===== EVENTS PREVIEW ===== */
-.events-preview {
-    padding: 5rem 0;
-    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-}
-
-.section-header {
-    margin-bottom: 3.5rem;
-}
-
-.section-tag {
-    display: inline-block;
-    background: rgba(33, 58, 92, 0.08);
-    color: var(--asnc-blue);
-    padding: 0.5rem 1.25rem;
-    border-radius: 30px;
-    font-size: 0.8rem;
+.ev-leaf-month {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    margin-bottom: 1rem;
-    letter-spacing: 1px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
 }
+.ev-next-visual--plain .ev-leaf {
+    left: 50%;
+    top: 50%;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    box-shadow: none;
+    background: transparent;
+}
+.ev-next-visual--plain .ev-leaf-day { font-size: 6rem; }
+.ev-next-visual--plain .ev-leaf-month { font-size: 1.1rem; }
 
-.section-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--asnc-navy);
-    margin-bottom: 1rem;
+.ev-next-body { padding: 2rem 2.25rem; display: flex; flex-direction: column; }
+.ev-next-kicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: var(--ev-muted);
+    font-weight: 500;
+}
+.ev-next-title {
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0.6rem 0 0.6rem;
+}
+.ev-next-title a { color: var(--ev-ink); text-decoration: none; }
+.ev-next-title a:hover { color: var(--asnc-blue); }
+.ev-next-summary { color: var(--ev-muted); font-size: 1.02rem; line-height: 1.6; margin: 0 0 1.25rem; }
+.ev-next-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-top: auto;
+    padding-top: 1.5rem;
 }
 
-.section-subtitle {
-    font-size: 1.1rem;
-    color: #64748b;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.events-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+/* Vacío */
+.ev-empty {
+    display: flex;
     gap: 1.5rem;
-}
-
-.event-type-card {
-    background: white;
-    border-radius: 24px;
+    align-items: flex-start;
+    max-width: 44rem;
     padding: 2rem;
-    text-align: center;
-    border: 1px solid #e2e8f0;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px dashed #C9D2DE;
+    border-radius: 18px;
 }
+.ev-empty > i { font-size: 2.25rem; color: var(--ev-navy); line-height: 1; }
+.ev-empty h2 { font-size: 1.35rem; font-weight: 700; margin: 0 0 0.5rem; }
+.ev-empty p { color: var(--ev-muted); margin: 0 0 1.25rem; line-height: 1.6; }
 
-.event-type-card:hover {
-    transform: translateY(-10px);
-    border-color: transparent;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
-}
-
-.card-glow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--asnc-blue), var(--asnc-gold));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.event-type-card:hover .card-glow {
-    opacity: 1;
-}
-
-.event-type-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, var(--asnc-navy), var(--asnc-blue));
-    border-radius: 20px;
+/* Cierre */
+.ev-join { padding-top: 0 !important; }
+.ev-join-inner {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 1.75rem;
-    color: white;
-    transition: transform 0.3s ease;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ev-line);
 }
+.ev-join-inner p { margin: 0; color: var(--ev-muted); }
+.ev-section--wash + .ev-join { padding-top: 3rem !important; }
+.ev-section--wash + .ev-join .ev-join-inner { border-top: 0; padding-top: 0; }
 
-.event-type-card:hover .event-type-icon {
-    transform: scale(1.1) rotate(-5deg);
+@media (max-width: 991.98px) {
+    .ev-next { grid-template-columns: 1fr; }
+    .ev-next-visual { min-height: 220px; aspect-ratio: 16 / 9; }
+    .ev-next-visual--plain { min-height: 180px; aspect-ratio: auto; }
+    .ev-next-body { padding: 1.5rem; }
 }
-
-.event-type-icon.icon-gold {
-    background: linear-gradient(135deg, var(--asnc-gold), #fbbf24);
-    color: var(--asnc-navy);
-}
-
-.event-type-icon.icon-purple {
-    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
-}
-
-.event-type-icon.icon-green {
-    background: linear-gradient(135deg, #10b981, #34d399);
-}
-
-.event-type-card h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--asnc-navy);
-    margin-bottom: 0.75rem;
-}
-
-.event-type-card p {
-    font-size: 0.95rem;
-    color: #64748b;
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
-}
-
-.event-tag {
-    display: inline-block;
-    background: #f1f5f9;
-    color: var(--asnc-blue);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-/* ===== CTA SECTION ===== */
-.events-cta {
-    padding: 3rem 0 5rem;
-    background: white;
-}
-
-.cta-card {
-    background: linear-gradient(135deg, var(--asnc-navy) 0%, var(--asnc-blue) 100%);
-    border-radius: 24px;
-    padding: 3rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.cta-card::before {
-    content: '';
-    position: absolute;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(244, 195, 67, 0.15) 0%, transparent 70%);
-    top: -200px;
-    right: -100px;
-    pointer-events: none;
-}
-
-.cta-icon {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.cta-icon i {
-    font-size: 2rem;
-    color: var(--asnc-gold);
-}
-
-.cta-content {
-    flex: 1;
-}
-
-.cta-content h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 0.5rem;
-}
-
-.cta-content p {
-    color: rgba(255, 255, 255, 0.8);
-    margin: 0;
-    font-size: 1.05rem;
-}
-
-.cta-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: var(--asnc-gold);
-    color: var(--asnc-navy);
-    padding: 1rem 2rem;
-    border-radius: 14px;
-    font-size: 1rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}
-
-.cta-button:hover {
-    background: white;
-    color: var(--asnc-navy);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.cta-button i {
-    transition: transform 0.3s ease;
-}
-
-.cta-button:hover i {
-    transform: translateX(4px);
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1200px) {
-    .events-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    .construction-card {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-        padding: 3rem;
-    }
-
-    .construction-visual {
-        order: -1;
-    }
-
-    .atom-animation {
-        width: 160px;
-        height: 160px;
-    }
-
-    .orbit-1 { width: 80px; height: 80px; }
-    .orbit-2 { width: 120px; height: 120px; }
-    .orbit-3 { width: 160px; height: 160px; }
-
-    .cta-card {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.5rem;
-    }
-
-    .construction-content h2 {
-        font-size: 1.75rem;
-    }
-
-    .events-grid {
-        grid-template-columns: 1fr;
-        max-width: 400px;
-        margin: 0 auto;
-    }
-
-    .section-title {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .construction-card {
-        padding: 2rem;
-    }
-
-    .feature-item {
-        flex-direction: column;
-        text-align: center;
-    }
+@media (max-width: 575.98px) {
+    .ev-empty { flex-direction: column; padding: 1.5rem; }
+    .ev-next-actions .ev-btn { width: 100%; }
 }
 </style>
-
 {% endblock %}

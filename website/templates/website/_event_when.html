@@ -1,0 +1,1 @@
+{% load i18n %}{% if event.is_ongoing %}{% trans "En curso" %}{% elif event.days_until == 0 %}{% trans "Hoy" %}{% elif event.days_until == 1 %}{% trans "Mañana" %}{% else %}{% blocktrans with n=event.days_until %}En {{ n }} días{% endblocktrans %}{% endif %}
