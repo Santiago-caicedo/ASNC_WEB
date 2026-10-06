@@ -56,8 +56,10 @@
                     </div>
                     <a href="{% url 'event_detail' event.slug %}" class="hero-event-body">
                         {% if event.cover_image %}
+                        {# Alto fijo: la imagen se reduce hasta caber completa; el fondo difuminado rellena los bordes #}
                         <span class="hero-event-cover">
-                            <img src="{{ event.cover_image.url }}" alt="">
+                            <img src="{{ event.cover_image.url }}" alt="" class="hero-event-cover-bg" aria-hidden="true">
+                            <img src="{{ event.cover_image.url }}" alt="" class="hero-event-cover-img">
                         </span>
                         {% endif %}
                         <span class="hero-event-main">
@@ -1576,17 +1578,28 @@
 .hero-event-body:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
 .hero-event-body:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
 .hero-event-cover {
+    position: relative;
     display: block;
-    aspect-ratio: 16 / 8;
+    height: 220px;
     overflow: hidden;
+    background: rgba(0, 0, 0, 0.25);
 }
-.hero-event-cover img {
+.hero-event-cover-bg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    filter: blur(20px) brightness(0.55);
+    transform: scale(1.15);
 }
-.hero-event-body:hover .hero-event-cover img { transform: scale(1.03); }
+.hero-event-cover-img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 .hero-event-main {
     display: flex;
     gap: 1.1rem;
@@ -1682,11 +1695,10 @@
 @media (max-width: 991.98px) {
     /* En móvil el evento baja bajo los botones del hero (las noticias siguen ocultas) */
     .hero-event-col { margin-top: 2.5rem; margin-bottom: 6rem; }
-    .hero-event-cover { aspect-ratio: 16 / 7; }
+    .hero-event-cover { height: 200px; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .hero-event-cover img, .hero-event-body { transition: none; }
-    .hero-event-body:hover .hero-event-cover img { transform: none; }
+    .hero-event-body { transition: none; }
 }
 
 /* Scroll Indicator */

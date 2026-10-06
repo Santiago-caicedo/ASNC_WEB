@@ -29,7 +29,9 @@
         <div class="row g-5">
             <div class="col-lg-7 order-2 order-lg-1">
                 {% if event.cover_image %}
-                <img src="{{ event.cover_image.url }}" alt="" class="ev-detail-cover">
+                <div class="ev-detail-cover">
+                    <img src="{{ event.cover_image.url }}" alt="">
+                </div>
                 {% endif %}
                 {% if event.description %}
                 <div class="ev-detail-text">
@@ -108,12 +110,21 @@
 .ev-back:hover { color: #fff; }
 .ev-back:focus-visible { outline: 3px solid var(--ev-gold); outline-offset: 2px; border-radius: 6px; }
 
+/* La imagen se ve completa, en su proporción; las muy altas se limitan a la pantalla */
 .ev-detail-cover {
-    width: 100%;
-    border-radius: 16px;
+    display: flex;
+    justify-content: center;
     margin-bottom: 2rem;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--ev-wash);
+}
+.ev-detail-cover img {
+    display: block;
+    max-width: 100%;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
 }
 .ev-detail-text {
     font-size: 1.08rem;
