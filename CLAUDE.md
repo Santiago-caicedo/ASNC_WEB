@@ -283,7 +283,7 @@ Public events, managed **only by the superadmin** at `/portal/eventos/` (`Superu
 - `EventQuerySet`: `published()`, `upcoming()` (not ended, by `starts_at`), `past()`, `ended()`, `not_ended()`. **An event without `ends_at` stays upcoming until the end of its day.**
 - Properties: `end`, `is_past`, `is_ongoing`, `days_until`, `is_multiday`, `start_month` (groups the agenda by month)
 - `EventForm` (`dashboard/forms.py`) asks for date / start time / end time / "dura varios días" separately and combines them in `clean()` (Bogotá time).
-- **Homepage hero box** shows the nearest upcoming event (`next_event` in `HomeView`); if there is none it falls back to the "Noticias de la Asociación" list. On mobile only the event box is shown (below the hero buttons).
+- **Homepage hero box** shows **all upcoming events**: the nearest one featured (cover, date leaf, CTA) and the rest as compact rows under "También en la agenda" (scrolls when long). Context in `HomeView`: `hero_event`, `hero_more_events`, `hero_event_is_past`. With no upcoming events it shows the **last published event** ("Último evento" · "Finalizado", no registration button); with no events at all, an empty agenda state. News are no longer shown in the hero. The box also shows on mobile (below the hero buttons).
 - Public: `/eventos/` (next event + rest grouped by month + past), `/eventos/<slug>/` (detail), `/eventos/<slug>/calendario.ics` (add to calendar). Shared partials `website/_event_*.html`. Events are in the sitemap.
 
 ### Convocatoria models (`convocatorias/models.py`)
@@ -751,7 +751,7 @@ python manage.py showmigrations
 ## Views Summary
 
 ### Website App
-- `HomeView` (TemplateView) - Public homepage (next event in the hero box, latest news + Observatorio ENSO)
+- `HomeView` (TemplateView) - Public homepage (upcoming events — or the last one — in the hero box, latest news + Observatorio ENSO)
 - `enso_data()` - Sirve `website/data/enso.json` (cacheado 24 h) para el tablero de la portada
 - `AboutView` (ListView) - About page with FeaturedMembers + comités
 - `EventsView` (TemplateView) - Events agenda; `EventDetailView`; `event_ics()` calendar file

@@ -66,15 +66,18 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['enso_version'] = enso_data_version()
-        # Recuadro del hero: el evento más próximo; sin eventos, las noticias.
-        context['next_event'] = Event.objects.upcoming().first()
+        # Recuadro del hero: todos los próximos eventos (el más cercano
+        # destacado); si no hay ninguno, el último evento publicado.
+        upcoming = list(Event.objects.upcoming())
+        if upcoming:
+            context['hero_event'], context['hero_more_events'] = upcoming[0], upcoming[1:]
+        else:
+            context['hero_event'] = Event.objects.past().first()
+            context['hero_more_events'] = []
+        context['hero_event_is_past'] = not upcoming
         published = NewsArticle.objects.filter(
             is_published=True
         ).select_related('category')
-        # Barra lateral: noticias de la categoría "De la Asociación".
-        context['news_association'] = published.filter(
-            category__slug='de-la-asociacion'
-        )[:4]
         # Sección principal: últimas noticias del resto de categorías
         # (incluye cualquier categoría nueva, p. ej. "Mundial Nuclear").
         context['news_nuclear'] = published.exclude(

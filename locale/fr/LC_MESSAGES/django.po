@@ -91,8 +91,20 @@ msgstr "Rejoignez l'ASNC"
 msgid "Descubre más"
 msgstr "En savoir plus"
 
+msgid "Último evento"
+msgstr "Dernier événement"
+
+msgid "Finalizado"
+msgstr "Terminé"
+
+msgid "Próximos eventos"
+msgstr "Prochains événements"
+
 msgid "Próximo evento"
 msgstr "Prochain événement"
+
+msgid "También en la agenda"
+msgstr "Aussi à l'agenda"
 
 msgid "Inscribirme"
 msgstr "M'inscrire"
@@ -103,14 +115,11 @@ msgstr "Voir les détails"
 msgid "Ver agenda"
 msgstr "Voir l'agenda"
 
-msgid "Noticias de la Asociación"
-msgstr "Actualités de l'Association"
+msgid "Agenda"
+msgstr "Agenda"
 
-msgid "Próximamente publicaremos novedades."
-msgstr "Nous publierons bientôt des nouveautés."
-
-msgid "Ver todas las noticias"
-msgstr "Voir toutes les actualités"
+msgid "No hay eventos programados por ahora"
+msgstr "Aucun événement prévu pour le moment"
 
 msgid "Scroll"
 msgstr "Défiler"
@@ -130,6 +139,9 @@ msgstr "L'essentiel du monde nucléaire : avancées, recherches et tendances."
 
 msgid "Próximamente publicaremos noticias del sector nuclear."
 msgstr "Nous publierons bientôt les actualités du secteur nucléaire."
+
+msgid "Ver todas las noticias"
+msgstr "Voir toutes les actualités"
 
 msgid "El Poder del Átomo"
 msgstr "La puissance de l'atome"
@@ -842,9 +854,6 @@ msgstr "Ensuite"
 msgid "El resto de la agenda, por mes."
 msgstr "Le reste de l'agenda, par mois."
 
-msgid "No hay eventos programados por ahora"
-msgstr "Aucun événement prévu pour le moment"
-
 msgid ""
 "Aquí publicamos las conferencias, webinars y talleres de la ASNC. Los "
 "asociados reciben cada invitación por correo."
@@ -864,9 +873,6 @@ msgstr "Ce qui a déjà eu lieu, du plus récent au plus ancien."
 msgid "Los asociados reciben la invitación a cada evento en su correo."
 msgstr "Les membres reçoivent l'invitation à chaque événement par e-mail."
 
-msgid "Agenda"
-msgstr "Agenda"
-
 msgid "Este evento ya pasó"
 msgstr "Cet événement est terminé"
 
@@ -875,9 +881,6 @@ msgstr "Rejoindre la diffusion"
 
 msgid "La inscripción se abre en otra pestaña."
 msgstr "L'inscription s'ouvre dans un nouvel onglet."
-
-msgid "También en la agenda"
-msgstr "Aussi à l'agenda"
 
 msgid "Los siguientes eventos de la ASNC."
 msgstr "Les prochains événements de l'ASNC."

@@ -249,6 +249,8 @@ class EventListView(SuperuserRequiredMixin, ListView):
         upcoming = list(Event.objects.upcoming())
         context['upcoming_events'] = upcoming
         context['next_event'] = upcoming[0] if upcoming else None
+        # Sin próximos, la portada muestra el último evento publicado.
+        context['last_event'] = None if upcoming else Event.objects.past().first()
         context['draft_events'] = Event.objects.filter(is_published=False).not_ended().order_by('starts_at')
         return context
 

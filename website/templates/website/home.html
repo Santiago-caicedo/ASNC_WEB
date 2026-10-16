@@ -45,14 +45,19 @@
                 </div>
             </div>
 
-            {% if next_event %}
+            {% if hero_event %}
             <div class="col-lg-5 hero-event-col">
-                {% with event=next_event %}
-                <div class="hero-news-panel hero-event">
+                {% with event=hero_event %}
+                <div class="hero-news-panel hero-event{% if hero_event_is_past %} is-past{% endif %}">
                     <div class="hero-news-header">
                         <i class="bi bi-calendar-event" aria-hidden="true"></i>
-                        <span>{% trans "Próximo evento" %}</span>
+                        {% if hero_event_is_past %}
+                        <span>{% trans "Último evento" %}</span>
+                        <span class="hero-event-when">{% trans "Finalizado" %}</span>
+                        {% else %}
+                        <span>{% if hero_more_events %}{% trans "Próximos eventos" %}{% else %}{% trans "Próximo evento" %}{% endif %}</span>
                         <span class="hero-event-when">{% include 'website/_event_when.html' %}</span>
+                        {% endif %}
                     </div>
                     <a href="{% url 'event_detail' event.slug %}" class="hero-event-body">
                         {% if event.cover_image %}
@@ -78,8 +83,33 @@
                             </span>
                         </span>
                     </a>
+                    {% if hero_more_events %}
+                    {# El resto de próximos eventos, compactos; con muchos, la lista se desplaza #}
+                    <div class="hero-event-more">
+                        <span class="hero-event-more-title">{% trans "También en la agenda" %}</span>
+                        <ul class="hero-event-more-list">
+                            {% for e in hero_more_events %}
+                            <li>
+                                <a href="{% url 'event_detail' e.slug %}" class="hero-event-row">
+                                    <span class="hero-event-row-date" aria-hidden="true">
+                                        <span class="hero-event-row-day">{{ e.starts_at|date:"j" }}</span>
+                                        <span class="hero-event-row-month">{{ e.starts_at|date:"M" }}</span>
+                                    </span>
+                                    <span class="hero-event-row-info">
+                                        <span class="hero-event-row-title">{{ e.title }}</span>
+                                        <span class="hero-event-row-meta">
+                                            <span class="visually-hidden">{{ e.starts_at|date:"j \d\e F \d\e Y" }}.</span>
+                                            {{ e.starts_at|date:"g:i a" }} · {{ e.get_modality_display }}
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                     <div class="hero-event-actions">
-                        {% if event.registration_url %}
+                        {% if event.registration_url and not hero_event_is_past %}
                         <a href="{{ event.registration_url }}" class="hero-event-cta" target="_blank" rel="noopener">
                             {% trans "Inscribirme" %} <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
                         </a>
@@ -95,34 +125,18 @@
             </div>
             {% else %}
             <div class="col-lg-5 d-none d-lg-block">
-                {# Sin eventos próximos: noticias de la Asociación #}
+                {# Aún no se ha publicado ningún evento #}
                 <div class="hero-news-panel">
                     <div class="hero-news-header">
-                        <i class="bi bi-flag-fill"></i>
-                        <span>{% trans "Noticias de la Asociación" %}</span>
+                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                        <span>{% trans "Agenda" %}</span>
                     </div>
-                    <div class="hero-news-list">
-                        {% if news_association %}
-                            {% for article in news_association %}
-                            <a href="{% url 'public_news_detail' article.slug %}" class="hero-news-item">
-                                <div class="hero-news-img">
-                                    <img src="{{ article.cover_image.url }}" alt="{{ article.title }}">
-                                </div>
-                                <div class="hero-news-info">
-                                    <span class="hero-news-date">{{ article.published_at|date:"d M Y" }}</span>
-                                    <h6>{{ article.title|truncatechars:60 }}</h6>
-                                </div>
-                            </a>
-                            {% endfor %}
-                        {% else %}
-                            <div class="hero-news-empty">
-                                <i class="bi bi-newspaper"></i>
-                                <p>{% trans "Próximamente publicaremos novedades." %}</p>
-                            </div>
-                        {% endif %}
+                    <div class="hero-news-empty">
+                        <i class="bi bi-calendar3" aria-hidden="true"></i>
+                        <p>{% trans "No hay eventos programados por ahora" %}</p>
                     </div>
-                    <a href="{% url 'public_news_list' %}" class="hero-news-footer">
-                        {% trans "Ver todas las noticias" %} <i class="bi bi-arrow-right"></i>
+                    <a href="{% url 'events' %}" class="hero-news-footer">
+                        {% trans "Ver agenda" %} <i class="bi bi-arrow-right" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>
@@ -1440,78 +1454,6 @@
     font-size: 1rem;
 }
 
-.hero-news-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0.5rem;
-}
-
-.hero-news-list::-webkit-scrollbar {
-    width: 4px;
-}
-
-.hero-news-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-}
-
-.hero-news-item {
-    display: flex;
-    gap: 0.85rem;
-    padding: 0.75rem;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: all 0.25s ease;
-    align-items: center;
-}
-
-.hero-news-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.hero-news-img {
-    width: 60px;
-    height: 60px;
-    border-radius: 10px;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.hero-news-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hero-news-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.hero-news-date {
-    font-size: 0.72rem;
-    color: var(--gold);
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-}
-
-.hero-news-info h6 {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: white;
-    margin: 0.2rem 0 0;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.hero-news-item:hover .hero-news-info h6 {
-    color: var(--gold);
-}
-
 .hero-news-empty {
     text-align: center;
     padding: 2.5rem 1rem;
@@ -1692,8 +1634,66 @@
 .hero-event-cta:focus-visible,
 .hero-event-all:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 
+/* Resto de próximos eventos: filas compactas bajo el destacado */
+.hero-event-more { border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 0.85rem 0.75rem 0.4rem; }
+.hero-event-more-title {
+    display: block;
+    padding: 0 0.5rem 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+.hero-event-more-list { list-style: none; margin: 0; padding: 0; max-height: 196px; overflow-y: auto; }
+.hero-event-more-list::-webkit-scrollbar { width: 4px; }
+.hero-event-more-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+.hero-event-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-height: 56px;
+    padding: 0.5rem;
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+.hero-event-row:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+.hero-event-row:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
+.hero-event-row-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 2.75rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+.hero-event-row-day { font-size: 1.35rem; font-weight: 700; color: var(--gold); }
+.hero-event-row-month {
+    margin-top: 0.2rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+}
+.hero-event-row-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.hero-event-row-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.hero-event-row:hover .hero-event-row-title { color: var(--gold); }
+.hero-event-row-meta { font-size: 0.8rem; color: rgba(255, 255, 255, 0.72); }
+/* Sin eventos futuros: el último publicado, con el punto apagado */
+.hero-event.is-past .hero-event-when { color: rgba(255, 255, 255, 0.75); }
+.hero-event.is-past .hero-event-when::before { background: rgba(255, 255, 255, 0.45); box-shadow: none; }
+
 @media (max-width: 991.98px) {
-    /* En móvil el evento baja bajo los botones del hero (las noticias siguen ocultas) */
+    /* En móvil el evento baja bajo los botones del hero */
     .hero-event-col { margin-top: 2.5rem; margin-bottom: 6rem; }
     .hero-event-cover { height: 200px; }
 }

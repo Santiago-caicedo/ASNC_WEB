@@ -90,8 +90,20 @@ msgstr "Join the ASNC"
 msgid "Descubre más"
 msgstr "Discover more"
 
+msgid "Último evento"
+msgstr "Latest event"
+
+msgid "Finalizado"
+msgstr "Ended"
+
+msgid "Próximos eventos"
+msgstr "Upcoming events"
+
 msgid "Próximo evento"
 msgstr "Next event"
+
+msgid "También en la agenda"
+msgstr "Also on the calendar"
 
 msgid "Inscribirme"
 msgstr "Register"
@@ -102,14 +114,11 @@ msgstr "View details"
 msgid "Ver agenda"
 msgstr "View calendar"
 
-msgid "Noticias de la Asociación"
-msgstr "Association News"
+msgid "Agenda"
+msgstr "Calendar"
 
-msgid "Próximamente publicaremos novedades."
-msgstr "We will publish updates soon."
-
-msgid "Ver todas las noticias"
-msgstr "View all news"
+msgid "No hay eventos programados por ahora"
+msgstr "No events scheduled for now"
 
 msgid "Scroll"
 msgstr "Scroll"
@@ -130,6 +139,9 @@ msgstr ""
 
 msgid "Próximamente publicaremos noticias del sector nuclear."
 msgstr "We will publish nuclear industry news soon."
+
+msgid "Ver todas las noticias"
+msgstr "View all news"
 
 msgid "El Poder del Átomo"
 msgstr "The Power of the Atom"
@@ -829,9 +841,6 @@ msgstr "Later"
 msgid "El resto de la agenda, por mes."
 msgstr "The rest of the calendar, by month."
 
-msgid "No hay eventos programados por ahora"
-msgstr "No events scheduled for now"
-
 msgid ""
 "Aquí publicamos las conferencias, webinars y talleres de la ASNC. Los "
 "asociados reciben cada invitación por correo."
@@ -851,9 +860,6 @@ msgstr "What already happened, most recent first."
 msgid "Los asociados reciben la invitación a cada evento en su correo."
 msgstr "Members receive the invitation to every event in their inbox."
 
-msgid "Agenda"
-msgstr "Calendar"
-
 msgid "Este evento ya pasó"
 msgstr "This event has ended"
 
@@ -862,9 +868,6 @@ msgstr "Join the stream"
 
 msgid "La inscripción se abre en otra pestaña."
 msgstr "Registration opens in a new tab."
-
-msgid "También en la agenda"
-msgstr "Also on the calendar"
 
 msgid "Los siguientes eventos de la ASNC."
 msgstr "Upcoming ASNC events."

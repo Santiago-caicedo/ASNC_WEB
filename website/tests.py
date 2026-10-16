@@ -122,20 +122,43 @@ class EventPublicTests(TestCase):
         self.assertIn(ev, Event.objects.upcoming())
         self.assertFalse(ev.is_past)
 
-    def test_portada_muestra_el_evento_mas_proximo(self):
+    def test_portada_muestra_todos_los_proximos_eventos(self):
+        _event('Pasado', timedelta(days=-3))
+        _event('Tercero', timedelta(days=40))
         _event('Segundo', timedelta(days=20))
         _event('Primero', timedelta(days=2), registration_url='https://forms.example.com/x')
         r = self.client.get(reverse('home'), HTTP_HOST='localhost')
-        self.assertEqual(r.context['next_event'].title, 'Primero')
-        self.assertContains(r, 'Próximo evento')
+        self.assertEqual(r.context['hero_event'].title, 'Primero')
+        self.assertEqual([e.title for e in r.context['hero_more_events']], ['Segundo', 'Tercero'])
+        self.assertFalse(r.context['hero_event_is_past'])
+        self.assertContains(r, 'Próximos eventos')
+        self.assertContains(r, 'También en la agenda')
         self.assertContains(r, 'https://forms.example.com/x')
         self.assertNotContains(r, 'Noticias de la Asociación')
 
-    def test_portada_sin_eventos_vuelve_a_las_noticias(self):
-        _event('Pasado', timedelta(days=-3))
+    def test_portada_un_solo_evento_proximo(self):
+        _event('Único', timedelta(days=5))
         r = self.client.get(reverse('home'), HTTP_HOST='localhost')
-        self.assertIsNone(r.context['next_event'])
-        self.assertContains(r, 'Noticias de la Asociación')
+        self.assertContains(r, 'Próximo evento')
+        self.assertNotContains(r, 'También en la agenda')
+
+    def test_portada_sin_proximos_muestra_el_ultimo_evento(self):
+        _event('Antiguo', timedelta(days=-30))
+        _event('Reciente', timedelta(days=-3), registration_url='https://forms.example.com/viejo')
+        _event('Borrador pasado', timedelta(days=-1), is_published=False)
+        r = self.client.get(reverse('home'), HTTP_HOST='localhost')
+        self.assertEqual(r.context['hero_event'].title, 'Reciente')
+        self.assertTrue(r.context['hero_event_is_past'])
+        self.assertContains(r, 'Último evento')
+        self.assertContains(r, 'Finalizado')
+        self.assertNotContains(r, 'https://forms.example.com/viejo')  # sin botón de inscripción
+        self.assertNotContains(r, 'Noticias de la Asociación')
+
+    def test_portada_sin_eventos(self):
+        r = self.client.get(reverse('home'), HTTP_HOST='localhost')
+        self.assertIsNone(r.context['hero_event'])
+        self.assertContains(r, 'No hay eventos programados por ahora')
+        self.assertNotContains(r, 'Noticias de la Asociación')
 
     def test_agenda_detalle_y_calendario(self):
         ev = _event('Jornada de Medicina Nuclear', timedelta(days=5), location='UNAB, Bucaramanga')
