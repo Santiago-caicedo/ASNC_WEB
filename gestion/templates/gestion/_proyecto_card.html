@@ -1,18 +1,13 @@
 {% load gestion_extras %}
-{# Tarjeta de proyecto con anillo de avance. Espera: p (Proyecto anotado con total/hechas). Opcionales: seleccionable (filtra tareas al pulsar), proyecto_sel (el seleccionado). #}
+{# Tarjeta de proyecto con anillo de avance; al pulsarla abre su ficha. Espera: p (Proyecto anotado con total/hechas). Opcional: proyecto_sel (el de la ficha abierta). #}
 {% widthratio p.hechas p.total|default:1 100 as pct %}
-<li class="ws-card {% if proyecto_sel and proyecto_sel.pk == p.pk %}is-selected{% endif %} {% if p.estado == 'PAUSADO' %}is-paused{% endif %}">
-    {% if seleccionable %}
-    <a class="ws-card-link" href="{% url 'gestion:workspace' %}?comite={{ p.comite_id }}{% if not proyecto_sel or proyecto_sel.pk != p.pk %}&proyecto={{ p.pk }}{% endif %}"
-       aria-label="{% if proyecto_sel and proyecto_sel.pk == p.pk %}Quitar filtro{% else %}Ver solo las tareas de{% endif %} {{ p.title }}"
-       title="{% if proyecto_sel and proyecto_sel.pk == p.pk %}Volver a todas las tareas{% else %}Ver solo las tareas de este proyecto{% endif %}">
-    {% else %}
-    <span class="ws-card-link">
-    {% endif %}
+<li class="ws-card {% if proyecto_sel and proyecto_sel.pk == p.pk %}is-selected{% endif %} {% if p.estado == 'PAUSADO' %}is-paused{% endif %}" data-card="{{ p.pk }}">
+    <a class="ws-card-link" href="{% url 'gestion:workspace' %}?{% if p.comite_id %}comite={{ p.comite_id }}&amp;{% endif %}proyecto={{ p.pk }}"
+       data-ficha="{% url 'gestion:proyecto_ficha' p.pk %}" aria-haspopup="dialog" title="Abrir la ficha del proyecto">
         <span class="ws-ring" aria-hidden="true">
             <svg viewBox="0 0 36 36">
                 <circle cx="18" cy="18" r="15.5" class="ws-ring-track"/>
-                {% if p.hechas %}<circle cx="18" cy="18" r="15.5" class="ws-ring-fill" style="stroke-dasharray: {{ pct }} 100;"/>{% endif %}
+                {% if p.hechas %}<circle cx="18" cy="18" r="15.5" pathLength="100" class="ws-ring-fill" style="stroke-dasharray: {{ pct }} 100;"/>{% endif %}
             </svg>
         </span>
         <span class="ws-card-body">
@@ -26,10 +21,6 @@
                 {% if not p.total %}Sin tareas todavía{% elif p.hechas == p.total %}Todo completado{% else %}{{ p.hechas }} de {{ p.total }} tareas hechas{% endif %}
             </span>
         </span>
-    {% if seleccionable %}</a>{% else %}</span>{% endif %}
-    <button type="button" class="ws-card-edit ws-link" data-bs-toggle="modal" data-bs-target="#modalProyecto"
-            data-pk="{{ p.pk }}" data-title="{{ p.title }}" data-description="{{ p.description }}"
-            data-comite="{{ p.comite_id|default:'' }}" data-responsable="{{ p.responsable_id|default:'' }}"
-            data-estado="{{ p.estado }}" data-prioridad="{{ p.prioridad }}"
-            data-start_date="{{ p.start_date|date:'Y-m-d' }}" data-due_date="{{ p.due_date|date:'Y-m-d' }}">Editar</button>
+        <span class="ws-card-chev" aria-hidden="true">›</span>
+    </a>
 </li>

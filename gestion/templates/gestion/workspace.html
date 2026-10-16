@@ -2,7 +2,7 @@
 {% load gestion_extras %}
 
 {% block content %}
-<div class="ws {% if comite %}has-aside{% endif %}" id="ws" data-next="{{ request.get_full_path }}">
+<div class="ws {% if comite %}has-aside{% endif %}" id="ws">
 
     <!-- ───────── Comités ───────── -->
     <aside class="ws-rail" aria-label="Comités">
@@ -56,14 +56,14 @@
             <div class="ws-h2-row">
                 <div>
                     <h2 class="ws-h2">Proyectos</h2>
-                    <p class="ws-help">Un proyecto agrupa tareas con un objetivo y una fecha. El anillo muestra cuánto va hecho. Pulsa uno para ver solo sus tareas.</p>
+                    <p class="ws-help">Un proyecto agrupa tareas con un objetivo y una fecha. El anillo muestra cuánto va hecho. Pulsa uno para ver su ficha: estado, informe, tareas y notas.</p>
                 </div>
                 <button type="button" class="ws-btn" data-bs-toggle="modal" data-bs-target="#modalProyecto"
                         data-nuevo="1" data-comite="{{ comite.pk }}">Nuevo proyecto</button>
             </div>
             <ul class="ws-cards">
                 {% for p in proyectos %}
-                    {% include 'gestion/_proyecto_card.html' with p=p seleccionable=True proyecto_sel=proyecto_sel %}
+                    {% include 'gestion/_proyecto_card.html' with p=p %}
                 {% empty %}
                 <li class="ws-card ws-card-empty">
                     <span class="ws-card-body">
@@ -77,7 +77,7 @@
             <details class="ws-details">
                 <summary>Cerrados ({{ proyectos_cerrados|length }})</summary>
                 <ul class="ws-cards is-closed">
-                    {% for p in proyectos_cerrados %}{% include 'gestion/_proyecto_card.html' with p=p seleccionable=True %}{% endfor %}
+                    {% for p in proyectos_cerrados %}{% include 'gestion/_proyecto_card.html' with p=p %}{% endfor %}
                 </ul>
             </details>
             {% endif %}
@@ -87,10 +87,7 @@
         <section class="ws-section" id="tareas">
             <div class="ws-h2-row">
                 <div>
-                    <h2 class="ws-h2">
-                        Tareas
-                        {% if proyecto_sel %}<span class="ws-filter">de {{ proyecto_sel.title }} <a href="{% url 'gestion:workspace' %}?comite={{ comite.pk }}#tareas" class="ws-filter-clear" aria-label="Quitar filtro">×</a></span>{% endif %}
-                    </h2>
+                    <h2 class="ws-h2">Tareas</h2>
                     <p class="ws-help">Ordenadas por cuándo vencen. Marca el círculo para completarlas.</p>
                 </div>
                 <button type="button" class="ws-btn ws-btn-primary" data-composer-open>Nueva tarea</button>
@@ -102,12 +99,12 @@
             <div class="ws-horizon is-{{ clave }}">
                 <h3 class="ws-h3">{{ titulo }} <span class="ws-h3-count">{{ lista|length }}</span>{% if ayuda %}<span class="ws-h3-help">{{ ayuda }}</span>{% endif %}</h3>
                 <ul class="ws-list">
-                    {% for t in lista %}{% include 'gestion/_tarea.html' with t=t con_proyecto=proyecto_sel|yesno:",1" %}{% endfor %}
+                    {% for t in lista %}{% include 'gestion/_tarea.html' with t=t con_proyecto=True %}{% endfor %}
                 </ul>
             </div>
             {% empty %}
             <div class="ws-empty-block">
-                <p class="ws-empty-title">{% if proyecto_sel %}Este proyecto no tiene tareas abiertas.{% else %}No hay tareas abiertas en este comité.{% endif %}</p>
+                <p class="ws-empty-title">No hay tareas abiertas en este comité.</p>
                 <p class="ws-empty-text">Pulsa «Nueva tarea», escribe qué hay que hacer, a quién le toca y para cuándo.</p>
             </div>
             {% endfor %}
@@ -116,7 +113,7 @@
             <details class="ws-details">
                 <summary>Completadas y canceladas ({{ cerradas|length }})</summary>
                 <ul class="ws-list">
-                    {% for t in cerradas %}{% include 'gestion/_tarea.html' with t=t con_proyecto=proyecto_sel|yesno:",1" %}{% endfor %}
+                    {% for t in cerradas %}{% include 'gestion/_tarea.html' with t=t con_proyecto=True %}{% endfor %}
                 </ul>
             </details>
             {% endif %}
@@ -159,7 +156,7 @@
             <div class="ws-h2-row">
                 <div>
                     <h2 class="ws-h2">Proyectos transversales</h2>
-                    <p class="ws-help">No pertenecen a un comité en particular.</p>
+                    <p class="ws-help">No pertenecen a un comité en particular. Pulsa uno para ver su ficha.</p>
                 </div>
             </div>
             <ul class="ws-cards">
@@ -243,10 +240,17 @@
 
 {% include 'gestion/_modales.html' %}
 
+<!-- Ficha del proyecto: se llena con /proyectos/<id>/ficha/ o llega rellena con ?proyecto=<id> -->
+<div class="modal fade ws-modal ws-sheet" id="modalFicha" tabindex="-1" aria-labelledby="modalFichaTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down">
+        <div class="modal-content" id="fichaContenido">{% if ficha %}{% include 'gestion/_ficha.html' with f=ficha %}{% endif %}</div>
+    </div>
+</div>
+
 <style>
 /* ── Tokens (también en los modales, que se montan fuera de .ws) ── */
 .ws, .ws-modal {
-    --ink: #16202B; --ink-2: #5B6774; --ink-3: #8A95A1;
+    --ink: #16202B; --ink-2: #4E5A67; --ink-3: #697482;
     --line: #E6EAF0; --line-strong: #CBD3DC;
     --paper: #FFFFFF; --wash: #F2F4F7; --wash-2: #E9EDF2;
     --navy: #1B2A41; --navy-soft: rgba(27, 42, 65, .08); --gold: #f4c343;
@@ -300,9 +304,6 @@
 .ws-horizon.is-vencidas .ws-h3 { color: var(--late); }
 .ws-h3-count { font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; letter-spacing: 0; text-transform: none; font-size: 12px; }
 .ws-h3-help { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--ink-3); font-size: 12px; }
-.ws-filter { font-weight: 400; font-size: 13px; color: var(--ink-2); background: var(--wash); border-radius: 50px; padding: 2px 8px 2px 10px; display: inline-flex; align-items: center; gap: 6px; }
-.ws-filter-clear { color: var(--ink-3); text-decoration: none; font-size: 16px; line-height: 1; }
-.ws-filter-clear:hover { color: var(--late); }
 
 /* ── Tarjetas de proyecto ── */
 .ws-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
@@ -313,11 +314,12 @@
 .ws-card.is-paused { background: var(--wash); }
 .ws-card-link { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 12px; color: inherit; text-decoration: none; height: 100%; }
 a.ws-card-link:hover .ws-card-title { color: var(--navy); }
-.ws-card-body { min-width: 0; display: flex; flex-direction: column; gap: 1px; padding-right: 40px; }
+.ws-card-body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.ws-card-chev { color: var(--ink-3); font-size: 20px; line-height: 1; align-self: center; }
+a.ws-card-link:hover .ws-card-chev { color: var(--navy); }
 .ws-card-title { font-weight: 600; line-height: 1.3; }
 .ws-card-meta { font-size: 12px; color: var(--ink-2); }
 .ws-card-foot { font-size: 12px; color: var(--ink-3); }
-.ws-card-edit { position: absolute; top: 8px; right: 8px; }
 .ws-card-empty { border-style: dashed; }
 .ws-card-empty .ws-card-body { padding: 14px; }
 .ws-ring { width: 40px; height: 40px; flex-shrink: 0; position: relative; }
@@ -415,6 +417,86 @@ a.ws-card-link:hover .ws-card-title { color: var(--navy); }
 .ws-modal .form-control, .ws-modal .form-select { border-color: var(--line-strong); border-radius: 6px; font-size: 14px; }
 .ws-modal .form-control:focus, .ws-modal .form-select:focus { border-color: var(--navy); box-shadow: 0 0 0 3px var(--navy-soft); }
 
+/* ── Ficha del proyecto ── */
+.ws-sheet .modal-content { overflow: hidden; color: var(--ink); font-size: 14px; line-height: 1.45; }
+.ws-sheet *:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.ws-ficha { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.ws-ficha-head { align-items: flex-start; gap: 16px; padding: 22px 28px 18px !important; }
+.ws-ficha-titles { min-width: 0; flex: 1; }
+.ws-eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 600; color: var(--ink-3); }
+.ws-ficha-title { font-size: 22px; font-weight: 600; letter-spacing: -.01em; line-height: 1.25; margin: 0; color: var(--ink); }
+.ws-ficha-meta { margin: 8px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; color: var(--ink-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.ws-avatar-sm { width: 22px; height: 22px; font-size: 9.5px; margin-right: 2px; }
+.ws-sep { color: var(--line-strong); padding: 0 2px; }
+/* Control segmentado del estado */
+.ws-seg { display: inline-flex; margin-top: 14px; padding: 3px; gap: 2px; background: var(--wash); border-radius: 9px; }
+.ws-seg-btn { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 500; padding: 5px 14px; min-height: 30px; border-radius: 7px; cursor: pointer; }
+.ws-seg-btn:hover { color: var(--ink); }
+.ws-seg-btn.is-on { background: var(--paper); color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(22, 32, 43, .12), 0 0 0 .5px rgba(22, 32, 43, .08); cursor: default; }
+.ws-ficha-body { display: grid; grid-template-columns: minmax(0, 1fr) 300px; padding: 0 !important; }
+.ws-ficha-main { padding: 22px 28px 28px; min-width: 0; }
+.ws-ficha-side { padding: 22px 22px 28px; border-left: 1px solid var(--line); background: var(--wash); min-width: 0; }
+.ws-ficha-side-block { border-top: 1px solid var(--line-strong); margin-top: 22px; padding-top: 20px; }
+.ws-ficha-side .ws-person + .ws-person { border-top-color: var(--line-strong); }
+.ws-ficha-side .ws-note { border-top-color: var(--line-strong); }
+.ws-person-meta { font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ws-ficha-section { border-top: 1px solid var(--line); margin-top: 24px; padding-top: 22px; }
+/* Informe: anillo grande y el estado contado en frases */
+.ws-informe-row { display: flex; align-items: center; gap: 20px; margin-top: 14px; }
+.ws-ring-lg, .ws-ring-lg svg { width: 84px; height: 84px; }
+.ws-ring-lg .ws-ring-track, .ws-ring-lg .ws-ring-fill { stroke-width: 3; }
+.ws-ring-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.ws-ring-num small { font-size: 11px; font-weight: 500; color: var(--ink-2); margin-left: 1px; }
+.ws-informe-text { flex: 1; min-width: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); }
+.ws-informe-text p { margin: 0; }
+.ws-informe-text p + p { margin-top: 4px; }
+.ws-informe-text b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.ws-ficha-desc { margin: 16px 0 0; padding: 12px 14px; background: var(--wash); border-radius: 8px; color: var(--ink-2); font-size: 13.5px; }
+/* Alta de tarea en una línea */
+.ws-ficha-add { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+.ws-ficha-add .ws-grow { flex: 1 1 220px; }
+.ws-ficha-add .ws-select { max-width: 200px; }
+/* Responsable editable: parece texto hasta que se pasa por encima */
+.ws-assign { max-width: 170px; border: 1px solid transparent; background: transparent; color: var(--ink-2); font: inherit; font-size: 13px; padding: 3px 6px; min-height: 30px; border-radius: 6px; cursor: pointer; text-overflow: ellipsis; }
+.ws-assign:hover, .ws-assign:focus { border-color: var(--line-strong); background: var(--paper); color: var(--ink); }
+.ws-assign.is-empty { color: var(--ink-3); }
+.ws-assign-static { max-width: 170px; font-size: 13px; color: var(--ink-3); padding: 0 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws-ficha-foot { padding: 12px 28px !important; }
+.ws-ficha-stamp { margin-right: auto; font-size: 12px; color: var(--ink-3); }
+.ws-ficha-loading { padding: 80px 24px; text-align: center; color: var(--ink-3); }
+.ws-print-only { display: none; }
+@media (max-width: 991px) {
+    .ws-ficha-head { padding: 18px 16px 14px !important; }
+    .ws-ficha-body { grid-template-columns: 1fr; }
+    .ws-ficha-main { padding: 18px 16px 22px; }
+    .ws-ficha-side { border-left: 0; border-top: 1px solid var(--line); padding: 18px 16px 28px; }
+    .ws-ficha-foot { padding: 10px 16px !important; }
+    .ws-ficha-stamp { width: 100%; }
+    .ws-ficha-add .ws-select { max-width: none; flex: 1 1 160px; }
+}
+@media (max-width: 575px) {
+    .ws-informe-row { align-items: flex-start; gap: 14px; }
+    .ws-ring-lg, .ws-ring-lg svg { width: 64px; height: 64px; }
+    .ws-ring-num { font-size: 16px; }
+    .ws-ficha-body .ws-row { flex-wrap: wrap; }
+    .ws-ficha-body .ws-row-main { flex-basis: calc(100% - 40px); }
+    .ws-ficha-body .ws-row > .ws-inline:not(:first-child) { margin-left: 28px; }
+    .ws-seg { display: flex; }
+    .ws-seg-btn { flex: 1; }
+}
+/* Impresión del informe: solo la ficha (copiada a #fichaPrint al imprimir) */
+@media print {
+    html.ws-printing body > *:not(#fichaPrint) { display: none !important; }
+    #fichaPrint { display: block !important; color: #000; }
+    #fichaPrint .ws-noprint { display: none !important; }
+    #fichaPrint .ws-print-only { display: block; margin: 8px 0 0; font-size: 13px; }
+    #fichaPrint .ws-ficha-body { display: block; }
+    #fichaPrint .ws-ficha-side { background: none; border: 0; border-top: 1px solid #ccc; }
+    #fichaPrint details { display: block; }
+    #fichaPrint details > * { display: block; }
+    #fichaPrint .ws-assign { border: 0; appearance: none; -webkit-appearance: none; padding: 0; }
+}
+
 /* ── Responsive ── */
 @media (max-width: 1299px) {
     .ws.has-aside { grid-template-columns: 224px minmax(0, 1fr); }
@@ -440,15 +522,20 @@ a.ws-card-link:hover .ws-card-title { color: var(--navy); }
 </style>
 
 <script>
-(function () {
+// Espera a DOMContentLoaded: bootstrap.bundle se carga después de este bloque.
+document.addEventListener('DOMContentLoaded', function () {
     var ws = document.getElementById('ws');
-    var next = ws.dataset.next;
+    function aqui() { return location.pathname + location.search; }
 
-    document.querySelectorAll('form[data-confirm]').forEach(function (f) {
-        f.addEventListener('submit', function (e) { if (!confirm(f.dataset.confirm)) e.preventDefault(); });
+    // Delegado: también vale para la ficha, que llega después por fetch.
+    document.addEventListener('submit', function (e) {
+        var f = e.target;
+        if (f.dataset.confirm && !confirm(f.dataset.confirm)) { e.preventDefault(); return; }
+        // Los formularios de la pantalla vuelven a la URL actual (con o sin ficha abierta).
+        if (ws.contains(f)) { var n = f.querySelector('input[name=next]'); if (n) n.value = aqui(); }
     });
-    document.querySelectorAll('select[data-autosubmit]').forEach(function (s) {
-        s.addEventListener('change', function () { s.form.submit(); });
+    document.addEventListener('change', function (e) {
+        if (e.target.matches('select[data-autosubmit]')) e.target.form.submit();
     });
 
     // Compositor de nueva tarea: se abre bajo demanda y enfoca el título.
@@ -484,7 +571,7 @@ a.ws-card-link:hover .ws-card-title { color: var(--navy); }
             el.value = v;
         });
         if (nuevo && d.comite !== undefined) { var c = form.querySelector('[name=comite]'); if (c) c.value = d.comite; }
-        modal.querySelectorAll('input[name=next]').forEach(function (n) { n.value = next; });
+        modal.querySelectorAll('input[name=next]').forEach(function (n) { n.value = aqui(); });
         var primero = form.querySelector('input[name=title], input[name=name]');
         modal.addEventListener('shown.bs.modal', function once() { if (primero) primero.focus(); modal.removeEventListener('shown.bs.modal', once); });
     }
@@ -496,8 +583,77 @@ a.ws-card-link:hover .ws-card-title { color: var(--navy); }
     Object.keys(cfgs).forEach(function (id) {
         var modal = document.getElementById(id);
         if (!modal) return;
-        modal.addEventListener('show.bs.modal', function (e) { if (e.relatedTarget) preparar(modal, e.relatedTarget, cfgs[id]); });
+        modal.addEventListener('show.bs.modal', function (e) {
+            if (!e.relatedTarget) return;
+            preparar(modal, e.relatedTarget, cfgs[id]);
+            // Abierto desde la ficha: si se cancela, la ficha vuelve.
+            modal.dataset.desdeFicha = e.relatedTarget.closest('#modalFicha') ? '1' : '';
+        });
+        modal.addEventListener('submit', function () { modal.dataset.desdeFicha = ''; });
+        modal.addEventListener('hidden.bs.modal', function () {
+            if (modal.dataset.desdeFicha) { modal.dataset.desdeFicha = ''; fichaModal.show(); }
+        });
     });
-})();
+
+    // ── Ficha del proyecto ──
+    var fichaEl = document.getElementById('modalFicha');
+    var fichaContenido = document.getElementById('fichaContenido');
+    var fichaModal = bootstrap.Modal.getOrCreateInstance(fichaEl);
+
+    function marcarTarjeta(pk) {
+        document.querySelectorAll('.ws-card[data-card]').forEach(function (c) {
+            c.classList.toggle('is-selected', c.dataset.card === String(pk));
+        });
+    }
+    function abrirFicha(enlace) {
+        fichaContenido.innerHTML = '<div class="ws-ficha-loading" role="status">Cargando proyecto…</div>';
+        fichaModal.show();
+        fetch(enlace.dataset.ficha, { credentials: 'same-origin' })
+            .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+            .then(function (html) {
+                fichaContenido.innerHTML = html;
+                var titulo = fichaContenido.querySelector('.ws-ficha-title');
+                if (titulo) { titulo.tabIndex = -1; titulo.focus({ preventScroll: true }); }
+                alMostrar();
+            })
+            .catch(function () { location.href = enlace.href; });  // sin JS/red: la página la trae abierta
+    }
+    function alMostrar() {
+        var raiz = fichaContenido.querySelector('.ws-ficha');
+        if (!raiz) return;
+        history.replaceState(null, '', raiz.dataset.url);
+        marcarTarjeta(raiz.dataset.pk);
+    }
+    document.addEventListener('click', function (e) {
+        var enlace = e.target.closest('a[data-ficha]');
+        if (!enlace || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        abrirFicha(enlace);
+    });
+    fichaEl.addEventListener('shown.bs.modal', alMostrar);
+    fichaEl.addEventListener('hidden.bs.modal', function () {
+        var url = new URL(location.href);
+        url.searchParams.delete('proyecto');
+        history.replaceState(null, '', url.pathname + url.search);
+        marcarTarjeta(null);
+    });
+    if (fichaContenido.querySelector('.ws-ficha')) fichaModal.show();
+
+    // Imprimir el informe: se copia la ficha a la raíz para que la página no salga detrás.
+    fichaEl.addEventListener('click', function (e) {
+        if (!e.target.closest('[data-ficha-print]')) return;
+        var copia = document.createElement('div');
+        copia.id = 'fichaPrint';
+        copia.className = 'ws-modal';
+        copia.hidden = true;
+        copia.innerHTML = fichaContenido.innerHTML;
+        copia.querySelectorAll('details').forEach(function (d) { d.open = true; });
+        document.body.appendChild(copia);
+        document.documentElement.classList.add('ws-printing');
+        window.print();
+        document.documentElement.classList.remove('ws-printing');
+        copia.remove();
+    });
+});
 </script>
 {% endblock %}

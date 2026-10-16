@@ -1,0 +1,174 @@
+{% load gestion_extras %}
+{# Ficha de un proyecto: contenido de #modalFicha. Espera: f (views.contexto_ficha). Se sirve sola (proyecto_ficha) o incluida en workspace.html. #}
+{% with p=f.p %}
+<div class="ws-ficha" data-url="{{ f.next }}" data-pk="{{ p.pk }}">
+
+    <header class="modal-header ws-ficha-head">
+        <div class="ws-ficha-titles">
+            <p class="ws-eyebrow">{% if p.comite %}{{ p.comite.name }}{% else %}Proyecto transversal{% endif %}</p>
+            <h2 class="ws-ficha-title" id="modalFichaTitulo">{{ p.title }}{% if p.prioridad == 'ALTA' %} <span class="ws-flag">Alta</span>{% endif %}</h2>
+            <p class="ws-ficha-meta">
+                {% if p.responsable %}<span class="ws-avatar ws-avatar-sm" aria-hidden="true">{{ p.responsable|iniciales }}</span>{{ p.responsable|nombre }}{% else %}<span class="is-quiet">Sin responsable</span>{% endif %}
+                {% if p.start_date or p.due_date %}
+                <span class="ws-sep" aria-hidden="true">·</span>
+                {% if p.start_date %}{{ p.start_date|date:"j M Y" }}{% else %}Sin inicio{% endif %}
+                <span aria-label="hasta">→</span>
+                {% if p.due_date %}<span class="{% if p.is_overdue %}is-late{% endif %}">{{ p.due_date|date:"j M Y" }}</span>{% else %}sin fecha objetivo{% endif %}
+                {% endif %}
+            </p>
+            <form method="post" action="{% url 'gestion:proyecto_estado' p.pk %}" class="ws-seg ws-noprint" role="group" aria-label="Estado del proyecto">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ f.next }}">
+                {% for v, l in f.estados %}
+                <button type="submit" name="estado" value="{{ v }}" class="ws-seg-btn {% if p.estado == v %}is-on{% endif %}"
+                        aria-pressed="{% if p.estado == v %}true{% else %}false{% endif %}">{{ l }}</button>
+                {% endfor %}
+            </form>
+            <p class="ws-print-only">Estado: {{ p.get_estado_display }}</p>
+        </div>
+        <button type="button" class="btn-close ws-noprint" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+    </header>
+
+    <div class="modal-body ws-ficha-body">
+
+        <div class="ws-ficha-main">
+            <!-- Informe -->
+            <section class="ws-informe" aria-labelledby="fichaInforme">
+                <h3 class="ws-h2" id="fichaInforme">Informe</h3>
+                <div class="ws-informe-row">
+                    <span class="ws-ring ws-ring-lg" role="img" aria-label="{{ f.pct }} % completado">
+                        <svg viewBox="0 0 36 36" aria-hidden="true">
+                            <circle cx="18" cy="18" r="15.5" class="ws-ring-track"/>
+                            {% if f.hechas %}<circle cx="18" cy="18" r="15.5" pathLength="100" class="ws-ring-fill" style="stroke-dasharray: {{ f.pct }} 100;"/>{% endif %}
+                        </svg>
+                        <span class="ws-ring-num">{{ f.pct }}<small>%</small></span>
+                    </span>
+                    <div class="ws-informe-text">
+                        {% if not f.total %}
+                        <p>Este proyecto aún no tiene tareas. Agrega la primera abajo y aquí verás cuánto va hecho.</p>
+                        {% else %}
+                        <p>
+                            Lleva <b>{{ f.hechas }} de {{ f.total }}</b> tarea{{ f.total|pluralize }} hecha{{ f.total|pluralize }}.
+                            {% if f.abiertas %}
+                                Queda{{ f.abiertas|length|pluralize:"n" }} <b>{{ f.abiertas|length }}</b> abierta{{ f.abiertas|length|pluralize }}{% if f.vencidas %}, <b class="is-late">{{ f.vencidas }} vencida{{ f.vencidas|pluralize }}</b>{% endif %}{% if f.sin_responsable %}{% if f.vencidas %} y{% else %},{% endif %} <b>{{ f.sin_responsable }}</b> sin responsable{% endif %}.
+                            {% else %}
+                                Todo lo planeado está hecho.
+                            {% endif %}
+                        </p>
+                        {% if f.proxima %}<p>La próxima es «{{ f.proxima.title }}», para el {{ f.proxima.due_date|date:"j \d\e F" }}{% if f.proxima.asignado_a %}, a cargo de {{ f.proxima.asignado_a|nombre }}{% endif %}.</p>{% endif %}
+                        {% endif %}
+                        {% if p.estado == 'CERRADO' %}
+                        <p>El proyecto está cerrado.</p>
+                        {% elif f.dias is not None %}
+                        <p class="{% if f.dias < 0 %}is-late{% endif %}">
+                            {% if f.dias > 0 %}Faltan <b>{{ f.dias }}</b> día{{ f.dias|pluralize }} para la fecha objetivo.
+                            {% elif f.dias == 0 %}La fecha objetivo es hoy.
+                            {% else %}La fecha objetivo pasó hace <b>{{ f.dias_abs }}</b> día{{ f.dias_abs|pluralize }}.{% endif %}
+                            {% if p.estado == 'PAUSADO' %}Ahora está en pausa.{% endif %}
+                        </p>
+                        {% elif p.estado == 'PAUSADO' %}
+                        <p>Ahora está en pausa.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if p.description %}<p class="ws-ficha-desc">{{ p.description|linebreaksbr }}</p>{% endif %}
+            </section>
+
+            <!-- Tareas -->
+            <section class="ws-ficha-section" aria-labelledby="fichaTareas">
+                <h3 class="ws-h2" id="fichaTareas">Tareas <span class="ws-h3-count">{{ f.abiertas|length }} abierta{{ f.abiertas|length|pluralize }}</span></h3>
+                <p class="ws-help">Cambia el responsable desde su nombre. Marca el círculo para completarla.</p>
+
+                <form method="post" action="{% url 'gestion:tarea_quick' %}" class="ws-ficha-add ws-noprint">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ f.next }}">
+                    <input type="hidden" name="proyecto" value="{{ p.pk }}">
+                    <input type="text" name="title" class="ws-input ws-grow" maxlength="200" required autocomplete="off"
+                           placeholder="Nueva tarea…" aria-label="Nueva tarea">
+                    <select name="asignado_a" class="ws-select" aria-label="Responsable">
+                        <option value="">Sin responsable</option>
+                        {% include 'gestion/_opciones_usuarios.html' %}
+                    </select>
+                    <input type="date" name="due_date" class="ws-input" aria-label="Fecha límite">
+                    <button type="submit" class="ws-btn ws-btn-primary">Agregar</button>
+                </form>
+
+                {% if f.abiertas %}
+                <ul class="ws-list">
+                    {% for t in f.abiertas %}{% include 'gestion/_ficha_tarea.html' %}{% endfor %}
+                </ul>
+                {% elif f.total %}
+                <p class="ws-empty">No quedan tareas abiertas.</p>
+                {% endif %}
+
+                {% if f.cerradas %}
+                <details class="ws-details">
+                    <summary>Completadas y canceladas ({{ f.cerradas|length }})</summary>
+                    <ul class="ws-list">
+                        {% for t in f.cerradas %}{% include 'gestion/_ficha_tarea.html' %}{% endfor %}
+                    </ul>
+                </details>
+                {% endif %}
+            </section>
+        </div>
+
+        <aside class="ws-ficha-side">
+            <!-- Por persona -->
+            <section aria-labelledby="fichaPersonas">
+                <h3 class="ws-h2" id="fichaPersonas">Por persona</h3>
+                <p class="ws-help">Quién tiene qué en este proyecto.</p>
+                <ul class="ws-people">
+                    {% for c in f.carga %}
+                    <li class="ws-person">
+                        {% if c.user %}<span class="ws-avatar" aria-hidden="true">{{ c.user|iniciales }}</span>{% else %}<span class="ws-avatar is-empty" aria-hidden="true">?</span>{% endif %}
+                        <span class="ws-person-main">
+                            <span class="ws-person-name">{% if c.user %}{{ c.user|nombre }}{% else %}Sin responsable{% endif %}</span>
+                            <span class="ws-person-meta">
+                                {{ c.abiertas }} abierta{{ c.abiertas|pluralize }}{% if c.vencidas %} · <span class="is-late">{{ c.vencidas }} vencida{{ c.vencidas|pluralize }}</span>{% endif %} · {{ c.hechas }} hecha{{ c.hechas|pluralize }}
+                            </span>
+                        </span>
+                    </li>
+                    {% empty %}
+                    <li class="ws-empty">Aparecerá cuando haya tareas.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- Notas -->
+            <section class="ws-ficha-side-block" aria-labelledby="fichaNotas">
+                <h3 class="ws-h2" id="fichaNotas">Notas <span class="ws-h3-count">{{ f.notas|length }}</span></h3>
+                <p class="ws-help">Acuerdos y novedades de este proyecto.</p>
+                <form method="post" action="{% url 'gestion:nota_add' 'proyecto' p.pk %}" class="ws-noteform ws-noprint">
+                    {% csrf_token %}<input type="hidden" name="next" value="{{ f.next }}">
+                    <textarea name="content" class="ws-textarea" rows="2" placeholder="Escribe una nota…" required aria-label="Nota"></textarea>
+                    <button type="submit" class="ws-btn ws-select-sm">Guardar nota</button>
+                </form>
+                <ul class="ws-notes">
+                    {% for n in f.notas %}
+                    <li class="ws-note">
+                        <div class="ws-note-meta">
+                            <span>{{ n.author|nombre|default:"Sistema" }}</span>
+                            <time datetime="{{ n.created_at|date:'c' }}">{{ n.created_at|date:"j M, H:i" }}</time>
+                            <form method="post" action="{% url 'gestion:nota_delete' n.pk %}" class="ws-inline ws-noprint" data-confirm="¿Eliminar esta nota?">
+                                {% csrf_token %}<input type="hidden" name="next" value="{{ f.next }}">
+                                <button type="submit" class="ws-x" aria-label="Eliminar nota">×</button>
+                            </form>
+                        </div>
+                        <p class="ws-note-body">{{ n.content }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </aside>
+    </div>
+
+    <footer class="modal-footer ws-ficha-foot ws-noprint">
+        <span class="ws-ficha-stamp">Actualizado {{ p.updated_at|date:"j M Y, H:i" }}</span>
+        <button type="button" class="ws-btn" data-ficha-print>Imprimir informe</button>
+        <button type="button" class="ws-btn" data-bs-toggle="modal" data-bs-target="#modalProyecto"
+                data-pk="{{ p.pk }}" data-title="{{ p.title }}" data-description="{{ p.description }}"
+                data-comite="{{ p.comite_id|default:'' }}" data-responsable="{{ p.responsable_id|default:'' }}"
+                data-estado="{{ p.estado }}" data-prioridad="{{ p.prioridad }}"
+                data-start_date="{{ p.start_date|date:'Y-m-d' }}" data-due_date="{{ p.due_date|date:'Y-m-d' }}">Editar proyecto</button>
+    </footer>
+</div>
+{% endwith %}

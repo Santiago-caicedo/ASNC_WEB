@@ -161,7 +161,7 @@ class FlujoTests(TestCase):
         titulos = [t.title for _, _, _, lista in r.context['horizontes'] for t in lista]
         self.assertEqual(titulos, ['Vencida', 'De hoy', 'Semana', 'Luego', 'Suelta'])
 
-    def test_seleccionar_proyecto_filtra_las_tareas(self):
+    def test_seleccionar_proyecto_abre_su_ficha(self):
         p = Proyecto.objects.create(title='Webinar', comite=self.comite)
         q = Proyecto.objects.create(title='Otro', comite=self.comite)
         Tarea.objects.create(title='Del webinar', proyecto=p)
@@ -169,12 +169,61 @@ class FlujoTests(TestCase):
         Tarea.objects.create(title='Sin proyecto', comite=self.comite)
         r = self.client.get(self.url + f'&proyecto={p.pk}')
         self.assertEqual(r.context['proyecto_sel'], p)
+        self.assertEqual([t.title for t in r.context['ficha']['abiertas']], ['Del webinar'])
+        # La lista del comité ya no se filtra: la ficha muestra las del proyecto.
         titulos = [t.title for _, _, _, lista in r.context['horizontes'] for t in lista]
-        self.assertEqual(titulos, ['Del webinar'])
+        self.assertEqual(sorted(titulos), ['Del webinar', 'Sin proyecto'])
         # Anillo: hechas/total por proyecto.
         avance = {x.title: (x.hechas, x.total) for x in r.context['proyectos']}
         self.assertEqual(avance, {'Webinar': (0, 1), 'Otro': (1, 1)})
-        self.assertContains(r, 'de Webinar')  # filtro visible en el título de Tareas
+        self.assertContains(r, 'id="modalFichaTitulo"')
+        # Un proyecto que ya no existe no rompe la pantalla.
+        self.assertIsNone(self.client.get(self.url + '&proyecto=999999').context['ficha'])
+
+    def test_ficha_informe_y_carga_por_persona(self):
+        hoy = timezone.localdate()
+        MiembroComite.objects.create(comite=self.comite, user=self.ana)
+        p = Proyecto.objects.create(title='Congreso', comite=self.comite, due_date=hoy + timedelta(days=10))
+        Tarea.objects.create(title='Hecha', proyecto=p, asignado_a=self.ana, estado='COMPLETADA')
+        Tarea.objects.create(title='Vencida', proyecto=p, asignado_a=self.ana, due_date=hoy - timedelta(days=1))
+        Tarea.objects.create(title='Normal', proyecto=p, due_date=hoy + timedelta(days=3))
+        Tarea.objects.create(title='Urgente', proyecto=p, due_date=hoy + timedelta(days=3), prioridad='ALTA')
+        Tarea.objects.create(title='Cancelada', proyecto=p, estado='CANCELADA')
+        r = self.client.get(reverse('gestion:proyecto_ficha', args=[p.pk]))
+        f = r.context['f']
+        self.assertEqual((f['hechas'], f['total'], f['pct']), (1, 4, 25))
+        self.assertEqual((f['vencidas'], f['sin_responsable'], f['dias']), (1, 2, 10))
+        self.assertEqual([t.title for t in f['abiertas']], ['Vencida', 'Urgente', 'Normal'])
+        self.assertEqual(f['proxima'].title, 'Urgente')
+        carga = [(c['user'], c['abiertas'], c['vencidas'], c['hechas']) for c in f['carga']]
+        self.assertEqual(carga, [(self.ana, 1, 1, 1), (None, 2, 0, 0)])
+        self.assertEqual(f['usuarios_comite'], [self.ana])
+        self.assertEqual(f['next'], self.url + f'&proyecto={p.pk}')
+        self.assertContains(r, 'Lleva <b>1 de 4</b>')
+        self.assertContains(r, 'Faltan <b>10</b> días')
+
+    def test_ficha_alta_de_tarea_y_asignar(self):
+        p = Proyecto.objects.create(title='Congreso', comite=self.comite)
+        vuelta = self.url + f'&proyecto={p.pk}'
+        r = self.client.post(reverse('gestion:tarea_quick'), {'title': 'Reservar sala', 'proyecto': p.pk, 'next': vuelta})
+        self.assertRedirects(r, vuelta)
+        t = Tarea.objects.get(title='Reservar sala')
+        self.assertEqual((t.proyecto, t.comite), (p, self.comite))  # hereda el comité del proyecto
+        self.client.post(reverse('gestion:tarea_asignar', args=[t.pk]), {'asignado_a': self.luis.pk, 'next': vuelta})
+        t.refresh_from_db()
+        self.assertEqual(t.asignado_a, self.luis)
+        self.client.post(reverse('gestion:tarea_asignar', args=[t.pk]), {'asignado_a': ''})
+        t.refresh_from_db()
+        self.assertIsNone(t.asignado_a)
+
+    def test_ficha_solo_superusuario(self):
+        p = Proyecto.objects.create(title='P', comite=self.comite)
+        self.client.force_login(self.ana)
+        self.assertEqual(self.client.get(reverse('gestion:proyecto_ficha', args=[p.pk])).status_code, 302)
+        t = Tarea.objects.create(title='T', proyecto=p)
+        self.client.post(reverse('gestion:tarea_asignar', args=[t.pk]), {'asignado_a': self.ana.pk})
+        t.refresh_from_db()
+        self.assertIsNone(t.asignado_a)
 
     def test_notas_en_comite_proyecto_y_tarea(self):
         p = Proyecto.objects.create(title='P', comite=self.comite)

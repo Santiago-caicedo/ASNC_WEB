@@ -1,0 +1,4 @@
+{% load gestion_extras %}
+{# <option>s de usuarios: integrantes del comité primero. Espera: f (contexto_ficha). Opcional: sel (id del usuario elegido). #}
+{% if f.usuarios_comite %}<optgroup label="Integrantes">{% for u in f.usuarios_comite %}<option value="{{ u.pk }}" {% if sel == u.pk %}selected{% endif %}>{{ u|nombre }}</option>{% endfor %}</optgroup>{% endif %}
+{% if f.usuarios_otros %}<optgroup label="{% if f.usuarios_comite %}Otros usuarios{% else %}Usuarios{% endif %}">{% for u in f.usuarios_otros %}<option value="{{ u.pk }}" {% if sel == u.pk %}selected{% endif %}>{{ u|nombre }}</option>{% endfor %}</optgroup>{% endif %}

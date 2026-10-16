@@ -21,6 +21,7 @@ urlpatterns = [
     # Proyectos
     path('proyectos/nuevo/', views.proyecto_guardar, name='proyecto_create'),
     path('proyectos/<int:pk>/guardar/', views.proyecto_guardar, name='proyecto_update'),
+    path('proyectos/<int:pk>/ficha/', views.proyecto_ficha, name='proyecto_ficha'),
     path('proyectos/<int:pk>/estado/', views.proyecto_estado, name='proyecto_estado'),
     path('proyectos/<int:pk>/eliminar/', views.proyecto_eliminar, name='proyecto_delete'),
 
@@ -28,6 +29,7 @@ urlpatterns = [
     path('tareas/rapida/', views.tarea_rapida, name='tarea_quick'),
     path('tareas/nueva/', views.tarea_guardar, name='tarea_create'),
     path('tareas/<int:pk>/guardar/', views.tarea_guardar, name='tarea_update'),
+    path('tareas/<int:pk>/asignar/', views.tarea_asignar, name='tarea_asignar'),
     path('tareas/<int:pk>/estado/', views.tarea_estado, name='tarea_estado'),
     path('tareas/<int:pk>/eliminar/', views.tarea_eliminar, name='tarea_delete'),
 

@@ -95,12 +95,12 @@ class TareaForm(_Base):
         super().__init__(*args, **kwargs)
         self.fields['comite'].queryset = Comite.objects.filter(is_active=True)
         self.fields['comite'].empty_label = 'Sin comité'
-        self.fields['proyecto'].queryset = (
-            Proyecto.objects.exclude(estado=Proyecto.Estado.CERRADO).select_related('comite').order_by('title')
-        )
+        # Incluye los cerrados: editar una tarea de un proyecto cerrado no debe desvincularla.
+        self.fields['proyecto'].queryset = Proyecto.objects.select_related('comite').order_by('title')
         self.fields['proyecto'].empty_label = 'Sin proyecto'
-        self.fields['proyecto'].label_from_instance = (
-            lambda p: f'{p.title} · {p.comite}' if p.comite_id else f'{p.title} · Transversal'
+        self.fields['proyecto'].label_from_instance = lambda p: ' · '.join(
+            [p.title, str(p.comite) if p.comite_id else 'Transversal']
+            + (['cerrado'] if p.estado == Proyecto.Estado.CERRADO else [])
         )
 
 

@@ -2,7 +2,8 @@
 
 ``WorkspaceView`` dibuja todo: la lista de comités y, del comité elegido, sus
 proyectos (tarjetas con avance), sus tareas por horizonte de vencimiento,
-sus integrantes y sus notas. El resto son acciones POST que
+sus integrantes y sus notas. Cada tarjeta abre la ficha del proyecto en un
+modal (``proyecto_ficha``). El resto son acciones POST que
 guardan y vuelven a la misma pantalla. Acceso solo para superadministradores.
 """
 from datetime import timedelta
@@ -10,7 +11,7 @@ from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -86,6 +87,62 @@ def proyectos_con_avance(qs):
     )
 
 
+def url_ficha(proyecto):
+    """La pantalla con la ficha del proyecto abierta (vuelta de los POST de la ficha)."""
+    url = reverse('gestion:workspace')
+    if proyecto.comite_id:
+        return f'{url}?comite={proyecto.comite_id}&proyecto={proyecto.pk}'
+    return f'{url}?proyecto={proyecto.pk}'
+
+
+def contexto_ficha(proyecto, hoy):
+    """Estado, informe, tareas, carga por persona y notas de un proyecto."""
+    tareas = list(proyecto.tareas.select_related('asignado_a'))
+    abiertas = sorted(
+        (t for t in tareas if not t.is_closed),
+        key=lambda t: (t.due_date is None, t.due_date or hoy, t.prioridad != Prioridad.ALTA, t.created_at),
+    )
+    cerradas = sorted((t for t in tareas if t.is_closed), key=lambda t: t.updated_at, reverse=True)
+    hechas = sum(1 for t in tareas if t.is_done)
+    total = sum(1 for t in tareas if t.estado != Tarea.Estado.CANCELADA)
+
+    # Carga por persona: abiertas, vencidas y hechas (sin contar canceladas).
+    personas = {}
+    for t in tareas:
+        if t.estado == Tarea.Estado.CANCELADA:
+            continue
+        fila = personas.setdefault(t.asignado_a_id, {'user': t.asignado_a, 'abiertas': 0, 'vencidas': 0, 'hechas': 0})
+        if t.is_done:
+            fila['hechas'] += 1
+        else:
+            fila['abiertas'] += 1
+            fila['vencidas'] += t.is_overdue
+    carga = sorted(personas.values(), key=lambda f: (f['user'] is None, -f['abiertas'], -f['hechas']))
+
+    miembros = set(proyecto.comite.miembros.values_list('user_id', flat=True)) if proyecto.comite_id else set()
+    usuarios = list(usuarios_activos())
+    dias = (proyecto.due_date - hoy).days if proyecto.due_date else None
+    return {
+        'p': proyecto,
+        'abiertas': abiertas,
+        'cerradas': cerradas,
+        'hechas': hechas,
+        'total': total,
+        'pct': round(100 * hechas / total) if total else 0,
+        'vencidas': sum(1 for t in abiertas if t.is_overdue),
+        'sin_responsable': sum(1 for t in abiertas if not t.asignado_a_id),
+        'proxima': next((t for t in abiertas if t.due_date and t.due_date >= hoy), None),
+        'dias': dias,
+        'dias_abs': abs(dias) if dias is not None else None,
+        'carga': carga,
+        'usuarios_comite': [u for u in usuarios if u.pk in miembros],
+        'usuarios_otros': [u for u in usuarios if u.pk not in miembros],
+        'notas': proyecto.notas.select_related('author')[:30],
+        'estados': Proyecto.Estado.choices,
+        'next': url_ficha(proyecto),
+    }
+
+
 class WorkspaceView(SuperuserRequiredMixin, TemplateView):
     template_name = 'gestion/workspace.html'
 
@@ -116,6 +173,14 @@ class WorkspaceView(SuperuserRequiredMixin, TemplateView):
         else:
             ctx['comite'] = None
             self._contexto_general(ctx, hoy)
+
+        # ?proyecto=<id>: la ficha de ese proyecto llega abierta.
+        sel = self.request.GET.get('proyecto')
+        p = None
+        if sel and sel.isdigit():
+            p = Proyecto.objects.select_related('comite', 'responsable').filter(pk=int(sel)).first()
+        ctx['proyecto_sel'] = p
+        ctx['ficha'] = contexto_ficha(p, hoy) if p else None
         return ctx
 
     def _contexto_comite(self, ctx, comite, hoy):
@@ -128,14 +193,9 @@ class WorkspaceView(SuperuserRequiredMixin, TemplateView):
         ctx['proyectos'] = [p for p in proyectos if p.estado != Proyecto.Estado.CERRADO]
         ctx['proyectos_cerrados'] = [p for p in proyectos if p.estado == Proyecto.Estado.CERRADO]
 
-        # Tarjeta seleccionada: la lista de tareas se limita a ese proyecto.
-        sel = self.request.GET.get('proyecto')
-        ctx['proyecto_sel'] = next((p for p in proyectos if sel and sel.isdigit() and p.pk == int(sel)), None)
-
-        tareas = comite.tareas.select_related('asignado_a', 'proyecto').order_by('due_date', '-prioridad', 'created_at')
-        if ctx['proyecto_sel']:
-            tareas = tareas.filter(proyecto=ctx['proyecto_sel'])
-        tareas = list(tareas)
+        tareas = list(
+            comite.tareas.select_related('asignado_a', 'proyecto').order_by('due_date', '-prioridad', 'created_at')
+        )
         ctx['horizontes'] = agrupar_por_horizonte(tareas, hoy)
         ctx['cerradas'] = [t for t in tareas if t.is_closed][:50]
         abiertas = [t for t in tareas if not t.is_closed]
@@ -259,6 +319,13 @@ def proyecto_guardar(request, pk=None):
 
 
 @superuser_required
+def proyecto_ficha(request, pk):
+    """La ficha del proyecto como fragmento HTML: el modal la carga sin recargar la pantalla."""
+    p = get_object_or_404(Proyecto.objects.select_related('comite', 'responsable'), pk=pk)
+    return render(request, 'gestion/_ficha.html', {'f': contexto_ficha(p, timezone.localdate())})
+
+
+@superuser_required
 @require_POST
 def proyecto_estado(request, pk):
     p = get_object_or_404(Proyecto, pk=pk)
@@ -330,6 +397,17 @@ def tarea_estado(request, pk):
     if estado in Tarea.Estado.values:
         t.estado = estado
         t.save()
+    return _volver(request, t.comite_id)
+
+
+@superuser_required
+@require_POST
+def tarea_asignar(request, pk):
+    """Cambia solo el responsable (selector de la ficha del proyecto)."""
+    t = get_object_or_404(Tarea, pk=pk)
+    uid = request.POST.get('asignado_a') or ''
+    t.asignado_a = usuarios_activos().filter(pk=int(uid)).first() if uid.isdigit() else None
+    t.save(update_fields=['asignado_a', 'updated_at'])
     return _volver(request, t.comite_id)
 
 
