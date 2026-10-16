@@ -6,7 +6,99 @@
 
 {% block content %}
 
-<!-- ==================== HERO FULL SCREEN ==================== -->
+{% if hero_event %}
+<!-- ==================== ESCENA DE EVENTOS (en lugar del hero) ====================
+     Una sola línea de tiempo: baja por los eventos anteriores (izquierda), gira y
+     llega al evento actual (derecha), donde se enciende; sigue punteada hacia lo que viene. -->
+{% with event=hero_event %}
+<section class="hero-section stage{% if hero_event_is_past %} is-past{% endif %}{% if event.cover_image %} has-poster{% endif %}" aria-labelledby="stageTitle">
+    <div class="hero-bg"></div>
+    {% if event.cover_image %}<div class="stage-ambient" style="background-image: url('{{ event.cover_image.url }}');" aria-hidden="true"></div>{% endif %}
+    <div class="stage-overlay" aria-hidden="true"></div>
+    <div class="hero-particles" id="heroParticles"></div>
+
+    <div class="container position-relative z-2 stage-inner">
+        <h1 class="visually-hidden">Asociación Nuclear Colombiana</h1>
+        <p class="stage-brand" aria-hidden="true"><span class="badge-dot"></span>Asociación Nuclear Colombiana</p>
+
+        <div class="stage-grid">
+            <article class="stage-now" aria-labelledby="stageTitle">
+                <div class="stage-now-text">
+                    <p class="stage-now-when">
+                        {% if hero_event_is_past %}{% trans "Último evento" %} · {% trans "Finalizado" %}{% else %}{% trans "Próximo evento" %} · <strong>{% include 'website/_event_when.html' %}</strong>{% endif %}
+                    </p>
+                    <p class="stage-now-kind">{{ event.get_event_type_display }} · {{ event.get_modality_display }}</p>
+                    <h2 class="stage-now-title" id="stageTitle"><a href="{% url 'event_detail' event.slug %}">{{ event.title }}</a></h2>
+                    {% if event.summary %}<p class="stage-now-summary">{{ event.summary }}</p>{% endif %}
+                    <div class="stage-now-facts">
+                        <span class="stage-leaf" aria-hidden="true">
+                            <span class="stage-leaf-day">{{ event.starts_at|date:"j" }}</span>
+                            <span class="stage-leaf-month">{{ event.starts_at|date:"M" }}</span>
+                        </span>
+                        <span class="stage-facts-list">
+                            <span class="visually-hidden">{{ event.starts_at|date:"j \d\e F \d\e Y" }}.</span>
+                            <span><i class="bi bi-clock" aria-hidden="true"></i> {{ event.starts_at|date:"l"|capfirst }}, {{ event.starts_at|date:"g:i a" }}</span>
+                            {% if event.location %}<span><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ event.location }}</span>{% endif %}
+                        </span>
+                    </div>
+                    <div class="stage-actions">
+                        {% if event.registration_url and not hero_event_is_past %}
+                        <a href="{{ event.registration_url }}" class="stage-cta" target="_blank" rel="noopener">{% trans "Inscribirme" %} <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></a>
+                        <a href="{% url 'event_detail' event.slug %}" class="stage-link">{% trans "Ver detalles" %}</a>
+                        {% else %}
+                        <a href="{% url 'event_detail' event.slug %}" class="stage-cta">{% trans "Ver detalles" %} <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                        {% endif %}
+                    </div>
+                    {% if hero_more_events %}
+                    <div class="stage-next">
+                        <span class="stage-next-label">{% trans "También en la agenda" %}</span>
+                        <ul class="stage-next-list">
+                            {% for e in hero_more_events|slice:":3" %}
+                            <li><a href="{% url 'event_detail' e.slug %}"><time datetime="{{ e.starts_at|date:'c' }}">{{ e.starts_at|date:"j M" }}</time> {{ e.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if event.cover_image %}
+                {# El afiche completo; el mismo, difuminado, tiñe el fondo de la escena #}
+                <a href="{% url 'event_detail' event.slug %}" class="stage-poster" tabindex="-1" aria-hidden="true">
+                    <img src="{{ event.cover_image.url }}" alt="">
+                </a>
+                {% endif %}
+            </article>
+
+            <section class="stage-past" aria-labelledby="stagePastTitle">
+                <h2 class="stage-label" id="stagePastTitle">{% trans "Eventos anteriores" %}</h2>
+                {% if hero_past_events %}
+                <ol class="stage-past-list">
+                    {% for e in hero_past_events reversed %}
+                    <li class="stage-past-item" style="--age: {{ forloop.revcounter0 }}; --i: {{ forloop.counter0 }};">
+                        <a href="{% url 'event_detail' e.slug %}" class="stage-past-link">
+                            <time class="stage-past-date" datetime="{{ e.starts_at|date:'c' }}">{{ e.starts_at|date:"j M Y" }}</time>
+                            <span class="stage-past-title">{{ e.title }}</span>
+                            <span class="stage-past-kind">{{ e.get_event_type_display }} · {{ e.get_modality_display }}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% else %}
+                <p class="stage-past-empty">{% trans "Aquí aparecerán los eventos que ya realizamos." %}</p>
+                {% endif %}
+                <a href="{% url 'events' %}" class="stage-agenda">{% trans "Ver agenda" %} <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </section>
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <span>{% trans "Scroll" %}</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+{% endwith %}
+{% else %}
+<!-- ==================== HERO CLÁSICO (sin eventos publicados) ==================== -->
 <section class="hero-section">
     <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
@@ -45,102 +137,6 @@
                 </div>
             </div>
 
-            {% if hero_event %}
-            <div class="col-lg-5 hero-event-col">
-                {% with event=hero_event %}
-                <div class="hero-news-panel hero-event{% if hero_event_is_past %} is-past{% endif %}">
-                    <div class="hero-news-header">
-                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
-                        {% if hero_event_is_past %}
-                        <span>{% trans "Último evento" %}</span>
-                        <span class="hero-event-when">{% trans "Finalizado" %}</span>
-                        {% else %}
-                        <span>{% if hero_more_events %}{% trans "Próximos eventos" %}{% else %}{% trans "Próximo evento" %}{% endif %}</span>
-                        <span class="hero-event-when">{% include 'website/_event_when.html' %}</span>
-                        {% endif %}
-                    </div>
-                    <a href="{% url 'event_detail' event.slug %}" class="hero-event-body">
-                        {% if event.cover_image %}
-                        {# Alto fijo: la imagen se reduce hasta caber completa; el fondo difuminado rellena los bordes #}
-                        <span class="hero-event-cover">
-                            <img src="{{ event.cover_image.url }}" alt="" class="hero-event-cover-bg" aria-hidden="true">
-                            <img src="{{ event.cover_image.url }}" alt="" class="hero-event-cover-img">
-                        </span>
-                        {% endif %}
-                        <span class="hero-event-main">
-                            <span class="hero-event-leaf" aria-hidden="true">
-                                <span class="hero-event-day">{{ event.starts_at|date:"j" }}</span>
-                                <span class="hero-event-month">{{ event.starts_at|date:"M" }}</span>
-                            </span>
-                            <span class="hero-event-info">
-                                <span class="hero-event-kind">{{ event.get_event_type_display }} · {{ event.get_modality_display }}</span>
-                                <span class="hero-event-title">{{ event.title }}</span>
-                                <span class="hero-event-meta">
-                                    <span class="visually-hidden">{{ event.starts_at|date:"j \d\e F \d\e Y" }}.</span>
-                                    <span><i class="bi bi-clock" aria-hidden="true"></i> {{ event.starts_at|date:"l"|capfirst }}, {{ event.starts_at|date:"g:i a" }}</span>
-                                    {% if event.location %}<span><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ event.location }}</span>{% endif %}
-                                </span>
-                            </span>
-                        </span>
-                    </a>
-                    {% if hero_more_events %}
-                    {# El resto de próximos eventos, compactos; con muchos, la lista se desplaza #}
-                    <div class="hero-event-more">
-                        <span class="hero-event-more-title">{% trans "También en la agenda" %}</span>
-                        <ul class="hero-event-more-list">
-                            {% for e in hero_more_events %}
-                            <li>
-                                <a href="{% url 'event_detail' e.slug %}" class="hero-event-row">
-                                    <span class="hero-event-row-date" aria-hidden="true">
-                                        <span class="hero-event-row-day">{{ e.starts_at|date:"j" }}</span>
-                                        <span class="hero-event-row-month">{{ e.starts_at|date:"M" }}</span>
-                                    </span>
-                                    <span class="hero-event-row-info">
-                                        <span class="hero-event-row-title">{{ e.title }}</span>
-                                        <span class="hero-event-row-meta">
-                                            <span class="visually-hidden">{{ e.starts_at|date:"j \d\e F \d\e Y" }}.</span>
-                                            {{ e.starts_at|date:"g:i a" }} · {{ e.get_modality_display }}
-                                        </span>
-                                    </span>
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    <div class="hero-event-actions">
-                        {% if event.registration_url and not hero_event_is_past %}
-                        <a href="{{ event.registration_url }}" class="hero-event-cta" target="_blank" rel="noopener">
-                            {% trans "Inscribirme" %} <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
-                        </a>
-                        {% else %}
-                        <a href="{% url 'event_detail' event.slug %}" class="hero-event-cta">
-                            {% trans "Ver detalles" %} <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                        </a>
-                        {% endif %}
-                        <a href="{% url 'events' %}" class="hero-event-all">{% trans "Ver agenda" %}</a>
-                    </div>
-                </div>
-                {% endwith %}
-            </div>
-            {% else %}
-            <div class="col-lg-5 d-none d-lg-block">
-                {# Aún no se ha publicado ningún evento #}
-                <div class="hero-news-panel">
-                    <div class="hero-news-header">
-                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
-                        <span>{% trans "Agenda" %}</span>
-                    </div>
-                    <div class="hero-news-empty">
-                        <i class="bi bi-calendar3" aria-hidden="true"></i>
-                        <p>{% trans "No hay eventos programados por ahora" %}</p>
-                    </div>
-                    <a href="{% url 'events' %}" class="hero-news-footer">
-                        {% trans "Ver agenda" %} <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </div>
-            {% endif %}
         </div>
     </div>
 
@@ -150,6 +146,7 @@
         <div class="scroll-line"></div>
     </div>
 </section>
+{% endif %}
 
 <!-- ==================== OBSERVATORIO ENSO (FENÓMENO DEL NIÑO) ==================== -->
 <section class="enso-section" id="enso">
@@ -1424,281 +1421,365 @@
     background: rgba(255,255,255,0.1);
 }
 
-/* Hero News Panel */
-.hero-news-panel {
-    background: rgba(255, 255, 255, 0.07);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
-    overflow: hidden;
+/* ===== ESCENA DE EVENTOS (en lugar del hero) =====
+   Una sola línea de tiempo recorre la escena: baja por los eventos anteriores,
+   gira con una curva y llega al presente, donde se enciende en dorado; después
+   sigue punteada (lo que viene). El afiche, difuminado, tiñe el fondo. */
+.stage-ambient {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 70%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(48px) saturate(1.15);
+    opacity: 0.32;
+    transform: scale(1.1);
+    -webkit-mask-image: linear-gradient(to left, #000 25%, transparent 95%);
+    mask-image: linear-gradient(to left, #000 25%, transparent 95%);
+}
+.stage-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 55% 50% at 45% 85%, rgba(244, 195, 67, 0.10), transparent 70%),
+        linear-gradient(to bottom, transparent 55%, rgba(15, 26, 43, 0.55) 100%);
+}
+/* La escena cabe en una pantalla bajo la cabecera, con la línea a la vista */
+.hero-section.stage { min-height: 0; }
+.stage-inner {
     display: flex;
     flex-direction: column;
-    max-height: 480px;
+    justify-content: center;
+    min-height: calc(100svh - 136px);
+    padding-top: 2.5rem;
+    padding-bottom: 5rem;
 }
-
-.hero-news-header {
-    display: flex;
+.stage-brand {
+    display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 1rem 1.25rem;
-    background: rgba(244, 195, 67, 0.12);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--gold);
-    font-weight: 700;
-    font-size: 0.9rem;
+    gap: 0.65rem;
+    margin: 0 0 2rem;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.85rem;
+    font-weight: 600;
     letter-spacing: 0.02em;
 }
 
-.hero-news-header i {
-    font-size: 1rem;
+/* Rejilla: pasado (izquierda) | presente (derecha), apoyados en la misma línea */
+.stage-grid {
+    --line: rgba(255, 255, 255, 0.26);
+    --node: 13px;
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
 }
-
-.hero-news-empty {
-    text-align: center;
-    padding: 2.5rem 1rem;
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.hero-news-empty i {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.hero-news-empty p {
-    font-size: 0.85rem;
-    margin: 0;
-}
-
-.hero-news-footer {
+.stage-past {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    padding: 0.85rem;
-    font-size: 0.82rem;
+    flex-direction: column;
+    justify-content: flex-end; /* el más reciente queda junto a la curva, cerca del presente */
+    padding: 0.25rem 3.5rem 2.75rem 2rem;
+}
+.stage-now { grid-column: 2; grid-row: 1; }
+
+/* La línea: baja junto a los anteriores y gira hacia el presente */
+.stage-past::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+    right: 0;
+    bottom: 0;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-bottom-left-radius: 36px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 3.5rem);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 3.5rem);
+    pointer-events: none;
+}
+/* ...y se enciende al acercarse al presente */
+.stage-past::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold));
+    z-index: 1;
+}
+.stage.is-past .stage-past::before { background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.7)); }
+
+.stage-label {
+    margin: 0 0 1.1rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--gold);
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.66);
+}
+.stage-past-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+/* --age: 0 el más reciente; los más antiguos se apagan */
+.stage-past-item {
+    position: relative;
+    animation: stage-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(0.15s + var(--i) * 0.09s);
+}
+.stage-past-item::before {
+    content: '';
+    position: absolute;
+    left: calc(-2rem - 3.5px);
+    top: 1.05rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: 1.5px solid rgba(255, 255, 255, calc(0.8 - var(--age) * 0.15));
+}
+.stage-past-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-height: 44px;
+    padding: 0.6rem 0.5rem 0.6rem 0;
+    color: rgba(255, 255, 255, calc(0.95 - var(--age) * 0.15));
     text-decoration: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.25s ease;
+    border-radius: 8px;
 }
-
-.hero-news-footer:hover {
-    background: rgba(244, 195, 67, 0.1);
-    color: var(--gold-light);
+.stage-past-date {
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgba(244, 195, 67, calc(0.92 - var(--age) * 0.14));
 }
-
-/* Hero: próximo evento (mismo panel de vidrio que las noticias) */
-.hero-event { max-height: none; }
-.hero-event .hero-news-header { justify-content: flex-start; }
-.hero-event-when {
-    margin-left: auto;
+.stage-past-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s ease;
+}
+.stage-past-kind { font-size: 0.8rem; color: rgba(255, 255, 255, calc(0.7 - var(--age) * 0.06)); }
+.stage-past-link:hover { color: #fff; }
+.stage-past-link:hover .stage-past-title { color: var(--gold); }
+.stage-past-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.stage-past-empty { margin: 0; max-width: 26ch; font-size: 0.95rem; color: rgba(255, 255, 255, 0.66); }
+.stage-agenda {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    color: #fff;
+    min-height: 44px;
+    margin-top: 0.75rem;
+    color: var(--gold);
+    font-size: 0.9rem;
     font-weight: 600;
-    font-size: 0.8rem;
-    letter-spacing: 0;
+    text-decoration: none;
 }
-.hero-event-when::before {
+.stage-agenda:hover { color: #fff; }
+
+/* El presente: donde llega la línea */
+.stage-now {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    padding: 0 0 2.75rem 3rem;
+}
+.stage-now::before {
     content: '';
-    width: 7px;
-    height: 7px;
+    position: absolute;
+    left: calc(var(--node) / -2);
+    bottom: calc(var(--node) / -2 + 0.5px);
+    width: var(--node);
+    height: var(--node);
     border-radius: 50%;
     background: var(--gold);
-    box-shadow: 0 0 0 3px rgba(244, 195, 67, 0.25);
+    box-shadow: 0 0 0 5px rgba(244, 195, 67, 0.18), 0 0 24px 4px rgba(244, 195, 67, 0.4);
+    animation: stage-pulse 2.6s ease-in-out infinite;
+    z-index: 2;
 }
-.hero-event-body {
-    display: block;
-    text-decoration: none;
-    color: #fff;
-    transition: background-color 0.25s ease;
-}
-.hero-event-body:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
-.hero-event-body:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
-.hero-event-cover {
-    position: relative;
-    display: block;
-    height: 220px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.25);
-}
-.hero-event-cover-bg {
+/* Lo que viene: la línea sigue punteada */
+.stage-now::after {
+    content: '';
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: blur(20px) brightness(0.55);
-    transform: scale(1.15);
+    left: 1rem;
+    right: 0;
+    bottom: 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
 }
-.hero-event-cover-img {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.stage.is-past .stage-now::before {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.08);
+    animation: none;
 }
-.hero-event-main {
-    display: flex;
-    gap: 1.1rem;
-    padding: 1.25rem 1.25rem 1.1rem;
-    align-items: flex-start;
-}
-.hero-event-leaf {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 4rem;
-    padding-right: 1.1rem;
-    border-right: 1px solid rgba(255, 255, 255, 0.14);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-}
-.hero-event-day {
-    font-size: 2.9rem;
+.stage-now-text { flex: 1 1 auto; min-width: 0; animation: stage-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both; }
+.stage-now-when { margin: 0 0 0.9rem; font-size: 0.85rem; font-weight: 600; color: var(--gold); }
+.stage-now-when strong { color: #fff; font-weight: 600; }
+.stage.is-past .stage-now-when { color: rgba(255, 255, 255, 0.72); }
+.stage-now-kind { margin: 0 0 0.5rem; font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.72); }
+.stage-now-title {
+    margin: 0;
+    max-width: 18ch;
+    font-size: clamp(2.1rem, 3.3vw, 3.25rem);
     font-weight: 700;
-    color: var(--gold);
-    letter-spacing: -0.02em;
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
 }
-.hero-event-month {
-    margin-top: 0.35rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.85);
-}
-.hero-event-info { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
-.hero-event-kind {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-    letter-spacing: 0.02em;
-}
-.hero-event-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    line-height: 1.3;
+.stage-now-title a { color: #fff; text-decoration: none; transition: color 0.2s ease; }
+.stage-now-title a:hover { color: var(--gold); }
+.stage-now-title a:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; border-radius: 4px; }
+.stage-now-summary {
+    margin: 1.1rem 0 0;
+    max-width: 52ch;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.78);
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-.hero-event-body:hover .hero-event-title { color: var(--gold); }
-.hero-event-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    margin-top: 0.25rem;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.78);
-}
-.hero-event-meta i { color: rgba(255, 255, 255, 0.55); margin-right: 0.3rem; }
-.hero-event-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.85rem 1.25rem 1.1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.hero-event-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 44px;
-    padding: 0.55rem 1.15rem;
-    border-radius: 10px;
-    background: var(--gold);
-    color: var(--asnc-navy, #1B2A41);
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-.hero-event-cta:hover { background: #fff; color: var(--asnc-navy, #1B2A41); }
-.hero-event-all {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    color: var(--gold);
-    font-weight: 600;
-    font-size: 0.88rem;
-    text-decoration: none;
-}
-.hero-event-all:hover { color: #fff; }
-.hero-event-cta:focus-visible,
-.hero-event-all:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-
-/* Resto de próximos eventos: filas compactas bajo el destacado */
-.hero-event-more { border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 0.85rem 0.75rem 0.4rem; }
-.hero-event-more-title {
-    display: block;
-    padding: 0 0.5rem 0.4rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-}
-.hero-event-more-list { list-style: none; margin: 0; padding: 0; max-height: 196px; overflow-y: auto; }
-.hero-event-more-list::-webkit-scrollbar { width: 4px; }
-.hero-event-more-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
-.hero-event-row {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    min-height: 56px;
-    padding: 0.5rem;
-    border-radius: 10px;
-    color: #fff;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-.hero-event-row:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
-.hero-event-row:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
-.hero-event-row-date {
+.stage-now-facts { display: flex; align-items: center; gap: 1.25rem; margin-top: 1.5rem; }
+.stage-leaf {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex-shrink: 0;
-    width: 2.75rem;
+    padding-right: 1.25rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.16);
     line-height: 1;
     font-variant-numeric: tabular-nums;
 }
-.hero-event-row-day { font-size: 1.35rem; font-weight: 700; color: var(--gold); }
-.hero-event-row-month {
-    margin-top: 0.2rem;
-    font-size: 0.68rem;
+.stage-leaf-day { font-size: 3.2rem; font-weight: 700; letter-spacing: -0.03em; color: var(--gold); }
+.stage.is-past .stage-leaf-day { color: rgba(255, 255, 255, 0.85); }
+.stage-leaf-month {
+    margin-top: 0.35rem;
+    font-size: 0.78rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.85);
 }
-.hero-event-row-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
-.hero-event-row-title {
-    font-size: 0.92rem;
+.stage-facts-list { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.85); }
+.stage-facts-list i { margin-right: 0.35rem; color: rgba(255, 255, 255, 0.55); }
+.stage-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.5rem; margin-top: 1.75rem; }
+.stage-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 48px;
+    padding: 0.7rem 1.5rem;
+    border-radius: 12px;
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+.stage-cta:hover { background: #fff; color: var(--navy); }
+.stage-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: #fff;
     font-weight: 600;
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    text-underline-offset: 5px;
 }
-.hero-event-row:hover .hero-event-row-title { color: var(--gold); }
-.hero-event-row-meta { font-size: 0.8rem; color: rgba(255, 255, 255, 0.72); }
-/* Sin eventos futuros: el último publicado, con el punto apagado */
-.hero-event.is-past .hero-event-when { color: rgba(255, 255, 255, 0.75); }
-.hero-event.is-past .hero-event-when::before { background: rgba(255, 255, 255, 0.45); box-shadow: none; }
+.stage-link:hover { color: var(--gold); text-decoration-color: currentColor; }
+.stage-cta:focus-visible,
+.stage-link:focus-visible,
+.stage-agenda:focus-visible,
+.stage-next-list a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.stage-next { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 1rem; margin-top: 1.5rem; font-size: 0.88rem; }
+.stage-next-label { font-weight: 600; color: rgba(255, 255, 255, 0.66); }
+.stage-next-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; }
+.stage-next-list a { display: inline-block; padding: 0.25rem 0; color: rgba(255, 255, 255, 0.86); text-decoration: none; }
+.stage-next-list a:hover { color: var(--gold); }
+.stage-next-list time { margin-right: 0.3rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--gold); }
 
+/* El afiche, completo, flotando sobre su propio reflejo difuminado */
+.stage-poster {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    width: clamp(220px, 24vw, 360px);
+    animation: stage-float-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s both;
+}
+.stage-poster img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 54vh;
+    border-radius: 14px;
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+@keyframes stage-rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes stage-float-in {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes stage-pulse {
+    0%, 100% { box-shadow: 0 0 0 5px rgba(244, 195, 67, 0.18), 0 0 24px 4px rgba(244, 195, 67, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(244, 195, 67, 0.06), 0 0 34px 8px rgba(244, 195, 67, 0.55); }
+}
+
+@media (max-width: 1199.98px) {
+    .stage-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); }
+    .stage-past { padding-right: 2.5rem; }
+    .stage-now { gap: 2rem; padding-left: 2.5rem; }
+}
+/* Móvil y tablet: la línea se vuelve vertical; primero el presente, debajo lo anterior */
 @media (max-width: 991.98px) {
-    /* En móvil el evento baja bajo los botones del hero */
-    .hero-event-col { margin-top: 2.5rem; margin-bottom: 6rem; }
-    .hero-event-cover { height: 200px; }
+    .stage-inner { min-height: auto; padding-top: 2.5rem; padding-bottom: 6rem; }
+    .stage-brand { margin-bottom: 2rem; }
+    .stage-grid { grid-template-columns: minmax(0, 1fr); position: relative; padding-left: 1.6rem; }
+    .stage-grid::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.55rem;
+        bottom: 3rem;
+        width: 1px;
+        background: linear-gradient(to bottom, var(--gold), var(--line) 25%, var(--line) 85%, transparent);
+    }
+    .stage.is-past .stage-grid::before { background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), var(--line) 25%, var(--line) 85%, transparent); }
+    .stage-now, .stage-past { grid-column: 1; grid-row: auto; }
+    .stage-now { flex-direction: column; align-items: stretch; gap: 2rem; padding: 0 0 3rem; }
+    .stage-now::before { left: calc(-1.6rem - var(--node) / 2 + 0.5px); top: 0.3rem; bottom: auto; }
+    .stage-now::after { display: none; }
+    .stage-past { padding: 0; justify-content: flex-start; }
+    /* La línea baja desde el presente: primero el anterior más reciente */
+    .stage-past-list { flex-direction: column-reverse; }
+    .stage-past::before, .stage-past::after { display: none; }
+    .stage-past-item::before { left: calc(-1.6rem - 3.5px); }
+    .stage-poster { width: 100%; justify-content: flex-start; }
+    .stage-poster img { max-height: 48vh; }
+    .stage-ambient {
+        width: 100%;
+        opacity: 0.22;
+        -webkit-mask-image: linear-gradient(to bottom, #000 10%, transparent 70%);
+        mask-image: linear-gradient(to bottom, #000 10%, transparent 70%);
+    }
+}
+@media (max-width: 575.98px) {
+    .stage-now-facts { gap: 1rem; }
+    .stage-leaf { padding-right: 1rem; }
+    .stage-leaf-day { font-size: 2.6rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .hero-event-body { transition: none; }
+    .stage-past-item, .stage-now-text, .stage-poster, .stage-now::before { animation: none; }
+    .stage-past-title, .stage-now-title a, .stage-cta { transition: none; }
 }
 
 /* Scroll Indicator */
@@ -4756,13 +4837,6 @@ document.addEventListener('DOMContentLoaded', function() {
             targets: '.hero-actions',
             opacity: [0, 1],
             translateY: [30, 0],
-            duration: 800,
-            easing: 'easeOutExpo'
-        }, '-=600')
-        .add({
-            targets: '.hero-news-panel',
-            opacity: [0, 1],
-            translateX: [40, 0],
             duration: 800,
             easing: 'easeOutExpo'
         }, '-=600');

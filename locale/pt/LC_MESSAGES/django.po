@@ -70,6 +70,36 @@ msgstr "Todos os direitos reservados."
 msgid "Desarrollado por"
 msgstr "Desenvolvido por"
 
+msgid "Último evento"
+msgstr "Último evento"
+
+msgid "Finalizado"
+msgstr "Encerrado"
+
+msgid "Próximo evento"
+msgstr "Próximo evento"
+
+msgid "Inscribirme"
+msgstr "Inscrever-me"
+
+msgid "Ver detalles"
+msgstr "Ver detalhes"
+
+msgid "También en la agenda"
+msgstr "Também na agenda"
+
+msgid "Eventos anteriores"
+msgstr "Eventos anteriores"
+
+msgid "Aquí aparecerán los eventos que ya realizamos."
+msgstr "Aqui aparecerão os eventos que já realizamos."
+
+msgid "Ver agenda"
+msgstr "Ver agenda"
+
+msgid "Scroll"
+msgstr "Rolar"
+
 msgid "El Futuro de Colombia"
 msgstr "O Futuro da Colombia"
 
@@ -89,39 +119,6 @@ msgstr "Junte-se à ASNC"
 
 msgid "Descubre más"
 msgstr "Descubra mais"
-
-msgid "Último evento"
-msgstr "Último evento"
-
-msgid "Finalizado"
-msgstr "Encerrado"
-
-msgid "Próximos eventos"
-msgstr "Próximos eventos"
-
-msgid "Próximo evento"
-msgstr "Próximo evento"
-
-msgid "También en la agenda"
-msgstr "Também na agenda"
-
-msgid "Inscribirme"
-msgstr "Inscrever-me"
-
-msgid "Ver detalles"
-msgstr "Ver detalhes"
-
-msgid "Ver agenda"
-msgstr "Ver agenda"
-
-msgid "Agenda"
-msgstr "Agenda"
-
-msgid "No hay eventos programados por ahora"
-msgstr "Não há eventos programados no momento"
-
-msgid "Scroll"
-msgstr "Rolar"
 
 msgid "Cerrar"
 msgstr "Fechar"
@@ -844,6 +841,9 @@ msgstr "Depois"
 msgid "El resto de la agenda, por mes."
 msgstr "O restante da agenda, por mês."
 
+msgid "No hay eventos programados por ahora"
+msgstr "Não há eventos programados no momento"
+
 msgid ""
 "Aquí publicamos las conferencias, webinars y talleres de la ASNC. Los "
 "asociados reciben cada invitación por correo."
@@ -854,14 +854,14 @@ msgstr ""
 msgid "Unirme a la ASNC"
 msgstr "Associar-me à ASNC"
 
-msgid "Eventos anteriores"
-msgstr "Eventos anteriores"
-
 msgid "Lo que ya pasó, del más reciente al más antiguo."
 msgstr "O que já aconteceu, do mais recente ao mais antigo."
 
 msgid "Los asociados reciben la invitación a cada evento en su correo."
 msgstr "Os associados recebem o convite para cada evento por e-mail."
+
+msgid "Agenda"
+msgstr "Agenda"
 
 msgid "Este evento ya pasó"
 msgstr "Este evento já terminou"

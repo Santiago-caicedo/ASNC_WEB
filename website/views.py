@@ -66,14 +66,18 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['enso_version'] = enso_data_version()
-        # Recuadro del hero: todos los próximos eventos (el más cercano
-        # destacado); si no hay ninguno, el último evento publicado.
+        # Escena de eventos (reemplaza al hero): a la derecha el evento actual
+        # (el próximo, o el último publicado si no hay próximos) y a la
+        # izquierda los anteriores. Sin ningún evento se muestra el hero clásico.
         upcoming = list(Event.objects.upcoming())
+        past = list(Event.objects.past()[:4])
         if upcoming:
             context['hero_event'], context['hero_more_events'] = upcoming[0], upcoming[1:]
+            context['hero_past_events'] = past[:3]
         else:
-            context['hero_event'] = Event.objects.past().first()
+            context['hero_event'] = past[0] if past else None
             context['hero_more_events'] = []
+            context['hero_past_events'] = past[1:4]
         context['hero_event_is_past'] = not upcoming
         published = NewsArticle.objects.filter(
             is_published=True
