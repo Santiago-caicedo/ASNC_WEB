@@ -283,7 +283,7 @@ Public events, managed **only by the superadmin** at `/portal/eventos/` (`Superu
 - `EventQuerySet`: `published()`, `upcoming()` (not ended, by `starts_at`), `past()`, `ended()`, `not_ended()`. **An event without `ends_at` stays upcoming until the end of its day.**
 - Properties: `end`, `is_past`, `is_ongoing`, `days_until`, `is_multiday`, `start_month` (groups the agenda by month)
 - `EventForm` (`dashboard/forms.py`) asks for date / start time / end time / "dura varios días" separately and combines them in `clean()` (Bogotá time).
-- **Homepage events stage** (replaces the hero when any published event exists; `.stage` in `home.html`): one composition crossed by a single **time line** — it runs down the left past the 3 most recent past events (`hero_past_events`, older ones fade via `--age`), curves at the bottom, turns gold and lights a pulsing node under the current event on the right (`hero_event`: nearest upcoming, or the last published one when none — `hero_event_is_past`, white node, no registration CTA), then continues dashed toward the future (up to 3 `hero_more_events` as "También en la agenda"). The event poster is shown complete; a blurred copy tints the background (`.stage-ambient`). A visually-hidden `<h1>` keeps the brand heading. On < 992px the line turns vertical: current event first, then past events newest-first. With no events at all the classic hero ("El Futuro de Colombia es Nuclear") is shown. CSS animations only, disabled with `prefers-reduced-motion`.
+- **Homepage hero box** shows **all upcoming events**: the nearest one featured (cover, date leaf, CTA) and the rest as compact rows under "También en la agenda" (scrolls when long). Context in `HomeView`: `hero_event`, `hero_more_events`, `hero_event_is_past`. With no upcoming events it shows the **last published event** ("Último evento" · "Finalizado", no registration button); with no events at all, an empty agenda state. News are no longer shown in the hero. The box also shows on mobile (below the hero buttons).
 - Public: `/eventos/` (next event + rest grouped by month + past), `/eventos/<slug>/` (detail), `/eventos/<slug>/calendario.ics` (add to calendar). Shared partials `website/_event_*.html`. Events are in the sitemap.
 
 ### Convocatoria models (`convocatorias/models.py`)
@@ -751,7 +751,7 @@ python manage.py showmigrations
 ## Views Summary
 
 ### Website App
-- `HomeView` (TemplateView) - Public homepage (events stage in place of the hero, latest news + Observatorio ENSO)
+- `HomeView` (TemplateView) - Public homepage (upcoming events — or the last one — in the hero box, latest news + Observatorio ENSO)
 - `enso_data()` - Sirve `website/data/enso.json` (cacheado 24 h) para el tablero de la portada
 - `AboutView` (ListView) - About page with FeaturedMembers + comités
 - `EventsView` (TemplateView) - Events agenda; `EventDetailView`; `event_ics()` calendar file

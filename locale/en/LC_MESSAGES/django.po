@@ -70,36 +70,6 @@ msgstr "All rights reserved."
 msgid "Desarrollado por"
 msgstr "Developed by"
 
-msgid "Último evento"
-msgstr "Latest event"
-
-msgid "Finalizado"
-msgstr "Ended"
-
-msgid "Próximo evento"
-msgstr "Next event"
-
-msgid "Inscribirme"
-msgstr "Register"
-
-msgid "Ver detalles"
-msgstr "View details"
-
-msgid "También en la agenda"
-msgstr "Also on the calendar"
-
-msgid "Eventos anteriores"
-msgstr "Past events"
-
-msgid "Aquí aparecerán los eventos que ya realizamos."
-msgstr "Our past events will appear here."
-
-msgid "Ver agenda"
-msgstr "View calendar"
-
-msgid "Scroll"
-msgstr "Scroll"
-
 msgid "El Futuro de Colombia"
 msgstr "The Future of Colombia"
 
@@ -119,6 +89,39 @@ msgstr "Join the ASNC"
 
 msgid "Descubre más"
 msgstr "Discover more"
+
+msgid "Último evento"
+msgstr "Latest event"
+
+msgid "Finalizado"
+msgstr "Ended"
+
+msgid "Próximos eventos"
+msgstr "Upcoming events"
+
+msgid "Próximo evento"
+msgstr "Next event"
+
+msgid "También en la agenda"
+msgstr "Also on the calendar"
+
+msgid "Inscribirme"
+msgstr "Register"
+
+msgid "Ver detalles"
+msgstr "View details"
+
+msgid "Ver agenda"
+msgstr "View calendar"
+
+msgid "Agenda"
+msgstr "Calendar"
+
+msgid "No hay eventos programados por ahora"
+msgstr "No events scheduled for now"
+
+msgid "Scroll"
+msgstr "Scroll"
 
 msgid "Cerrar"
 msgstr "Close"
@@ -838,9 +841,6 @@ msgstr "Later"
 msgid "El resto de la agenda, por mes."
 msgstr "The rest of the calendar, by month."
 
-msgid "No hay eventos programados por ahora"
-msgstr "No events scheduled for now"
-
 msgid ""
 "Aquí publicamos las conferencias, webinars y talleres de la ASNC. Los "
 "asociados reciben cada invitación por correo."
@@ -851,14 +851,14 @@ msgstr ""
 msgid "Unirme a la ASNC"
 msgstr "Join the ASNC"
 
+msgid "Eventos anteriores"
+msgstr "Past events"
+
 msgid "Lo que ya pasó, del más reciente al más antiguo."
 msgstr "What already happened, most recent first."
 
 msgid "Los asociados reciben la invitación a cada evento en su correo."
 msgstr "Members receive the invitation to every event in their inbox."
-
-msgid "Agenda"
-msgstr "Calendar"
 
 msgid "Este evento ya pasó"
 msgstr "This event has ended"

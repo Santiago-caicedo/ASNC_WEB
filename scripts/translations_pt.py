@@ -569,7 +569,6 @@ TRANSLATIONS_PT.update({
     'Próximos eventos': 'Próximos eventos',
     'Último evento': 'Último evento',
     'Finalizado': 'Encerrado',
-    'Aquí aparecerán los eventos que ya realizamos.': 'Aqui aparecerão os eventos que já realizamos.',
     'El que sigue en la agenda. Inscríbete o agrégalo a tu calendario.': 'O próximo da agenda. Inscreva-se ou adicione-o ao seu calendário.',
     'Inscribirme': 'Inscrever-me',
     'Agregar a mi calendario': 'Adicionar ao meu calendário',
