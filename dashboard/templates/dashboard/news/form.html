@@ -130,29 +130,27 @@
                             {% endif %}
                         </div>
 
-                        <hr class="my-2">
-
-                        <!-- Estado -->
-                        <div class="col-12">
-                            <label class="form-label fw-semibold d-block">
-                                <i class="bi bi-toggle-on me-2 text-primary"></i>Estado de publicación
-                            </label>
-                            <div class="form-check form-switch mt-2">
-                                {{ form.is_published }}
-                                <label class="form-check-label" for="id_is_published">
-                                    Publicar en el sitio web (visible para todos)
-                                </label>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
-                        <a href="{% url 'news_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
-                            Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4">
-                            <i class="bi bi-check-lg me-2"></i>{{ button_text }}
-                        </button>
+                    <div class="mt-4 pt-3 border-top">
+                        <p class="small text-muted mb-3">
+                            {% if object.is_published %}
+                            <i class="bi bi-globe me-1 text-success"></i>Esta noticia está <strong>publicada</strong>. "Guardar cambios" la mantiene visible; "Pasar a borrador" la retira del sitio web.
+                            {% else %}
+                            <i class="bi bi-pencil me-1"></i>"Guardar borrador" la guarda sin mostrarla; "Publicar" la hace visible para todos en el sitio web.
+                            {% endif %}
+                        </p>
+                        <div class="d-flex flex-wrap justify-content-end gap-2">
+                            <a href="{% url 'news_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                                Cancelar
+                            </a>
+                            <button type="submit" name="accion" value="borrador" class="btn btn-outline-primary rounded-pill px-4">
+                                <i class="bi bi-file-earmark me-2"></i>{% if object.is_published %}Pasar a borrador{% else %}Guardar borrador{% endif %}
+                            </button>
+                            <button type="submit" name="accion" value="publicar" class="btn btn-primary rounded-pill px-4">
+                                <i class="bi bi-globe me-2"></i>{% if object.is_published %}Guardar cambios{% else %}Publicar{% endif %}
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

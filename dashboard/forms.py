@@ -88,8 +88,10 @@ class NewsArticleForm(forms.ModelForm):
     class Meta:
         model = NewsArticle
         fields = [
-            'category', 'title', 'cover_image', 'excerpt', 'content', 'is_published'
+            'category', 'title', 'cover_image', 'excerpt', 'content'
         ]
+        # is_published is not a field: the "Guardar borrador" / "Publicar"
+        # buttons set it in the view (NewsPublishMixin).
         widgets = {
             'category': forms.Select(attrs={
                 'class': 'form-select'
@@ -110,9 +112,6 @@ class NewsArticleForm(forms.ModelForm):
                 'class': 'form-control',
                 'rows': 15,
                 'placeholder': 'Contenido completo de la noticia...'
-            }),
-            'is_published': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
             }),
         }
 

@@ -183,7 +183,20 @@ class NewsListView(NewsEditorRequiredMixin, LoginRequiredMixin, ListView):
     paginate_by = 20
 
 
-class NewsCreateView(NewsEditorRequiredMixin, LoginRequiredMixin, CreateView):
+class NewsPublishMixin:
+    """Sets is_published from the button pressed: "publicar" or "borrador"."""
+
+    def form_valid(self, form):
+        form.instance.is_published = self.request.POST.get('accion') == 'publicar'
+        response = super().form_valid(form)
+        if self.object.is_published:
+            messages.success(self.request, 'Noticia publicada en el sitio web.')
+        else:
+            messages.success(self.request, 'Noticia guardada como borrador (no visible en el sitio web).')
+        return response
+
+
+class NewsCreateView(NewsEditorRequiredMixin, LoginRequiredMixin, NewsPublishMixin, CreateView):
     """Crear nueva noticia"""
     model = NewsArticle
     form_class = NewsArticleForm
@@ -192,31 +205,24 @@ class NewsCreateView(NewsEditorRequiredMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        messages.success(self.request, 'Noticia creada exitosamente.')
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Nueva Noticia'
-        context['button_text'] = 'Crear Noticia'
         return context
 
 
-class NewsUpdateView(NewsEditorRequiredMixin, LoginRequiredMixin, UpdateView):
+class NewsUpdateView(NewsEditorRequiredMixin, LoginRequiredMixin, NewsPublishMixin, UpdateView):
     """Editar noticia"""
     model = NewsArticle
     form_class = NewsArticleForm
     template_name = 'dashboard/news/form.html'
     success_url = reverse_lazy('news_list')
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Noticia actualizada exitosamente.')
-        return super().form_valid(form)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Editar Noticia'
-        context['button_text'] = 'Guardar Cambios'
         return context
 
 
