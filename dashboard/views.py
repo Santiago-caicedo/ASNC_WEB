@@ -14,11 +14,11 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from email.utils import formataddr
 from admissions.models import MembershipApplication
-from website.models import Event, FeaturedMember, NewsArticle, NewsCategory
+from website.models import Event, FeaturedMember, HeroSlide, NewsArticle, NewsCategory
 from carnets.models import MemberCard
 from users.models import User
 from admissions.views import SuperuserRequiredMixin
-from .forms import EventForm, FeaturedMemberForm, NewsArticleForm, NewsCategoryForm, EmailComposeForm, UserRoleForm
+from .forms import EventForm, FeaturedMemberForm, HeroSlideForm, NewsArticleForm, NewsCategoryForm, EmailComposeForm, UserRoleForm
 from .models import SentEmail
 
 
@@ -234,6 +234,65 @@ class NewsDeleteView(NewsEditorRequiredMixin, LoginRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Noticia eliminada exitosamente.')
+        return super().form_valid(form)
+
+
+# ============================================
+# Slides de la portada (admins y editores de noticias)
+# ============================================
+
+class HeroSlideListView(NewsEditorRequiredMixin, LoginRequiredMixin, ListView):
+    """Slides del carrusel de la portada, en el orden en que se muestran."""
+    model = HeroSlide
+    template_name = 'dashboard/slides/list.html'
+    context_object_name = 'slides'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['visible_count'] = HeroSlide.objects.visible().count()
+        return context
+
+
+class HeroSlideCreateView(NewsEditorRequiredMixin, LoginRequiredMixin, CreateView):
+    model = HeroSlide
+    form_class = HeroSlideForm
+    template_name = 'dashboard/slides/form.html'
+    success_url = reverse_lazy('slide_list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        messages.success(self.request, 'Slide creado.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Nuevo slide'
+        return context
+
+
+class HeroSlideUpdateView(NewsEditorRequiredMixin, LoginRequiredMixin, UpdateView):
+    model = HeroSlide
+    form_class = HeroSlideForm
+    template_name = 'dashboard/slides/form.html'
+    success_url = reverse_lazy('slide_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Slide actualizado.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar slide'
+        return context
+
+
+class HeroSlideDeleteView(NewsEditorRequiredMixin, LoginRequiredMixin, DeleteView):
+    model = HeroSlide
+    template_name = 'dashboard/slides/confirm_delete.html'
+    success_url = reverse_lazy('slide_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Slide eliminado.')
         return super().form_valid(form)
 
 

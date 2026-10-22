@@ -4,7 +4,7 @@ import nh3
 from django import forms
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from website.models import Event, FeaturedMember, NewsArticle, NewsCategory
+from website.models import Event, FeaturedMember, HeroSlide, NewsArticle, NewsCategory
 from website.countries import COUNTRIES
 from admissions.models import MembershipApplication
 
@@ -390,3 +390,36 @@ class EventForm(forms.ModelForm):
         self.instance.starts_at = starts_at
         self.instance.ends_at = ends_at
         return cleaned
+
+
+class HeroSlideForm(forms.ModelForm):
+    """Slide del carrusel de la portada. Color y tipo de imagen se pintan como
+    selectores visuales en la plantilla (dashboard/slides/form.html)."""
+
+    class Meta:
+        model = HeroSlide
+        fields = [
+            'kicker', 'title', 'title_en', 'main_image', 'main_style',
+            'secondary_image', 'color', 'link_url', 'link_label',
+            'is_active', 'show_until', 'display_order',
+        ]
+        widgets = {
+            'kicker': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Evento'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título del slide'}),
+            'title_en': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Slide title (optional)'}),
+            'main_image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'main_style': forms.RadioSelect,
+            'secondary_image': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),  # "-clear" checkbox drawn by hand in the template
+            'color': forms.RadioSelect,
+            'link_url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '/eventos/mi-evento/ o https://...'}),
+            'link_label': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ver más'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
+            'show_until': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+        }
+
+    def clean_link_url(self):
+        url = self.cleaned_data.get('link_url', '').strip()
+        if url and not (url.startswith(('https://', 'http://')) or (url.startswith('/') and not url.startswith('//'))):
+            raise forms.ValidationError('Usa una ruta del sitio que empiece por "/" o una URL completa con https://.')
+        return url

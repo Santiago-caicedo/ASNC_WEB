@@ -1,0 +1,34 @@
+{% load i18n %}
+{# Carrusel de la portada. Recibe `hero_slides` (HeroSlide.objects.visible()). #}
+<section class="hs" data-hs aria-roledescription="{% trans 'carrusel' %}" aria-label="{% trans 'Destacados de la ASNC' %}">
+    <div class="hs-track">
+        {% for slide in hero_slides %}
+        <article class="hs-slide {{ slide.color_class }}{% if forloop.first %} is-active{% endif %}"
+                 data-hs-slide aria-roledescription="{% trans 'diapositiva' %}"
+                 aria-label="{{ forloop.counter }} / {{ hero_slides|length }}"
+                 {% if not forloop.first %}aria-hidden="true" inert{% endif %}>
+            {% include 'website/_hero_slide_stage.html' %}
+        </article>
+        {% endfor %}
+    </div>
+
+    {% if hero_slides|length > 1 %}
+    <button type="button" class="hs-arrow hs-arrow--prev" data-hs-prev aria-label="{% trans 'Anterior' %}">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="hs-arrow hs-arrow--next" data-hs-next aria-label="{% trans 'Siguiente' %}">
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+    </button>
+    <div class="hs-controls">
+        {% for slide in hero_slides %}
+        <button type="button" class="hs-dot" data-hs-dot
+                aria-label="{% blocktrans with n=forloop.counter %}Ir a la diapositiva {{ n }}{% endblocktrans %}"
+                {% if forloop.first %}aria-current="true"{% endif %}></button>
+        {% endfor %}
+        <button type="button" class="hs-pause" data-hs-pause
+                aria-label="{% trans 'Pausar' %}" data-label-play="{% trans 'Reanudar' %}" data-label-pause="{% trans 'Pausar' %}">
+            <i class="bi bi-pause-fill" aria-hidden="true"></i>
+        </button>
+    </div>
+    {% endif %}
+</section>

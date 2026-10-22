@@ -389,3 +389,109 @@ class Event(models.Model):
         if not self.ends_at:
             return False
         return timezone.localtime(self.ends_at).date() != timezone.localtime(self.starts_at).date()
+
+
+class HeroSlideQuerySet(models.QuerySet):
+    def visible(self):
+        """Activos y sin vencer (una fecha "Mostrar hasta" incluye ese día)."""
+        today = timezone.localdate()
+        return self.filter(is_active=True).filter(
+            models.Q(show_until__isnull=True) | models.Q(show_until__gte=today)
+        )
+
+
+class HeroSlide(models.Model):
+    """Slide del carrusel que abre la portada (estilo Lanent).
+
+    Cada slide tiene una imagen principal (foto o logos), una secundaria y un
+    título sobre una franja de color; solo cambia el color de las figuras que
+    lo adornan. Lo gestionan los admins y editores de noticias en /portal/slides/.
+    """
+
+    class Color(models.TextChoices):
+        TEAL = 'TEAL', _('Turquesa')
+        BLUE = 'BLUE', _('Azul')
+        VIOLET = 'VIOLET', _('Violeta')
+        ROSE = 'ROSE', _('Rosa')
+        GOLD = 'GOLD', _('Dorado')
+        NAVY = 'NAVY', _('Azul marino')
+
+    class MainStyle(models.TextChoices):
+        PHOTO = 'PHOTO', _('Fotografía')
+        LOGO = 'LOGO', _('Logos o gráfico')
+
+    kicker = models.CharField(
+        _('Etiqueta'), max_length=40, blank=True,
+        help_text=_('Texto corto sobre el título. Ej: Evento, Alianza, Curso, Noticia.'),
+    )
+    title = models.CharField(_('Título'), max_length=160)
+    title_en = models.CharField(
+        _('Título (inglés)'), max_length=160, blank=True,
+        help_text=_('Versión en inglés. Si se deja vacío, se muestra el español.'),
+    )
+    main_image = models.ImageField(_('Imagen principal'), upload_to='hero_slides/')
+    main_style = models.CharField(
+        _('Tipo de imagen principal'), max_length=10,
+        choices=MainStyle.choices, default=MainStyle.PHOTO,
+        help_text=_('Fotografía: llena el panel. Logos o gráfico: se muestra completo sobre un fondo claro.'),
+    )
+    secondary_image = models.ImageField(
+        _('Imagen secundaria'), upload_to='hero_slides/', blank=True,
+        help_text=_('Va detrás del título. Si no hay, se usa un fondo del color elegido.'),
+    )
+    color = models.CharField(_('Color'), max_length=10, choices=Color.choices, default=Color.TEAL)
+    link_url = models.CharField(
+        _('Enlace'), max_length=300, blank=True,
+        help_text=_('A dónde lleva el slide. Una ruta del sitio (/eventos/mi-evento/) o una URL completa (https://...).'),
+    )
+    link_label = models.CharField(
+        _('Texto del botón'), max_length=40, blank=True,
+        help_text=_('Si se deja vacío: "Ver más".'),
+    )
+    is_active = models.BooleanField(_('Visible'), default=True)
+    show_until = models.DateField(
+        _('Mostrar hasta'), null=True, blank=True,
+        help_text=_('Opcional. Después de este día el slide deja de mostrarse solo.'),
+    )
+    display_order = models.PositiveIntegerField(
+        _('Orden'), default=0, help_text=_('Los números menores van primero.'),
+    )
+    created_by = models.ForeignKey(
+        'users.User', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='hero_slides', verbose_name=_('Creado por'),
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = HeroSlideQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = _('Slide de la portada')
+        verbose_name_plural = _('Slides de la portada')
+        ordering = ['display_order', '-created_at']
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def display_title(self):
+        lang = get_language() or ''
+        if lang.startswith('en') and self.title_en:
+            return self.title_en
+        return self.title
+
+    @property
+    def color_class(self):
+        return f'hs-c-{self.color.lower()}'
+
+    @property
+    def is_external_link(self):
+        return self.link_url.startswith(('http://', 'https://'))
+
+    @property
+    def is_expired(self):
+        return bool(self.show_until and self.show_until < timezone.localdate())
+
+    @property
+    def is_visible(self):
+        return self.is_active and not self.is_expired

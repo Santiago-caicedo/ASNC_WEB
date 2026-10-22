@@ -12,6 +12,7 @@ from .views import (
     NewsCategoryListView, NewsCategoryCreateView, NewsCategoryUpdateView,
     NewsCategoryDeleteView,
     news_image_upload,
+    HeroSlideListView, HeroSlideCreateView, HeroSlideUpdateView, HeroSlideDeleteView,
     EventListView, EventCreateView, EventUpdateView, EventDeleteView,
     EmailComposeView, EmailHistoryView, EmailDetailView,
     DirectoryListView, DirectoryDetailView,
@@ -69,6 +70,12 @@ urlpatterns = [
     path('noticias/<int:pk>/editar/', NewsUpdateView.as_view(), name='news_update'),
     path('noticias/<int:pk>/eliminar/', NewsDeleteView.as_view(), name='news_delete'),
     path('noticias/subir-imagen/', news_image_upload, name='news_image_upload'),
+
+    # Slides de la portada
+    path('slides/', HeroSlideListView.as_view(), name='slide_list'),
+    path('slides/nuevo/', HeroSlideCreateView.as_view(), name='slide_create'),
+    path('slides/<int:pk>/editar/', HeroSlideUpdateView.as_view(), name='slide_update'),
+    path('slides/<int:pk>/eliminar/', HeroSlideDeleteView.as_view(), name='slide_delete'),
 
     # Categorías de noticias
     # Eventos (solo superadmin)

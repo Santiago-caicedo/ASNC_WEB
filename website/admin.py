@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from .models import Event, FeaturedMember, ContactMessage, NewsCategory
+from .models import Event, FeaturedMember, ContactMessage, HeroSlide, NewsCategory
 
 
 @admin.register(NewsCategory)
@@ -97,3 +97,13 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = ('title', 'summary', 'location')
     date_hierarchy = 'starts_at'
     readonly_fields = ('slug', 'created_by', 'created_at', 'updated_at')
+
+
+@admin.register(HeroSlide)
+class HeroSlideAdmin(admin.ModelAdmin):
+    """Slides del carrusel de la portada (se gestionan normalmente desde /portal/slides/)."""
+    list_display = ('title', 'color', 'main_style', 'is_active', 'show_until', 'display_order')
+    list_filter = ('is_active', 'color')
+    list_editable = ('is_active', 'display_order')
+    search_fields = ('title', 'kicker')
+    readonly_fields = ('created_by', 'created_at', 'updated_at')

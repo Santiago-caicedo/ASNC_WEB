@@ -1,0 +1,46 @@
+{% load i18n %}
+{# Contenido de un slide. Recibe `slide`; lo usan la portada y la vista previa del portal. #}
+<div class="hs-stage">
+    <div class="hs-main hs-main--{{ slide.main_style|lower }}" data-hs-main>
+        {% if slide.main_image %}
+        <img src="{{ slide.main_image.url }}" alt=""
+             {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} data-hs-main-img>
+        {% endif %}
+    </div>
+    <div class="hs-side">
+        {% if slide.secondary_image %}
+        <img src="{{ slide.secondary_image.url }}" alt="" loading="lazy" data-hs-side-img>
+        {% endif %}
+    </div>
+
+    {# Marco, pestañas y barras: se estiran con el lienzo #}
+    <svg class="hs-deco" viewBox="0 0 1920 600" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <polygon class="f2" points="30,0 540,0 516,34 54,34"/>
+        <path class="ln" d="M40 14H858L878 34V584H14V40Z"/>
+        <polygon class="f1" points="1010,0 1210,0 1192,14 1028,14"/>
+        <path class="ln-soft" d="M904 44H948L978 14H1874L1906 46"/>
+        <rect class="f2" x="520" y="556" width="540" height="44"/>
+        <rect class="f3" x="1060" y="580" width="230" height="20"/>
+    </svg>
+    {# Cuadros de la esquina: no se deforman #}
+    <svg class="hs-deco hs-deco-px" viewBox="0 0 200 200" preserveAspectRatio="xMinYMax meet" aria-hidden="true" focusable="false">
+        <rect class="f2" x="14" y="40" width="44" height="44"/>
+        <rect class="f3" x="14" y="84" width="44" height="44"/>
+        <rect class="f1" x="58" y="84" width="44" height="44"/>
+        <rect class="f3" x="58" y="128" width="44" height="44"/>
+        <rect class="f2" x="102" y="146" width="34" height="34"/>
+    </svg>
+
+    <div class="hs-band">
+        <div class="hs-band-inner">
+            <span class="hs-kicker" data-hs-kicker{% if not slide.kicker %} hidden{% endif %}>{{ slide.kicker }}</span>
+            <h2 class="hs-title" data-hs-title>{{ slide.display_title }}</h2>
+            {% if slide.link_url %}
+            <a class="hs-cta" href="{{ slide.link_url }}" data-hs-cta
+               {% if slide.is_external_link %}target="_blank" rel="noopener"{% endif %}>
+                {{ slide.link_label|default:_("Ver más") }} <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -21,7 +21,7 @@ from django.views.generic.edit import FormView
 from django.shortcuts import get_object_or_404
 
 from .forms import ContactForm
-from .models import Event, FeaturedMember, NewsArticle, NewsCategory
+from .models import Event, FeaturedMember, HeroSlide, NewsArticle, NewsCategory
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +66,8 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['enso_version'] = enso_data_version()
+        # Carrusel de slides; sin slides visibles se muestra el hero clásico.
+        context['hero_slides'] = list(HeroSlide.objects.visible())
         # Recuadro del hero: todos los próximos eventos (el más cercano
         # destacado); si no hay ninguno, el último evento publicado.
         upcoming = list(Event.objects.upcoming())

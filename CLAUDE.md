@@ -276,6 +276,16 @@ News/blog article shown publicly and managed by admins/news editors.
 - `is_published`: BooleanField, `published_at`: DateTimeField (auto-set on publish)
 - `created_at`, `updated_at`: Timestamps
 
+### HeroSlide (`website/models.py`)
+Slides of the carousel that **opens the homepage** (Lanent-style banner, rendered in HTML/CSS instead of a baked image). Managed at `/portal/slides/` by **admins and news editors** (`NewsEditorRequiredMixin`; sidebar "Slides del inicio" in both portals). When no slide is visible the classic hero (with the events box) is shown instead.
+- `kicker` (small label: Evento, Alianza…), `title`, `title_en` (shown when the language is EN, via `display_title`)
+- `main_image` + `main_style` PHOTO (cover) | LOGO (contained over light facets of the color); `secondary_image` (optional, behind the title band; without it, a gradient of the color)
+- `color` TEAL | BLUE | VIOLET | ROSE | GOLD | NAVY — the only thing that changes between slides: frame, tabs, squares, bars and the title band (`hs-c-<color>` sets `--hs`, `--hs-deep`, `--hs-ink` RGB triplets; GOLD uses navy text)
+- `link_url` (site path starting with `/` or full http(s) URL, validated in `HeroSlideForm`; the whole slide becomes clickable), `link_label` (default "Ver más")
+- `is_active`, `show_until` (optional; the slide hides itself after that day), `display_order`, `created_by`
+- `HeroSlideQuerySet.visible()` → active and not expired. Context `hero_slides` in `HomeView`.
+- Front-end: `website/_hero_slider.html` + `_hero_slide_stage.html` (the stage is reused by the live preview in `dashboard/slides/form.html`), `static/css/hero_slider.css` (`.hs-` prefix; 16:5 canvas on desktop, 16:7 tablet, stacked photo + band on mobile), `static/js/hero_slider.js` (crossfade, 7 s autoplay, pause button, pauses on hover/focus/hidden tab, arrows, dots, keyboard, swipe; no autoplay with `prefers-reduced-motion`). New static files → run `collectstatic` on deploy.
+
 ### Event (`website/models.py`)
 Public events, managed **only by the superadmin** at `/portal/eventos/` (`SuperuserRequiredMixin`; sidebar link "Eventos" under Contenido Web, visible only to `is_superuser`).
 - `title`, `slug` (auto), `event_type` CONFERENCE|WEBINAR|WORKSHOP|NETWORKING|OTHER, `modality` IN_PERSON|VIRTUAL|HYBRID
@@ -283,7 +293,7 @@ Public events, managed **only by the superadmin** at `/portal/eventos/` (`Superu
 - `EventQuerySet`: `published()`, `upcoming()` (not ended, by `starts_at`), `past()`, `ended()`, `not_ended()`. **An event without `ends_at` stays upcoming until the end of its day.**
 - Properties: `end`, `is_past`, `is_ongoing`, `days_until`, `is_multiday`, `start_month` (groups the agenda by month)
 - `EventForm` (`dashboard/forms.py`) asks for date / start time / end time / "dura varios días" separately and combines them in `clean()` (Bogotá time).
-- **Homepage hero box** shows **all upcoming events**: the nearest one featured (cover, date leaf, CTA) and the rest as compact rows under "También en la agenda" (scrolls when long). Context in `HomeView`: `hero_event`, `hero_more_events`, `hero_event_is_past`. With no upcoming events it shows the **last published event** ("Último evento" · "Finalizado", no registration button); with no events at all, an empty agenda state. News are no longer shown in the hero. The box also shows on mobile (below the hero buttons).
+- **Homepage hero box** (classic hero, shown only when there are **no visible `HeroSlide`s**) shows **all upcoming events**: the nearest one featured (cover, date leaf, CTA) and the rest as compact rows under "También en la agenda" (scrolls when long). Context in `HomeView`: `hero_event`, `hero_more_events`, `hero_event_is_past`. With no upcoming events it shows the **last published event** ("Último evento" · "Finalizado", no registration button); with no events at all, an empty agenda state. News are no longer shown in the hero. The box also shows on mobile (below the hero buttons).
 - Public: `/eventos/` (next event + rest grouped by month + past), `/eventos/<slug>/` (detail), `/eventos/<slug>/calendario.ics` (add to calendar). Shared partials `website/_event_*.html`. Events are in the sitemap.
 
 ### Convocatoria models (`convocatorias/models.py`)
@@ -403,6 +413,10 @@ Single-screen work management for the committees. **Visible only to `is_superuse
 /portal/noticias/nueva/        → Create news
 /portal/noticias/<id>/editar/  → Edit news
 /portal/noticias/<id>/eliminar/ → Delete news
+
+# Homepage slides CRUD (Protected - news editors or admins)
+/portal/slides/                → Slide list (order, color, visible/hidden/expired)
+/portal/slides/nuevo/ , /<id>/editar/ , /<id>/eliminar/   → Create / edit (with live preview) / delete
 
 # Events CRUD (Protected - SUPERUSER ONLY)
 /portal/eventos/               → Upcoming / drafts / past
@@ -731,6 +745,7 @@ python manage.py showmigrations
 - `0001_initial.py` (2026-01-17) - Creates FeaturedMember model
 - Adds `NewsArticle` model (news/blog) in a later migration
 - `0010_event.py` - Creates `Event` (public events)
+- `0011_heroslide.py` - Creates `HeroSlide` (homepage carousel)
 
 ### dashboard
 - `0001_initial.py` (2026-01-25) - Creates SentEmail model
@@ -751,7 +766,7 @@ python manage.py showmigrations
 ## Views Summary
 
 ### Website App
-- `HomeView` (TemplateView) - Public homepage (upcoming events — or the last one — in the hero box, latest news + Observatorio ENSO)
+- `HomeView` (TemplateView) - Public homepage: `HeroSlide` carousel on top (or, without visible slides, the classic hero with upcoming events — or the last one — in its box), latest news + Observatorio ENSO
 - `enso_data()` - Sirve `website/data/enso.json` (cacheado 24 h) para el tablero de la portada
 - `AboutView` (ListView) - About page with FeaturedMembers + comités
 - `EventsView` (TemplateView) - Events agenda; `EventDetailView`; `event_ics()` calendar file
@@ -933,6 +948,7 @@ GESTIÓN DE ASOCIADOS
 CONTENIDO WEB
 ├── Asociados Destacados (featured_member_list)
 ├── Noticias (news_list)
+├── Slides del inicio (slide_list) — news editors and admins
 └── Eventos (event_list) — only if user.is_superuser
 
 COMUNICACIONES

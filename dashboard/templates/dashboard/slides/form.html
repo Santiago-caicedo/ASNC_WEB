@@ -1,0 +1,280 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/hero_slider.css' %}">
+<style>
+    .slide-preview { border-radius: 14px; overflow: hidden; box-shadow: 0 6px 24px rgba(27, 42, 65, .12); }
+    .slide-preview .hs-main:not(:has(img)) {
+        display: grid; place-items: center;
+        background: repeating-linear-gradient(45deg, #eef1f5 0 12px, #e6eaf0 12px 24px);
+    }
+    .slide-preview .hs-main:not(:has(img))::after {
+        content: 'Imagen principal'; color: #8592a6; font-size: .9rem; font-weight: 600;
+    }
+    .slide-preview .hs-title:empty::before { content: 'Título del slide'; opacity: .6; }
+    .slide-preview .hs-cta::after { display: none; }
+
+    /* Selectores visuales de color y tipo de imagen */
+    .choice-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choice-row input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+    .choice {
+        display: inline-flex; align-items: center; gap: .5rem;
+        padding: .45rem .85rem .45rem .5rem;
+        border: 1.5px solid #dee2e6; border-radius: 999px;
+        font-size: .88rem; cursor: pointer; background: #fff;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .choice:hover { border-color: #adb5bd; }
+    .choice:has(input:checked) { border-color: var(--asnc-navy, #1B2A41); box-shadow: 0 0 0 3px rgba(27, 42, 65, .12); font-weight: 600; }
+    .choice:has(input:focus-visible) { outline: 2px solid #f4c343; outline-offset: 2px; }
+    .choice-swatch { width: 22px; height: 22px; border-radius: 50%; background: rgb(var(--hs)); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .6); }
+    .choice-icon { width: 22px; text-align: center; color: #6c7a90; }
+</style>
+
+<div class="mb-4">
+    <a href="{% url 'slide_list' %}" class="text-decoration-none text-muted small fw-bold">
+        <i class="bi bi-arrow-left me-1"></i> Volver al listado
+    </a>
+</div>
+
+<h1 class="page-title mb-3">{{ title }}</h1>
+
+<!-- Vista previa: mismo diseño que la portada, se actualiza al escribir -->
+<div class="mb-2 d-flex align-items-center gap-2 text-muted small fw-semibold">
+    <i class="bi bi-eye"></i> Vista previa
+</div>
+<div class="hs slide-preview mb-4" id="slidePreview">
+    <div class="hs-track">
+        <article class="hs-slide is-active {{ form.instance.color_class }}" id="slidePreviewSlide">
+            {% include 'website/_hero_slide_stage.html' with slide=form.instance %}
+        </article>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" id="slide-form">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger rounded-3">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Columna 1: contenido -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">Texto</h6>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="{{ form.kicker.id_for_label }}">Etiqueta</label>
+                        {{ form.kicker }}
+                        <small class="text-muted">{{ form.kicker.help_text }}</small>
+                        {% for e in form.kicker.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="{{ form.title.id_for_label }}">Título *</label>
+                        {{ form.title }}
+                        {% for e in form.title.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold" for="{{ form.title_en.id_for_label }}">Título en inglés</label>
+                        {{ form.title_en }}
+                        <small class="text-muted">{{ form.title_en.help_text }}</small>
+                        {% for e in form.title_en.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <h6 class="fw-bold mb-3">Enlace</h6>
+                    <div class="row g-3">
+                        <div class="col-sm-8">
+                            <label class="form-label fw-semibold" for="{{ form.link_url.id_for_label }}">A dónde lleva</label>
+                            {{ form.link_url }}
+                            <small class="text-muted">{{ form.link_url.help_text }}</small>
+                            {% for e in form.link_url.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label fw-semibold" for="{{ form.link_label.id_for_label }}">Texto del botón</label>
+                            {{ form.link_label }}
+                            {% for e in form.link_label.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mt-2">Sin enlace, el slide se muestra sin botón y no se puede pulsar.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna 2: imágenes y diseño -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">Imágenes y color</h6>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="{{ form.main_image.id_for_label }}">Imagen principal {% if not object %}*{% endif %}</label>
+                        {{ form.main_image }}
+                        <small class="text-muted">Panel izquierdo. {% if object %}Déjalo vacío para conservar la actual.{% endif %}</small>
+                        {% for e in form.main_image.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="form-label fw-semibold d-block">Tipo de imagen principal</span>
+                        <div class="choice-row" id="mainStyleChoices">
+                            {% for radio in form.main_style %}
+                            <label class="choice">
+                                {{ radio.tag }}
+                                <i class="choice-icon bi {% if radio.data.value == 'LOGO' %}bi-badge-tm{% else %}bi-image{% endif %}" aria-hidden="true"></i>
+                                {{ radio.choice_label }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                        <small class="text-muted">{{ form.main_style.help_text }}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="{{ form.secondary_image.id_for_label }}">Imagen secundaria</label>
+                        {# Se pinta a mano: el widget por defecto ("Actualmente / Limpiar / Modificar") se ve desordenado #}
+                        <input type="file" name="secondary_image" id="{{ form.secondary_image.id_for_label }}" class="form-control" accept="image/*">
+                        {% if object.secondary_image %}
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="secondary_image-clear" id="secondary_image-clear_id">
+                            <label class="form-check-label small" for="secondary_image-clear_id">Quitar la imagen secundaria actual</label>
+                        </div>
+                        {% endif %}
+                        <small class="text-muted">{{ form.secondary_image.help_text }}{% if object.secondary_image %} Déjalo vacío para conservar la actual.{% endif %}</small>
+                        {% for e in form.secondary_image.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="form-label fw-semibold d-block">Color de las figuras y la franja</span>
+                        <div class="choice-row" id="colorChoices">
+                            {% for radio in form.color %}
+                            <label class="choice hs-c-{{ radio.data.value|lower }}">
+                                {{ radio.tag }}
+                                <span class="choice-swatch" aria-hidden="true"></span>
+                                {{ radio.choice_label }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold mb-3">Publicación</h6>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-sm-4">
+                            <label class="form-label fw-semibold" for="{{ form.display_order.id_for_label }}">Orden</label>
+                            {{ form.display_order }}
+                        </div>
+                        <div class="col-sm-8">
+                            <label class="form-label fw-semibold" for="{{ form.show_until.id_for_label }}">Mostrar hasta</label>
+                            {{ form.show_until }}
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mt-1">{{ form.display_order.help_text }} {{ form.show_until.help_text }}</small>
+
+                    <div class="form-check form-switch mt-3">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Visible en la portada</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+        <a href="{% url 'slide_list' %}" class="btn btn-outline-secondary rounded-pill px-4">Cancelar</a>
+        <button type="submit" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-check-lg me-2"></i>Guardar slide
+        </button>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('slide-form');
+    const slide = document.getElementById('slidePreviewSlide');
+    const main = slide.querySelector('[data-hs-main]');
+    const side = slide.querySelector('.hs-side');
+    const inner = slide.querySelector('.hs-band-inner');
+    const kicker = slide.querySelector('[data-hs-kicker]');
+    const title = slide.querySelector('[data-hs-title]');
+
+    // Texto
+    const titleInput = form.elements['title'];
+    const kickerInput = form.elements['kicker'];
+    titleInput.addEventListener('input', () => { title.textContent = titleInput.value; });
+    kickerInput.addEventListener('input', () => {
+        kicker.textContent = kickerInput.value;
+        kicker.hidden = !kickerInput.value.trim();
+    });
+
+    // Botón: en la vista previa es un <span> que no navega
+    function syncCta() {
+        let cta = inner.querySelector('[data-hs-cta]');
+        const url = form.elements['link_url'].value.trim();
+        if (!url) { if (cta) cta.remove(); return; }
+        if (!cta) {
+            cta = document.createElement('span');
+            cta.className = 'hs-cta';
+            cta.dataset.hsCta = '';
+            inner.appendChild(cta);
+        }
+        const label = form.elements['link_label'].value.trim() || 'Ver más';
+        cta.innerHTML = '';
+        cta.append(label + ' ');
+        const icon = document.createElement('i');
+        icon.className = 'bi bi-arrow-right';
+        cta.appendChild(icon);
+    }
+    form.elements['link_url'].addEventListener('input', syncCta);
+    form.elements['link_label'].addEventListener('input', syncCta);
+    // Un enlace ya guardado no debe navegar desde la vista previa
+    const savedCta = inner.querySelector('a[data-hs-cta]');
+    if (savedCta) savedCta.addEventListener('click', (e) => e.preventDefault());
+
+    // Color
+    form.querySelectorAll('input[name="color"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            slide.className = slide.className.replace(/\bhs-c-\w+/g, '').trim() + ' hs-c-' + radio.value.toLowerCase();
+        });
+    });
+
+    // Tipo de imagen principal
+    form.querySelectorAll('input[name="main_style"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            main.classList.toggle('hs-main--logo', radio.value === 'LOGO');
+            main.classList.toggle('hs-main--photo', radio.value === 'PHOTO');
+        });
+    });
+
+    // Imágenes: se leen como data: (la CSP no permite blob:)
+    function previewImage(input, container) {
+        input.addEventListener('change', () => {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                let img = container.querySelector('img');
+                if (!img) {
+                    img = document.createElement('img');
+                    img.alt = '';
+                    container.appendChild(img);
+                }
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    previewImage(form.elements['main_image'], main);
+    previewImage(form.elements['secondary_image'], side);
+
+    // "Limpiar" la imagen secundaria
+    const clear = form.elements['secondary_image-clear'];
+    if (clear) {
+        clear.addEventListener('change', () => {
+            const img = side.querySelector('img');
+            if (img) img.hidden = clear.checked;
+        });
+    }
+});
+</script>
+{% endblock %}

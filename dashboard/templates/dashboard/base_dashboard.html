@@ -384,6 +384,9 @@
             <a href="{% url 'news_category_list' %}" class="nav-link {% if 'categorias' in request.path %}active{% endif %}">
                 <i class="bi bi-tags"></i> Categorías
             </a>
+            <a href="{% url 'slide_list' %}" class="nav-link {% if '/portal/slides/' in request.path %}active{% endif %}">
+                <i class="bi bi-images"></i> Slides del inicio
+            </a>
             {% endif %}
 
             {% if user.is_superuser %}

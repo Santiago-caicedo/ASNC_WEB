@@ -6,7 +6,13 @@
 
 {% block content %}
 
-<!-- ==================== HERO FULL SCREEN ==================== -->
+{% if hero_slides %}
+<!-- ==================== CARRUSEL DE SLIDES (se gestiona en /portal/slides/) ==================== -->
+<link rel="stylesheet" href="{% static 'css/hero_slider.css' %}">
+{% include 'website/_hero_slider.html' %}
+<script src="{% static 'js/hero_slider.js' %}" defer></script>
+{% else %}
+<!-- ==================== HERO FULL SCREEN (sin slides visibles) ==================== -->
 <section class="hero-section">
     <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
@@ -150,6 +156,7 @@
         <div class="scroll-line"></div>
     </div>
 </section>
+{% endif %}
 
 <!-- ==================== OBSERVATORIO ENSO (FENÓMENO DEL NIÑO) ==================== -->
 <section class="enso-section" id="enso">
