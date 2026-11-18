@@ -3,7 +3,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.css">
-<link rel="preload" as="image" href="{% static 'images/simposio/barranquilla.jpg' %}">
+<link rel="preload" as="image" href="{% static 'images/simposio/barranquilla-ventana.jpg' %}">
 <script>
 /* Hide the hero pieces until the entrance animation takes over (never with reduced motion). */
 (function () {
@@ -63,7 +63,7 @@
                 </g>
             </svg>
             <div class="sp-kv-photo">
-                <img src="{% static 'images/simposio/barranquilla.jpg' %}" alt="" width="1152" height="1596" fetchpriority="high">
+                <img src="{% static 'images/simposio/barranquilla-ventana.jpg' %}" alt="" width="1200" height="1200" fetchpriority="high">
             </div>
             <svg class="sp-kv-svg" viewBox="0 0 600 600">
                 <g class="sp-orbits">
@@ -147,7 +147,7 @@
             <h2>Aliados institucionales</h2>
             <div class="sp-logos-row">
                 <img class="sp-logo-wide" src="{% static 'images/simposio/ini.png' %}" alt="International Nuclear Industry">
-                <img class="sp-logo-wide" src="{% static 'images/simposio/segrad.png' %}" alt="Segrad, Seguridad Radiológica S.A.S.">
+                <span class="sp-lockup"><img class="sp-logo-wide" src="{% static 'images/simposio/segrad.png' %}" alt=""><span>Segrad S.A.S.</span></span>
             </div>
         </div>
     </div>
@@ -368,7 +368,7 @@
                 <h3>Aliados institucionales</h3>
                 <div class="sp-allybox-logos">
                     <img src="{% static 'images/simposio/ini.png' %}" alt="International Nuclear Industry">
-                    <img class="sp-allybox-tall" src="{% static 'images/simposio/segrad.png' %}" alt="Segrad, Seguridad Radiológica S.A.S.">
+                    <span class="sp-lockup sp-lockup--lg"><img class="sp-allybox-tall" src="{% static 'images/simposio/segrad.png' %}" alt=""><span>Segrad S.A.S.</span></span>
                     <a class="sp-allybox-free" href="mailto:info@asncol.com?subject=Aliados%20del%20Simposio%20de%20Energ%C3%ADa%20Nuclear">Aquí puede ir tu organización</a>
                 </div>
             </div>
@@ -445,6 +445,10 @@
     <a href="{% url 'simposio:registro' %}" class="sp-btn sp-btn--gold sp-btn--sm">Inscribirme</a>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block photo_credit %}
+<span class="sp-credit">Foto de portada: Ventana al Mundo, Barranquilla. <a href="https://commons.wikimedia.org/wiki/File:Ventanalmundo.jpg" target="_blank" rel="noopener">Jdvillalobos</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-SA 4.0</a>, recortada.</span>
 {% endblock %}
 
 {% block extra_js %}
