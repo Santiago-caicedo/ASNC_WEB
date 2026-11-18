@@ -460,6 +460,13 @@ class AgendaPeopleTests(SimpleTestCase):
         # In person for the talk, remote for the panel: not a virtual speaker.
         self.assertFalse(speakers[0]['virtual'])
 
+    def test_speaker_to_be_confirmed_is_not_a_person(self):
+        agenda = 'Jueves 3 de diciembre\n8:30 – 9:05 | Radiación | Por confirmar\n'
+        simposio = Simposio(agenda=agenda)
+        item = simposio.agenda_items[1]
+        self.assertEqual((item['speaker'], item['people']), ('Por confirmar', []))
+        self.assertEqual(simposio.speakers, [])
+
     def test_moderator(self):
         agenda = (
             'Jueves 3 de diciembre\n'

@@ -236,9 +236,13 @@ class Simposio(models.Model):
         An organisation ending in «, virtual» flags a remote participation.
         A part after «;» that starts with «Modera:» names the moderator, e.g.
         «… ; Modera: Santiago Caicedo (Vicepresidente ejecutivo, AsNC)».
-        Allies' talks name an organisation, not a person, so they give no people.
+        Allies' talks name an organisation, not a person, so they give no people,
+        and neither does a speaker «Por confirmar».
         """
         if not speaker or kind in ('break', 'ally'):
+            return []
+        # «Por confirmar» (or «Por definir») is shown as plain text, not as a person.
+        if re.match(r'(?i)por\s+(confirmar|definir)\b', speaker):
             return []
         people = []
         for part in speaker.split(';'):

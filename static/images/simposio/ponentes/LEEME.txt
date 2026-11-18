@@ -5,7 +5,6 @@ El nombre del archivo es el nombre de la persona en minusculas, sin tildes y con
 La pagina la muestra sola en la agenda y en la seccion Conferencistas; mientras no haya foto se ven las iniciales.
 
 Nombres esperados con la agenda actual:
-  jhon-aponte.jpg   (Jhon Aponte)
   herling-gonzales.jpg   (Herling Gonzales)
   laura.jpg   (Laura)
   daniel-herrera.jpg   (Daniel Herrera)
