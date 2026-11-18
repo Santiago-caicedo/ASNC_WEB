@@ -186,7 +186,7 @@
 
     /* Scroll-linked depth */
     var heroScroll = { trigger: '.sp-hero', start: 'top top', end: 'bottom top', scrub: true };
-    gsap.to('.sp-kv-photo img', { yPercent: 6, ease: 'none', scrollTrigger: heroScroll });
+    gsap.to('.sp-kv-photo img', { yPercent: 3, ease: 'none', scrollTrigger: heroScroll });
     gsap.to('.sp-kv-svg', { rotation: 16, ease: 'none', scrollTrigger: heroScroll });
     all('[data-parallax] img').forEach(function (image) {
         gsap.fromTo(image, { yPercent: -5 }, {

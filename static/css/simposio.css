@@ -107,7 +107,7 @@ body.sp-body {
 .sp-kv-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .sp-kv-photo { position: absolute; inset: 13%; border-radius: 50%; overflow: hidden; background: var(--sp-night-2);
     box-shadow: 0 0 0 1.5px rgba(244,195,67,.75), 0 0 0 14px rgba(255,255,255,.05), 0 40px 90px rgba(0,0,0,.55); }
-.sp-kv-photo img { position: absolute; left: 0; top: -3%; width: 100%; height: 116%; object-fit: cover; object-position: 50% 40%; }
+.sp-kv-photo img { position: absolute; left: 0; top: -3%; width: 100%; height: 106%; object-fit: cover; object-position: 50% 50%; }
 .sp-kv-photo::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 50% 45%, transparent 60%, rgba(7,28,51,.5) 100%); }
 .sp-ring { fill: none; stroke: rgba(255,255,255,.2); stroke-width: 1; stroke-dasharray: 2 9; vector-effect: non-scaling-stroke; }
 .sp-orbit { fill: none; stroke: rgba(255,255,255,.5); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
