@@ -280,13 +280,14 @@ body.sp-body {
 .sp-steps span { color: var(--sp-ice); font-size: .98rem; line-height: 1.4; }
 
 /* Allies */
-.sp-allies { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1.2rem; }
+.sp-allies { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.2rem; }
 .sp-allybox { background: #fff; border-radius: 24px; padding: 1.6rem 1.8rem 1.8rem; }
 .sp-allybox h3 { margin: 0; font-size: .95rem; font-weight: 500; color: var(--sp-mute); }
 .sp-allybox-logos { display: flex; flex-wrap: wrap; align-items: center; gap: 2.5rem; min-height: 150px; padding-top: 1rem; }
 .sp-allybox--main .sp-allybox-logos { justify-content: center; }
 .sp-allybox img { height: 78px; width: auto; max-width: 100%; }
-.sp-allybox--main img { height: 104px; }
+.sp-allybox--main img { height: 78px; }
+.sp-allybox-logos { gap: 2rem 2.5rem; }
 .sp-allybox img.sp-allybox-tall { height: 104px; }
 .sp-allybox-free { display: grid; place-items: center; height: 78px; padding: 0 1.4rem; border: 1.5px dashed #BFC9D6; border-radius: 999px; font-size: .92rem; color: var(--sp-mute); text-decoration: none; transition: border-color .2s, color .2s; }
 .sp-allybox-free:hover { border-color: var(--sp-navy); color: var(--sp-navy); }
