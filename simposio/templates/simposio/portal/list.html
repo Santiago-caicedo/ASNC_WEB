@@ -117,7 +117,7 @@
                         </td>
                         <td class="text-end">
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-light rounded-pill" type="button" data-bs-toggle="dropdown" aria-label="Acciones para {{ i.full_name }}"><i class="bi bi-three-dots"></i></button>
+                                <button class="btn btn-sm btn-light rounded-pill" type="button" data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}' aria-label="Acciones para {{ i.full_name }}"><i class="bi bi-three-dots"></i></button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="{{ i.get_ticket_path }}" target="_blank" rel="noopener">Ver entrada</a></li>
                                     {% if i.is_confirmed %}
