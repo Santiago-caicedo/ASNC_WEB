@@ -141,6 +141,8 @@ class InscripcionTests(Base):
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
         self.assertEqual(message.to, ['maria@example.com'])
+        self.assertIn('Registro presencial', message.subject)
+        self.assertIn('registro presencial', message.alternatives[0][0])
         self.assertIn(str(inscripcion.uuid), message.alternatives[0][0])
         self.assertEqual(message.attachments[0][0], 'entrada-qr.png')
         self.assertIn('simposio.ics', [attachment[0] for attachment in message.attachments])

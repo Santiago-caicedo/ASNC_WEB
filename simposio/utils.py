@@ -195,7 +195,7 @@ def send_confirmation_email(inscripcion):
     email = EmailMultiAlternatives(
         subject=(
             f'Inscripción virtual confirmada: {simposio.title}' if virtual
-            else f'Tu entrada al {simposio.title}'
+            else f'Registro presencial confirmado: {simposio.title}'
         ),
         body=strip_tags(html),
         from_email=_from_email(),
