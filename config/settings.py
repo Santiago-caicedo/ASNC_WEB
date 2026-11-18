@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'members',
     'convocatorias',
     'gestion',
+    'simposio',
 ]
 
 MIDDLEWARE = [
@@ -278,4 +279,4 @@ if not DEBUG:
 # Redirecciones
 LOGIN_URL = '/acceso/'
 LOGIN_REDIRECT_URL = '/mi-portal/'
-LOGOUT_REDIRECT_URL = '/acceso/'
+LOGOUT_REDIRECT_URL = '/acceso/'

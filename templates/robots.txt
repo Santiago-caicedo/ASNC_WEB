@@ -12,5 +12,9 @@ Disallow: /static/admin/
 # Bloquear archivos de media privados (CVs, documentos)
 Disallow: /media/applications/
 
+# Entradas y certificados personales del simposio
+Disallow: /simposio/entrada/
+Disallow: /simposio/certificado/
+
 # Sitemap
 Sitemap: https://www.asncol.com/sitemap.xml

@@ -1,0 +1,20 @@
+Fotos de los conferencistas del simposio
+
+Guarda aqui una foto por persona (cuadrada, minimo 400 x 400 px, formato .jpg, .png o .webp).
+El nombre del archivo es el nombre de la persona en minusculas, sin tildes y con guiones.
+La pagina la muestra sola en la agenda y en la seccion Conferencistas; mientras no haya foto se ven las iniciales.
+
+Nombres esperados con la agenda actual:
+  jhon-aponte.jpg   (Jhon Aponte)
+  herling-gonzales.jpg   (Herling Gonzales)
+  laura.jpg   (Laura)
+  daniel-herrera.jpg   (Daniel Herrera)
+  rafael-fragozo.jpg   (Rafael Fragozo)
+  karen-ibarra.jpg   (Karen Ibarra)
+  luis-eduardo-jaimes.jpg   (Luis Eduardo Jaimes)
+  diana-montana.jpg   (Diana Montaña)
+  carlos-cardenas.jpg   (Carlos Cárdenas)
+  christian-moreno.jpg   (Christian Moreno)
+  dario-cruz.jpg   (Darío Cruz)
+  adriana-rincon.jpg   (Adriana Rincón)
+  lourdes-merino.jpg   (Lourdes Meriño)

@@ -1,0 +1,455 @@
+{% extends 'simposio/base_simposio.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.css">
+<link rel="preload" as="image" href="{% static 'images/simposio/barranquilla.jpg' %}">
+<script>
+/* Hide the hero pieces until the entrance animation takes over (never with reduced motion). */
+(function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var root = document.documentElement;
+    root.classList.add('sp-anim');
+    setTimeout(function () { root.classList.remove('sp-anim'); }, 2500);
+})();
+</script>
+{% endblock %}
+
+{% block nav %}
+<a href="#simposio">El simposio</a>
+<a href="#programa">Agenda</a>
+<a href="#conferencistas">Conferencistas</a>
+<a href="#sede">Sede</a>
+<a href="#aliados">Aliados</a>
+<a href="#preguntas">Preguntas</a>
+{% endblock %}
+
+{% block content %}
+
+{# ------------------------------------------------------------ Hero #}
+<section class="sp-hero">
+    <div class="sp-hero-glow" aria-hidden="true"></div>
+    <div class="sp-wrap sp-hero-in">
+        <div class="sp-hero-copy">
+            {% if simposio.hero_kicker %}<span class="sp-pill" data-intro>{{ simposio.hero_kicker }}</span>{% endif %}
+            <h1 aria-label="{{ simposio.title }} del Caribe colombiano">
+                {% with lines=simposio.hero_lines %}
+                <span class="sp-hero-line"><span>{{ lines.0 }}</span></span>
+                {% if lines.1 %}<span class="sp-hero-line sp-hero-line--gold"><span>{{ lines.1 }}</span></span>{% endif %}
+                {% endwith %}
+                <span class="sp-hero-region" data-intro>del <span class="sp-wave">Caribe<svg viewBox="0 0 120 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 7 q 9.67 -9 19.33 0 t 19.33 0 t 19.33 0 t 19.33 0 t 19.33 0 t 19.33 0"/></svg></span> colombiano</span>
+            </h1>
+            {% if simposio.tagline %}<p class="sp-hero-lead" data-intro>{{ simposio.tagline }}</p>{% endif %}
+
+            <div class="sp-hero-actions" id="spHeroActions" data-intro>
+                {% include 'simposio/_cta.html' with style='gold' label='Inscribirme gratis' %}
+                <a href="#programa" class="sp-btn sp-btn--ghost">Ver la agenda</a>
+            </div>
+        </div>
+
+        {# Key visual: Barranquilla at night as the nucleus, with two orbits around it #}
+        <div class="sp-kv" aria-hidden="true">
+            <svg class="sp-kv-svg" viewBox="0 0 600 600">
+                <g class="sp-orbits">
+                    <circle class="sp-ring" cx="300" cy="300" r="262"/>
+                    <g transform="rotate(-24 300 300)">
+                        <path class="sp-orbit sp-orbit--gold" d="M-22,300 a322,116 0 1,0 644,0 a322,116 0 1,0 -644,0"/>
+                        <circle class="sp-electron sp-electron--gold" id="spElectronA2" r="8" cx="-22" cy="300"/>
+                    </g>
+                    <g transform="rotate(38 300 300)">
+                        <path class="sp-orbit" d="M-6,300 a306,104 0 1,0 612,0 a306,104 0 1,0 -612,0"/>
+                        <circle class="sp-electron" id="spElectronB2" r="5.5" cx="606" cy="300"/>
+                    </g>
+                </g>
+            </svg>
+            <div class="sp-kv-photo">
+                <img src="{% static 'images/simposio/barranquilla.jpg' %}" alt="" width="1152" height="1596" fetchpriority="high">
+            </div>
+            <svg class="sp-kv-svg" viewBox="0 0 600 600">
+                <g class="sp-orbits">
+                    <g transform="rotate(-24 300 300)">
+                        <path id="spOrbitA" class="sp-orbit sp-orbit--gold sp-orbit--front" pathLength="100" d="M-22,300 a322,116 0 1,0 644,0 a322,116 0 1,0 -644,0"/>
+                        <circle class="sp-electron sp-electron--gold" id="spElectronA" r="8" cx="-22" cy="300"/>
+                    </g>
+                    <g transform="rotate(38 300 300)">
+                        <path id="spOrbitB" class="sp-orbit sp-orbit--front" pathLength="100" d="M-6,300 a306,104 0 1,0 612,0 a306,104 0 1,0 -612,0"/>
+                        <circle class="sp-electron" id="spElectronB" r="5.5" cx="606" cy="300"/>
+                    </g>
+                </g>
+            </svg>
+            <div class="sp-seal">
+                <svg viewBox="0 0 160 160">
+                    <defs><path id="spSealPath" d="M80,80 m-61,0 a61,61 0 1,1 122,0 a61,61 0 1,1 -122,0"/></defs>
+                    <circle cx="80" cy="80" r="80" fill="#F4C343"/>
+                    <g class="sp-seal-ring">
+                        <text><textPath href="#spSealPath" textLength="376">CUPOS LIMITADOS • PRESENCIAL Y VIRTUAL • </textPath></text>
+                    </g>
+                    <circle cx="80" cy="80" r="47" fill="#0B2545"/>
+                </svg>
+                <span>Entrada<br>gratuita</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# The event facts, shaped as the ticket people get when they register #}
+<div class="sp-pass-wrap">
+    <div class="sp-wrap">
+        <div class="sp-pass" data-intro>
+            {% if date_block %}
+            <div class="sp-pass-stub">
+                <span class="sp-pass-days">{{ date_block.days }}</span>
+                <span class="sp-pass-month">{{ date_block.month }}<br><b>{{ date_block.year }}</b></span>
+            </div>
+            {% endif %}
+            <div class="sp-pass-cell">
+                <span class="sp-pass-label">Lugar</span>
+                <b>{{ simposio.venue|default:"Por confirmar" }}</b>
+                {% if simposio.city %}<span>{{ simposio.city }}</span>{% endif %}
+            </div>
+            <div class="sp-pass-cell">
+                <span class="sp-pass-label">Modalidad</span>
+                <b>Presencial y virtual</b>
+                <span>Entrada gratuita con inscripción</span>
+            </div>
+            {% if countdown_iso %}
+            <div class="sp-pass-count" id="spCountdown" data-start="{{ countdown_iso }}" hidden>
+                <span class="sp-pass-label">Empieza en</span>
+                <div class="sp-count" role="timer" aria-live="off">
+                    <div><b data-unit="d">0</b><span>días</span></div>
+                    <div><b data-unit="h">00</b><span>horas</span></div>
+                    <div><b data-unit="m">00</b><span>min</span></div>
+                    <div><b data-unit="s">00</b><span>seg</span></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<section class="sp-logos" aria-label="Organizadores y aliados">
+    <div class="sp-wrap sp-logos-in">
+        <div class="sp-logos-group">
+            <h2>Organizan</h2>
+            <div class="sp-logos-row">
+                <img src="{% static 'images/asnc_logo_full.png' %}" alt="Asociación Nuclear Colombiana">
+                <img class="sp-logo-ua" src="{% static 'images/simposio/uatlantico.png' %}" alt="Universidad del Atlántico">
+            </div>
+        </div>
+        <div class="sp-logos-group">
+            <h2>Aliado principal</h2>
+            <div class="sp-logos-row">
+                <img class="sp-logo-main" src="{% static 'images/simposio/aciem.png' %}" alt="ACIEM, Asociación Colombiana de Ingenieros">
+            </div>
+        </div>
+        <div class="sp-logos-group">
+            <h2>Aliados institucionales</h2>
+            <div class="sp-logos-row">
+                <img class="sp-logo-wide" src="{% static 'images/simposio/ini.png' %}" alt="International Nuclear Industry">
+                <img class="sp-logo-wide" src="{% static 'images/simposio/segrad.png' %}" alt="Segrad, Seguridad Radiológica S.A.S.">
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ------------------------------------------------------------ About #}
+<section class="sp-sec" id="simposio">
+    <div class="sp-wrap">
+        <div class="sp-intro">
+            <div class="sp-intro-text">
+                <h2 class="sp-h2" data-reveal>Por qué este simposio</h2>
+                <div class="sp-intro-body">
+                    {% if simposio.description %}{{ simposio.description|urlize|linebreaks }}
+                    {% else %}<p>Pronto publicaremos la presentación del simposio.</p>{% endif %}
+                </div>
+                <p class="sp-meet-label">Un punto de encuentro entre</p>
+                <ul class="sp-meet" data-stagger>
+                    <li><i class="bi bi-mortarboard" aria-hidden="true"></i>Academia</li>
+                    <li><i class="bi bi-gear" aria-hidden="true"></i>Industria</li>
+                    <li><i class="bi bi-bank" aria-hidden="true"></i>Gobierno</li>
+                    <li><i class="bi bi-people" aria-hidden="true"></i>Sociedad</li>
+                </ul>
+            </div>
+
+            {% with stats=simposio.agenda_stats %}
+            {% if stats.days %}
+            <div class="sp-figs">
+                <svg class="sp-figs-orbits" viewBox="0 0 600 600" aria-hidden="true">
+                    <ellipse cx="300" cy="300" rx="290" ry="104" transform="rotate(-24 300 300)"/>
+                    <ellipse cx="300" cy="300" rx="290" ry="104" transform="rotate(38 300 300)"/>
+                </svg>
+                <h3 class="sp-figs-title">El simposio en cifras</h3>
+                <dl class="sp-figs-grid">
+                    <div class="sp-fig sp-fig--lead"><dd data-count="{{ simposio.capacity }}">{{ simposio.capacity }}</dd><dt>cupos presenciales en el auditorio, con entrada gratuita</dt></div>
+                    <div class="sp-fig"><dd data-count="{{ stats.days }}">{{ stats.days }}</dd><dt>día{{ stats.days|pluralize }} de programa</dt></div>
+                    <div class="sp-fig"><dd data-count="{{ stats.talks }}">{{ stats.talks }}</dd><dt>charlas</dt></div>
+                    <div class="sp-fig"><dd data-count="{{ stats.panels }}">{{ stats.panels }}</dd><dt>panel{{ stats.panels|pluralize:"es" }} de expertos</dt></div>
+                </dl>
+                {% include 'simposio/_cta.html' with style='gold' label='Reservar mi cupo' quiet=True %}
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="sp-caribe">
+            <div class="sp-caribe-img" data-parallax>
+                <img src="{% static 'images/simposio/caribe.jpg' %}" alt="Ilustración de una central nuclear frente a Barranquilla" loading="lazy">
+            </div>
+            <div class="sp-caribe-text">
+                <h3 class="sp-h2 sp-h2--sm" data-reveal>¿Por qué en el Caribe?</h3>
+                <p>La región Caribe tiene un papel estratégico en el futuro energético de Colombia. Este simposio busca posicionar a Barranquilla como punto de encuentro para el diálogo técnico y académico sobre el potencial de la energía nuclear en la región y en el país.</p>
+                <a class="sp-link" href="#sede">Conoce la sede <i class="bi bi-arrow-down-short" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ------------------------------------------------------------ Goals and audience #}
+<section class="sp-sec sp-sec--night">
+    <div class="sp-wrap sp-duo">
+        <div>
+            <h2 class="sp-h2" data-reveal>Objetivos del evento</h2>
+            <ul class="sp-marks" data-stagger>
+                <li><span class="sp-mark"><i class="bi bi-broadcast" aria-hidden="true"></i></span><p>Divulgar conocimientos sobre la energía nuclear y sus aplicaciones.</p></li>
+                <li><span class="sp-mark"><i class="bi bi-lightning-charge" aria-hidden="true"></i></span><p>Analizar su potencial en la transición energética de Colombia.</p></li>
+                <li><span class="sp-mark"><i class="bi bi-people" aria-hidden="true"></i></span><p>Generar un espacio de encuentro entre academia, industria, gobierno y sociedad.</p></li>
+            </ul>
+        </div>
+        <div>
+            <h2 class="sp-h2" data-reveal>¿A quién está dirigido?</h2>
+            <ul class="sp-marks sp-marks--aud" data-stagger>
+                <li><span class="sp-mark"><i class="bi bi-mortarboard" aria-hidden="true"></i></span><p><b>Estudiantes</b>De colegios y universidades.</p></li>
+                <li><span class="sp-mark"><i class="bi bi-person-workspace" aria-hidden="true"></i></span><p><b>Profesionales e investigadores</b>Del sector nuclear y áreas afines.</p></li>
+                <li><span class="sp-mark"><i class="bi bi-buildings" aria-hidden="true"></i></span><p><b>Sector productivo y entidades públicas</b>Empresas, reguladores y gobierno.</p></li>
+                <li><span class="sp-mark"><i class="bi bi-globe-americas" aria-hidden="true"></i></span><p><b>Público general</b>Interesado en ciencia, tecnología y energía.</p></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+{# ------------------------------------------------------------ Programme #}
+<section class="sp-sec" id="programa">
+    <div class="sp-wrap">
+        {% with days=simposio.agenda_days %}
+        <div class="sp-sec-head">
+            <h2 class="sp-h2" data-reveal>Agenda académica</h2>
+            <p>Charlas de 35 minutos: 25 de presentación y 10 de preguntas.</p>
+        </div>
+
+        <div class="sp-prog{% if days|length < 2 %} sp-prog--single{% endif %}">
+            {% if days|length > 1 %}
+            <div class="sp-days" role="tablist" aria-label="Días del simposio">
+                {% for day in days %}
+                <button type="button" class="sp-daybtn" role="tab" id="spTab{{ forloop.counter }}" aria-controls="spDay{{ forloop.counter }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" {% if not forloop.first %}tabindex="-1"{% endif %}>
+                    {% if day.day %}
+                    <span class="sp-daybtn-wd">{{ day.weekday }}</span>
+                    <span class="sp-daybtn-n">{{ day.day }}</span>
+                    <span class="sp-daybtn-rest">{{ day.rest }}</span>
+                    {% else %}<span class="sp-daybtn-wd">{{ day.label }}</span>{% endif %}
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="sp-prog-main">
+                {% for day in days %}
+                <div class="sp-day" id="spDay{{ forloop.counter }}" {% if days|length > 1 %}role="tabpanel" aria-labelledby="spTab{{ forloop.counter }}"{% endif %}>
+                    {% if days|length == 1 and day.label %}<h3 class="sp-day-title">{{ day.label }}</h3>{% endif %}
+                    <ol class="sp-slots">
+                        {% for item in day.items %}
+                        <li class="sp-slot sp-slot--{{ item.kind }}">
+                            <div class="sp-slot-time"><b>{{ item.start }}</b>{% if item.end %}<span>a {{ item.end }}</span>{% endif %}</div>
+                            <div class="sp-slot-body">
+                                {% if item.kind == 'panel' %}<span class="sp-slot-kind">Panel de discusión</span>
+                                {% elif item.kind == 'ally' %}<span class="sp-slot-kind">Aliado</span>
+                                {% elif item.kind == 'talk' %}<span class="sp-slot-kind">Charla</span>
+                                {% endif %}
+                                <p class="sp-slot-title">{{ item.title }}</p>
+                                {% if item.people %}
+                                <ul class="sp-who">
+                                    {% for person in item.people %}
+                                    <li{% if person.moderator %} class="sp-who-mod"{% endif %}>
+                                        {% include 'simposio/_avatar.html' with person=person %}
+                                        <span class="sp-who-text">{% if person.moderator %}<span class="sp-who-role">Modera</span>{% endif %}<b>{{ person.name }}</b>{% if person.org %}<small>{{ person.org }}</small>{% endif %}{% if person.virtual %}<span class="sp-virtual"><i class="bi bi-camera-video" aria-hidden="true"></i> Virtual</span>{% endif %}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% elif item.speaker %}
+                                <p class="sp-slot-org">{{ item.speaker }}</p>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+                {% empty %}
+                <div class="sp-empty">El programa se publicará pronto.</div>
+                {% endfor %}
+                {% if days %}<p class="sp-note">Programación provisional: los horarios y ponentes pueden cambiar.</p>{% endif %}
+            </div>
+        </div>
+        {% endwith %}
+    </div>
+</section>
+
+{# ------------------------------------------------------------ Speakers #}
+{% with speakers=simposio.speakers %}
+{% if speakers %}
+<section class="sp-sec sp-sec--mist" id="conferencistas">
+    <div class="sp-wrap">
+        <div class="sp-sec-head">
+            <h2 class="sp-h2" data-reveal>Conferencistas</h2>
+            <p>Especialistas de la academia, la industria y el sector público que comparten su experiencia en el simposio.</p>
+        </div>
+        <ul class="sp-speakers" data-stagger>
+            {% for speaker in speakers %}
+            <li class="sp-speaker">
+                {% include 'simposio/_avatar.html' with person=speaker size='xl' %}
+                <b>{{ speaker.name }}</b>
+                {% if speaker.org %}<span class="sp-speaker-org">{{ speaker.org }}</span>{% endif %}
+                {% if speaker.virtual %}<span class="sp-virtual"><i class="bi bi-camera-video" aria-hidden="true"></i> Participa de forma virtual</span>{% endif %}
+                <p>{{ speaker.talk }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endif %}
+{% endwith %}
+
+{# ------------------------------------------------------------ Venue and how to take part #}
+<section class="sp-sec" id="sede">
+    <div class="sp-wrap sp-venue">
+        <div>
+            <h2 class="sp-h2" data-reveal>Sede</h2>
+            <p class="sp-venue-name">{% if simposio.venue %}{{ simposio.venue }}{% else %}Por confirmar{% endif %}</p>
+            <dl class="sp-facts">
+                {% if simposio.address or simposio.city %}
+                <div><dt>{% if simposio.address %}Dirección{% else %}Ciudad{% endif %}</dt><dd>{% if simposio.address %}{{ simposio.address }}{% if simposio.city %}, {% endif %}{% endif %}{{ simposio.city }}</dd></div>
+                {% endif %}
+                <div><dt>Fecha</dt><dd>{% if event_dates %}{{ event_dates|capfirst }}{% else %}Por confirmar{% endif %}{% if simposio.schedule_text %}<small>{{ simposio.schedule_text }}</small>{% endif %}</dd></div>
+                <div><dt>Modalidad</dt><dd>Presencial en Barranquilla<small>También se podrá seguir de forma virtual.</small></dd></div>
+            </dl>
+            {% if simposio.venue %}
+            <a class="sp-btn sp-btn--line" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query={{ maps_query|urlencode }}"><i class="bi bi-geo-alt" aria-hidden="true"></i> Ver en Google Maps</a>
+            {% endif %}
+        </div>
+
+        <div class="sp-steps-box">
+            <h3>Así participas</h3>
+            <ol class="sp-steps" data-stagger>
+                <li><b>Inscríbete gratis</b><span>Llena el formulario; toma dos minutos y reserva tu cupo.</span></li>
+                <li><b>Recibe tu entrada con código QR</b><span>Llega a tu correo apenas te inscribes.</span></li>
+                <li><b>Muéstrala al llegar</b><span>Queda registrada tu asistencia y después descargas tu certificado.</span></li>
+            </ol>
+            {% include 'simposio/_cta.html' with style='gold' label='Inscribirme gratis' quiet=True %}
+        </div>
+    </div>
+</section>
+
+{# ------------------------------------------------------------ Allies #}
+<section class="sp-sec sp-sec--mist" id="aliados">
+    <div class="sp-wrap">
+        <div class="sp-sec-head">
+            <h2 class="sp-h2" data-reveal>Aliados del simposio</h2>
+            <p>Las organizaciones que hacen posible este encuentro.</p>
+        </div>
+
+        <div class="sp-allies">
+            <div class="sp-allybox sp-allybox--main">
+                <h3>Aliado principal</h3>
+                <div class="sp-allybox-logos">
+                    <img src="{% static 'images/simposio/aciem.png' %}" alt="ACIEM, Asociación Colombiana de Ingenieros">
+                </div>
+            </div>
+            <div class="sp-allybox">
+                <h3>Aliados institucionales</h3>
+                <div class="sp-allybox-logos">
+                    <img src="{% static 'images/simposio/ini.png' %}" alt="International Nuclear Industry">
+                    <img class="sp-allybox-tall" src="{% static 'images/simposio/segrad.png' %}" alt="Segrad, Seguridad Radiológica S.A.S.">
+                    <a class="sp-allybox-free" href="mailto:info@asncol.com?subject=Aliados%20del%20Simposio%20de%20Energ%C3%ADa%20Nuclear">Aquí puede ir tu organización</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp-sponsor">
+            <div class="sp-sponsor-img" data-parallax>
+                <img src="{% static 'images/simposio/stands.jpg' %}" alt="Stands de los aliados en el vestíbulo del Centro de Convenciones" loading="lazy">
+            </div>
+            <div class="sp-sponsor-text">
+                <h3>Vincula a tu organización</h3>
+                <p>Los aliados tienen stand en el vestíbulo del Centro de Convenciones, una charla dentro del programa y presencia de marca durante el evento.</p>
+                <a class="sp-btn sp-btn--gold" href="mailto:info@asncol.com?subject=Aliados%20del%20Simposio%20de%20Energ%C3%ADa%20Nuclear">Solicitar la propuesta</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ------------------------------------------------------------ FAQ #}
+<section class="sp-sec" id="preguntas">
+    <div class="sp-wrap sp-faq-grid">
+        <div>
+            <h2 class="sp-h2" data-reveal>Preguntas frecuentes</h2>
+            <p class="sp-faq-note">¿No encuentras lo que buscas? Escríbenos a <a href="mailto:info@asncol.com">info@asncol.com</a>.</p>
+        </div>
+        <div class="sp-faq">
+            <details>
+                <summary>¿La inscripción tiene costo?</summary>
+                <div class="sp-faq-a"><p>No. La entrada es gratuita, pero el cupo del auditorio es limitado: necesitas inscribirte para reservar tu lugar.</p></div>
+            </details>
+            <details>
+                <summary>¿Cómo ingreso el día del evento?</summary>
+                <div class="sp-faq-a"><p>Si te inscribes en modalidad presencial, recibes por correo una entrada con un código QR. Muéstralo en el registro, desde el celular o impreso, y quedará registrada tu asistencia.</p></div>
+            </details>
+            <details>
+                <summary>¿Entregan certificado de asistencia?</summary>
+                <div class="sp-faq-a"><p>Sí. Al terminar el simposio, quienes hayan registrado su asistencia con el código QR podrán descargar su certificado desde el mismo enlace de la entrada.</p></div>
+            </details>
+            <details>
+                <summary>¿Quién puede asistir?</summary>
+                <div class="sp-faq-a"><p>Estudiantes, profesionales, investigadores, empresas, entidades públicas y cualquier persona interesada en ciencia, tecnología y energía. No se requieren conocimientos previos.</p></div>
+            </details>
+            <details>
+                <summary>¿Puedo seguirlo de forma virtual?</summary>
+                <div class="sp-faq-a"><p>Sí. Al inscribirte elige la modalidad virtual y te enviaremos por correo la información de conexión antes del evento.</p></div>
+            </details>
+            <details>
+                <summary>No me llegó el correo con mi entrada, ¿qué hago?</summary>
+                <div class="sp-faq-a"><p>Revisa la carpeta de correo no deseado. Si no está, vuelve a llenar el formulario con el mismo correo y te lo reenviamos, o escríbenos a info@asncol.com.</p></div>
+            </details>
+        </div>
+    </div>
+</section>
+
+{# ------------------------------------------------------------ Closing #}
+<section class="sp-close">
+    <svg class="sp-close-orbits" viewBox="0 0 600 600" aria-hidden="true">
+        <g>
+            <ellipse cx="300" cy="300" rx="290" ry="104" transform="rotate(-24 300 300)"/>
+            <ellipse cx="300" cy="300" rx="290" ry="104" transform="rotate(38 300 300)"/>
+            <circle cx="300" cy="300" r="150"/>
+        </g>
+    </svg>
+    <div class="sp-wrap">
+        <h2 data-reveal>Hagamos parte de esta conversación</h2>
+        <p>{% if event_dates %}{{ event_dates|capfirst }}{% if simposio.city %}, en {{ simposio.city }}{% endif %}. {% endif %}Reserva tu cupo y recibe tu entrada por correo.</p>
+        {% include 'simposio/_cta.html' with style='gold' label='Inscribirme gratis' %}
+    </div>
+</section>
+
+{% if simposio.accepts_registrations %}
+<div class="sp-dock" id="spDock">
+    <span><b>{% if date_block %}{{ date_block.days }} de {{ date_block.month }}{% endif %}</b>Entrada gratuita</span>
+    <a href="{% url 'simposio:registro' %}" class="sp-btn sp-btn--gold sp-btn--sm">Inscribirme</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.1/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.1/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.1/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.1/dist/MotionPathPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.min.js"></script>
+<script src="{% static 'js/simposio.js' %}"></script>
+{% endblock %}

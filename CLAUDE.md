@@ -119,6 +119,7 @@ asnc_platform/
 | `website` | Public pages: homepage, about (with comités), events, **news (blog)**, PowerPoint template |
 | `convocatorias` | Public calls (convocatorias) with a dynamic form builder, submissions, file uploads and CSV export |
 | `gestion` | **Gestión de comités (superadmin only)**: one screen with committees, members (registered users only), projects with tasks, notes |
+| `simposio` | **Simposio** (rama `simposio`): landing pública, inscripción gratuita con cupo, entrada con QR, asistencia por día escaneando el QR, certificado de asistencia en PDF |
 | `capacitaciones` | **LMS / Aula Virtual — on the `aula-virtual` branch only, NOT in `main`** |
 
 ## Key Models
@@ -943,6 +944,7 @@ GESTIÓN DE ASOCIADOS
 ├── Carnés Digitales (carnets:card_list)
 ├── Directorio Oficial (directory_list)
 ├── Convocatorias (convocatorias_admin:list)
+├── Simposio (simposio_admin:list) — rama `simposio`, solo admins
 └── Usuarios (user_list)
 
 CONTENIDO WEB
@@ -1052,6 +1054,47 @@ dashboard/templates/dashboard/
 ├── directory/list.html      # Simplified table
 ├── emails/history.html      # Compact email list
 └── featured_members/list.html # Hidden columns on mobile
+```
+
+## Simposio (`simposio/`, rama `simposio`)
+
+Landing + inscripción + asistencia con QR + certificado para el simposio nuclear (≈250 asistentes, gratuito). Vive en el mismo proyecto y base de datos, bajo la ruta `/simposio/` (no subdominio). **Se desarrolla en la rama `simposio`** (aún sin fusionar a `main`).
+
+**Modelos (`simposio/models.py`):**
+- **Simposio**: una fila por edición; `/simposio/` sirve siempre `Simposio.objects.actual()` (la vigente más reciente). Campos editables desde el portal: `title`, `tagline`, `description`, `starts_on`/`ends_on`, `schedule_text`, `venue`/`address`/`city`, `agenda` (texto: una línea `hora | actividad | ponente`; una línea sin `|` es encabezado → `agenda_items`), `capacity` (250), `is_published` (sin publicar = vista previa solo para admins, 404 para el resto), `registration_open`, `certificates_enabled`, `certificate_min_days`, `certificate_hours`, `signer_name`/`signer_role`. Propiedades `seats_left`, `is_full`, `has_ended`, `accepts_registrations`. La migración `0002_seed_simposio` crea la primera edición **sin publicar**.
+- **Inscripcion**: `uuid` (es el código de la entrada), datos personales (`document_type`/`document_number` salen en el certificado), `attendee_type`, `status` CONFIRMED|CANCELLED, `confirmation_sent_at`, `certificate_sent_at`. Único por (`simposio`, `email`); el correo se guarda en minúsculas. `code` = primeros 8 caracteres del UUID. `can_get_certificate` = certificados habilitados + confirmada + días asistidos ≥ mínimo.
+- **Asistencia**: una fila por inscripción y día (`unique`), `method` QR|MANUAL, `checked_in_by`.
+
+**Modalidad (desde 2026-11-17):** el formulario ya no pide documento; pide `modality` PRESENCIAL | VIRTUAL. Presencial → correo con la entrada y el QR. Virtual → correo «inscripción virtual completa» (la conexión se enviará después), sin QR. Ambos llevan `simposio.ics` adjunto (un evento por día, `Simposio.sessions` sale de las horas de la agenda) y enlaces de Google Calendar por día (`utils.google_calendar_links`); la entrada tiene `/simposio/entrada/<uuid>/calendario.ics`. **El cupo (`capacity`) cuenta solo presenciales**: al llenarse se deshabilita la opción presencial y se sigue aceptando virtual. `document_type`/`document_number` quedan opcionales (el certificado omite la línea si no hay documento). Portal: filtro y contadores por modalidad; el Excel trae la columna Modalidad.
+
+**Flujo:** formulario público (honeypot + token firmado con tiempo mínimo de 3 s + límite de 20 envíos/hora por IP, alto a propósito porque una universidad comparte IP) → se bloquea la fila del simposio (`select_for_update`) para no pasarse del cupo → correo de confirmación con el QR (imagen enlazada a `/simposio/entrada/<uuid>/qr.png` + PNG adjunto) → página de la entrada. Si el correo ya estaba inscrito **no se muestra la entrada en pantalla**: solo se reenvía a ese correo (máx. una vez cada 10 min). El QR codifica `/portal/simposio/checkin/<uuid>/`: lo lee el escáner del portal (`escanear.html`, `BarcodeDetector` nativo o jsQR desde jsDelivr) o la cámara del celular (abre la página de check-in, que solo registra con POST). `utils.check_in()` rechaza inscripciones canceladas y días fuera de las fechas del simposio. Al terminar: se activan los certificados en la configuración, cada asistente lo descarga desde su entrada y el aviso por correo se envía **en lotes de 25** desde la lista (`send_certificate_emails`, por los límites del SMTP y el timeout de gunicorn). El certificado (ReportLab, A4 horizontal) lleva un QR a la verificación pública.
+
+**Detalles que no son obvios:**
+- `SecurityHeadersMiddleware` solo permite la cámara (`Permissions-Policy: camera=(self)`) en `/portal/simposio/escanear/`.
+- El escáner toma el token CSRF de la plantilla, no de la cookie (`CSRF_COOKIE_HTTPONLY=True` en producción).
+- Acceso: gestión (lista, configuración, Excel, certificados, acciones) → `AdminRequiredMixin`/`admin_required`; escanear y check-in → cualquier usuario staff.
+- **Página independiente**: las páginas públicas extienden `simposio/base_simposio.html` (barra propia con los logos ASNC + Universidad del Atlántico, anclas y pie «Organizan»), no `base.html`. Estilos en `static/css/simposio.css` (`.sp-`; identidad del brochure: navy, dorado, Outfit) e imágenes en `static/images/simposio/` → **correr `collectstatic` al desplegar**. Portal: `.spp-`. La landing aún **no está en el menú público ni en el sitemap**.
+- **Landing** (`landing.html`, rediseñada el 2026-11-17): hero con la foto nocturna de Barranquilla dentro de un círculo («núcleo») rodeado por dos órbitas SVG con electrones y un sello giratorio «Entrada gratuita»; debajo, los datos del evento con forma de entrada (`.sp-pass`: fecha en dorado, lugar, modalidad y cuenta regresiva); logos; por qué (texto + «Un punto de encuentro entre» academia/industria/gobierno/sociedad) junto a un panel oscuro «El simposio en cifras» (`agenda_stats`: cupo grande, días, charlas, paneles y botón «Reservar mi cupo») + Caribe; objetivos y público; agenda con selector de día a la izquierda (`agenda_days`, con `weekday`/`day`/`rest`) y cada actividad como línea de tiempo con el **avatar circular de cada ponente**; conferencistas (retratos circulares); sede + «Así participas»; aliados; preguntas; cierre. En celular hay una barra fija inferior de inscripción (`.sp-dock`). Los textos de objetivos, público, aliados, pasos y preguntas están en la plantilla; el resto sale del modelo.
+- **Ponentes y fotos**: salen de la tercera columna de cada línea de la agenda. Charla: `Nombre, Organización`. Panel: `Ana y Luis (Org), Marta (Otra) y Juan (Org, virtual)`. Las charlas de aliados nombran una organización y no generan personas. `Simposio._agenda_people()` arma `item.people` (`name`, `org`, `initials`, `photo`) y `Simposio.speakers` lista a todos una sola vez. **La foto es un archivo estático** en `static/images/simposio/ponentes/<slug-del-nombre>.jpg` (también .jpeg/.png/.webp; `slugify`, p. ej. `dario-cruz.jpg`); sin archivo se muestran las iniciales (`_avatar.html`). Hay un `LEEME.txt` en esa carpeta con los nombres esperados. Foto nueva → `collectstatic`.
+- **Movimiento** (`static/js/simposio.js`, solo en la landing): GSAP 3.15.1 (ScrollTrigger, SplitText, MotionPathPlugin) y Lenis 1.3.27 desde jsDelivr (permitido por la CSP). Todo funciona sin las librerías y se desactiva con `prefers-reduced-motion`. La clase `sp-anim` en `<html>` oculta las piezas del hero hasta que arranca la entrada (se quita sola a los 2,5 s si GSAP no carga). React Bits no se instaló (el proyecto no usa React); el sello de texto circular y el conteo de cifras son versiones propias de esos efectos.
+- Una organización terminada en «, virtual» (p. ej. `Darío Cruz, CEO de Fusenet, virtual`) marca la participación como virtual (`person.virtual`, etiqueta «Virtual»). Una cuarta columna «| Aliado» marca la charla de un aliado que nombra a su ponente (sale con avatar y en Conferencistas). Un tramo tras «;» que empieza por «Modera:» es el moderador (`person.moderator`), p. ej. `…; Modera: Santiago Caicedo (Vicepresidente ejecutivo, AsNC)`. La línea «del Caribe colombiano» del hero y los logos de aliados (ACIEM, INI, Segrad) están en la plantilla.
+- Migraciones: `0005_dario_cruz_virtual`, `0006_ponentes_cargos` y `0007_daniel_herrera_cargo`, `0008_charla_aliado_viernes` (nombres completos, cargos y moderador del Panel 1 en la agenda), `0003_portada` (campos de portada) y `0004_contenido_2026` (carga título, fechas 3 y 4 de diciembre de 2026, sede y la agenda tentativa v4 en la edición sembrada, solo si nadie la editó).
+- La carpeta `simposio/` contiene además material de referencia del evento (brochures PDF, `img/`, `simposio.html`…) que **no es código** de la app.
+- Pruebas: `simposio/tests.py` (38).
+
+**Rutas:**
+```
+/simposio/                                   → Landing (LandingView)
+/simposio/inscripcion/ , /inscripcion/gracias/ → Formulario y confirmación
+/simposio/entrada/<uuid>/ , /qr.png          → Entrada con QR / imagen del QR
+/simposio/certificado/<uuid>/                → Certificado PDF
+/simposio/certificado/<uuid>/verificar/      → Verificación pública del certificado
+/portal/simposio/                            → Inscritos (KPIs, búsqueda, filtros, acciones)
+/portal/simposio/configuracion/              → Editar la edición
+/portal/simposio/exportar/excel/             → Excel (respeta los filtros)
+/portal/simposio/certificados/enviar/        → Enviar el siguiente lote de 25 (POST)
+/portal/simposio/escanear/ , /checkin/ (POST JSON) , /checkin/<uuid>/ → Asistencia en la puerta
+/portal/simposio/inscripciones/<id>/asistencia/ , /asistencia/quitar/ , /estado/ , /reenviar/ (POST)
 ```
 
 ## Observatorio ENSO (Fenómeno del Niño)

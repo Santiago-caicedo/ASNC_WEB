@@ -1,0 +1,53 @@
+{% extends 'simposio/emails/_base.html' %}
+{% load simposio_extras %}
+
+{% block title %}Inscripción virtual confirmada: {{ simposio.title }}{% endblock %}
+{% block heading %}Tu inscripción virtual está completa{% endblock %}
+
+{% block body %}
+<p style="font-size: 18px; color: #1B2A41; margin: 0 0 16px;">Hola <strong>{{ inscripcion.first_name }}</strong>,</p>
+<p style="font-size: 16px; color: #475569; line-height: 1.7; margin: 0 0 26px;">
+    Tu inscripción al <strong>{{ simposio.title }}</strong> en modalidad <strong>virtual</strong> quedó confirmada. Antes del evento te enviaremos a este correo la información de conexión.
+</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 28px; font-size: 15px;">
+    <tr>
+        <td style="padding: 10px 0; color: #64748b; border-bottom: 1px solid #e2e8f0; width: 110px;">Cuándo</td>
+        <td style="padding: 10px 0; color: #1B2A41; font-weight: 600; border-bottom: 1px solid #e2e8f0;">{% event_dates simposio as dates %}{% if dates %}{{ dates|capfirst }}{% if simposio.schedule_text %} · {{ simposio.schedule_text }}{% endif %}{% else %}Fecha por confirmar{% endif %}</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 0; color: #64748b; border-bottom: 1px solid #e2e8f0;">Modalidad</td>
+        <td style="padding: 10px 0; color: #1B2A41; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Virtual</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 0; color: #64748b;">Conexión</td>
+        <td style="padding: 10px 0; color: #1B2A41; font-weight: 600;">Te la enviaremos por correo antes del evento</td>
+    </tr>
+</table>
+
+{% if calendar_links %}
+<p style="font-size: 16px; color: #1B2A41; font-weight: 600; margin: 0 0 12px;">Agrega las fechas a tu calendario</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 10px;">
+    {% for link in calendar_links %}
+    <tr>
+        <td style="padding: 0 0 10px;">
+            <a href="{{ link.url }}" style="display: block; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 13px 18px; color: #213a5c; font-size: 15px; font-weight: 600; text-decoration: none;">+ Google Calendar · {{ link.label }}</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<p style="font-size: 14px; color: #64748b; line-height: 1.7; margin: 0 0 26px;">¿Usas Outlook o Apple Calendar? Abre el archivo <strong>simposio.ics</strong> adjunto a este correo.</p>
+{% endif %}
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+            <a href="{{ ticket_url }}" style="display: inline-block; background-color: #213a5c; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 15px 38px; border-radius: 50px;">Ver mi inscripción</a>
+        </td>
+    </tr>
+</table>
+
+<p style="font-size: 14px; color: #64748b; line-height: 1.7; margin: 26px 0 0;">
+    Guarda este mensaje: desde el mismo enlace podrás consultar tu inscripción.
+</p>
+{% endblock %}

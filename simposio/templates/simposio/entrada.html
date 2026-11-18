@@ -1,0 +1,86 @@
+{% extends 'simposio/base_simposio.html' %}
+
+{% block title %}Mi entrada · {{ simposio.title }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block content %}
+<div class="sp-page">
+    <div class="sp-wrap">
+        <div class="sp-narrow">
+            <a href="{% url 'simposio:landing' %}" class="sp-back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ simposio.title }}</a>
+
+            {% for message in messages %}
+                <div class="sp-alert sp-alert--info" role="status">{{ message }}</div>
+            {% endfor %}
+
+            {% if not inscripcion.is_confirmed %}
+                <div class="sp-alert sp-alert--error" role="alert">Esta inscripción fue cancelada y la entrada ya no es válida. Si crees que es un error, escríbenos a <a href="mailto:info@asncol.com">info@asncol.com</a>.</div>
+            {% endif %}
+
+            <article class="sp-ticket">
+                <header class="sp-ticket-head">
+                    <small>{% if inscripcion.is_virtual %}Inscripción virtual{% else %}Entrada{% endif %} · Asociación Nuclear Colombiana</small>
+                    <h1>{{ simposio.title }}</h1>
+                </header>
+                <div class="sp-ticket-body">
+                    <div>
+                        <div class="sp-ticket-name">{{ inscripcion.full_name }}</div>
+                        <div class="sp-ticket-meta">{{ inscripcion.get_attendee_type_display }}{% if inscripcion.institution %} · {{ inscripcion.institution }}{% endif %}</div>
+                        <dl class="sp-dl">
+                            <dt>Cuándo</dt>
+                            <dd>{% if event_dates %}{{ event_dates|capfirst }}{% if simposio.schedule_text %} · {{ simposio.schedule_text }}{% endif %}{% else %}Fecha por confirmar{% endif %}</dd>
+                            <dt>Modalidad</dt>
+                            <dd>{{ inscripcion.get_modality_display }}</dd>
+                            {% if inscripcion.is_virtual %}
+                            <dt>Conexión</dt>
+                            <dd>Te enviaremos el enlace por correo antes del evento.</dd>
+                            {% else %}
+                            <dt>Dónde</dt>
+                            <dd>{% if simposio.venue or simposio.city %}{{ simposio.venue }}{% if simposio.venue and simposio.city %}, {% endif %}{{ simposio.city }}{% if simposio.address %}<br><span class="fw-normal text-secondary">{{ simposio.address }}</span>{% endif %}{% else %}Lugar por confirmar{% endif %}</dd>
+                            {% endif %}
+                            {% if asistencias %}
+                            <dt>Asistencia</dt>
+                            <dd>{% for a in asistencias %}{{ a.day|date:"j \d\e F" }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd>
+                            {% endif %}
+                        </dl>
+                    </div>
+                    {% if qr_data_uri %}
+                    <div class="sp-qr">
+                        <img src="{{ qr_data_uri }}" alt="Código QR de tu entrada" width="220" height="220">
+                        <div class="sp-qr-code">{{ inscripcion.code }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                <footer class="sp-ticket-foot">
+                    <span>{% if inscripcion.is_virtual %}Guarda este enlace: aquí encontrarás tu certificado al terminar el simposio.{% else %}Muestra este código en la entrada, desde el celular o impreso.{% endif %}</span>
+                    <button type="button" class="sp-btn sp-btn--line sp-noprint" onclick="window.print()"><i class="bi bi-printer" aria-hidden="true"></i> Imprimir</button>
+                </footer>
+            </article>
+
+            {% if inscripcion.is_confirmed and calendar_links %}
+            <div class="sp-card sp-noprint">
+                <h2 class="h5 fw-bold mb-2">Agrégalo a tu calendario</h2>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for link in calendar_links %}
+                    <a href="{{ link.url }}" class="sp-btn sp-btn--line" target="_blank" rel="noopener"><i class="bi bi-google" aria-hidden="true"></i> {{ link.label }}</a>
+                    {% endfor %}
+                    <a href="{% url 'simposio:entrada_ics' inscripcion.uuid %}" class="sp-btn sp-btn--line"><i class="bi bi-calendar-plus" aria-hidden="true"></i> Outlook / Apple (.ics)</a>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if inscripcion.is_confirmed %}
+            <div class="sp-card sp-noprint">
+                <h2 class="h5 fw-bold mb-2">Certificado de asistencia</h2>
+                {% if inscripcion.can_get_certificate %}
+                    <p class="text-secondary">Gracias por acompañarnos. Tu certificado está listo.</p>
+                    <a href="{% url 'simposio:certificado' inscripcion.uuid %}" class="sp-btn sp-btn--navy" target="_blank" rel="noopener"><i class="bi bi-award" aria-hidden="true"></i> Descargar certificado (PDF)</a>
+                {% else %}
+                    <p class="text-secondary mb-0">Estará disponible en esta misma página cuando termine el simposio, para quienes registren su asistencia con el código QR.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

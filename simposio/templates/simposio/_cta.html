@@ -1,0 +1,6 @@
+{# Registration button, or the reason it is unavailable. `quiet` hides the unavailable state. #}
+{% if simposio.accepts_registrations %}
+<a href="{% url 'simposio:registro' %}" class="sp-btn sp-btn--{{ style|default:'gold' }}">{{ label|default:'Inscribirme' }}</a>
+{% elif not quiet %}
+<span class="sp-btn sp-btn--ghost is-off">{% if simposio.has_ended %}El simposio ya terminó{% elif simposio.registration_open and simposio.is_full %}Cupos agotados{% else %}Inscripciones próximamente{% endif %}</span>
+{% endif %}

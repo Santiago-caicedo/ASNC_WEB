@@ -1,0 +1,6 @@
+<div class="{{ col|default:'col-md-6' }}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}{% if not field.field.required %} <span class="text-secondary fw-normal">(opcional)</span>{% endif %}</label>
+    {{ field }}
+    {% if field.help_text %}<div class="sp-help">{{ field.help_text }}</div>{% endif %}
+    {% for error in field.errors %}<div class="sp-error">{{ error }}</div>{% endfor %}
+</div>

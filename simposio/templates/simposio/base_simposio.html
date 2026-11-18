@@ -1,0 +1,136 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1H2FNJ5PB8"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-1H2FNJ5PB8');
+    </script>
+
+    <title>{% block title %}{{ simposio.title }}{% endblock %} | ASNC</title>
+    <meta name="description" content="{% block meta_description %}{{ simposio.title }}. {{ simposio.tagline }}{% endblock %}">
+    <meta name="robots" content="{% block robots %}{% if simposio.is_published %}index, follow{% else %}noindex, nofollow{% endif %}{% endblock %}">
+    <link rel="canonical" href="https://www.asncol.com{{ request.path }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.asncol.com{{ request.path }}">
+    <meta property="og:title" content="{% block og_title %}{{ simposio.title }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ simposio.tagline }}{% endblock %}">
+    <meta property="og:image" content="https://www.asncol.com{% static 'images/og-image.png' %}">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/icon_asnc.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/icon_asnc.png' %}">
+    <meta name="theme-color" content="#1B2A41">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/simposio.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="sp-body">
+    <a class="sp-skip" href="#contenido">Saltar al contenido</a>
+
+    {% if simposio and not simposio.is_published %}
+    <div class="sp-preview">
+        <div class="sp-wrap">
+            Vista previa: esta página aún no está publicada y solo la ven los administradores.
+            <a href="{% url 'simposio_admin:config' %}">Editar y publicar</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <header class="sp-bar">
+        <div class="sp-wrap sp-bar-in">
+            <a class="sp-brand" href="{% url 'simposio:landing' %}" aria-label="{{ simposio.title }}, inicio">
+                <img src="{% static 'images/asnc_logo_full.png' %}" alt="Asociación Nuclear Colombiana">
+                <span class="sp-brand-sep" aria-hidden="true"></span>
+                <img class="sp-brand-ua" src="{% static 'images/simposio/uatlantico.png' %}" alt="Universidad del Atlántico">
+            </a>
+            <button type="button" class="sp-menu-btn" id="spMenuBtn" aria-controls="spNav" aria-expanded="false" aria-label="Abrir el menú">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+            <nav class="sp-nav" id="spNav" aria-label="Secciones del simposio">
+                {% block nav %}
+                <a href="{% url 'simposio:landing' %}#simposio">El simposio</a>
+                <a href="{% url 'simposio:landing' %}#programa">Agenda</a>
+                <a href="{% url 'simposio:landing' %}#conferencistas">Conferencistas</a>
+                <a href="{% url 'simposio:landing' %}#sede">Sede</a>
+                <a href="{% url 'simposio:landing' %}#aliados">Aliados</a>
+                <a href="{% url 'simposio:landing' %}#preguntas">Preguntas</a>
+                {% endblock %}
+            </nav>
+            {% if simposio.accepts_registrations %}
+            <a href="{% url 'simposio:registro' %}" class="sp-btn sp-btn--navy sp-btn--sm sp-bar-cta">Inscribirme</a>
+            {% endif %}
+        </div>
+        <span class="sp-bar-progress" aria-hidden="true"></span>
+    </header>
+
+    <main id="contenido">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="sp-foot">
+        <div class="sp-wrap">
+            <div class="sp-foot-top">
+                <div>
+                    <h3>Organizan</h3>
+                    <div class="sp-foot-logos">
+                        <img src="{% static 'images/asnc_logo_full.png' %}" alt="Asociación Nuclear Colombiana">
+                        <img src="{% static 'images/simposio/uatlantico.png' %}" alt="Universidad del Atlántico">
+                    </div>
+                </div>
+                <div>
+                    <h3>Contacto</h3>
+                    <ul>
+                        <li><a href="mailto:info@asncol.com">info@asncol.com</a></li>
+                        <li><a href="{% url 'home' %}">www.asncol.com</a></li>
+                        <li><a href="{% url 'privacy_policy' %}">Política de privacidad</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Síguenos</h3>
+                    <div class="sp-social">
+                        <a href="https://www.linkedin.com/company/asociaci%C3%B3n-nuclear-colombiana/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
+                        <a href="https://www.instagram.com/asncol_oficial" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+                        <a href="https://www.facebook.com/share/1BhF3tqKT7/" target="_blank" rel="noopener" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+                        <a href="https://x.com/asncol_oficial" target="_blank" rel="noopener" aria-label="X"><i class="bi bi-twitter-x" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="sp-foot-bottom">
+                <span>&copy; {% now "Y" %} Asociación Nuclear Colombiana</span>
+                <span class="sp-vadom">Desarrollado por
+                    <a href="https://vadomdata.com/" target="_blank" rel="noopener" aria-label="Vadom Data Consulting"><img src="{% static 'images/vadom/vadom_logo_white.png' %}" alt="Vadom Data Consulting"></a>
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        var button = document.getElementById('spMenuBtn');
+        var nav = document.getElementById('spNav');
+        if (!button || !nav) return;
+        function setOpen(open) {
+            nav.classList.toggle('is-open', open);
+            button.setAttribute('aria-expanded', open ? 'true' : 'false');
+            button.setAttribute('aria-label', open ? 'Cerrar el menú' : 'Abrir el menú');
+        }
+        button.addEventListener('click', function () { setOpen(!nav.classList.contains('is-open')); });
+        nav.addEventListener('click', function (event) { if (event.target.closest('a')) setOpen(false); });
+        document.addEventListener('keydown', function (event) { if (event.key === 'Escape') setOpen(false); });
+    })();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

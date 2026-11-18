@@ -1,0 +1,37 @@
+{% extends 'simposio/base_simposio.html' %}
+
+{% block title %}Inscripción recibida · {{ simposio.title }}{% endblock %}
+
+{% block content %}
+<div class="sp-page">
+    <div class="sp-wrap">
+        <div class="sp-narrow">
+            <div class="sp-card">
+                {% if inscripcion %}
+                    <div class="sp-check" aria-hidden="true"><i class="bi bi-check-lg"></i></div>
+                    {% if inscripcion.is_virtual %}
+                    <h1>¡Listo, {{ inscripcion.first_name }}! Tu inscripción virtual está completa</h1>
+                    <p class="sp-sub">Enviamos la confirmación a <strong>{{ inscripcion.email }}</strong>. Antes del simposio te compartiremos por correo la información de conexión. Si no ves el mensaje en unos minutos, revisa la carpeta de correo no deseado.</p>
+                    {% else %}
+                    <h1>¡Listo, {{ inscripcion.first_name }}! Tu cupo está reservado</h1>
+                    <p class="sp-sub">Enviamos tu entrada con el código QR a <strong>{{ inscripcion.email }}</strong>. Si no la ves en unos minutos, revisa la carpeta de correo no deseado.</p>
+                    {% endif %}
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ inscripcion.get_ticket_path }}" class="sp-btn sp-btn--navy">{% if inscripcion.is_virtual %}Ver mi inscripción{% else %}Ver mi entrada{% endif %}</a>
+                        <a href="{% url 'simposio:landing' %}" class="sp-btn sp-btn--line">Volver al simposio</a>
+                    </div>
+                {% elif ya_inscrito %}
+                    <div class="sp-check" aria-hidden="true"><i class="bi bi-envelope-check"></i></div>
+                    <h1>Ese correo ya estaba inscrito</h1>
+                    <p class="sp-sub">Reenviamos la confirmación de la inscripción a esa dirección. Si no la recibes, escríbenos a <a href="mailto:info@asncol.com">info@asncol.com</a>.</p>
+                    <a href="{% url 'simposio:landing' %}" class="sp-btn sp-btn--line">Volver al simposio</a>
+                {% else %}
+                    <h1>{{ simposio.title }}</h1>
+                    <p class="sp-sub">Si ya te inscribiste, tu entrada está en el correo que te enviamos.</p>
+                    <a href="{% url 'simposio:landing' %}" class="sp-btn sp-btn--line">Ir al simposio</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

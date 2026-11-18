@@ -271,3 +271,12 @@ Libro ASNC.xlsx
 
 # Material de trabajo del proyecto (no forma parte de la plataforma)
 nino/
+
+### Simposio: reference material (brochures, source photos, drafts), not code
+simposio/img/
+simposio/*.pdf
+simposio/*.docx
+simposio/*.jpeg
+simposio/*.html
+simposio/edit_sim.py
+WhatsApp*.zip

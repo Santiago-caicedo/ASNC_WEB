@@ -1,0 +1,75 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+{% include 'simposio/portal/_styles.html' %}
+<div class="spp">
+    <a href="{% url 'simposio_admin:list' %}" class="text-decoration-none small"><i class="bi bi-arrow-left"></i> Inscritos</a>
+    <h1 class="page-title mt-2 mb-2">Configurar el simposio</h1>
+    <p class="spp-help">Lo que escribas aquí es lo que muestra la página pública, la entrada, los correos y el certificado. <a href="{% url 'simposio:landing' %}" target="_blank" rel="noopener">Ver la página <i class="bi bi-box-arrow-up-right"></i></a></p>
+
+    {% if form.errors %}
+    <div class="alert alert-danger border-0 rounded-3">Revisa los campos marcados.{% for error in form.non_field_errors %} {{ error }}{% endfor %}</div>
+    {% endif %}
+
+    <form method="post" class="spp-form" novalidate>
+        {% csrf_token %}
+
+        <div class="spp-group">
+            <h2>Publicación</h2>
+            <p>Mientras la página esté sin publicar solo la ven los administradores, como vista previa.</p>
+            <div class="row g-3">
+                {% include 'simposio/portal/_cfield.html' with field=form.is_published col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.registration_open col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.capacity col='col-md-4' %}
+            </div>
+        </div>
+
+        <div class="spp-group">
+            <h2>Presentación</h2>
+            <p>Título, lema y texto de la sección «Sobre el simposio».</p>
+            <div class="row g-3">
+                {% include 'simposio/portal/_cfield.html' with field=form.title col='col-12' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.hero_kicker %}
+                {% include 'simposio/portal/_cfield.html' with field=form.hero_title %}
+                {% include 'simposio/portal/_cfield.html' with field=form.tagline col='col-12' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.description col='col-12' %}
+            </div>
+        </div>
+
+        <div class="spp-group">
+            <h2>Fecha y lugar</h2>
+            <p>La asistencia solo se puede registrar en los días del simposio.</p>
+            <div class="row g-3">
+                {% include 'simposio/portal/_cfield.html' with field=form.starts_on col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.ends_on col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.schedule_text col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.venue col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.address col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.city col='col-md-4' %}
+            </div>
+        </div>
+
+        <div class="spp-group">
+            <h2>Programa</h2>
+            <p>Se muestra en la sección «Agenda académica» de la página.</p>
+            <div class="row g-3">
+                {% include 'simposio/portal/_cfield.html' with field=form.agenda col='col-12' %}
+            </div>
+        </div>
+
+        <div class="spp-group">
+            <h2>Certificado de asistencia</h2>
+            <p>Al habilitarlos, cada asistente puede descargar su certificado desde el enlace de su entrada. El correo de aviso se envía desde la lista de inscritos.</p>
+            <div class="row g-3">
+                {% include 'simposio/portal/_cfield.html' with field=form.certificates_enabled col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.certificate_min_days col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.certificate_hours col='col-md-4' %}
+                {% include 'simposio/portal/_cfield.html' with field=form.signer_name %}
+                {% include 'simposio/portal/_cfield.html' with field=form.signer_role %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-pill px-5">Guardar</button>
+    </form>
+</div>
+{% endblock %}

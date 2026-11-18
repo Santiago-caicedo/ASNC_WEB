@@ -44,8 +44,10 @@ class SecurityHeadersMiddleware:
         response['Referrer-Policy'] = 'strict-origin-when-cross-origin'
 
         # Permissions Policy - restrict browser features
+        # The symposium door scanner is the only page that may use the camera.
+        camera = '(self)' if request.path.startswith('/portal/simposio/escanear/') else '()'
         response['Permissions-Policy'] = (
-            'camera=(), microphone=(), geolocation=(), payment=()'
+            f'camera={camera}, microphone=(), geolocation=(), payment=()'
         )
 
         return response

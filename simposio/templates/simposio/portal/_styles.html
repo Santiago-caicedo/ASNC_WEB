@@ -1,0 +1,37 @@
+<style>
+/* Simposio — portal. Prefix .spp- */
+.spp { --line:#e3e8ef; --mute:#5b6676; --navy:#1B2A41; --gold:#f4c343; font-size:.95rem; }
+.spp-help { color:var(--mute); max-width:75ch; margin-bottom:1.5rem; }
+.spp-state { display:flex; flex-wrap:wrap; gap:.5rem 1.4rem; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:.9rem 1.2rem; margin-bottom:1.2rem; }
+.spp-dot { display:inline-block; width:.6rem; height:.6rem; border-radius:50%; background:#c2cad6; margin-right:.4rem; }
+.spp-dot.on { background:#12b76a; }
+.spp-stats { display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:1.5rem; }
+.spp-stat { background:#fff; padding:1.1rem 1.2rem; }
+.spp-stat-num { font-size:1.7rem; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums; }
+.spp-stat-num small { font-size:.95rem; font-weight:400; color:var(--mute); }
+.spp-stat-label { color:var(--mute); font-size:.85rem; }
+.spp-panel { background:#fff; border:1px solid var(--line); border-radius:14px; }
+.spp-filters { display:flex; flex-wrap:wrap; gap:.6rem; padding:1rem 1.2rem; border-bottom:1px solid var(--line); }
+.spp-filters .form-control, .spp-filters .form-select { width:auto; min-width:11rem; flex:1 1 11rem; }
+.spp-table { width:100%; margin:0; }
+.spp-table th { font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; color:var(--mute); font-weight:500; padding:.8rem 1.2rem; border-bottom:1px solid var(--line); white-space:nowrap; }
+.spp-table td { padding:.8rem 1.2rem; border-bottom:1px solid var(--line); vertical-align:middle; }
+.spp-table tr:last-child td { border-bottom:0; }
+.spp-name { font-weight:700; }
+.spp-sub { color:var(--mute); font-size:.85rem; }
+.spp-tag { display:inline-block; font-size:.78rem; font-weight:500; padding:.15rem .6rem; border-radius:999px; background:#eef2f7; color:#39465a; white-space:nowrap; }
+.spp-tag--ok { background:#ecfdf3; color:#067647; }
+.spp-tag--off { background:#fef3f2; color:#b42318; }
+.spp-row-off td { opacity:.6; }
+.spp-empty { padding:2.5rem 1.2rem; text-align:center; color:var(--mute); }
+.spp-form .spp-group { background:#fff; border:1px solid var(--line); border-radius:14px; padding:1.5rem; margin-bottom:1.2rem; }
+.spp-form h2 { font-size:1.05rem; font-weight:700; margin-bottom:.2rem; }
+.spp-form .spp-group > p { color:var(--mute); font-size:.88rem; margin-bottom:1.1rem; }
+.spp-form label { font-weight:500; font-size:.9rem; margin-bottom:.3rem; }
+.spp-form .form-text { font-size:.8rem; }
+.spp-form .spp-error { color:#b42318; font-size:.85rem; margin-top:.25rem; }
+@media (max-width: 767.98px) {
+    .spp-stats { grid-template-columns:repeat(2, 1fr); }
+    .spp-table th, .spp-table td { padding:.7rem .8rem; }
+}
+</style>

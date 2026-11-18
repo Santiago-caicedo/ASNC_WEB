@@ -49,6 +49,10 @@ urlpatterns = [
 
     # Gestión interna / CRM de comités (solo superadmin, bajo /portal/)
     path('portal/gestion/', include('gestion.urls')),
+
+    # Simposio: landing + inscripción (público) y gestión/asistencia (bajo /portal/)
+    path('simposio/', include('simposio.urls')),
+    path('portal/simposio/', include('simposio.admin_urls')),
 ]
 
 # Configuración para servir archivos media en modo DEBUG

@@ -1,0 +1,45 @@
+{% extends 'simposio/emails/_base.html' %}
+{% load simposio_extras %}
+
+{% block title %}Tu inscripción al {{ simposio.title }}{% endblock %}
+{% block heading %}Tu cupo está reservado{% endblock %}
+
+{% block body %}
+<p style="font-size: 18px; color: #1B2A41; margin: 0 0 16px;">Hola <strong>{{ inscripcion.first_name }}</strong>,</p>
+<p style="font-size: 16px; color: #475569; line-height: 1.7; margin: 0 0 26px;">
+    Tu inscripción quedó confirmada. Esta es tu entrada: muestra el código QR en la puerta, desde el celular o impreso, para registrar tu asistencia.
+</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 26px;">
+    <tr>
+        <td align="center" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 26px;">
+            <img src="{{ qr_url }}" alt="Código QR de tu entrada" width="220" height="220" style="display: block; width: 220px; height: 220px; margin: 0 auto 12px;">
+            <p style="font-family: monospace; font-size: 15px; letter-spacing: 3px; color: #64748b; margin: 0 0 6px;">{{ inscripcion.code }}</p>
+            <p style="font-size: 17px; font-weight: 700; color: #1B2A41; margin: 0;">{{ inscripcion.full_name }}</p>
+        </td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 28px; font-size: 15px;">
+    <tr>
+        <td style="padding: 10px 0; color: #64748b; border-bottom: 1px solid #e2e8f0; width: 90px;">Cuándo</td>
+        <td style="padding: 10px 0; color: #1B2A41; font-weight: 600; border-bottom: 1px solid #e2e8f0;">{% event_dates simposio as dates %}{% if dates %}{{ dates|capfirst }}{% if simposio.schedule_text %} · {{ simposio.schedule_text }}{% endif %}{% else %}Fecha por confirmar{% endif %}</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 0; color: #64748b;">Dónde</td>
+        <td style="padding: 10px 0; color: #1B2A41; font-weight: 600;">{% if simposio.venue or simposio.city %}{{ simposio.venue }}{% if simposio.venue and simposio.city %}, {% endif %}{{ simposio.city }}{% if simposio.address %}<br><span style="font-weight: 400; color: #64748b;">{{ simposio.address }}</span>{% endif %}{% else %}Lugar por confirmar{% endif %}</td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+            <a href="{{ ticket_url }}" style="display: inline-block; background-color: #213a5c; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 15px 38px; border-radius: 50px;">Ver mi entrada</a>
+        </td>
+    </tr>
+</table>
+
+<p style="font-size: 14px; color: #64748b; line-height: 1.7; margin: 26px 0 0;">
+    ¿No ves el código? Está adjunto a este correo y también en el botón de arriba. Guarda este mensaje: desde el mismo enlace podrás descargar tu certificado de asistencia al terminar el simposio.
+</p>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block content %}
+{% include 'simposio/portal/_styles.html' %}
+<div class="spp">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-2 gap-2">
+        <h1 class="page-title mb-0">Simposio</h1>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'simposio_admin:escanear' %}" class="btn btn-primary rounded-pill px-4"><i class="bi bi-qr-code-scan me-2"></i>Registrar asistencia</a>
+            <a href="{% url 'simposio_admin:config' %}" class="btn btn-outline-primary rounded-pill px-4"><i class="bi bi-sliders me-2"></i>Configurar</a>
+            <a href="{% url 'simposio_admin:export_excel' %}{% if querystring %}?{{ querystring }}{% endif %}" class="btn btn-outline-secondary rounded-pill px-4"><i class="bi bi-file-earmark-excel me-2"></i>Excel</a>
+        </div>
+    </div>
+    <p class="spp-help">Personas inscritas al <strong>{{ simposio.title }}</strong>{% if event_dates %} ({{ event_dates }}){% endif %}. Cada una recibe por correo una entrada con código QR; al escanearlo en la puerta queda registrada su asistencia del día.</p>
+
+    <div class="spp-state">
+        <span><span class="spp-dot {% if simposio.is_published %}on{% endif %}"></span>Página {% if simposio.is_published %}publicada{% else %}sin publicar{% endif %}</span>
+        <span><span class="spp-dot {% if simposio.registration_open %}on{% endif %}"></span>Inscripciones {% if simposio.registration_open %}abiertas{% else %}cerradas{% endif %}</span>
+        <span><span class="spp-dot {% if simposio.certificates_enabled %}on{% endif %}"></span>Certificados {% if simposio.certificates_enabled %}habilitados{% else %}sin habilitar{% endif %}</span>
+        <a href="{% url 'simposio:landing' %}" target="_blank" rel="noopener" class="ms-lg-auto">Ver la página <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="spp-stats">
+        <div class="spp-stat">
+            <div class="spp-stat-num">{{ total_in_person }} <small>/ {{ simposio.capacity }}</small></div>
+            <div class="spp-stat-label">Presenciales · cupo ({{ simposio.seats_left }} libres)</div>
+        </div>
+        <div class="spp-stat">
+            <div class="spp-stat-num">{{ total_virtual }}</div>
+            <div class="spp-stat-label">Virtuales</div>
+        </div>
+        <div class="spp-stat">
+            <div class="spp-stat-num">{{ attended_today }}</div>
+            <div class="spp-stat-label">Ingresaron hoy</div>
+        </div>
+        <div class="spp-stat">
+            <div class="spp-stat-num">{{ total_attended }}</div>
+            <div class="spp-stat-label">Han asistido al menos un día</div>
+        </div>
+    </div>
+
+    {% if simposio.certificates_enabled %}
+    <div class="spp-state">
+        <span><i class="bi bi-award me-1"></i>
+            {% if pending_certificates %}
+                Hay <strong>{{ pending_certificates }}</strong> asistentes a quienes aún no se les ha enviado el correo del certificado. Se envían de 25 en 25.
+            {% else %}
+                Todos los asistentes con derecho a certificado ya recibieron el correo.
+            {% endif %}
+        </span>
+        {% if pending_certificates %}
+        <form method="post" action="{% url 'simposio_admin:enviar_certificados' %}" class="ms-lg-auto">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">Enviar certificados</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="spp-panel">
+        <form method="get" class="spp-filters">
+            <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="Nombre, correo o código" aria-label="Buscar">
+            <select name="modalidad" class="form-select" aria-label="Modalidad">
+                <option value="">Presencial y virtual</option>
+                {% for value, label in modalidades %}
+                <option value="{{ value }}" {% if modalidad == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <select name="estado" class="form-select" aria-label="Estado">
+                <option value="">Todos</option>
+                <option value="asistieron" {% if estado == 'asistieron' %}selected{% endif %}>Con asistencia</option>
+                <option value="sin_asistencia" {% if estado == 'sin_asistencia' %}selected{% endif %}>Sin asistencia</option>
+                <option value="canceladas" {% if estado == 'canceladas' %}selected{% endif %}>Canceladas</option>
+            </select>
+            <select name="tipo" class="form-select" aria-label="Tipo de asistente">
+                <option value="">Todos los perfiles</option>
+                {% for value, label in tipos %}
+                <option value="{{ value }}" {% if tipo == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-outline-primary rounded-pill px-4">Filtrar</button>
+        </form>
+
+        <div class="table-responsive">
+            <table class="spp-table">
+                <thead>
+                    <tr>
+                        <th>Asistente</th>
+                        <th class="d-none d-md-table-cell">Perfil</th>
+                        <th class="d-none d-lg-table-cell">Inscrito</th>
+                        <th>Asistencia</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in page_obj %}
+                    <tr class="{% if not i.is_confirmed %}spp-row-off{% endif %}">
+                        <td>
+                            <div class="spp-name">{{ i.full_name }}</div>
+                            <div class="spp-sub">{{ i.email }} · {{ i.get_modality_display }} · {{ i.code }}</div>
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            {{ i.get_attendee_type_display }}
+                            {% if i.institution %}<div class="spp-sub">{{ i.institution }}</div>{% endif %}
+                        </td>
+                        <td class="d-none d-lg-table-cell">{{ i.created_at|date:"j M, g:i a" }}</td>
+                        <td>
+                            {% if not i.is_confirmed %}
+                                <span class="spp-tag spp-tag--off">Cancelada</span>
+                            {% elif i.hoy %}
+                                <span class="spp-tag spp-tag--ok">Ingresó hoy</span>
+                            {% elif i.dias %}
+                                <span class="spp-tag spp-tag--ok">{{ i.dias }} día{{ i.dias|pluralize }}</span>
+                            {% else %}
+                                <span class="spp-tag">Sin registrar</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light rounded-pill" type="button" data-bs-toggle="dropdown" aria-label="Acciones para {{ i.full_name }}"><i class="bi bi-three-dots"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ i.get_ticket_path }}" target="_blank" rel="noopener">Ver entrada</a></li>
+                                    {% if i.is_confirmed %}
+                                    <li>
+                                        <form method="post" action="{% url 'simposio_admin:reenviar' i.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <button type="submit" class="dropdown-item">Reenviar confirmación por correo</button></form>
+                                    </li>
+                                    {% if i.hoy %}
+                                    <li>
+                                        <form method="post" action="{% url 'simposio_admin:asistencia_quitar' i.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <button type="submit" class="dropdown-item">Quitar asistencia de hoy</button></form>
+                                    </li>
+                                    {% else %}
+                                    <li>
+                                        <form method="post" action="{% url 'simposio_admin:asistencia_manual' i.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <button type="submit" class="dropdown-item">Marcar asistencia de hoy</button></form>
+                                    </li>
+                                    {% endif %}
+                                    {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="post" action="{% url 'simposio_admin:inscripcion_estado' i.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <button type="submit" class="dropdown-item {% if i.is_confirmed %}text-danger{% endif %}">{% if i.is_confirmed %}Cancelar inscripción{% else %}Restablecer inscripción{% endif %}</button></form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="spp-empty">
+                        {% if q or estado or tipo %}Ninguna inscripción coincide con el filtro.{% else %}Todavía no hay inscripciones. Aparecerán aquí cuando abras las inscripciones y publiques la página.{% endif %}
+                    </td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="d-flex justify-content-between align-items-center mt-3" aria-label="Paginación">
+        <span class="spp-sub">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} · {{ page_obj.paginator.count }} inscripciones</span>
+        <div class="d-flex gap-2">
+            {% if page_obj.has_previous %}<a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>{% endif %}
+            {% if page_obj.has_next %}<a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>{% endif %}
+        </div>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

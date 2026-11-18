@@ -1,0 +1,32 @@
+{% extends 'simposio/base_simposio.html' %}
+
+{% block title %}Verificación de certificado · {{ simposio.title }}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block content %}
+<div class="sp-page">
+    <div class="sp-wrap">
+        <div class="sp-narrow">
+            <div class="sp-card">
+                {% if valid %}
+                    <div class="sp-check" aria-hidden="true"><i class="bi bi-patch-check"></i></div>
+                    <h1>Certificado válido</h1>
+                    <p class="sp-sub">La Asociación Nuclear Colombiana confirma que este certificado de asistencia es auténtico.</p>
+                    <dl class="sp-dl">
+                        <dt>Nombre</dt><dd>{{ inscripcion.full_name }}</dd>
+                        {% if masked_document %}<dt>Documento</dt><dd>{{ inscripcion.get_document_type_display }} {{ masked_document }}</dd>{% endif %}
+                        <dt>Evento</dt><dd>{{ simposio.title }}</dd>
+                        {% if event_dates %}<dt>Fecha</dt><dd>{{ event_dates|capfirst }}</dd>{% endif %}
+                        {% if simposio.venue or simposio.city %}<dt>Lugar</dt><dd>{{ simposio.venue }}{% if simposio.venue and simposio.city %}, {% endif %}{{ simposio.city }}</dd>{% endif %}
+                        {% if simposio.certificate_hours %}<dt>Intensidad</dt><dd>{{ simposio.certificate_hours }} horas</dd>{% endif %}
+                        <dt>Código</dt><dd>{{ inscripcion.code }}</dd>
+                    </dl>
+                {% else %}
+                    <h1>No hay un certificado válido</h1>
+                    <p class="sp-sub mb-0">Este código no corresponde a un certificado de asistencia emitido para el {{ simposio.title }}. Si tienes dudas, escríbenos a <a href="mailto:info@asncol.com">info@asncol.com</a>.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

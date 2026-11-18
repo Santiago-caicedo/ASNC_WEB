@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ simposio.title }}{% endblock %}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f5f7fa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                    <tr>
+                        <td style="background-color: #ffffff; padding: 30px 40px; text-align: center; border-bottom: 3px solid #f4c343;">
+                            <img src="https://vadomdata.s3.amazonaws.com/asnc/static/images/asnc_logo_full.png" alt="ASNC - Asociación Nuclear Colombiana" style="height: 70px; width: auto;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #1B2A41; padding: 28px 40px; text-align: center;">
+                            <p style="color: #f4c343; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px;">{{ simposio.title }}</p>
+                            <h1 style="color: #ffffff; font-size: 23px; margin: 0; font-weight: 600;">{% block heading %}{% endblock %}</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 36px 40px;">
+                            {% block body %}{% endblock %}
+                            <p style="font-size: 14px; color: #64748b; line-height: 1.7; margin: 28px 0 0;">
+                                ¿Dudas? Escríbenos a <a href="mailto:info@asncol.com" style="color: #213a5c; font-weight: 600;">info@asncol.com</a>.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #1B2A41; padding: 26px 40px; text-align: center;">
+                            <p style="font-size: 14px; color: #ffffff; margin: 0 0 6px; font-weight: 600;">Asociación Nuclear Colombiana</p>
+                            <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin: 0 0 16px;">
+                                <a href="https://www.asncol.com" style="color: rgba(255,255,255,0.8);">www.asncol.com</a> · &copy; {% now "Y" %} ASNC
+                            </p>
+                            <p style="font-size: 11px; color: rgba(255,255,255,0.4); margin: 0 0 8px;">Desarrollado por</p>
+                            <a href="https://vadomdata.com/" target="_blank">
+                                <img src="https://vadomdata.s3.amazonaws.com/asnc/static/images/vadom/vadom_logo_white.png" alt="Vadom Data Consulting" style="height: 18px; width: auto;">
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+                <p style="font-size: 12px; color: #94a3b8; margin: 20px 0 0;">
+                    Recibes este correo en {{ inscripcion.email }} porque te inscribiste al {{ simposio.title }}.
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

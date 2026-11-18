@@ -1,0 +1,21 @@
+{% extends 'simposio/emails/_base.html' %}
+
+{% block title %}Tu certificado de asistencia · {{ simposio.title }}{% endblock %}
+{% block heading %}Tu certificado está listo{% endblock %}
+
+{% block body %}
+<p style="font-size: 18px; color: #1B2A41; margin: 0 0 16px;">Hola <strong>{{ inscripcion.first_name }}</strong>,</p>
+<p style="font-size: 16px; color: #475569; line-height: 1.7; margin: 0 0 28px;">
+    Gracias por acompañarnos en el <strong style="color: #1B2A41;">{{ simposio.title }}</strong>. Ya puedes descargar tu certificado de asistencia en PDF.
+</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+            <a href="{{ certificate_url }}" style="display: inline-block; background-color: #213a5c; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 15px 38px; border-radius: 50px;">Descargar certificado</a>
+        </td>
+    </tr>
+</table>
+<p style="font-size: 14px; color: #64748b; line-height: 1.7; margin: 26px 0 0;">
+    El certificado incluye un código QR con el que cualquier persona puede comprobar su autenticidad en www.asncol.com.
+</p>
+{% endblock %}
