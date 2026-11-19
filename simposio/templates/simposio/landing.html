@@ -194,7 +194,7 @@
 
         <div class="sp-caribe">
             <div class="sp-caribe-img" data-parallax>
-                <img src="{% static 'images/simposio/caribe.jpg' %}" alt="Ilustración de una central nuclear frente a Barranquilla" loading="lazy">
+                <img src="{% static 'images/simposio/central-angra.jpg' %}" alt="Central nuclear de Angra, en la costa de Brasil, entre el mar y la selva" loading="lazy" width="1400" height="1120">
             </div>
             <div class="sp-caribe-text">
                 <h3 class="sp-h2 sp-h2--sm" data-reveal>¿Por qué en el Caribe?</h3>
@@ -445,6 +445,10 @@
     <a href="{% url 'simposio:registro' %}" class="sp-btn sp-btn--gold sp-btn--sm">Inscribirme</a>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block photo_credit %}
+<span class="sp-credit">Foto de la central de Angra (Brasil): <a href="https://commons.wikimedia.org/wiki/File:Around_Paraty,_Brazil_2018_239_(cropped).jpg" target="_blank" rel="noopener">Mike Peel</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-SA 4.0</a>, recortada.</span>
 {% endblock %}
 
 {% block extra_js %}
