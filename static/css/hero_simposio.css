@@ -1,0 +1,302 @@
+/* Hero promocional del simposio en la portada (website/_hero_simposio.html). Prefijo .hsp-
+   Identidad del brochure: navy de noche, dorado, Outfit; la foto de Barranquilla como núcleo. */
+
+.hsp {
+    --hsp-night: #071C33;
+    --hsp-night-2: #0B2545;
+    --hsp-navy: #1B2A41;
+    --hsp-gold: #F4C343;
+    --hsp-ice: #C9D4E3;
+    --hsp-steel: #6F8FB8;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background:
+        radial-gradient(1200px 600px at 85% 40%, rgba(33, 58, 92, .9), transparent 60%),
+        linear-gradient(160deg, var(--hsp-night-2) 0%, var(--hsp-night) 70%);
+}
+.hsp::before { /* fine dot grid, like the brochure's background texture */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(201, 212, 227, .12) 1px, transparent 1.2px);
+    background-size: 26px 26px;
+    mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, .35) 55%, transparent 100%);
+    pointer-events: none;
+}
+.hsp-glow {
+    position: absolute;
+    width: 560px;
+    height: 560px;
+    right: 6%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244, 195, 67, .22), transparent 65%);
+    filter: blur(10px);
+    pointer-events: none;
+}
+.hsp-in {
+    position: relative;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 4vw, 3rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    min-height: min(calc(100vh - 90px), 760px);
+}
+
+/* ---------- Copy */
+.hsp-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    color: var(--hsp-ice);
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+.hsp-eyebrow:hover { color: #fff; }
+.hsp-pill {
+    display: inline-block;
+    padding: .38rem .95rem;
+    border-radius: 999px;
+    background: var(--hsp-gold);
+    color: var(--hsp-navy);
+    font-weight: 700;
+    letter-spacing: .12em;
+}
+.hsp-title {
+    margin: 1.1rem 0 0;
+    font-weight: 800;
+    line-height: .92;
+    letter-spacing: -.02em;
+    font-size: clamp(3.2rem, 7.4vw, 6.4rem);
+    color: #fff;
+}
+.hsp-line { display: block; }
+.hsp-line--gold { color: var(--hsp-gold); }
+.hsp-region {
+    display: block;
+    margin-top: .9rem;
+    font-size: clamp(1.15rem, 2vw, 1.55rem);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.2;
+    color: var(--hsp-ice);
+}
+.hsp-lead {
+    margin: 1.1rem 0 0;
+    max-width: 36rem;
+    font-size: .9rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, .78);
+}
+
+/* ---------- Facts (date block + place + modality) */
+.hsp-facts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0;
+    margin: 1.8rem 0 0;
+    border: 1px solid rgba(201, 212, 227, .22);
+    border-radius: 16px;
+    background: rgba(7, 28, 51, .55);
+    backdrop-filter: blur(4px);
+    overflow: hidden;
+    max-width: 40rem;
+}
+.hsp-facts dt, .hsp-facts dd { margin: 0; }
+.hsp-date {
+    display: flex;
+    align-items: center;
+    padding: .9rem 1.2rem;
+    background: var(--hsp-gold);
+    color: var(--hsp-navy);
+}
+.hsp-date dd { display: flex; align-items: center; gap: .6rem; }
+.hsp-date b { font-size: 2.1rem; font-weight: 800; line-height: 1; white-space: nowrap; }
+.hsp-date span { font-size: .78rem; font-weight: 700; line-height: 1.15; text-transform: uppercase; letter-spacing: .08em; }
+.hsp-fact {
+    flex: 1 1 11rem;
+    padding: .85rem 1.15rem;
+    border-left: 1px solid rgba(201, 212, 227, .18);
+}
+.hsp-fact dt {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--hsp-gold);
+}
+.hsp-fact dd { margin-top: .2rem; font-weight: 600; line-height: 1.3; font-size: .95rem; }
+.hsp-fact small { display: block; font-weight: 400; color: var(--hsp-ice); font-size: .82rem; margin-top: .1rem; }
+
+/* ---------- Buttons */
+.hsp-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.8rem; }
+.hsp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    min-height: 52px;
+    padding: .8rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease, color .2s ease;
+}
+.hsp-btn--gold { background: var(--hsp-gold); color: var(--hsp-navy); box-shadow: 0 10px 30px rgba(244, 195, 67, .28); }
+.hsp-btn--gold:hover { color: var(--hsp-navy); transform: translateY(-2px); box-shadow: 0 14px 34px rgba(244, 195, 67, .38); }
+.hsp-btn--gold i { transition: transform .2s ease; }
+.hsp-btn--gold:hover i { transform: translateX(3px); }
+.hsp-btn--ghost { color: #fff; border: 1.5px solid rgba(255, 255, 255, .5); }
+.hsp-btn--ghost:hover { color: var(--hsp-navy); background: #fff; border-color: #fff; }
+.hsp-btn:focus-visible, .hsp-eyebrow:focus-visible, .hsp-logos-link:focus-visible { outline: 3px solid var(--hsp-gold); outline-offset: 3px; }
+
+/* ---------- Countdown */
+.hsp-count { display: flex; align-items: center; gap: 1rem; margin-top: 1.6rem; }
+.hsp-count[hidden] { display: none; }
+.hsp-count-label { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--hsp-ice); }
+.hsp-count-units { display: flex; gap: .5rem; }
+.hsp-count-units div {
+    min-width: 3.4rem;
+    padding: .4rem .3rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(201, 212, 227, .16);
+    text-align: center;
+}
+.hsp-count-units b { display: block; font-size: 1.35rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.hsp-count-units span { display: block; font-size: .66rem; color: var(--hsp-ice); text-transform: uppercase; letter-spacing: .08em; }
+
+/* ---------- Key visual: photo nucleus + orbits + seal */
+.hsp-kv {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 1;
+    justify-self: center;
+}
+.hsp-orbits { position: absolute; inset: -6%; width: 112%; height: 112%; overflow: visible; pointer-events: none; }
+.hsp-orbits--front { z-index: 2; }
+.hsp-ring { fill: none; stroke: rgba(201, 212, 227, .18); stroke-width: 1.5; stroke-dasharray: 3 9; }
+.hsp-orbit { fill: none; stroke: rgba(201, 212, 227, .45); stroke-width: 1.6; }
+.hsp-orbit--gold { stroke: var(--hsp-gold); stroke-width: 2.2; }
+.hsp-electron { fill: var(--hsp-ice); }
+.hsp-electron--gold { fill: var(--hsp-gold); filter: drop-shadow(0 0 8px rgba(244, 195, 67, .8)); }
+.hsp-photo {
+    position: absolute;
+    inset: 9%;
+    border-radius: 50%;
+    overflow: hidden;
+    z-index: 1;
+    border: 4px solid rgba(244, 195, 67, .9);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .45), 0 0 0 14px rgba(244, 195, 67, .08);
+    background: var(--hsp-night-2);
+}
+.hsp-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hsp-seal {
+    position: absolute;
+    z-index: 3;
+    left: 2%;
+    top: 6%;
+    width: clamp(108px, 11vw, 148px);
+    aspect-ratio: 1;
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, .35));
+}
+.hsp-seal svg { width: 100%; height: 100%; display: block; }
+.hsp-seal text { font: 700 11.5px 'Outfit', sans-serif; letter-spacing: .02em; fill: var(--hsp-navy); }
+.hsp-seal-ring { transform-origin: 80px 80px; animation: hsp-spin 22s linear infinite; }
+.hsp-seal > span {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    color: var(--hsp-gold);
+    font-weight: 800;
+    font-size: clamp(.8rem, .95vw, .98rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+}
+@keyframes hsp-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Logos strip */
+.hsp-logos { background: #fff; border-bottom: 1px solid #E3E8EF; font-family: 'Outfit', system-ui, sans-serif; }
+.hsp-logos-in {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 1.1rem clamp(1.25rem, 4vw, 3rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2.6rem;
+}
+.hsp-logos-group { display: flex; align-items: center; gap: 1.1rem; }
+.hsp-logos-label {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #6B7686;
+    max-width: 8rem;
+    line-height: 1.3;
+}
+.hsp-logos-row { display: flex; align-items: center; gap: 1.4rem; }
+.hsp-logos-row img { height: 44px; width: auto; object-fit: contain; }
+.hsp-logos-row .hsp-logo-asnc { height: 62px; margin: -9px -14px; } /* the file carries white margins */
+.hsp-logos-row .hsp-logo-ua { height: 56px; }
+.hsp-logos-link {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-weight: 700;
+    color: #1B2A41;
+    text-decoration: none;
+    border-bottom: 2px solid var(--hsp-gold, #F4C343);
+    padding-bottom: .1rem;
+}
+.hsp-logos-link:hover { color: #213A5C; }
+
+/* ---------- Responsive */
+@media (max-width: 991.98px) {
+    .hsp-in { grid-template-columns: minmax(0, 1fr); min-height: 0; padding-top: 2.4rem; }
+    .hsp-kv { order: -1; max-width: 340px; }
+    .hsp-glow { right: 50%; top: 18%; transform: translate(50%, -50%); width: 420px; height: 420px; }
+    .hsp-copy { text-align: left; }
+}
+@media (max-width: 575.98px) {
+    .hsp-kv { max-width: 270px; }
+    .hsp-seal { width: 92px; left: -4%; top: 0; }
+    .hsp-eyebrow { flex-wrap: wrap; gap: .5rem; }
+    .hsp-facts { flex-direction: column; }
+    .hsp-date { justify-content: flex-start; }
+    .hsp-fact { flex: none; border-left: 0; border-top: 1px solid rgba(201, 212, 227, .18); }
+    .hsp-seal > span { font-size: .62rem; }
+    .hsp-actions .hsp-btn { flex: 1 1 100%; }
+    .hsp-count { flex-direction: column; align-items: flex-start; gap: .5rem; }
+    .hsp-logos-in { gap: .9rem 1.6rem; }
+    .hsp-logos-group { flex-direction: column; align-items: flex-start; gap: .4rem; }
+    .hsp-logos-link { margin-left: 0; }
+    .hsp-logos-row img { height: 36px; }
+    .hsp-logos-row .hsp-logo-asnc { height: 52px; }
+    .hsp-logos-row .hsp-logo-ua { height: 46px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hsp-seal-ring { animation: none; }
+    .hsp-btn, .hsp-btn i { transition: none; }
+}

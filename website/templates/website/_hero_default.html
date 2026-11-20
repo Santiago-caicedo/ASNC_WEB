@@ -1,0 +1,155 @@
+{% load static i18n %}
+{% comment %} Hero habitual de la portada (carrusel de slides o hero clásico con eventos).
+   Se guardó aquí tal cual el 2026-11-20 cuando la portada pasó a promocionar el
+   simposio; vuelve solo cuando no hay simposio vigente (ver HomeView). {% endcomment %}
+{% if hero_slides %}
+<!-- ==================== CARRUSEL DE SLIDES (se gestiona en /portal/slides/) ==================== -->
+<link rel="stylesheet" href="{% static 'css/hero_slider.css' %}">
+{% include 'website/_hero_slider.html' %}
+<script src="{% static 'js/hero_slider.js' %}" defer></script>
+{% else %}
+<!-- ==================== HERO FULL SCREEN (sin slides visibles) ==================== -->
+<section class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+
+    <!-- Floating Particles -->
+    <div class="hero-particles" id="heroParticles"></div>
+
+    <div class="container position-relative z-2">
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-content">
+                    <div class="hero-badge" data-animate="fadeInUp">
+                        <span class="badge-dot"></span>
+                        <span>Asociación Nuclear Colombiana</span>
+                    </div>
+
+                    <h1 class="hero-title" data-animate="fadeInUp" data-delay="100">
+                        {% trans "El Futuro de Colombia" %}
+                        <span class="text-highlight">{% trans "es Nuclear" %}</span>
+                    </h1>
+
+                    <p class="hero-description" data-animate="fadeInUp" data-delay="200">
+                        {% trans "Somos una comunidad científica que impulsa el desarrollo de la energía nuclear como pilar fundamental de la transición energética justa en Colombia." %}
+                    </p>
+
+                    <div class="hero-actions" data-animate="fadeInUp" data-delay="300">
+                        <a href="{% url 'application_create' %}" class="btn-primary-xl">
+                            <span>{% trans "Únete a la ASNC" %}</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="#fission" class="btn-secondary-xl">
+                            <i class="bi bi-play-circle"></i>
+                            <span>{% trans "Descubre más" %}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {% if hero_event %}
+            <div class="col-lg-5 hero-event-col">
+                {% with event=hero_event %}
+                <div class="hero-news-panel hero-event{% if hero_event_is_past %} is-past{% endif %}">
+                    <div class="hero-news-header">
+                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                        {% if hero_event_is_past %}
+                        <span>{% trans "Último evento" %}</span>
+                        <span class="hero-event-when">{% trans "Finalizado" %}</span>
+                        {% else %}
+                        <span>{% if hero_more_events %}{% trans "Próximos eventos" %}{% else %}{% trans "Próximo evento" %}{% endif %}</span>
+                        <span class="hero-event-when">{% include 'website/_event_when.html' %}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'event_detail' event.slug %}" class="hero-event-body">
+                        {% if event.cover_image %}
+                        {# Alto fijo: la imagen se reduce hasta caber completa; el fondo difuminado rellena los bordes #}
+                        <span class="hero-event-cover">
+                            <img src="{{ event.cover_image.url }}" alt="" class="hero-event-cover-bg" aria-hidden="true">
+                            <img src="{{ event.cover_image.url }}" alt="" class="hero-event-cover-img">
+                        </span>
+                        {% endif %}
+                        <span class="hero-event-main">
+                            <span class="hero-event-leaf" aria-hidden="true">
+                                <span class="hero-event-day">{{ event.starts_at|date:"j" }}</span>
+                                <span class="hero-event-month">{{ event.starts_at|date:"M" }}</span>
+                            </span>
+                            <span class="hero-event-info">
+                                <span class="hero-event-kind">{{ event.get_event_type_display }} · {{ event.get_modality_display }}</span>
+                                <span class="hero-event-title">{{ event.title }}</span>
+                                <span class="hero-event-meta">
+                                    <span class="visually-hidden">{{ event.starts_at|date:"j \d\e F \d\e Y" }}.</span>
+                                    <span><i class="bi bi-clock" aria-hidden="true"></i> {{ event.starts_at|date:"l"|capfirst }}, {{ event.starts_at|date:"g:i a" }}</span>
+                                    {% if event.location %}<span><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ event.location }}</span>{% endif %}
+                                </span>
+                            </span>
+                        </span>
+                    </a>
+                    {% if hero_more_events %}
+                    {# El resto de próximos eventos, compactos; con muchos, la lista se desplaza #}
+                    <div class="hero-event-more">
+                        <span class="hero-event-more-title">{% trans "También en la agenda" %}</span>
+                        <ul class="hero-event-more-list">
+                            {% for e in hero_more_events %}
+                            <li>
+                                <a href="{% url 'event_detail' e.slug %}" class="hero-event-row">
+                                    <span class="hero-event-row-date" aria-hidden="true">
+                                        <span class="hero-event-row-day">{{ e.starts_at|date:"j" }}</span>
+                                        <span class="hero-event-row-month">{{ e.starts_at|date:"M" }}</span>
+                                    </span>
+                                    <span class="hero-event-row-info">
+                                        <span class="hero-event-row-title">{{ e.title }}</span>
+                                        <span class="hero-event-row-meta">
+                                            <span class="visually-hidden">{{ e.starts_at|date:"j \d\e F \d\e Y" }}.</span>
+                                            {{ e.starts_at|date:"g:i a" }} · {{ e.get_modality_display }}
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    <div class="hero-event-actions">
+                        {% if event.registration_url and not hero_event_is_past %}
+                        <a href="{{ event.registration_url }}" class="hero-event-cta" target="_blank" rel="noopener">
+                            {% trans "Inscribirme" %} <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'event_detail' event.slug %}" class="hero-event-cta">
+                            {% trans "Ver detalles" %} <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'events' %}" class="hero-event-all">{% trans "Ver agenda" %}</a>
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+            {% else %}
+            <div class="col-lg-5 d-none d-lg-block">
+                {# Aún no se ha publicado ningún evento #}
+                <div class="hero-news-panel">
+                    <div class="hero-news-header">
+                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                        <span>{% trans "Agenda" %}</span>
+                    </div>
+                    <div class="hero-news-empty">
+                        <i class="bi bi-calendar3" aria-hidden="true"></i>
+                        <p>{% trans "No hay eventos programados por ahora" %}</p>
+                    </div>
+                    <a href="{% url 'events' %}" class="hero-news-footer">
+                        {% trans "Ver agenda" %} <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <span>{% trans "Scroll" %}</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+{% endif %}

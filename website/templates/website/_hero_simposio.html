@@ -1,0 +1,144 @@
+{% load static %}
+{% comment %}
+Hero promocional del simposio en la portada. Recibe `simposio`, `simposio_date_block`
+y `simposio_countdown_iso` (website.views.simposio_promo_context). Estilos: css/hero_simposio.css (.hsp-).
+{% endcomment %}
+<link rel="stylesheet" href="{% static 'css/hero_simposio.css' %}">
+<section class="hsp" aria-labelledby="hspTitle">
+    <div class="hsp-glow" aria-hidden="true"></div>
+    <div class="hsp-in">
+        <div class="hsp-copy">
+            <a href="{% url 'simposio:landing' %}" class="hsp-eyebrow">
+                {% if simposio.hero_kicker %}<span class="hsp-pill">{{ simposio.hero_kicker }}</span>{% endif %}
+                <span>Barranquilla · Entrada gratuita</span>
+            </a>
+            <h1 class="hsp-title" id="hspTitle" aria-label="{{ simposio.title }} del Caribe colombiano">
+                {% with lines=simposio.hero_lines %}
+                <span class="hsp-line">{{ lines.0 }}</span>
+                {% if lines.1 %}<span class="hsp-line hsp-line--gold">{{ lines.1 }}</span>{% endif %}
+                {% endwith %}
+                <span class="hsp-region">del Caribe colombiano</span>
+            </h1>
+            {% if simposio.tagline %}<p class="hsp-lead">{{ simposio.tagline }}</p>{% endif %}
+
+            <dl class="hsp-facts">
+                {% if simposio_date_block %}
+                <div class="hsp-date">
+                    <dt class="visually-hidden">Fecha</dt>
+                    <dd><b>{{ simposio_date_block.days }}</b><span>{{ simposio_date_block.month }}<br>{{ simposio_date_block.year }}</span></dd>
+                </div>
+                {% endif %}
+                <div class="hsp-fact">
+                    <dt>Lugar</dt>
+                    <dd>{{ simposio.venue|default:"Por confirmar" }}{% if simposio.city %}<small>{{ simposio.city }}</small>{% endif %}</dd>
+                </div>
+                <div class="hsp-fact">
+                    <dt>Modalidad</dt>
+                    <dd>Presencial y virtual<small>Cupos limitados en el auditorio</small></dd>
+                </div>
+            </dl>
+
+            <div class="hsp-actions">
+                {% if simposio.accepts_registrations %}
+                <a href="{% url 'simposio:registro' %}" class="hsp-btn hsp-btn--gold">Inscribirme gratis <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                <a href="{% url 'simposio:landing' %}" class="hsp-btn hsp-btn--ghost">Conocer el simposio</a>
+                {% else %}
+                <a href="{% url 'simposio:landing' %}" class="hsp-btn hsp-btn--gold">Conocer el simposio <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                <a href="{% url 'simposio:landing' %}#programa" class="hsp-btn hsp-btn--ghost">Ver la agenda</a>
+                {% endif %}
+            </div>
+
+            {% if simposio_countdown_iso %}
+            <div class="hsp-count" id="hspCountdown" data-start="{{ simposio_countdown_iso }}" hidden>
+                <span class="hsp-count-label">Empieza en</span>
+                <div class="hsp-count-units" role="timer" aria-live="off">
+                    <div><b data-unit="d">0</b><span>días</span></div>
+                    <div><b data-unit="h">00</b><span>horas</span></div>
+                    <div><b data-unit="m">00</b><span>min</span></div>
+                    <div><b data-unit="s">00</b><span>seg</span></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        {# Barranquilla como núcleo, con dos órbitas y el sello de entrada gratuita #}
+        <a href="{% url 'simposio:landing' %}" class="hsp-kv" tabindex="-1" aria-hidden="true">
+            <svg class="hsp-orbits" viewBox="0 0 600 600">
+                <circle class="hsp-ring" cx="300" cy="300" r="262"/>
+                <g transform="rotate(-24 300 300)">
+                    <ellipse class="hsp-orbit hsp-orbit--gold" cx="300" cy="300" rx="322" ry="116"/>
+                </g>
+                <g transform="rotate(38 300 300)">
+                    <ellipse class="hsp-orbit" cx="300" cy="300" rx="306" ry="104"/>
+                </g>
+            </svg>
+            <span class="hsp-photo">
+                <img src="{% static 'images/simposio/barranquilla-ventana.jpg' %}" alt="" width="1200" height="1200" fetchpriority="high">
+            </span>
+            <svg class="hsp-orbits hsp-orbits--front" viewBox="0 0 600 600">
+                <g transform="rotate(-24 300 300)">
+                    <path class="hsp-orbit hsp-orbit--gold" d="M-22,300 a322,116 0 0,0 644,0"/>
+                    <circle class="hsp-electron hsp-electron--gold" r="9" cx="72" cy="382"/>
+                </g>
+                <g transform="rotate(38 300 300)">
+                    <path class="hsp-orbit" d="M-6,300 a306,104 0 0,0 612,0"/>
+                    <circle class="hsp-electron" r="6" cx="530" cy="369"/>
+                </g>
+            </svg>
+            <span class="hsp-seal">
+                <svg viewBox="0 0 160 160">
+                    <defs><path id="hspSealPath" d="M80,80 m-61,0 a61,61 0 1,1 122,0 a61,61 0 1,1 -122,0"/></defs>
+                    <circle cx="80" cy="80" r="80" fill="#F4C343"/>
+                    <g class="hsp-seal-ring">
+                        <text><textPath href="#hspSealPath" textLength="376">CUPOS LIMITADOS • PRESENCIAL Y VIRTUAL • </textPath></text>
+                    </g>
+                    <circle cx="80" cy="80" r="47" fill="#0B2545"/>
+                </svg>
+                <span>Entrada<br>gratuita</span>
+            </span>
+        </a>
+    </div>
+</section>
+
+<section class="hsp-logos" aria-label="Organizadores y patrocinadores del simposio">
+    <div class="hsp-logos-in">
+        <div class="hsp-logos-group">
+            <span class="hsp-logos-label">Organizan</span>
+            <div class="hsp-logos-row">
+                <img class="hsp-logo-asnc" src="{% static 'images/asnc_logo_full.png' %}" alt="Asociación Nuclear Colombiana">
+                <img class="hsp-logo-ua" src="{% static 'images/simposio/uatlantico.png' %}" alt="Universidad del Atlántico">
+            </div>
+        </div>
+        <div class="hsp-logos-group">
+            <span class="hsp-logos-label">Patrocinadores principales</span>
+            <div class="hsp-logos-row">
+                <img src="{% static 'images/simposio/aciem.png' %}" alt="ACIEM, Asociación Colombiana de Ingenieros">
+                <img src="{% static 'images/simposio/consejo-ingenierias.png' %}" alt="Consejo Profesional Nacional de Ingenierías Eléctrica, Mecánica y Profesiones Afines">
+            </div>
+        </div>
+        <a href="{% url 'simposio:landing' %}" class="hsp-logos-link">Ir a la página del simposio <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+    </div>
+</section>
+
+{% if simposio_countdown_iso %}
+<script>
+(function () {
+    var box = document.getElementById('hspCountdown');
+    if (!box) return;
+    var start = new Date(box.dataset.start).getTime(), units = {}, timer;
+    box.querySelectorAll('[data-unit]').forEach(function (el) { units[el.dataset.unit] = el; });
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function tick() {
+        var left = Math.floor((start - Date.now()) / 1000);
+        if (isNaN(left) || left <= 0) { box.hidden = true; clearInterval(timer); return; }
+        box.hidden = false;
+        units.d.textContent = Math.floor(left / 86400);
+        units.h.textContent = pad(Math.floor(left % 86400 / 3600));
+        units.m.textContent = pad(Math.floor(left % 3600 / 60));
+        units.s.textContent = pad(left % 60);
+    }
+    tick();
+    timer = setInterval(tick, 1000);
+})();
+</script>
+{% endif %}

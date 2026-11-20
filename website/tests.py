@@ -284,3 +284,40 @@ class ShareImageTests(TestCase):
         with override_settings(STATIC_URL='/static/', SITE_URL='https://www.asncol.com'):
             response = self.client.get(reverse('home'))
         self.assertEqual(self.og_image(response), 'https://www.asncol.com/static/images/og-image.png')
+
+class HomeSimposioHeroTests(TestCase):
+    """La portada promociona el simposio mientras esté publicado y por realizarse."""
+
+    def setUp(self):
+        import datetime
+        from django.utils import timezone
+        from simposio.models import Simposio
+        self.simposio = Simposio.objects.actual()  # sembrado por la migración 0002
+        self.simposio.starts_on = timezone.localdate() + datetime.timedelta(days=10)
+        self.simposio.ends_on = self.simposio.starts_on + datetime.timedelta(days=1)
+        self.simposio.save()
+
+    def get_home(self):
+        return self.client.get(reverse('home')).content.decode()
+
+    def test_sin_publicar_se_ve_el_hero_habitual(self):
+        html = self.get_home()
+        self.assertNotIn('class="hsp"', html)
+        self.assertIn('<section class="hero-section">', html)
+
+    def test_publicado_se_ve_el_hero_del_simposio_con_enlace(self):
+        self.simposio.is_published = True
+        self.simposio.save()
+        html = self.get_home()
+        self.assertIn('class="hsp"', html)
+        self.assertIn(f'href="{reverse("simposio:landing")}"', html)
+        self.assertNotIn('<section class="hero-section">', html)
+
+    def test_terminado_vuelve_el_hero_habitual(self):
+        import datetime
+        from django.utils import timezone
+        self.simposio.is_published = True
+        self.simposio.starts_on = timezone.localdate() - datetime.timedelta(days=3)
+        self.simposio.ends_on = self.simposio.starts_on + datetime.timedelta(days=1)
+        self.simposio.save()
+        self.assertNotIn('class="hsp"', self.get_home())

@@ -60,13 +60,34 @@ def enso_data(request):
     return JsonResponse(json.loads(payload))
 
 
+def simposio_promo_context():
+    """Hero promocional del simposio en la portada.
+
+    Se muestra mientras la edición vigente esté publicada y no haya terminado;
+    después la portada vuelve sola a su hero habitual.
+    """
+    from simposio.models import Simposio
+    from simposio.views import LandingView
+
+    simposio = Simposio.objects.actual()
+    if not simposio or not simposio.is_published or simposio.has_ended:
+        return {}
+    return {
+        'simposio_promo': simposio,
+        'simposio_date_block': LandingView._date_block(simposio),
+        'simposio_countdown_iso': LandingView._countdown_iso(simposio),
+    }
+
+
 class HomeView(TemplateView):
     template_name = 'website/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['enso_version'] = enso_data_version()
-        # Carrusel de slides; sin slides visibles se muestra el hero clásico.
+        context.update(simposio_promo_context())
+        # Hero habitual (website/_hero_default.html): carrusel de slides; sin
+        # slides visibles, el hero clásico con eventos.
         context['hero_slides'] = list(HeroSlide.objects.visible())
         # Recuadro del hero: todos los próximos eventos (el más cercano
         # destacado); si no hay ninguno, el último evento publicado.
