@@ -473,9 +473,13 @@ class AgendaPeopleTests(SimpleTestCase):
             '8:30 – 9:05 | Uno | Ana Ruiz, UA\n'
             '9:05 – 9:40 | Dos | Karen Ibarra, WiN\n'
             '9:40 – 10:15 | Tres | Rafael Fragozo, UPME\n'
+            '10:15 – 10:50 | Cuatro | Lourdes Meriño, UA\n'
+            '10:50 – 11:25 | Cinco | Pedro Gil, UA\n'
         )
         names = [s['name'] for s in Simposio(agenda=agenda).speakers_grid]
-        self.assertEqual(names, ['Rafael Fragozo', 'Karen Ibarra', 'Ana Ruiz'])
+        self.assertEqual(names[:2], ['Rafael Fragozo', 'Karen Ibarra'])
+        self.assertEqual(sorted(names[2:4]), ['Ana Ruiz', 'Pedro Gil'])
+        self.assertEqual(names[-1], 'Lourdes Meriño')
 
     def test_participation_marked_with_asterisk_is_tentative(self):
         agenda = (

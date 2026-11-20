@@ -350,8 +350,9 @@ class Simposio(models.Model):
                 found[person['name']] = entry
         return sorted(found.values(), key=lambda person: person['order'])
 
-    # Order of the «Conferencistas» grid (slugified names). Whoever is not listed
-    # comes after them, shuffled on every page load.
+    # Order of the «Conferencistas» grid (slugified names): `SPEAKERS_FIRST` open
+    # it, `SPEAKERS_LAST` close it and everyone else goes in between, shuffled on
+    # every page load.
     SPEAKERS_FIRST = (
         'rafael-fragozo', 'carlos-cardenas', 'jimmy-alejandro-munoz', 'dario-cruz',
         'karen-ibarra', 'andrea-sanchez', 'diana-montana', 'santiago-caicedo',
@@ -359,17 +360,22 @@ class Simposio(models.Model):
         'mauricio-penaloza', 'carlos-alberto-vega-pacheco',
         'luis-eduardo-jaimes',
     )
+    # Universidad del Atlántico (co-organiser).
+    SPEAKERS_LAST = ('adriana-rincon', 'lourdes-merino')
 
     @property
     def speakers_grid(self):
-        """`speakers` in the order of `SPEAKERS_FIRST`, the rest at random."""
-        rank = {slug: i for i, slug in enumerate(self.SPEAKERS_FIRST)}
-        first, rest = [], []
+        """`speakers` ordered by `SPEAKERS_FIRST` and `SPEAKERS_LAST`, the rest at random."""
+        first_rank = {slug: i for i, slug in enumerate(self.SPEAKERS_FIRST)}
+        last_rank = {slug: i for i, slug in enumerate(self.SPEAKERS_LAST)}
+        first, rest, last = [], [], []
         for speaker in self.speakers:
-            (first if slugify(speaker['name']) in rank else rest).append(speaker)
-        first.sort(key=lambda speaker: rank[slugify(speaker['name'])])
+            slug = slugify(speaker['name'])
+            (first if slug in first_rank else last if slug in last_rank else rest).append(speaker)
+        first.sort(key=lambda speaker: first_rank[slugify(speaker['name'])])
+        last.sort(key=lambda speaker: last_rank[slugify(speaker['name'])])
         random.shuffle(rest)
-        return first + rest
+        return first + rest + last
 
     @property
     def has_tentative(self):
