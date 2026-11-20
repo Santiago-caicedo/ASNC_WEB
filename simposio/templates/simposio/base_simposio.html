@@ -1,4 +1,4 @@
-{% load static %}<!DOCTYPE html>
+{% load static seo %}<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,8 @@
     <meta property="og:url" content="https://www.asncol.com{{ request.path }}">
     <meta property="og:title" content="{% block og_title %}{{ simposio.title }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ simposio.tagline }}{% endblock %}">
-    <meta property="og:image" content="https://www.asncol.com{% static 'images/og-image.png' %}">
+    {% static 'images/og-image.png' as og_default %}<meta property="og:image" content="{% block og_image %}{{ og_default|absolute_url }}{% endblock %}">
+    <meta name="twitter:image" content="{{ og_default|absolute_url }}">
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="icon" href="/favicon.ico" sizes="any">

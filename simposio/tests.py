@@ -74,6 +74,17 @@ class Base(TestCase):
 
 
 class PaginaPublicaTests(Base):
+    def test_og_image_no_repite_el_dominio_con_static_en_s3(self):
+        from django.test import override_settings
+        self.simposio.is_published = True
+        self.simposio.save()
+        s3 = 'https://bucket.s3.amazonaws.com/asnc/static/'
+        with override_settings(STATIC_URL=s3):
+            html = self.client.get(reverse('simposio:landing')).content.decode()
+        self.assertIn(f'<meta property="og:image" content="{s3}images/og-image.png">', html)
+        self.assertIn(f'<meta name="twitter:image" content="{s3}images/og-image.png">', html)
+        self.assertNotIn('asncol.comhttp', html)
+
     def test_la_migracion_crea_la_edicion_sin_publicar(self):
         self.assertIsNotNone(self.simposio)
         self.assertFalse(self.simposio.is_published)

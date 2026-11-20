@@ -253,3 +253,34 @@ class EventPortalTests(TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, 'El evento debe terminar después de empezar.')
         self.assertFalse(Event.objects.exists())
+
+class ShareImageTests(TestCase):
+    """og:image must be one absolute URL, also when static files live on S3."""
+
+    S3_STATIC = 'https://bucket.s3.amazonaws.com/asnc/static/'
+
+    def og_image(self, response):
+        import re
+        match = re.search(r'<meta property="og:image" content="([^"]*)"', response.content.decode())
+        return match.group(1)
+
+    def test_absolute_url_filter(self):
+        from django.test import override_settings
+        from .templatetags.seo import absolute_url
+        with override_settings(SITE_URL='https://www.asncol.com/'):
+            self.assertEqual(absolute_url('/static/x.png'), 'https://www.asncol.com/static/x.png')
+            self.assertEqual(absolute_url('media/y.jpg'), 'https://www.asncol.com/media/y.jpg')
+            self.assertEqual(absolute_url(self.S3_STATIC + 'x.png'), self.S3_STATIC + 'x.png')
+            self.assertEqual(absolute_url(''), '')
+
+    def test_home_og_image_with_s3_static_url(self):
+        from django.test import override_settings
+        with override_settings(STATIC_URL=self.S3_STATIC):
+            response = self.client.get(reverse('home'))
+        self.assertEqual(self.og_image(response), self.S3_STATIC + 'images/og-image.png')
+
+    def test_home_og_image_with_local_static_url(self):
+        from django.test import override_settings
+        with override_settings(STATIC_URL='/static/', SITE_URL='https://www.asncol.com'):
+            response = self.client.get(reverse('home'))
+        self.assertEqual(self.og_image(response), 'https://www.asncol.com/static/images/og-image.png')

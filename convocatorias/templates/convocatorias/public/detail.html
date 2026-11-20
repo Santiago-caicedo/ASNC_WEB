@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static seo %}
 {% load i18n %}
 
 {% block title %}{{ convocatoria.title }}{% endblock %}
@@ -7,7 +7,7 @@
 
 {% block og_title %}{{ convocatoria.title }} | ASNC{% endblock %}
 {% block og_description %}{{ convocatoria.description|truncatechars:160 }}{% endblock %}
-{% block og_image %}{% if convocatoria.cover_image and convocatoria.cover_image.name %}{{ request.scheme }}://{{ request.get_host }}{{ convocatoria.cover_image.url }}{% else %}https://www.asncol.com{% static 'images/og-image.png' %}{% endif %}{% endblock %}
+{% block og_image %}{% if convocatoria.cover_image and convocatoria.cover_image.name %}{{ convocatoria.cover_image.url|absolute_url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="convocatoria-page">

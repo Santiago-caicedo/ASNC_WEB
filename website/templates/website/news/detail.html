@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static seo %}
 {% load i18n %}
 
 {% block title %}{{ article.title }}{% endblock %}
@@ -9,7 +9,8 @@
 {% block og_title %}{{ article.title }} | ASNC{% endblock %}
 {% block og_description %}{{ article.excerpt }}{% endblock %}
 {% if article.cover_image %}
-{% block og_image %}{{ article.cover_image.url }}{% endblock %}
+{% block og_image %}{% if article.cover_image %}{{ article.cover_image.url|absolute_url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block twitter_image %}{% if article.cover_image %}{{ article.cover_image.url|absolute_url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% endif %}
 
 {% block content %}

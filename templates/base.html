@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n seo %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|slice:':2' }}">
 <head>
@@ -33,7 +33,7 @@
     <meta property="og:url" content="https://www.asncol.com{{ request.path }}">
     <meta property="og:title" content="{% block og_title %}Asociación Nuclear Colombiana | ASNC{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Albergamos y agrupamos al gremio nuclear de Colombia. Únete a la comunidad que articula a profesionales, investigadores y empresas del sector.{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}https://www.asncol.com{% static 'images/og-image.png' %}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/og-image.png' as og_default %}{{ og_default|absolute_url }}{% endblock %}">
     <meta property="og:locale" content="es_CO">
     <meta property="og:site_name" content="ASNC - Asociación Nuclear Colombiana">
 
@@ -42,7 +42,7 @@
     <meta name="twitter:url" content="https://www.asncol.com{{ request.path }}">
     <meta name="twitter:title" content="{% block twitter_title %}Asociación Nuclear Colombiana | ASNC{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}Albergamos y agrupamos al gremio nuclear de Colombia. Únete a la comunidad que articula a profesionales, investigadores y empresas del sector.{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}https://www.asncol.com{% static 'images/og-image.png' %}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/og-image.png' as og_default %}{{ og_default|absolute_url }}{% endblock %}">
 
     <!-- Favicon (Google requiere mínimo 48x48px, múltiplos de 48) -->
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -60,7 +60,7 @@
         "name": "Asociación Nuclear Colombiana",
         "alternateName": "ASNC",
         "url": "https://www.asncol.com",
-        "logo": "https://www.asncol.com{% static 'images/asnc_logo_full.png' %}",
+        "logo": "{% static 'images/asnc_logo_full.png' as logo_url %}{{ logo_url|absolute_url }}",
         "description": "Asociación que alberga y agrupa al gremio nuclear de Colombia, articulando a profesionales, investigadores, estudiantes y empresas del sector en una comunidad sólida que impulsa el desarrollo pacífico y sostenible de la ciencia y tecnología nuclear.",
         "email": "info@asncol.com",
         "address": {

@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static seo %}
 {% load i18n %}
 
 {% block title %}{{ event.title }}{% endblock %}
 {% block meta_description %}{{ event.summary }}{% endblock %}
 {% block og_title %}{{ event.title }} | ASNC{% endblock %}
 {% block og_description %}{{ event.summary }}{% endblock %}
-{% block og_image %}{% if event.cover_image %}{{ event.cover_image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og_image %}{% if event.cover_image %}{{ event.cover_image.url|absolute_url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block twitter_image %}{% if event.cover_image %}{{ event.cover_image.url|absolute_url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block content %}
 {% include 'website/_event_styles.html' %}
