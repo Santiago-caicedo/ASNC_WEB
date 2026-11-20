@@ -236,6 +236,8 @@ class Simposio(models.Model):
         An organisation ending in «, virtual» flags a remote participation.
         A part after «;» that starts with «Modera:» names the moderator, e.g.
         «… ; Modera: Santiago Caicedo (Vicepresidente ejecutivo, AsNC)».
+        A name ending in «*» marks a participation still to be confirmed
+        (`tentative`); the page then adds a «* Por confirmar» note.
         Allies' talks name an organisation, not a person, so they give no people,
         and neither does a speaker «Por confirmar».
         """
@@ -253,9 +255,12 @@ class Simposio(models.Model):
             for name, org in cls._name_org_pairs(part):
                 # «Org, virtual» (or just «virtual») marks someone who joins remotely.
                 trimmed = re.sub(r'(?:^|,)\s*virtual\s*$', '', org, flags=re.IGNORECASE)
+                # «Nombre*» marks a participation still to be confirmed.
+                tentative = name.endswith('*')
+                name = name.rstrip('*').strip()
                 people.append({
                     'name': name, 'org': trimmed.strip(), 'virtual': trimmed != org,
-                    'moderator': bool(moderator),
+                    'moderator': bool(moderator), 'tentative': tentative,
                     'initials': cls._initials(name),
                     'photo': photos.get(slugify(name), ''),
                 })
@@ -343,6 +348,14 @@ class Simposio(models.Model):
                 entry['virtual'] = person['virtual'] and (known is None or known['virtual'])
                 found[person['name']] = entry
         return sorted(found.values(), key=lambda person: person['order'])
+
+    @property
+    def has_tentative(self):
+        """True when someone in the programme is marked «*» (por confirmar)."""
+        return any(
+            person['tentative']
+            for item in self.agenda_items for person in item.get('people', ())
+        )
 
     @property
     def agenda_stats(self):

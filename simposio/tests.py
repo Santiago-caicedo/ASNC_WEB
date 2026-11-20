@@ -467,6 +467,18 @@ class AgendaPeopleTests(SimpleTestCase):
         self.assertEqual((item['speaker'], item['people']), ('Por confirmar', []))
         self.assertEqual(simposio.speakers, [])
 
+    def test_participation_marked_with_asterisk_is_tentative(self):
+        agenda = (
+            'Jueves 3 de diciembre\n'
+            '15:00 – 16:15 | Panel 1 | Ana Ruiz (UA) y Carlos Cárdenas* (ACIEM, virtual)\n'
+        )
+        simposio = Simposio(agenda=agenda)
+        ana, carlos = simposio.agenda_items[1]['people']
+        self.assertEqual((carlos['name'], carlos['tentative'], carlos['virtual']), ('Carlos Cárdenas', True, True))
+        self.assertFalse(ana['tentative'])
+        self.assertTrue(simposio.has_tentative)
+        self.assertFalse(Simposio(agenda=agenda.replace('*', '')).has_tentative)
+
     def test_moderator(self):
         agenda = (
             'Jueves 3 de diciembre\n'

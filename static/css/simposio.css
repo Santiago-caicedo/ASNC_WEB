@@ -249,6 +249,11 @@ body.sp-body {
 .sp-slot--panel .sp-who-mod { grid-column: 1 / -1; padding-top: 1.1rem; border-top: 1px dashed rgba(255,255,255,.2); }
 .sp-slot--panel .sp-av { box-shadow: 0 0 0 2px var(--sp-night-2), 0 0 0 3.5px var(--sp-gold); background: var(--sp-navy-3); }
 .sp-note { margin: 1.4rem 0 0; font-size: .92rem; color: var(--sp-mute); }
+.sp-note--tent + .sp-note { margin-top: .35rem; }
+.sp-tent { color: var(--sp-gold-ink); font-weight: 700; }
+sup.sp-tent { margin-left: .1em; font-size: 1em; line-height: 0; }
+.sp-slot--panel .sp-tent { color: var(--sp-gold); }
+.sp-speaker-tent { display: block; font-size: .78rem; font-weight: 600; color: var(--sp-gold-ink); text-transform: uppercase; letter-spacing: .06em; }
 .sp-empty { border: 1px dashed #BFC9D6; border-radius: 14px; padding: 2rem; color: var(--sp-mute); background: #fff; }
 
 /* Round portrait: photo, or initials until the photo arrives */

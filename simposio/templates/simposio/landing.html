@@ -271,7 +271,7 @@
                                     {% for person in item.people %}
                                     <li{% if person.moderator %} class="sp-who-mod"{% endif %}>
                                         {% include 'simposio/_avatar.html' with person=person %}
-                                        <span class="sp-who-text">{% if person.moderator %}<span class="sp-who-role">Modera</span>{% endif %}<b>{{ person.name }}</b>{% if person.org %}<small>{{ person.org }}</small>{% endif %}{% if person.virtual %}<span class="sp-virtual"><i class="bi bi-camera-video" aria-hidden="true"></i> Virtual</span>{% endif %}</span>
+                                        <span class="sp-who-text">{% if person.moderator %}<span class="sp-who-role">Modera</span>{% endif %}<b>{{ person.name }}{% if person.tentative %}<sup class="sp-tent" title="Por confirmar">*</sup>{% endif %}</b>{% if person.org %}<small>{{ person.org }}</small>{% endif %}{% if person.virtual %}<span class="sp-virtual"><i class="bi bi-camera-video" aria-hidden="true"></i> Virtual</span>{% endif %}</span>
                                     </li>
                                     {% endfor %}
                                 </ul>
@@ -286,6 +286,7 @@
                 {% empty %}
                 <div class="sp-empty">El programa se publicará pronto.</div>
                 {% endfor %}
+                {% if days and simposio.has_tentative %}<p class="sp-note sp-note--tent"><span class="sp-tent" aria-hidden="true">*</span> Por confirmar.</p>{% endif %}
                 {% if days %}<p class="sp-note">Programación provisional: los horarios y ponentes pueden cambiar.</p>{% endif %}
             </div>
         </div>
@@ -307,6 +308,7 @@
             <li class="sp-speaker">
                 {% include 'simposio/_avatar.html' with person=speaker size='xl' %}
                 <b>{{ speaker.name }}</b>
+                {% if speaker.tentative %}<span class="sp-speaker-tent">Por confirmar</span>{% endif %}
                 {% if speaker.org %}<span class="sp-speaker-org">{{ speaker.org }}</span>{% endif %}
                 {% if speaker.virtual %}<span class="sp-virtual"><i class="bi bi-camera-video" aria-hidden="true"></i> Participa de forma virtual</span>{% endif %}
                 <p>{{ speaker.talk }}</p>
