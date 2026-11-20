@@ -6,6 +6,7 @@ row, not new code.
 """
 import datetime
 import os
+import random
 import re
 import uuid
 
@@ -235,7 +236,7 @@ class Simposio(models.Model):
         «Ana y Luis (Org), Marta (Otra org) y Juan (Org, virtual)» (a panel).
         An organisation ending in «, virtual» flags a remote participation.
         A part after «;» that starts with «Modera:» names the moderator, e.g.
-        «… ; Modera: Santiago Caicedo (Vicepresidente ejecutivo, AsNC)».
+        «… ; Modera: Santiago Caicedo (Vicepresidente Ejecutivo AsNC)».
         A name ending in «*» marks a participation still to be confirmed
         (`tentative`); the page then adds a «* Por confirmar» note.
         Allies' talks name an organisation, not a person, so they give no people,
@@ -348,6 +349,27 @@ class Simposio(models.Model):
                 entry['virtual'] = person['virtual'] and (known is None or known['virtual'])
                 found[person['name']] = entry
         return sorted(found.values(), key=lambda person: person['order'])
+
+    # Order of the «Conferencistas» grid (slugified names). Whoever is not listed
+    # comes after them, shuffled on every page load.
+    SPEAKERS_FIRST = (
+        'rafael-fragozo', 'carlos-cardenas', 'jimmy-alejandro-munoz', 'dario-cruz',
+        'karen-ibarra', 'andrea-sanchez', 'diana-montana', 'santiago-caicedo',
+        # The allies' managers.
+        'mauricio-penaloza', 'carlos-alberto-vega-pacheco',
+        'luis-eduardo-jaimes',
+    )
+
+    @property
+    def speakers_grid(self):
+        """`speakers` in the order of `SPEAKERS_FIRST`, the rest at random."""
+        rank = {slug: i for i, slug in enumerate(self.SPEAKERS_FIRST)}
+        first, rest = [], []
+        for speaker in self.speakers:
+            (first if slugify(speaker['name']) in rank else rest).append(speaker)
+        first.sort(key=lambda speaker: rank[slugify(speaker['name'])])
+        random.shuffle(rest)
+        return first + rest
 
     @property
     def has_tentative(self):

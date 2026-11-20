@@ -467,6 +467,16 @@ class AgendaPeopleTests(SimpleTestCase):
         self.assertEqual((item['speaker'], item['people']), ('Por confirmar', []))
         self.assertEqual(simposio.speakers, [])
 
+    def test_speakers_grid_puts_listed_people_first(self):
+        agenda = (
+            'Jueves 3 de diciembre\n'
+            '8:30 – 9:05 | Uno | Ana Ruiz, UA\n'
+            '9:05 – 9:40 | Dos | Karen Ibarra, WiN\n'
+            '9:40 – 10:15 | Tres | Rafael Fragozo, UPME\n'
+        )
+        names = [s['name'] for s in Simposio(agenda=agenda).speakers_grid]
+        self.assertEqual(names, ['Rafael Fragozo', 'Karen Ibarra', 'Ana Ruiz'])
+
     def test_participation_marked_with_asterisk_is_tentative(self):
         agenda = (
             'Jueves 3 de diciembre\n'
