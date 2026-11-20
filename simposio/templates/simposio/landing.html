@@ -308,10 +308,8 @@
             <li class="sp-speaker">
                 {% include 'simposio/_avatar.html' with person=speaker size='xl' %}
                 <b>{{ speaker.name }}</b>
-                {% if speaker.tentative %}<span class="sp-speaker-tent">Por confirmar</span>{% endif %}
                 {% if speaker.org %}<span class="sp-speaker-org">{{ speaker.org }}</span>{% endif %}
                 {% if speaker.virtual %}<span class="sp-virtual"><i class="bi bi-camera-video" aria-hidden="true"></i> Participa de forma virtual</span>{% endif %}
-                <p>{{ speaker.talk }}</p>
             </li>
             {% endfor %}
         </ul>

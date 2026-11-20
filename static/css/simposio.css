@@ -253,7 +253,6 @@ body.sp-body {
 .sp-tent { color: var(--sp-gold-ink); font-weight: 700; }
 sup.sp-tent { margin-left: .1em; font-size: 1em; line-height: 0; }
 .sp-slot--panel .sp-tent { color: var(--sp-gold); }
-.sp-speaker-tent { display: block; font-size: .78rem; font-weight: 600; color: var(--sp-gold-ink); text-transform: uppercase; letter-spacing: .06em; }
 .sp-empty { border: 1px dashed #BFC9D6; border-radius: 14px; padding: 2rem; color: var(--sp-mute); background: #fff; }
 
 /* Round portrait: photo, or initials until the photo arrives */
@@ -266,7 +265,6 @@ sup.sp-tent { margin-left: .1em; font-size: 1em; line-height: 0; }
 .sp-speaker { width: calc((100% - 6rem) / 5); display: flex; flex-direction: column; align-items: center; text-align: center; }
 .sp-speaker b { display: block; margin-top: 1.1rem; font-size: 1.15rem; font-weight: 600; line-height: 1.2; }
 .sp-speaker-org { display: block; margin-top: .2rem; font-size: .95rem; font-weight: 500; color: var(--sp-gold-ink); }
-.sp-speaker p { margin: .55rem 0 0; font-size: .92rem; line-height: 1.4; color: var(--sp-mute); max-width: 24ch; }
 
 /* Venue + how to take part */
 .sp-venue { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(2rem, 6vw, 5rem); align-items: start; }
