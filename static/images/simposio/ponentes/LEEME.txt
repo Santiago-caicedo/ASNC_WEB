@@ -5,9 +5,10 @@ El nombre del archivo es el nombre de la persona en minusculas, sin tildes y con
 La pagina la muestra sola en la agenda y en la seccion Conferencistas; mientras no haya foto se ven las iniciales.
 
 Nombres esperados con la agenda actual:
+  jimmy-alejandro-munoz.jpg   (Jimmy Alejandro Muñoz)
   herling-gonzales.jpg   (Herling Gonzales)
-  laura.jpg   (Laura)
-  daniel-herrera.jpg   (Daniel Herrera)
+  laura-forero-rodriguez.jpg   (Laura Forero Rodríguez)
+  andrea-sanchez.jpg   (Andrea Sánchez)
   rafael-fragozo.jpg   (Rafael Fragozo)
   karen-ibarra.jpg   (Karen Ibarra)
   luis-eduardo-jaimes.jpg   (Luis Eduardo Jaimes)
