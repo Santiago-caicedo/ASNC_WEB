@@ -1,2 +1,2 @@
 {% load static %}{# Round portrait of a speaker; falls back to the initials until the photo is uploaded. #}
-<span class="sp-av{% if size %} sp-av--{{ size }}{% endif %}">{% if person.photo %}<img src="{% static person.photo %}" alt="" loading="lazy" decoding="async">{% else %}<span aria-hidden="true">{{ person.initials }}</span>{% endif %}</span>
+<span class="sp-av{% if size %} sp-av--{{ size }}{% endif %}{% if person.placeholder %} sp-av--open{% endif %}">{% if person.placeholder %}<i class="bi bi-person" aria-hidden="true"></i>{% elif person.photo %}<img src="{% static person.photo %}" alt="" loading="lazy" decoding="async">{% else %}<span aria-hidden="true">{{ person.initials }}</span>{% endif %}</span>

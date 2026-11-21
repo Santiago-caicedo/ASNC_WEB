@@ -240,7 +240,8 @@ class Simposio(models.Model):
         A name ending in «*» marks a participation still to be confirmed
         (`tentative`); the page then adds a «* Por confirmar» note.
         Allies' talks name an organisation, not a person, so they give no people,
-        and neither does a speaker «Por confirmar».
+        and neither does a speaker «Por confirmar». Inside a list of people
+        «Por confirmar» is an open seat (`placeholder`).
         """
         if not speaker or kind in ('break', 'ally'):
             return []
@@ -254,6 +255,15 @@ class Simposio(models.Model):
             if moderator:
                 part = part[moderator.end():]
             for name, org in cls._name_org_pairs(part):
+                # «Por confirmar» inside a list is a seat still open: the page shows
+                # a blank avatar; it is no person (not in Conferencistas nor the PDF).
+                if re.match(r'(?i)por\s+(confirmar|definir)\b', name):
+                    people.append({
+                        'name': 'Por confirmar', 'org': '', 'virtual': False,
+                        'moderator': bool(moderator), 'tentative': False,
+                        'placeholder': True, 'initials': '', 'photo': '',
+                    })
+                    continue
                 # «Org, virtual» (or just «virtual») marks someone who joins remotely.
                 trimmed = re.sub(r'(?:^|,)\s*virtual\s*$', '', org, flags=re.IGNORECASE)
                 # «Nombre*» marks a participation still to be confirmed.
@@ -261,7 +271,7 @@ class Simposio(models.Model):
                 name = name.rstrip('*').strip()
                 people.append({
                     'name': name, 'org': trimmed.strip(), 'virtual': trimmed != org,
-                    'moderator': bool(moderator), 'tentative': tentative,
+                    'moderator': bool(moderator), 'tentative': tentative, 'placeholder': False,
                     'initials': cls._initials(name),
                     'photo': photos.get(slugify(name), ''),
                 })
@@ -275,6 +285,10 @@ class Simposio(models.Model):
                 names = re.sub(r'^[\s,]*(?:y\s+)?', '', names)
                 for name in re.split(r'\s+y\s+|,', names):
                     pairs.append((name.strip(), org.strip()))
+            # Names after the last «(…)» have no organisation, e.g. «… y Por confirmar».
+            tail = re.sub(r'^[\s,]*(?:y\s+)?', '', text[text.rfind(')') + 1:])
+            for name in re.split(r'\s+y\s+|,', tail):
+                pairs.append((name.strip(), ''))
         else:
             name, _, org = text.partition(',')
             pairs.append((name.strip(), org.strip()))
@@ -338,6 +352,8 @@ class Simposio(models.Model):
         found = {}
         for item in self.agenda_items:
             for person in item.get('people', ()):
+                if person['placeholder']:
+                    continue
                 is_talk = item['kind'] == 'talk'
                 known = found.get(person['name'])
                 entry = known

@@ -258,6 +258,8 @@ sup.sp-tent { margin-left: .1em; font-size: 1em; line-height: 0; }
 /* Round portrait: photo, or initials until the photo arrives */
 .sp-av { --av: 52px; position: relative; flex: none; width: var(--av); height: var(--av); display: grid; place-items: center; border-radius: 50%; overflow: hidden; background: var(--sp-navy-2); color: #fff; font-weight: 600; font-size: calc(var(--av) * .36); letter-spacing: .02em; box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--sp-gold); }
 .sp-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sp-av--open { background: transparent; color: var(--sp-ice); border: 2px dashed rgba(201, 212, 227, .55); box-shadow: none; font-size: calc(var(--av) * .5); }
+.sp-who-open b { color: var(--sp-ice); font-weight: 600; }
 .sp-av--xl { --av: 132px; box-shadow: 0 0 0 4px var(--sp-mist), 0 0 0 6px var(--sp-gold); background: linear-gradient(160deg, var(--sp-navy-3), var(--sp-night-2)); }
 
 /* Speakers: portraits first */

@@ -269,7 +269,7 @@
                                 {% if item.people %}
                                 <ul class="sp-who">
                                     {% for person in item.people %}
-                                    <li{% if person.moderator %} class="sp-who-mod"{% endif %}>
+                                    <li class="{% if person.moderator %}sp-who-mod{% endif %}{% if person.placeholder %} sp-who-open{% endif %}">
                                         {% include 'simposio/_avatar.html' with person=person %}
                                         <span class="sp-who-text">{% if person.moderator %}<span class="sp-who-role">Modera</span>{% endif %}<b>{{ person.name }}{% if person.tentative %}<sup class="sp-tent" title="Por confirmar">*</sup>{% endif %}</b>{% if person.org %}<small>{{ person.org }}</small>{% endif %}{% if person.virtual %}<span class="sp-virtual"><i class="bi bi-camera-video" aria-hidden="true"></i> Virtual</span>{% endif %}</span>
                                     </li>

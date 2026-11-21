@@ -492,6 +492,18 @@ class AgendaPeopleTests(SimpleTestCase):
         self.assertEqual(sorted(names[2:4]), ['Ana Ruiz', 'Pedro Gil'])
         self.assertEqual(names[-1], 'Lourdes Meriño')
 
+    def test_open_seat_in_a_panel(self):
+        agenda = (
+            'Jueves 3 de diciembre\n'
+            '15:00 – 16:15 | Panel 1 | Ana Ruiz (UA), Luis Paz (UPME) y Por confirmar; '
+            'Modera: Santiago Caicedo (AsNC)\n'
+        )
+        simposio = Simposio(agenda=agenda)
+        people = simposio.agenda_items[1]['people']
+        self.assertEqual([p['name'] for p in people], ['Ana Ruiz', 'Luis Paz', 'Por confirmar', 'Santiago Caicedo'])
+        self.assertEqual([p['placeholder'] for p in people], [False, False, True, False])
+        self.assertNotIn('Por confirmar', [s['name'] for s in simposio.speakers])
+
     def test_participation_marked_with_asterisk_is_tentative(self):
         agenda = (
             'Jueves 3 de diciembre\n'
