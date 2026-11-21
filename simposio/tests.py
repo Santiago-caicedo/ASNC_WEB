@@ -117,7 +117,7 @@ class PaginaPublicaTests(Base):
         self.assertEqual(s.title, 'Primer Simposio de Energía Nuclear')
         self.assertEqual(s.hero_lines, ('Energía', 'Nuclear'))
         self.assertEqual(format_event_dates(s), '3 y 4 de diciembre de 2026')
-        self.assertEqual(s.agenda_stats, {'days': 2, 'talks': 11, 'panels': 2})
+        self.assertEqual(s.agenda_stats, {'days': 2, 'talks': 12, 'panels': 2})
         kinds = {i['title']: i['kind'] for i in s.agenda_items if 'kind' in i}
         self.assertEqual(kinds['Café'], 'break')
         self.assertEqual(kinds['Charla de aliado institucional'], 'ally')
