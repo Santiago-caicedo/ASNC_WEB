@@ -9,6 +9,7 @@ Nombres esperados con la agenda actual:
   herling-gonzales.jpg   (Herling Gonzales)
   laura-forero-rodriguez.jpg   (Laura Forero Rodríguez)
   andrea-sanchez.jpg   (Andrea Sánchez)
+  daniel-herrera.jpg   (Daniel Herrera)
   rafael-fragozo.jpg   (Rafael Fragozo)
   karen-ibarra.jpg   (Karen Ibarra)
   luis-eduardo-jaimes.jpg   (Luis Eduardo Jaimes)
