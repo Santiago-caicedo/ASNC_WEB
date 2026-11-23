@@ -120,7 +120,7 @@ class PaginaPublicaTests(Base):
         self.assertEqual(s.agenda_stats, {'days': 2, 'talks': 12, 'panels': 2})
         kinds = {i['title']: i['kind'] for i in s.agenda_items if 'kind' in i}
         self.assertEqual(kinds['Café'], 'break')
-        self.assertEqual(kinds['Charla de aliado institucional'], 'ally')
+        self.assertEqual(kinds['Conferencia de aliado institucional'], 'ally')
         self.assertEqual(kinds['Clausura'], 'ceremony')
 
     def test_formato_de_fechas(self):

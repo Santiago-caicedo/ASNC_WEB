@@ -183,7 +183,7 @@
                 <dl class="sp-figs-grid">
                     <div class="sp-fig sp-fig--lead"><dd data-count="{{ simposio.capacity }}">{{ simposio.capacity }}</dd><dt>cupos presenciales en el auditorio, con entrada gratuita</dt></div>
                     <div class="sp-fig"><dd data-count="{{ stats.days }}">{{ stats.days }}</dd><dt>día{{ stats.days|pluralize }} de programa</dt></div>
-                    <div class="sp-fig"><dd data-count="{{ stats.talks }}">{{ stats.talks }}</dd><dt>charlas</dt></div>
+                    <div class="sp-fig"><dd data-count="{{ stats.talks }}">{{ stats.talks }}</dd><dt>conferencias</dt></div>
                     <div class="sp-fig"><dd data-count="{{ stats.panels }}">{{ stats.panels }}</dd><dt>panel{{ stats.panels|pluralize:"es" }} de expertos</dt></div>
                 </dl>
                 {% include 'simposio/_cta.html' with style='gold' label='Reservar mi cupo' quiet=True %}
@@ -234,7 +234,7 @@
         {% with days=simposio.agenda_days %}
         <div class="sp-sec-head">
             <h2 class="sp-h2" data-reveal>Agenda académica</h2>
-            <p>Charlas de 35 minutos: 25 de presentación y 10 de preguntas.</p>
+            <p>Conferencias de 35 minutos: 25 de presentación y 10 de preguntas.</p>
         </div>
 
         <div class="sp-prog{% if days|length < 2 %} sp-prog--single{% endif %}">
@@ -263,7 +263,7 @@
                             <div class="sp-slot-body">
                                 {% if item.kind == 'panel' %}<span class="sp-slot-kind">Panel de discusión</span>
                                 {% elif item.kind == 'ally' %}<span class="sp-slot-kind">Aliado</span>
-                                {% elif item.kind == 'talk' %}<span class="sp-slot-kind">Charla</span>
+                                {% elif item.kind == 'talk' %}<span class="sp-slot-kind">Conferencia</span>
                                 {% endif %}
                                 <p class="sp-slot-title">{{ item.title }}</p>
                                 {% if item.people %}
@@ -380,7 +380,7 @@
             </div>
             <div class="sp-sponsor-text">
                 <h3>Vincula a tu organización</h3>
-                <p>Los aliados tienen stand en el vestíbulo del Centro de Convenciones, una charla dentro del programa y presencia de marca durante el evento.</p>
+                <p>Los aliados tienen stand en el vestíbulo del Centro de Convenciones, una conferencia dentro del programa y presencia de marca durante el evento.</p>
                 <a class="sp-btn sp-btn--gold" href="mailto:info@asncol.com?subject=Aliados%20del%20Simposio%20de%20Energ%C3%ADa%20Nuclear">Solicitar la propuesta</a>
             </div>
         </div>

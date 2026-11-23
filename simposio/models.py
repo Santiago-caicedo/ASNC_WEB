@@ -79,7 +79,7 @@ class Simposio(models.Model):
         'Programa', blank=True,
         help_text='Una línea por actividad con el formato «hora | actividad | ponente». '
                   'Una línea sin «|» se muestra como encabezado (por ejemplo, el día). '
-                  'Agrega «| Aliado» al final para marcar la charla de un aliado.',
+                  'Agrega «| Aliado» al final para marcar la conferencia de un aliado.',
     )
     capacity = models.PositiveIntegerField(
         'Cupo', default=250,
