@@ -245,8 +245,9 @@ class Simposio(models.Model):
         """
         if not speaker or kind in ('break', 'ally'):
             return []
-        # «Por confirmar» (or «Por definir») is shown as plain text, not as a person.
-        if re.match(r'(?i)por\s+(confirmar|definir)\b', speaker):
+        # «Por confirmar» (or «Por definir») and an unnamed delegate
+        # («Participante delegado del …») are shown as plain text, not as a person.
+        if re.match(r'(?i)(por\s+(confirmar|definir)|(participante\s+)?delegad[oa])\b', speaker):
             return []
         people = []
         for part in speaker.split(';'):
@@ -370,8 +371,8 @@ class Simposio(models.Model):
     # it, `SPEAKERS_LAST` close it and everyone else goes in between, shuffled on
     # every page load.
     SPEAKERS_FIRST = (
-        'rafael-fragozo', 'carlos-cardenas', 'jimmy-alejandro-munoz', 'dario-cruz',
-        'karen-ibarra', 'andrea-sanchez', 'diana-montana', 'santiago-caicedo',
+        'rafael-fragozo', 'carlos-cardenas', 'dario-cruz',
+        'karen-ibarra', 'diana-montana', 'santiago-caicedo',
         # The allies' managers.
         'mauricio-penaloza', 'carlos-alberto-vega-pacheco',
         'luis-eduardo-jaimes',

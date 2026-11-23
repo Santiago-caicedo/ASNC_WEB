@@ -478,6 +478,15 @@ class AgendaPeopleTests(SimpleTestCase):
         self.assertEqual((item['speaker'], item['people']), ('Por confirmar', []))
         self.assertEqual(simposio.speakers, [])
 
+    def test_unnamed_delegate_is_not_a_person(self):
+        agenda = ('Jueves 3 de diciembre\n'
+                  '10:35 – 11:10 | IAN-R1 | Participante delegado del Servicio Geológico Colombiano\n')
+        simposio = Simposio(agenda=agenda)
+        item = simposio.agenda_items[1]
+        self.assertEqual(item['people'], [])
+        self.assertEqual(item['speaker'], 'Participante delegado del Servicio Geológico Colombiano')
+        self.assertEqual(simposio.speakers, [])
+
     def test_speakers_grid_puts_listed_people_first(self):
         agenda = (
             'Jueves 3 de diciembre\n'
