@@ -120,7 +120,7 @@ class PaginaPublicaTests(Base):
         self.assertEqual(s.agenda_stats, {'days': 2, 'talks': 12, 'panels': 2})
         kinds = {i['title']: i['kind'] for i in s.agenda_items if 'kind' in i}
         self.assertEqual(kinds['Café'], 'break')
-        self.assertEqual(kinds['Conferencia de aliado institucional'], 'ally')
+        self.assertEqual(kinds['Instrumentación Nuclear'], 'ally')  # INI, «| Aliado» column
         self.assertEqual(kinds['Clausura'], 'ceremony')
 
     def test_formato_de_fechas(self):
@@ -343,6 +343,8 @@ class PortalTests(Base):
         self.client.force_login(self.admin)
         response = self.client.get(reverse('simposio_admin:list'), {'q': 'ana'})
         self.assertContains(response, 'Ana Ruiz')
+        self.assertEqual(response.context['total_confirmed'], 1)
+        self.assertContains(response, 'Total de inscritos')
         self.assertContains(response, 'Simposio')  # sidebar link
         self.assertNotContains(
             self.client.get(reverse('simposio_admin:list'), {'estado': 'asistieron'}), 'Ana Ruiz',

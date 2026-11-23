@@ -21,6 +21,10 @@
     </div>
 
     <div class="spp-stats">
+        <div class="spp-stat spp-stat--total">
+            <div class="spp-stat-num">{{ total_confirmed }}</div>
+            <div class="spp-stat-label">Total de inscritos</div>
+        </div>
         <div class="spp-stat">
             <div class="spp-stat-num">{{ total_in_person }} <small>/ {{ simposio.capacity }}</small></div>
             <div class="spp-stat-label">Presenciales · cupo ({{ simposio.seats_left }} libres)</div>
