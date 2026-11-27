@@ -6,7 +6,7 @@ La pagina la muestra sola en la agenda y en la seccion Conferencistas; mientras 
 
 Nombres esperados con la agenda actual:
   ricardo-munoz-ibanez.jpg   (Ricardo Muñoz Ibáñez)
-  herling-gonzales.jpg   (Herling Gonzales)
+  herling-gonzalez.jpg   (Herling Gonzalez)
   laura-forero-rodriguez.jpg   (Laura Forero Rodríguez)
   daniel-herrera.jpg   (Daniel Herrera)
   rafael-fragozo.jpg   (Rafael Fragozo)
