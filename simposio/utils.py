@@ -18,7 +18,7 @@ from django.utils.html import strip_tags
 
 from carnets.utils import generate_qr_code
 
-from .models import Asistencia, Inscripcion
+from .models import Asistencia, Inscripcion, Simposio
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +64,12 @@ def check_in(inscripcion, user=None, method=Asistencia.Method.QR):
     simposio = inscripcion.simposio
     today = timezone.localdate()
 
+    if inscripcion.is_waitlisted:
+        return (
+            False, 'waitlist',
+            'Esta persona está en la lista de espera: todavía no tiene cupo presencial.',
+            None,
+        )
     if not inscripcion.is_confirmed:
         return False, 'cancelled', 'Esta inscripción está cancelada.', None
 
@@ -173,13 +179,17 @@ def simposio_landing_path():
     return reverse('simposio:landing')
 
 
-def send_confirmation_email(inscripcion):
+def send_confirmation_email(inscripcion, from_waitlist=False):
     """Registration confirmation.
 
     In person: the QR ticket (linked image + attachment). Virtual: the
     registration is confirmed and the connection details will follow.
     Both carry the dates as a calendar invitation (.ics) and Google Calendar links.
+    On the waiting list: their place in line, no ticket. `from_waitlist`
+    words the in-person ticket as "a seat freed up for you".
     """
+    if inscripcion.is_waitlisted:
+        return send_waitlist_email(inscripcion)
     simposio = inscripcion.simposio
     site = settings.SITE_URL.rstrip('/')
     virtual = inscripcion.is_virtual
@@ -189,14 +199,18 @@ def send_confirmation_email(inscripcion):
         'ticket_url': inscripcion.get_ticket_url(),
         'qr_url': f"{site}{inscripcion.get_ticket_path()}qr.png",
         'calendar_links': google_calendar_links(simposio, virtual=virtual),
+        'from_waitlist': from_waitlist,
     }
     template = 'simposio/emails/confirmacion_virtual.html' if virtual else 'simposio/emails/confirmacion.html'
     html = render_to_string(template, context)
+    if virtual:
+        subject = f'Inscripción virtual confirmada: {simposio.title}'
+    elif from_waitlist:
+        subject = f'Se liberó un cupo: tu entrada al {simposio.title}'
+    else:
+        subject = f'Registro presencial confirmado: {simposio.title}'
     email = EmailMultiAlternatives(
-        subject=(
-            f'Inscripción virtual confirmada: {simposio.title}' if virtual
-            else f'Registro presencial confirmado: {simposio.title}'
-        ),
+        subject=subject,
         body=strip_tags(html),
         from_email=_from_email(),
         to=[inscripcion.email],
@@ -211,6 +225,51 @@ def send_confirmation_email(inscripcion):
 
     inscripcion.confirmation_sent_at = timezone.now()
     inscripcion.save(update_fields=['confirmation_sent_at', 'updated_at'])
+
+
+def send_waitlist_email(inscripcion):
+    """The room is full: the person is on the in-person waiting list (no ticket yet)."""
+    simposio = inscripcion.simposio
+    html = render_to_string('simposio/emails/lista_espera.html', {
+        'inscripcion': inscripcion,
+        'simposio': simposio,
+        'position': inscripcion.waitlist_position,
+        'ticket_url': inscripcion.get_ticket_url(),
+    })
+    email = EmailMultiAlternatives(
+        subject=f'Estás en la lista de espera: {simposio.title}',
+        body=strip_tags(html),
+        from_email=_from_email(),
+        to=[inscripcion.email],
+    )
+    email.attach_alternative(html, 'text/html')
+    email.send(fail_silently=False)
+
+    inscripcion.confirmation_sent_at = timezone.now()
+    inscripcion.save(update_fields=['confirmation_sent_at', 'updated_at'])
+
+
+def give_seats(simposio, inscripciones):
+    """Move people off the waiting list while there are free seats.
+
+    Locks the edition so two admins can't hand out the same seat. Returns
+    the registrations that got a seat (in line order); the ticket e-mail is
+    sent by the caller, outside the transaction.
+    """
+    with transaction.atomic():
+        locked = Simposio.objects.select_for_update().get(pk=simposio.pk)
+        seats = locked.seats_left
+        promoted = []
+        for inscripcion in inscripciones:
+            if seats <= 0:
+                break
+            if not inscripcion.is_waitlisted:
+                continue
+            inscripcion.status = Inscripcion.Status.CONFIRMED
+            inscripcion.save(update_fields=['status', 'updated_at'])
+            promoted.append(inscripcion)
+            seats -= 1
+    return promoted
 
 
 def send_certificate_emails(simposio, limit=25):

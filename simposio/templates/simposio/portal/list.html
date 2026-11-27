@@ -27,7 +27,7 @@
         </div>
         <div class="spp-stat">
             <div class="spp-stat-num">{{ total_in_person }} <small>/ {{ simposio.capacity }}</small></div>
-            <div class="spp-stat-label">Presenciales · cupo ({{ simposio.seats_left }} libres)</div>
+            <div class="spp-stat-label">Presenciales · cupo ({{ simposio.seats_left }} libres){% if waitlist_count %} · <a href="?estado=espera">{{ waitlist_count }} en espera</a>{% endif %}</div>
         </div>
         <div class="spp-stat">
             <div class="spp-stat-num">{{ total_virtual }}</div>
@@ -42,6 +42,26 @@
             <div class="spp-stat-label">Han asistido al menos un día</div>
         </div>
     </div>
+
+    {% if waitlist_count or simposio.is_full %}
+    <div class="spp-state">
+        <span><i class="bi bi-hourglass-split me-1"></i>
+            {% if waitlist_count %}
+                <strong>{{ waitlist_count }}</strong> persona{{ waitlist_count|pluralize }} en la <a href="?estado=espera">lista de espera presencial</a>.
+                {% if seats_to_give %}Hay {{ simposio.seats_left }} cupo{{ simposio.seats_left|pluralize }} libre{{ simposio.seats_left|pluralize }}: dáselos a las primeras de la fila y cada una recibe su entrada por correo.
+                {% else %}Cuando se libere un cupo (al cancelar una inscripción presencial o al subir el cupo en «Configurar»), dáselo a la primera de la fila.{% endif %}
+            {% else %}
+                El cupo presencial está lleno. Quien se inscriba como presencial queda en la lista de espera y recibe un correo con su lugar.
+            {% endif %}
+        </span>
+        {% if seats_to_give %}
+        <form method="post" action="{% url 'simposio_admin:dar_cupos_siguientes' %}" class="ms-lg-auto">
+            {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">Dar {% if seats_to_give == 1 %}el cupo a la siguiente persona{% else %}cupo a las siguientes {{ seats_to_give }}{% endif %}</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
 
     {% if simposio.certificates_enabled %}
     <div class="spp-state">
@@ -74,6 +94,7 @@
                 <option value="">Todos</option>
                 <option value="asistieron" {% if estado == 'asistieron' %}selected{% endif %}>Con asistencia</option>
                 <option value="sin_asistencia" {% if estado == 'sin_asistencia' %}selected{% endif %}>Sin asistencia</option>
+                <option value="espera" {% if estado == 'espera' %}selected{% endif %}>Lista de espera</option>
                 <option value="canceladas" {% if estado == 'canceladas' %}selected{% endif %}>Canceladas</option>
             </select>
             <select name="tipo" class="form-select" aria-label="Tipo de asistente">
@@ -98,7 +119,7 @@
                 </thead>
                 <tbody>
                     {% for i in page_obj %}
-                    <tr class="{% if not i.is_confirmed %}spp-row-off{% endif %}">
+                    <tr class="{% if i.is_cancelled %}spp-row-off{% endif %}">
                         <td>
                             <div class="spp-name">{{ i.full_name }}</div>
                             <div class="spp-sub">{{ i.email }} · {{ i.get_modality_display }} · {{ i.code }}</div>
@@ -109,7 +130,9 @@
                         </td>
                         <td class="d-none d-lg-table-cell">{{ i.created_at|date:"j M, g:i a" }}</td>
                         <td>
-                            {% if not i.is_confirmed %}
+                            {% if i.is_waitlisted %}
+                                <span class="spp-tag spp-tag--wait">En espera · n.º {{ i.position }}</span>
+                            {% elif not i.is_confirmed %}
                                 <span class="spp-tag spp-tag--off">Cancelada</span>
                             {% elif i.hoy %}
                                 <span class="spp-tag spp-tag--ok">Ingresó hoy</span>
@@ -124,6 +147,16 @@
                                 <button class="btn btn-sm btn-light rounded-pill" type="button" data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}' aria-label="Acciones para {{ i.full_name }}"><i class="bi bi-three-dots"></i></button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="{{ i.get_ticket_path }}" target="_blank" rel="noopener">Ver entrada</a></li>
+                                    {% if i.is_waitlisted %}
+                                    <li>
+                                        <form method="post" action="{% url 'simposio_admin:dar_cupo' i.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <button type="submit" class="dropdown-item"{% if not simposio.seats_left %} disabled title="No hay cupos libres"{% endif %}>Dar cupo y enviar la entrada</button></form>
+                                    </li>
+                                    <li>
+                                        <form method="post" action="{% url 'simposio_admin:reenviar' i.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <button type="submit" class="dropdown-item">Reenviar aviso de lista de espera</button></form>
+                                    </li>
+                                    {% endif %}
                                     {% if i.is_confirmed %}
                                     <li>
                                         <form method="post" action="{% url 'simposio_admin:reenviar' i.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
@@ -144,7 +177,7 @@
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form method="post" action="{% url 'simposio_admin:inscripcion_estado' i.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                            <button type="submit" class="dropdown-item {% if i.is_confirmed %}text-danger{% endif %}">{% if i.is_confirmed %}Cancelar inscripción{% else %}Restablecer inscripción{% endif %}</button></form>
+                                            <button type="submit" class="dropdown-item {% if not i.is_cancelled %}text-danger{% endif %}">{% if i.is_waitlisted %}Sacar de la lista de espera{% elif i.is_confirmed %}Cancelar inscripción{% else %}Restablecer inscripción{% endif %}</button></form>
                                     </li>
                                 </ul>
                             </div>

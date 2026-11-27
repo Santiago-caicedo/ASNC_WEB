@@ -391,6 +391,9 @@ sup.sp-tent { margin-left: .1em; font-size: 1em; line-height: 0; }
 .sp-mode { display: flex; gap: .8rem; align-items: flex-start; padding: 1rem 1.1rem; border: 1.5px solid #BFC9D6; border-radius: 12px; background: #fff; cursor: pointer; font-weight: 400 !important; margin: 0 !important; }
 .sp-mode:has(input:checked) { border-color: var(--sp-navy); box-shadow: 0 0 0 3px rgba(33,58,92,.14); }
 .sp-mode.is-off { opacity: .55; cursor: not-allowed; }
+.sp-mode.is-wait { border-style: dashed; background: #FFFBEB; }
+.sp-mode.is-wait:has(input:checked) { border-style: solid; }
+.sp-mode.is-wait .sp-mode-text b i { color: #B45309; }
 .sp-mode input { flex: none; margin-top: .25rem; }
 .sp-mode-text { display: grid; gap: .2rem; }
 .sp-mode-text b { font-weight: 600; font-size: 1.05rem; }

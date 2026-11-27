@@ -51,12 +51,17 @@
                         <legend>{{ form.modality.label }}</legend>
                         <div class="sp-modes" role="radiogroup">
                             {% for choice in form.modality %}
-                            {% with full=simposio.is_full %}
-                            <label class="sp-mode{% if choice.data.value == 'PRESENCIAL' and full %} is-off{% endif %}" for="{{ choice.id_for_label }}">
-                                <input type="radio" name="{{ choice.data.name }}" value="{{ choice.data.value }}" id="{{ choice.id_for_label }}" class="form-check-input"{% if choice.data.selected %} checked{% endif %}{% if choice.data.value == 'PRESENCIAL' and full %} disabled{% endif %}>
+                            {% with full=simposio.in_person_waitlisted %}
+                            <label class="sp-mode{% if choice.data.value == 'PRESENCIAL' and full %} is-wait{% endif %}" for="{{ choice.id_for_label }}">
+                                <input type="radio" name="{{ choice.data.name }}" value="{{ choice.data.value }}" id="{{ choice.id_for_label }}" class="form-check-input"{% if choice.data.selected %} checked{% endif %}>
                                 {% if choice.data.value == 'PRESENCIAL' %}
+                                {% if full %}
+                                <span class="sp-mode-text"><b><i class="bi bi-hourglass-split" aria-hidden="true"></i> Presencial · lista de espera</b>
+                                    <span>Los cupos presenciales están llenos, pero puedes inscribirte en la lista de espera. Si se libera un cupo, te enviamos tu entrada por correo.</span></span>
+                                {% else %}
                                 <span class="sp-mode-text"><b><i class="bi bi-geo-alt" aria-hidden="true"></i> Presencial</b>
-                                    <span>{% if full %}Cupos presenciales agotados.{% else %}En {{ simposio.venue|default:simposio.city }}. Recibes tu entrada con código QR.{% endif %}</span></span>
+                                    <span>En {{ simposio.venue|default:simposio.city }}. Recibes tu entrada con código QR.</span></span>
+                                {% endif %}
                                 {% else %}
                                 <span class="sp-mode-text"><b><i class="bi bi-camera-video" aria-hidden="true"></i> Virtual</b>
                                     <span>Desde donde estés. Te enviaremos la información de conexión antes del evento.</span></span>

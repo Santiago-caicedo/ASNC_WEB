@@ -28,7 +28,7 @@ from .forms import InscripcionForm, SimposioForm
 from .models import Asistencia, Inscripcion, Simposio
 from .utils import (
     calendar_ics, check_in, extract_ticket_uuid, format_event_dates, generate_certificate_pdf,
-    google_calendar_links, send_certificate_emails, send_confirmation_email,
+    give_seats, google_calendar_links, send_certificate_emails, send_confirmation_email,
     ticket_qr_data_uri, ticket_qr_png,
 )
 
@@ -38,6 +38,8 @@ logger = logging.getLogger(__name__)
 # company often shares one public IP.
 RATE_LIMIT_PER_HOUR = 20
 MIN_FILL_SECONDS = 3
+# Seats handed out from the waiting list per click (each one sends an e-mail).
+SEATS_PER_BATCH = 25
 
 
 def staff_required(view_func):
@@ -183,17 +185,14 @@ class RegistroView(FormView):
                 elif not simposio.accepts_registrations:
                     form.add_error(None, 'Las inscripciones están cerradas.')
                     return self.form_invalid(form)
-                elif (form.cleaned_data['modality'] == Inscripcion.Modality.IN_PERSON
-                      and simposio.is_full):
-                    form.add_error(
-                        'modality',
-                        'Se agotaron los cupos presenciales. Puedes inscribirte en modalidad virtual.',
-                    )
-                    return self.form_invalid(form)
                 else:
                     inscripcion = form.save(commit=False)
                     inscripcion.simposio = simposio
                     inscripcion.ip_address = ip
+                    if (inscripcion.modality == Inscripcion.Modality.IN_PERSON
+                            and simposio.in_person_waitlisted):
+                        # Room full (or people already waiting): in line for a seat.
+                        inscripcion.status = Inscripcion.Status.WAITLIST
                     inscripcion.save()
         except IntegrityError:
             inscripcion = self.simposio.inscripciones.get(email=email)
@@ -205,7 +204,7 @@ class RegistroView(FormView):
             # Someone typing an e-mail that is already registered only gets the
             # ticket re-sent to that address: never shown on screen.
             resend_key = f'simposio_resend_{inscripcion.pk}'
-            if inscripcion.is_confirmed and not cache.get(resend_key):
+            if not inscripcion.is_cancelled and not cache.get(resend_key):
                 cache.set(resend_key, True, 600)
                 self._send(inscripcion)
             self.request.session['simposio_ya_inscrito'] = True
@@ -356,6 +355,8 @@ def _filtered_inscripciones(request, simposio):
         queryset = queryset.filter(dias__gt=0)
     elif estado == 'sin_asistencia':
         queryset = queryset.filter(dias=0, status=Inscripcion.Status.CONFIRMED)
+    elif estado == 'espera':
+        queryset = queryset.filter(status=Inscripcion.Status.WAITLIST)
     elif estado == 'canceladas':
         queryset = queryset.filter(status=Inscripcion.Status.CANCELLED)
     tipo = request.GET.get('tipo', '')
@@ -364,6 +365,9 @@ def _filtered_inscripciones(request, simposio):
     modalidad = request.GET.get('modalidad', '')
     if modalidad in Inscripcion.Modality.values:
         queryset = queryset.filter(modality=modalidad)
+    if estado == 'espera':
+        # The waiting list reads in line order: the next one to get a seat first.
+        return queryset.order_by('created_at', 'pk')
     return queryset.order_by('-created_at')
 
 
@@ -391,10 +395,17 @@ class InscripcionListView(AdminRequiredMixin, TemplateView):
                 if i.can_get_certificate
             )
 
+        waitlist_ids = list(simposio.waitlist.values_list('pk', flat=True))
+        for inscripcion in page:
+            if inscripcion.status == Inscripcion.Status.WAITLIST:
+                inscripcion.position = waitlist_ids.index(inscripcion.pk) + 1
+
         context.update({
             'simposio': simposio,
             'event_dates': format_event_dates(simposio),
             'page_obj': page,
+            'waitlist_count': len(waitlist_ids),
+            'seats_to_give': min(simposio.seats_left, len(waitlist_ids), SEATS_PER_BATCH),
             'querystring': params.urlencode(),
             'total_confirmed': confirmed.count(),
             'total_in_person': confirmed.filter(modality=Inscripcion.Modality.IN_PERSON).count(),
@@ -540,9 +551,20 @@ def asistencia_quitar(request, pk):
 def inscripcion_estado(request, pk):
     """Cancel or restore a registration (frees or takes a seat)."""
     inscripcion = get_object_or_404(Inscripcion.objects.select_related('simposio'), pk=pk)
-    if inscripcion.is_confirmed:
+    if inscripcion.is_waitlisted:
+        inscripcion.status = Inscripcion.Status.CANCELLED
+        messages.success(request, f'{inscripcion.full_name} salió de la lista de espera.')
+    elif inscripcion.is_confirmed:
         inscripcion.status = Inscripcion.Status.CANCELLED
         messages.success(request, f'Inscripción de {inscripcion.full_name} cancelada.')
+    elif (inscripcion.modality == Inscripcion.Modality.IN_PERSON
+          and inscripcion.simposio.in_person_waitlisted):
+        # No seat to give back: the person returns to the line (by sign-up time).
+        inscripcion.status = Inscripcion.Status.WAITLIST
+        messages.success(
+            request,
+            f'{inscripcion.full_name} volvió a la lista de espera: no hay cupo presencial libre.',
+        )
     else:
         inscripcion.status = Inscripcion.Status.CONFIRMED
         messages.success(request, f'Inscripción de {inscripcion.full_name} restablecida.')
@@ -550,11 +572,77 @@ def inscripcion_estado(request, pk):
     return _back(request)
 
 
+def _send_tickets(request, promoted):
+    """E-mail the ticket to people who just got a seat; report how it went."""
+    failed = []
+    for inscripcion in promoted:
+        try:
+            send_confirmation_email(inscripcion, from_waitlist=True)
+        except Exception:
+            logger.exception('Fallo al enviar la entrada de la inscripción %s', inscripcion.pk)
+            failed.append(inscripcion.email)
+    sent = len(promoted) - len(failed)
+    if len(promoted) == 1 and sent:
+        messages.success(
+            request,
+            f'{promoted[0].full_name} ya tiene cupo: le enviamos su entrada a {promoted[0].email}.',
+        )
+    elif sent:
+        messages.success(
+            request,
+            f'{sent} personas pasaron de la lista de espera a tener cupo y recibieron su entrada.',
+        )
+    if failed:
+        messages.error(
+            request,
+            'Tienen cupo, pero no se pudo enviar el correo a: ' + ', '.join(failed)
+            + '. Usa «Reenviar confirmación» en cada una.',
+        )
+
+
+NO_SEATS_MESSAGE = (
+    'No hay cupos presenciales libres. Cancela una inscripción presencial '
+    'o sube el cupo en «Configurar».'
+)
+
+
+@admin_required
+@require_POST
+def dar_cupo(request, pk):
+    """Give a free seat to one person of the waiting list (any place in line)."""
+    inscripcion = get_object_or_404(Inscripcion.objects.select_related('simposio'), pk=pk)
+    if not inscripcion.is_waitlisted:
+        messages.info(request, f'{inscripcion.full_name} no está en la lista de espera.')
+        return _back(request)
+    promoted = give_seats(inscripcion.simposio, [inscripcion])
+    if not promoted:
+        messages.warning(request, NO_SEATS_MESSAGE)
+        return _back(request)
+    _send_tickets(request, promoted)
+    return _back(request)
+
+
+@admin_required
+@require_POST
+def dar_cupos_siguientes(request):
+    """Give the free seats to the first people in line (up to one batch)."""
+    simposio = get_admin_simposio()
+    promoted = give_seats(simposio, list(simposio.waitlist[:SEATS_PER_BATCH]))
+    if not promoted:
+        if simposio.waitlist_count:
+            messages.warning(request, NO_SEATS_MESSAGE)
+        else:
+            messages.info(request, 'No hay nadie en la lista de espera.')
+        return _back(request)
+    _send_tickets(request, promoted)
+    return _back(request)
+
+
 @admin_required
 @require_POST
 def reenviar_confirmacion(request, pk):
     inscripcion = get_object_or_404(Inscripcion.objects.select_related('simposio'), pk=pk)
-    if not inscripcion.is_confirmed:
+    if inscripcion.is_cancelled:
         messages.warning(request, 'La inscripción está cancelada: no se envió el correo.')
         return _back(request)
     try:
@@ -563,7 +651,10 @@ def reenviar_confirmacion(request, pk):
         logger.exception('Fallo al reenviar la confirmación de la inscripción %s', pk)
         messages.error(request, f'No se pudo enviar el correo a {inscripcion.email}.')
     else:
-        messages.success(request, f'Entrada reenviada a {inscripcion.email}.')
+        if inscripcion.is_waitlisted:
+            messages.success(request, f'Aviso de lista de espera reenviado a {inscripcion.email}.')
+        else:
+            messages.success(request, f'Entrada reenviada a {inscripcion.email}.')
     return _back(request)
 
 
@@ -604,6 +695,7 @@ def exportar_excel(request):
     date_fmt = workbook.add_format({'num_format': 'dd/mm/yyyy hh:mm'})
     yes = workbook.add_format({'bg_color': '#DCFCE7', 'font_color': '#166534'})
     off = workbook.add_format({'bg_color': '#FEE2E2', 'font_color': '#991B1B'})
+    wait = workbook.add_format({'bg_color': '#FEF3C7', 'font_color': '#92400E'})
 
     columns = [
         ('Código', 12), ('Nombres', 22), ('Apellidos', 22), ('Modalidad', 12),
@@ -627,7 +719,8 @@ def exportar_excel(request):
         ]
         for col, value in enumerate(values):
             sheet.write(row, col, value)
-        sheet.write(row, 10, i.get_status_display(), yes if i.is_confirmed else off)
+        status_fmt = yes if i.is_confirmed else (wait if i.is_waitlisted else off)
+        sheet.write(row, 10, i.get_status_display(), status_fmt)
         sheet.write_datetime(row, 11, timezone.localtime(i.created_at).replace(tzinfo=None), date_fmt)
         sheet.write(row, 12, len(days), yes if days else None)
         sheet.write(row, 13, ', '.join(date_format(d, 'd/m/Y') for d in days))

@@ -182,17 +182,47 @@ class InscripcionTests(Base):
         self.assertEqual(self.post(accepts_data_policy='').status_code, 200)
         self.assertEqual(Inscripcion.objects.count(), 0)
 
-    def test_cupo_presencial_agotado_deja_inscribirse_en_virtual(self):
+    def test_cupo_presencial_lleno_manda_a_la_lista_de_espera(self):
         self.simposio.capacity = 1
         self.simposio.save()
         inscribir(self.simposio)
-        self.assertContains(self.client.get(self.url), 'Cupos presenciales agotados')
+        self.assertContains(self.client.get(self.url), 'puedes inscribirte en la lista de espera')
+
         response = self.post()
-        self.assertContains(response, 'Se agotaron los cupos presenciales')
-        self.assertEqual(Inscripcion.objects.count(), 1)
-        response = self.post(modality='VIRTUAL')
         self.assertRedirects(response, reverse('simposio:gracias'))
-        self.assertEqual(Inscripcion.objects.filter(modality='VIRTUAL').count(), 1)
+        inscripcion = Inscripcion.objects.get(email='maria@example.com')
+        self.assertTrue(inscripcion.is_waitlisted)
+        self.assertEqual(inscripcion.waitlist_position, 1)
+        self.assertEqual(self.simposio.in_person_count, 1)  # the waiting list takes no seat
+
+        message = mail.outbox[0]
+        self.assertIn('lista de espera', message.subject)
+        self.assertEqual([a[0] for a in message.attachments], [])  # no QR, no calendar
+        self.assertIn('Tu lugar en la lista', message.alternatives[0][0])
+        self.assertContains(self.client.get(reverse('simposio:gracias')), 'quedaste en la lista de espera')
+
+        ticket = self.client.get(inscripcion.get_ticket_path())
+        self.assertContains(ticket, 'lista de espera presencial (lugar número 1)')
+        self.assertNotContains(ticket, 'Código QR de tu entrada')
+        self.assertEqual(
+            self.client.get(inscripcion.get_ticket_path() + 'qr.png').status_code, 404,
+        )
+
+        # Virtual still goes straight through.
+        response = self.post(modality='VIRTUAL', email='otra@example.com')
+        self.assertTrue(Inscripcion.objects.get(email='otra@example.com').is_confirmed)
+
+    def test_con_gente_en_espera_un_cupo_libre_no_se_lo_lleva_el_siguiente(self):
+        self.simposio.capacity = 2
+        self.simposio.save()
+        inscribir(self.simposio, status=Inscripcion.Status.WAITLIST)
+        self.post()
+        self.assertTrue(Inscripcion.objects.get(email='maria@example.com').is_waitlisted)
+
+    def test_correo_repetido_en_espera_reenvia_el_aviso(self):
+        inscribir(self.simposio, email='maria@example.com', status=Inscripcion.Status.WAITLIST)
+        self.post()
+        self.assertIn('lista de espera', mail.outbox[0].subject)
 
     def test_inscripcion_virtual_recibe_confirmacion_y_calendario(self):
         response = self.post(modality='VIRTUAL')
@@ -389,6 +419,68 @@ class PortalTests(Base):
         response = self.client.get(reverse('simposio_admin:export_excel'))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.content.startswith(b'PK'))
+
+
+class ListaDeEsperaTests(Base):
+    def setUp(self):
+        super().setUp()
+        abrir(self.simposio, capacity=1)
+        self.con_cupo = inscribir(self.simposio, email='ana@example.com')
+        self.primera = inscribir(self.simposio, email='uno@example.com', status=Inscripcion.Status.WAITLIST)
+        self.segunda = inscribir(self.simposio, email='dos@example.com', status=Inscripcion.Status.WAITLIST)
+        self.client.force_login(self.admin)
+
+    def test_portal_muestra_la_fila_en_orden(self):
+        response = self.client.get(reverse('simposio_admin:list'), {'estado': 'espera'})
+        self.assertEqual(response.context['waitlist_count'], 2)
+        self.assertEqual(response.context['seats_to_give'], 0)
+        rows = list(response.context['page_obj'])
+        self.assertEqual([r.email for r in rows], ['uno@example.com', 'dos@example.com'])
+        self.assertContains(response, 'En espera · n.º 2')
+        self.assertEqual(self.segunda.waitlist_position, 2)
+
+    def test_sin_cupo_libre_no_se_da_cupo(self):
+        self.client.post(reverse('simposio_admin:dar_cupo', args=[self.primera.pk]))
+        self.primera.refresh_from_db()
+        self.assertTrue(self.primera.is_waitlisted)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_al_liberarse_un_cupo_se_le_da_al_primero_con_su_entrada(self):
+        self.client.post(reverse('simposio_admin:inscripcion_estado', args=[self.con_cupo.pk]))
+        response = self.client.get(reverse('simposio_admin:list'))
+        self.assertEqual(response.context['seats_to_give'], 1)
+
+        self.client.post(reverse('simposio_admin:dar_cupos_siguientes'))
+        self.primera.refresh_from_db()
+        self.segunda.refresh_from_db()
+        self.assertTrue(self.primera.is_confirmed)
+        self.assertTrue(self.segunda.is_waitlisted)
+        self.assertEqual(self.segunda.waitlist_position, 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ['uno@example.com'])
+        self.assertIn('Se liberó un cupo', message.subject)
+        self.assertEqual(message.attachments[0][0], 'entrada-qr.png')
+
+    def test_subir_el_cupo_y_dar_cupos(self):
+        self.simposio.capacity = 5
+        self.simposio.save()
+        self.client.post(reverse('simposio_admin:dar_cupos_siguientes'))
+        self.assertEqual(self.simposio.waitlist_count, 0)
+        self.assertEqual(len(mail.outbox), 2)
+
+    def test_sacar_de_la_lista_y_restablecer_sin_cupo_vuelve_a_la_fila(self):
+        url = reverse('simposio_admin:inscripcion_estado', args=[self.primera.pk])
+        self.client.post(url)
+        self.primera.refresh_from_db()
+        self.assertTrue(self.primera.is_cancelled)
+        self.client.post(url)
+        self.primera.refresh_from_db()
+        self.assertTrue(self.primera.is_waitlisted)
+
+    def test_en_la_puerta_no_registra_asistencia(self):
+        ok, code, _, _ = check_in(self.primera)
+        self.assertFalse(ok)
+        self.assertEqual(code, 'waitlist')
 
 
 class CertificadoTests(Base):

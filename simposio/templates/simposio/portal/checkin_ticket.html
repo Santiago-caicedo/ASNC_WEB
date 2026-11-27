@@ -20,7 +20,9 @@
             {% for a in asistencias %}{{ a.day|date:"j \d\e F" }} ({{ a.checked_in_at|date:"g:i a" }}){% if not forloop.last %}, {% endif %}{% empty %}sin registrar{% endfor %}
         </div>
 
-        {% if not inscripcion.is_confirmed %}
+        {% if inscripcion.is_waitlisted %}
+            <span class="spp-tag spp-tag--wait">En lista de espera: sin cupo presencial</span>
+        {% elif not inscripcion.is_confirmed %}
             <span class="spp-tag spp-tag--off">Inscripción cancelada</span>
         {% elif today_done %}
             <span class="spp-tag spp-tag--ok">Ya ingresó hoy</span>

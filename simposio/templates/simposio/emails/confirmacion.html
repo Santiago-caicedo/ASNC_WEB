@@ -2,13 +2,19 @@
 {% load simposio_extras %}
 
 {% block title %}Registro presencial confirmado: {{ simposio.title }}{% endblock %}
-{% block heading %}Registro presencial confirmado{% endblock %}
+{% block heading %}{% if from_waitlist %}¡Se liberó un cupo para ti!{% else %}Registro presencial confirmado{% endif %}{% endblock %}
 
 {% block body %}
 <p style="font-size: 18px; color: #1B2A41; margin: 0 0 16px;">Hola <strong>{{ inscripcion.first_name }}</strong>,</p>
+{% if from_waitlist %}
+<p style="font-size: 16px; color: #475569; line-height: 1.7; margin: 0 0 26px;">
+    Buenas noticias: se liberó un cupo presencial y saliste de la lista de espera del <strong>{{ simposio.title }}</strong>. Tu lugar en el auditorio ya está reservado. Esta es tu entrada: muestra el código QR en la puerta, desde el celular o impreso, para registrar tu asistencia.
+</p>
+{% else %}
 <p style="font-size: 16px; color: #475569; line-height: 1.7; margin: 0 0 26px;">
     Tu <strong>registro presencial</strong> al <strong>{{ simposio.title }}</strong> quedó confirmado y tu cupo en el auditorio está reservado. Esta es tu entrada: muestra el código QR en la puerta, desde el celular o impreso, para registrar tu asistencia.
 </p>
+{% endif %}
 
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 26px;">
     <tr>

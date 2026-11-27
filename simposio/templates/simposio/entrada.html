@@ -13,13 +13,15 @@
                 <div class="sp-alert sp-alert--info" role="status">{{ message }}</div>
             {% endfor %}
 
-            {% if not inscripcion.is_confirmed %}
+            {% if inscripcion.is_waitlisted %}
+                <div class="sp-alert sp-alert--info" role="status"><strong>Estás en la lista de espera presencial (lugar número {{ inscripcion.waitlist_position }}).</strong> Todavía no tienes cupo en el auditorio: si se libera uno, te enviaremos tu entrada con el código QR por correo y aparecerá en esta misma página.</div>
+            {% elif inscripcion.is_cancelled %}
                 <div class="sp-alert sp-alert--error" role="alert">Esta inscripción fue cancelada y la entrada ya no es válida. Si crees que es un error, escríbenos a <a href="mailto:info@asncol.com">info@asncol.com</a>.</div>
             {% endif %}
 
             <article class="sp-ticket">
                 <header class="sp-ticket-head">
-                    <small>{% if inscripcion.is_virtual %}Inscripción virtual{% else %}Entrada{% endif %} · Asociación Nuclear Colombiana</small>
+                    <small>{% if inscripcion.is_virtual %}Inscripción virtual{% elif inscripcion.is_waitlisted %}Lista de espera{% else %}Entrada{% endif %} · Asociación Nuclear Colombiana</small>
                     <h1>{{ simposio.title }}</h1>
                 </header>
                 <div class="sp-ticket-body">
@@ -30,7 +32,7 @@
                             <dt>Cuándo</dt>
                             <dd>{% if event_dates %}{{ event_dates|capfirst }}{% if simposio.schedule_text %} · {{ simposio.schedule_text }}{% endif %}{% else %}Fecha por confirmar{% endif %}</dd>
                             <dt>Modalidad</dt>
-                            <dd>{{ inscripcion.get_modality_display }}</dd>
+                            <dd>{{ inscripcion.get_modality_display }}{% if inscripcion.is_waitlisted %} · en lista de espera{% endif %}</dd>
                             {% if inscripcion.is_virtual %}
                             <dt>Conexión</dt>
                             <dd>Te enviaremos el enlace por correo antes del evento.</dd>
@@ -52,7 +54,7 @@
                     {% endif %}
                 </div>
                 <footer class="sp-ticket-foot">
-                    <span>{% if inscripcion.is_virtual %}Guarda este enlace: aquí encontrarás tu certificado al terminar el simposio.{% else %}Muestra este código en la entrada, desde el celular o impreso.{% endif %}</span>
+                    <span>{% if inscripcion.is_virtual %}Guarda este enlace: aquí encontrarás tu certificado al terminar el simposio.{% elif inscripcion.is_waitlisted %}Guarda este enlace: aquí verás tu entrada si se libera un cupo.{% else %}Muestra este código en la entrada, desde el celular o impreso.{% endif %}</span>
                     <button type="button" class="sp-btn sp-btn--line sp-noprint" onclick="window.print()"><i class="bi bi-printer" aria-hidden="true"></i> Imprimir</button>
                 </footer>
             </article>

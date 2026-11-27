@@ -158,6 +158,29 @@ class Simposio(models.Model):
         return self.seats_left == 0
 
     @property
+    def waitlist(self):
+        """In-person registrations waiting for a seat, first come first served."""
+        return self.inscripciones.filter(
+            status=Inscripcion.Status.WAITLIST,
+        ).order_by('created_at', 'pk')
+
+    @property
+    def waitlist_count(self):
+        return self.waitlist.count()
+
+    @property
+    def in_person_waitlisted(self):
+        """New in-person sign-ups go to the waiting list.
+
+        True when the room is full, and also while anyone is still waiting:
+        a seat that frees up belongs to the first person in line, not to
+        whoever happens to fill the form next.
+        """
+        return self.is_full or self.inscripciones.filter(
+            status=Inscripcion.Status.WAITLIST,
+        ).exists()
+
+    @property
     def accepts_registrations(self):
         return self.registration_open and not self.has_ended
 
@@ -418,6 +441,7 @@ class Inscripcion(models.Model):
 
     class Status(models.TextChoices):
         CONFIRMED = 'CONFIRMED', 'Confirmada'
+        WAITLIST = 'WAITLIST', 'En lista de espera'
         CANCELLED = 'CANCELLED', 'Cancelada'
 
     class AttendeeType(models.TextChoices):
@@ -505,6 +529,26 @@ class Inscripcion(models.Model):
     @property
     def is_confirmed(self):
         return self.status == self.Status.CONFIRMED
+
+    @property
+    def is_waitlisted(self):
+        return self.status == self.Status.WAITLIST
+
+    @property
+    def is_cancelled(self):
+        return self.status == self.Status.CANCELLED
+
+    @property
+    def waitlist_position(self):
+        """1 for the next person to get a seat; None when not waiting."""
+        if not self.is_waitlisted:
+            return None
+        return self.simposio.inscripciones.filter(
+            status=self.Status.WAITLIST,
+        ).filter(
+            models.Q(created_at__lt=self.created_at)
+            | models.Q(created_at=self.created_at, pk__lt=self.pk)
+        ).count() + 1
 
     @property
     def is_virtual(self):

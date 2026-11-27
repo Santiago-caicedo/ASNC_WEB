@@ -1,0 +1,48 @@
+{% extends 'simposio/emails/_base.html' %}
+{% load simposio_extras %}
+
+{% block title %}Estás en la lista de espera: {{ simposio.title }}{% endblock %}
+{% block heading %}Estás en la lista de espera{% endblock %}
+
+{% block body %}
+<p style="font-size: 18px; color: #1B2A41; margin: 0 0 16px;">Hola <strong>{{ inscripcion.first_name }}</strong>,</p>
+<p style="font-size: 16px; color: #475569; line-height: 1.7; margin: 0 0 26px;">
+    Gracias por inscribirte al <strong>{{ simposio.title }}</strong>. Los cupos presenciales del auditorio ya están llenos, así que quedaste en la <strong>lista de espera presencial</strong>. Si se libera un cupo, te enviaremos a este correo tu entrada con el código QR.
+</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 26px;">
+    <tr>
+        <td align="center" style="background-color: #FFFBEB; border: 1px solid #FDE68A; border-radius: 12px; padding: 24px;">
+            <p style="font-size: 14px; color: #92400E; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 6px;">Tu lugar en la lista</p>
+            <p style="font-size: 44px; font-weight: 700; color: #1B2A41; line-height: 1; margin: 0;">{{ position }}</p>
+        </td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 28px; font-size: 15px;">
+    <tr>
+        <td style="padding: 10px 0; color: #64748b; border-bottom: 1px solid #e2e8f0; width: 110px;">Cuándo</td>
+        <td style="padding: 10px 0; color: #1B2A41; font-weight: 600; border-bottom: 1px solid #e2e8f0;">{% event_dates simposio as dates %}{% if dates %}{{ dates|capfirst }}{% if simposio.schedule_text %} · {{ simposio.schedule_text }}{% endif %}{% else %}Fecha por confirmar{% endif %}</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 0; color: #64748b; border-bottom: 1px solid #e2e8f0;">Dónde</td>
+        <td style="padding: 10px 0; color: #1B2A41; font-weight: 600; border-bottom: 1px solid #e2e8f0;">{% if simposio.venue or simposio.city %}{{ simposio.venue }}{% if simposio.venue and simposio.city %}, {% endif %}{{ simposio.city }}{% else %}Lugar por confirmar{% endif %}</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 0; color: #64748b;">Estado</td>
+        <td style="padding: 10px 0; color: #92400E; font-weight: 600;">En lista de espera: todavía sin cupo</td>
+    </tr>
+</table>
+
+<p style="font-size: 15px; color: #475569; line-height: 1.7; margin: 0 0 26px;">
+    <strong>Importante:</strong> mientras no recibas el correo con tu entrada, todavía no tienes cupo en el auditorio y no podrás registrar tu ingreso. Si ya no puedes asistir o prefieres seguir el simposio en modalidad virtual, escríbenos a <a href="mailto:info@asncol.com" style="color: #213a5c;">info@asncol.com</a>.
+</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+            <a href="{{ ticket_url }}" style="display: inline-block; background-color: #213a5c; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 15px 38px; border-radius: 50px;">Ver mi inscripción</a>
+        </td>
+    </tr>
+</table>
+{% endblock %}

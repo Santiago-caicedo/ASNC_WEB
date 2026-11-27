@@ -7,7 +7,15 @@
     <div class="sp-wrap">
         <div class="sp-narrow">
             <div class="sp-card">
-                {% if inscripcion %}
+                {% if inscripcion and inscripcion.is_waitlisted %}
+                    <div class="sp-check" aria-hidden="true"><i class="bi bi-hourglass-split"></i></div>
+                    <h1>{{ inscripcion.first_name }}, quedaste en la lista de espera</h1>
+                    <p class="sp-sub">Los cupos presenciales están llenos. Tu lugar en la lista es el <strong>número {{ inscripcion.waitlist_position }}</strong>: si se libera un cupo, te enviaremos tu entrada con el código QR a <strong>{{ inscripcion.email }}</strong>. Mientras no la recibas, todavía no tienes cupo en el auditorio.</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ inscripcion.get_ticket_path }}" class="sp-btn sp-btn--navy">Ver mi inscripción</a>
+                        <a href="{% url 'simposio:landing' %}" class="sp-btn sp-btn--line">Volver al simposio</a>
+                    </div>
+                {% elif inscripcion %}
                     <div class="sp-check" aria-hidden="true"><i class="bi bi-check-lg"></i></div>
                     {% if inscripcion.is_virtual %}
                     <h1>¡Listo, {{ inscripcion.first_name }}! Tu inscripción virtual está completa</h1>
