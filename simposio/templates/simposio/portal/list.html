@@ -43,15 +43,16 @@
         </div>
     </div>
 
-    {% if waitlist_count or simposio.is_full %}
     <div class="spp-state">
-        <span><i class="bi bi-hourglass-split me-1"></i>
-            {% if waitlist_count %}
-                <strong>{{ waitlist_count }}</strong> persona{{ waitlist_count|pluralize }} en la <a href="?estado=espera">lista de espera presencial</a>.
+        <span><i class="bi bi-hourglass-split me-1"></i><strong>Lista de espera presencial:</strong>
+            {% if not waitlist_count and not simposio.is_full %}
+                vacía. Se activa sola cuando se llenen los {{ simposio.capacity }} cupos presenciales (quedan {{ simposio.seats_left }}): desde ese momento, quien se inscriba como presencial queda en la fila y recibe un correo con su lugar.
+            {% elif waitlist_count %}
+                <strong>{{ waitlist_count }}</strong> persona{{ waitlist_count|pluralize }} <a href="?estado=espera">en la fila</a>.
                 {% if seats_to_give %}Hay {{ simposio.seats_left }} cupo{{ simposio.seats_left|pluralize }} libre{{ simposio.seats_left|pluralize }}: dáselos a las primeras de la fila y cada una recibe su entrada por correo.
                 {% else %}Cuando se libere un cupo (al cancelar una inscripción presencial o al subir el cupo en «Configurar»), dáselo a la primera de la fila.{% endif %}
             {% else %}
-                El cupo presencial está lleno. Quien se inscriba como presencial queda en la lista de espera y recibe un correo con su lugar.
+                todavía nadie en la fila, pero el cupo presencial está lleno: quien se inscriba como presencial queda en la lista de espera y recibe un correo con su lugar.
             {% endif %}
         </span>
         {% if seats_to_give %}
@@ -59,9 +60,10 @@
             {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
             <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">Dar {% if seats_to_give == 1 %}el cupo a la siguiente persona{% else %}cupo a las siguientes {{ seats_to_give }}{% endif %}</button>
         </form>
+        {% elif waitlist_count %}
+        <a href="?estado=espera" class="ms-lg-auto">Ver la fila <i class="bi bi-arrow-right"></i></a>
         {% endif %}
     </div>
-    {% endif %}
 
     {% if simposio.certificates_enabled %}
     <div class="spp-state">
